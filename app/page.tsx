@@ -27,21 +27,56 @@ export default async function Page() {
   const items = await getData();
 
   return (
-    <main style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 16 }}>
-      {items.map(p => (
-        <article key={p._id} style={{ border: '1px solid #ddd', borderRadius: 12, padding: 12 }}>
-          {p.preview?.asset?.url && (
-            <img src={p.preview.asset.url} alt={p.title} style={{ width: '100%', borderRadius: 8 }} />
-          )}
-          <h3 style={{ margin: '12px 0 4px' }}>{p.title}</h3>
-          <p>${((p.priceCents || 0) / 100).toFixed(2)}</p>
-          {p.file?.asset?.url ? (
-            <a href={p.file.asset.url}>Download (MVP)</a>
-          ) : (
-            <span style={{ opacity: 0.5 }}>No file yet</span>
-          )}
-        </article>
-      ))}
+    <main style={{ padding: 24 }}>
+      {/* Hero + Stripe CTA */}
+      <section style={{
+        border: '1px solid #e5e5e5',
+        borderRadius: 16,
+        padding: 24,
+        marginBottom: 24
+      }}>
+        <h1 style={{ margin: 0 }}>Exclusive Floral Faux Embroidery 10-Pack</h1>
+        <p style={{ margin: '8px 0 16px' }}>
+          $100 – Worldwide exclusive rights (single buyer).
+        </p>
+        <a
+          href="https://buy.stripe.com/6oUeVc9hudLCetmb4h83C00"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button
+            style={{
+              padding: '12px 20px',
+              border: 'none',
+              borderRadius: 8,
+              background: '#635BFF',
+              color: 'white',
+              fontSize: 16,
+              cursor: 'pointer'
+            }}
+          >
+            Buy Now – $100
+          </button>
+        </a>
+      </section>
+
+      {/* Pattern Grid (unchanged) */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 16 }}>
+        {items.map(p => (
+          <article key={p._id} style={{ border: '1px solid #ddd', borderRadius: 12, padding: 12 }}>
+            {p.preview?.asset?.url && (
+              <img src={p.preview.asset.url} alt={p.title} style={{ width: '100%', borderRadius: 8 }} />
+            )}
+            <h3 style={{ margin: '12px 0 4px' }}>{p.title}</h3>
+            <p>${((p.priceCents || 0) / 100).toFixed(2)}</p>
+            {p.file?.asset?.url ? (
+              <a href={p.file.asset.url}>Download (MVP)</a>
+            ) : (
+              <span style={{ opacity: 0.5 }}>No file yet</span>
+            )}
+          </article>
+        ))}
+      </section>
     </main>
   );
 }
