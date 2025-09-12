@@ -1,15 +1,22 @@
 {
-  "name": "patternripple",
+  "name": "patternripple-pages",
+  "version": "0.1.0",
   "private": true,
-  "scripts": { "dev": "next dev", "build": "next build", "start": "next start" },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "dependencies": {
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "sanity": "latest",
-    "next-sanity": "latest",
-    "@sanity/client": "latest",
-    "@sanity/image-url": "latest",
-    "@portabletext/react": "latest"
+    "next": "^15.5.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sanity": "^3.30.0",
+    "next-sanity": "^7.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/react": "^18.2.48",
+    "@types/node": "^20.11.5"
   }
 }
