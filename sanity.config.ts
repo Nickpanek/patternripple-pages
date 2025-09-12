@@ -7,6 +7,6 @@ export default defineConfig({
   title: 'PatternRipple Studio',
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  plugins: [structureTool(), visionTool()],
+  plugins: [structureTool()], // removed visionTool()
   schema: { types: schemaTypes }
 });
