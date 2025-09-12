@@ -1,2 +1,3 @@
-import pattern from './pattern';
-export default [pattern];
+import pattern from './pattern'
+
+export const schemaTypes = [pattern]
