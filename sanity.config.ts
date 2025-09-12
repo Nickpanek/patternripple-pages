@@ -6,7 +6,7 @@ export default defineConfig({
   name: 'default',
   title: 'PatternRipple',
   
-  projectId: 'your-project-id', // Add your actual project ID
+  projectId: 'cw0cqup1',
   dataset: 'production',
   
   plugins: [structureTool()],
