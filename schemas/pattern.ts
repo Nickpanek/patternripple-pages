@@ -1,6 +1,4 @@
-import { defineType } from 'sanity'
-
-export default defineType({
+export default {
   name: 'pattern',
   title: 'Pattern',
   type: 'document',
@@ -11,21 +9,36 @@ export default defineType({
       type: 'string',
     },
     {
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+    },
+    {
+      name: 'image',
+      title: 'Image',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+    },
+    {
+      name: 'category',
+      title: 'Category',
+      type: 'string',
+    },
+    {
+      name: 'price',
+      title: 'Price',
+      type: 'number',
+    },
+    {
       name: 'description',
       title: 'Description',
       type: 'text',
     },
-    {
-      name: 'image',
-      title: 'Pattern Image',
-      type: 'image',
-      options: { hotspot: true },
-    },
-    {
-      name: 'tags',
-      title: 'Tags',
-      type: 'array',
-      of: [{ type: 'string' }],
-    },
   ],
-})
+}
