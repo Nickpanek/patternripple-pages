@@ -6,7 +6,7 @@ export default defineConfig({
   name: 'default',
   title: 'PatternRipple',
   
-  projectId: 'cw0cqup1',
+  projectId: 'zomio78q',
   dataset: 'production',
   
   plugins: [structureTool()],
