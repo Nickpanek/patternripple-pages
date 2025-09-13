@@ -1,9 +1,10 @@
 // Studio route wrapper - Cloudflare-friendly
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const runtime = 'edge';
+export const dynamic = 'force-static';
 
-import StudioClient from './StudioClient';
+import dynamic from 'next/dynamic';
+
+const StudioClient = dynamic(() => import('./StudioClient'), { ssr: false });
 
 export default function StudioPage() {
   return <StudioClient />;
