@@ -1,11 +1,9 @@
+// Server wrapper so Studio renders fresh each request
+export const dynamic = 'force-dynamic';
 export const runtime = 'edge';
 
-export default function Home() {
-  return (
-    <main style={{ padding: 24 }}>
-      <h1>PatternRipple</h1>
-      <p>Homepage placeholder — restore your previous content here.</p>
-      <p><a href="/studio">Open Studio</a></p>
-    </main>
-  );
+import StudioClient from './StudioClient';
+
+export default function StudioPage() {
+  return <StudioClient />;
 }
