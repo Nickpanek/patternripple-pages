@@ -1,6 +1,7 @@
-// Server wrapper so Studio renders fresh each request
+// Studio route wrapper - Cloudflare-friendly
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const runtime = 'edge';
+export const revalidate = 0;
 
 import StudioClient from './StudioClient';
 
