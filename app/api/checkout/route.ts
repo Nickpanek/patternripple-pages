@@ -1,29 +1,45 @@
-import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
-// no apiVersion - simplest and fixes the type error
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+export const runtime = "edge";
 
 export async function POST(req: Request) {
   try {
     const { priceId, quantity = 1, metadata = {} } = await req.json();
-    if (!priceId) return NextResponse.json({ error: "Missing priceId" }, { status: 400 });
+    if (!priceId) {
+      return NextResponse.json({ error: "Missing priceId" }, { status: 400 });
+    }
 
     const site = process.env.NEXT_PUBLIC_SITE_URL || "https://www.patternripple.com";
-    const sku = metadata.sku || "PR-flo-20250916-001";
+    const sku = (metadata && metadata.sku) || "PR-flo-20250916-001";
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [{ price: priceId, quantity }],
-      success_url: `${site}/thank-you?session_id={CHECKOUT_SESSION_ID}&sku=${sku}`,
-      cancel_url: `${site}/checkout-cancelled`,
-      allow_promotion_codes: true,
-      metadata,
+    // Build Stripe form body
+    const body = new URLSearchParams();
+    body.append("mode", "payment");
+    body.append("success_url", `${site}/thank-you?session_id={CHECKOUT_SESSION_ID}&sku=${sku}`);
+    body.append("cancel_url", `${site}/checkout-cancelled`);
+    body.append("allow_promotion_codes", "true");
+    body.append("line_items[0][price]", priceId);
+    body.append("line_items[0][quantity]", String(quantity));
+    for (const [k, v] of Object.entries(metadata || {})) {
+      body.append(`metadata[${k}]`, String(v));
+    }
+
+    const resp = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY || ""}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: body.toString(),
     });
 
-    return NextResponse.json({ url: session.url });
+    if (!resp.ok) {
+      const errText = await resp.text();
+      return NextResponse.json({ error: "Stripe error", detail: errText }, { status: 500 });
+    }
+
+    const data = await resp.json();
+    return NextResponse.json({ url: data.url });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Stripe error" }, { status: 500 });
   }
