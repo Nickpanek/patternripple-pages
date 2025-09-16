@@ -1,11 +1,8 @@
-// Studio route wrapper - Cloudflare-friendly
-export const runtime = 'edge';
-export const dynamic = 'force-static';
+'use client'
 
-import NextDynamic from 'next/dynamic';
-
-const StudioClient = NextDynamic(() => import('./StudioClient'), { ssr: false });
+import { NextStudio } from 'next-sanity/studio'
+import config from '../../../sanity.config'
 
 export default function StudioPage() {
-  return <StudioClient />;
+  return <NextStudio config={config} />
 }
