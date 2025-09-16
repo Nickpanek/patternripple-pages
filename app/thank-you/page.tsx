@@ -1,12 +1,16 @@
 "use client";
+
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function ThankYouPage() {
+function ThankYouBody() {
   const p = useSearchParams();
   const sessionId = p.get("session_id");
   const sku = p.get("sku") || "PR-flo-20250916-001";
 
-  if (!sessionId) return <main className="p-8 text-center">Missing checkout information.</main>;
+  if (!sessionId) {
+    return <main className="p-8 text-center">Missing checkout information.</main>;
+  }
 
   const worker = "https://patternripple-delivery.nickpanek-ks.workers.dev";
   const href = `${worker}/download/${sku}?session_id=${encodeURIComponent(sessionId)}`;
@@ -19,5 +23,13 @@ export default function ThankYouPage() {
         Download package
       </a>
     </main>
+  );
+}
+
+export default function ThankYouPage() {
+  return (
+    <Suspense fallback={<main className="p-8 text-center">Loading...</main>}>
+      <ThankYouBody />
+    </Suspense>
   );
 }
