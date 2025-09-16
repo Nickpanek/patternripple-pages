@@ -8,5 +8,5 @@ export default defineConfig({
   dataset: 'production',
   basePath: '/studio',
   plugins: [deskTool()],
-  schema: { types: [] }, // keep empty for this test
+  schema: { types: [] }, // keep empty until Studio renders
 })
