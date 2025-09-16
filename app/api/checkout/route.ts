@@ -3,17 +3,13 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
+// no apiVersion - simplest and fixes the type error
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
-
-});
 
 export async function POST(req: Request) {
   try {
     const { priceId, quantity = 1, metadata = {} } = await req.json();
-
-    if (!priceId) {
-      return NextResponse.json({ error: "Missing priceId" }, { status: 400 });
-    }
+    if (!priceId) return NextResponse.json({ error: "Missing priceId" }, { status: 400 });
 
     const site = process.env.NEXT_PUBLIC_SITE_URL || "https://www.patternripple.com";
     const sku = metadata.sku || "PR-flo-20250916-001";
