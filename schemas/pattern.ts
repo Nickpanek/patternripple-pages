@@ -64,6 +64,7 @@ export default defineType({
 
     { name: 'isExclusive', title: 'Exclusive Pattern', type: 'boolean', initialValue: true, readOnly: true },
     { name: 'basePrice', title: 'Base Price ($)', type: 'number', validation: (Rule) => Rule.required().min(1) },
+    { name: 'stripePriceId', title: 'Stripe Price ID', type: 'string', description: 'Stripe price_xxx used for checkout', validation: (Rule) => Rule.required() },
     {
       name: 'exclusivityStatus',
       title: 'Exclusivity Status',
