@@ -1,6 +1,5 @@
 import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
-import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemas'
 
 export default defineConfig({
@@ -8,8 +7,8 @@ export default defineConfig({
   title: 'PatternRipple',
   projectId: 'zomio78q',
   dataset: 'production',
-  basePath: '/studio', // important for routing
-  plugins: [deskTool(), visionTool()],
+  basePath: '/studio',
+  plugins: [deskTool()],
   schema: {
     types: schemaTypes,
   },
