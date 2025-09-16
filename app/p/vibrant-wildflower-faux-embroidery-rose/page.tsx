@@ -4,7 +4,7 @@ export default function ProductPage() {
   const product = {
     title: "Vibrant Wildflower Faux Embroidery - Dusty Rose",
     sku: "PR-flo-20250916-001",
-    stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T",
+    stripePriceId: "price_1S81Y5BB8R6OUfKVOsUaeULq",
   };
 
   return (
