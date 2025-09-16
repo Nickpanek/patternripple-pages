@@ -1,34 +1,28 @@
-import Stripe from "stripe";
-import { NextResponse } from "next/server";
+"use client";
+import { useState } from "react";
 
-export const runtime = "nodejs";
+export default function BuyButton(props: { priceId: string; sku: string }) {
+  const [loading, setLoading] = useState(false);
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2024-06-20",
-});
-
-export async function POST(req: Request) {
-  try {
-    const { priceId, quantity = 1, metadata = {} } = await req.json();
-
-    if (!priceId) {
-      return NextResponse.json({ error: "Missing priceId" }, { status: 400 });
-    }
-
-    const site = process.env.NEXT_PUBLIC_SITE_URL || "https://www.patternripple.com";
-    const sku = metadata.sku || "PR-flo-20250916-001";
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [{ price: priceId, quantity }],
-      success_url: `${site}/thank-you?session_id={CHECKOUT_SESSION_ID}&sku=${sku}`,
-      cancel_url: `${site}/checkout-cancelled`,
-      allow_promotion_codes: true,
-      metadata,
+  const start = async () => {
+    setLoading(true);
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        priceId: props.priceId,
+        metadata: { sku: props.sku },
+      }),
     });
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+    else alert(data.error || "Checkout failed");
+    setLoading(false);
+  };
 
-    return NextResponse.json({ url: session.url });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Stripe error" }, { status: 500 });
-  }
+  return (
+    <button onClick={start} disabled={loading} className="px-4 py-2 rounded bg-black text-white">
+      {loading ? "Redirecting..." : "Buy for $125"}
+    </button>
+  );
 }
