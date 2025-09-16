@@ -1,90 +1,80 @@
-export default {
+import {defineField, defineType} from 'sanity'
+
+export default defineType({
   name: 'pattern',
   title: 'Pattern',
   type: 'document',
   fields: [
-    {
-      name: 'title',
-      title: 'Title',
-      type: 'string',
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: 'preview',
-      title: 'Preview Image',
+    defineField({ name: 'title', title: 'Title', type: 'string', validation: r => r.required().min(3).max(80) }),
+    defineField({ name: 'slug', title: 'URL Slug', type: 'slug', options: { source: 'title', maxLength: 96 }, validation: r => r.required() }),
+
+    defineField({
+      name: 'image',
+      title: 'Master Image',
       type: 'image',
-      options: {
-        hotspot: true,
-      },
-      description: 'Thumbnail/preview image for the pattern',
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: 'file',
-      title: 'Pattern File',
-      type: 'file',
-      description: 'High-resolution pattern file for download',
-      options: {
-        accept: '.jpg,.jpeg,.png,.svg,.zip'
-      }
-    },
-    {
-      name: 'priceCents',
-      title: 'Price (in cents)',
-      type: 'number',
-      description: 'Price in cents (e.g., 1000 = $10.00)',
-      validation: (Rule: any) => Rule.required().min(0),
-    },
-    {
+      options: { hotspot: true },
+      fields: [
+        defineField({ name: 'alt', title: 'Alt Text', type: 'string', validation: r => r.required().min(5) }),
+      ],
+      validation: r => r.required(),
+    }),
+
+    // exclusivity
+    defineField({ name: 'isExclusive', title: 'Exclusive Pattern', type: 'boolean', initialValue: true }),
+    defineField({
+      name: 'exclusivityStatus',
+      title: 'Exclusivity Status',
+      type: 'string',
+      options: { list: [
+        { title: 'Available', value: 'available' },
+        { title: 'Sold', value: 'sold' },
+        { title: 'Reserved', value: 'reserved' },
+      ], layout: 'radio' },
+      initialValue: 'available',
+    }),
+    defineField({ name: 'exclusivePrice', title: 'Exclusive Price USD', type: 'number', validation: r => r.min(1) }),
+    defineField({ name: 'saleDate', title: 'Sale Date', type: 'datetime' }),
+    defineField({ name: 'soldTo', title: 'Sold To - notes or buyer ref', type: 'string' }),
+    defineField({ name: 'daysListed', title: 'Days Listed', type: 'number' }),
+
+    // categories - include faux embroidery
+    defineField({
       name: 'category',
       title: 'Category',
       type: 'string',
-      options: {
-        list: [
-          { title: 'Florals', value: 'florals' },
-          { title: 'Geometric', value: 'geometric' },
-          { title: 'Seasonal', value: 'seasonal' },
-          { title: 'Faux Embroidery', value: 'faux-embroidery' },
-          { title: 'Wallpaper', value: 'wallpaper' },
-        ],
-      },
-    },
-    {
-      name: 'description',
-      title: 'Description',
-      type: 'text',
-    },
-    {
-      name: 'publishedAt',
-      title: 'Published at',
-      type: 'datetime',
-      description: 'Set this to make the pattern visible on the site',
-      initialValue: () => new Date().toISOString(),
-    },
+      options: { list: [
+        { title: 'Floral', value: 'floral' },
+        { title: 'Faux Embroidery', value: 'fauxEmbroidery' },
+        { title: 'Geometric', value: 'geometric' },
+        { title: 'Seasonal', value: 'seasonal' },
+        { title: 'Horror', value: 'horror' },
+      ]},
+      validation: r => r.required(),
+    }),
+    defineField({ name: 'subcategory', title: 'Subcategory', type: 'string' }),
+    defineField({ name: 'tags', title: 'Tags', type: 'array', of: [{ type: 'string' }], options: { layout: 'tags' } }),
+
+    // listing details
+    defineField({ name: 'description', title: 'Short Description', type: 'text', rows: 3 }),
+    defineField({ name: 'featured', title: 'Featured on Homepage', type: 'boolean' }),
+
+    // SEO
+    defineField({ name: 'metaTitle', title: 'SEO Title', type: 'string' }),
+    defineField({ name: 'metaDescription', title: 'SEO Description', type: 'text' }),
+    defineField({ name: 'seoKeywords', title: 'SEO Keywords', type: 'array', of: [{ type: 'string' }], options: { layout: 'tags' } }),
+
+    // offers
+    defineField({ name: 'acceptingOffers', title: 'Accepting Offers', type: 'boolean', initialValue: false }),
+    defineField({ name: 'minimumOffer', title: 'Minimum Offer USD', type: 'number', hidden: ({parent}) => !parent?.acceptingOffers }),
+    defineField({ name: 'currentOffers', title: 'Current Offers - notes', type: 'array', of: [{ type: 'string' }], hidden: ({parent}) => !parent?.acceptingOffers }),
+    defineField({ name: 'offerDeadline', title: 'Offer Deadline', type: 'datetime', hidden: ({parent}) => !parent?.acceptingOffers }),
   ],
   preview: {
-    select: {
-      title: 'title',
-      media: 'preview',
-      category: 'category',
-    },
-    prepare(selection: any) {
-      const { title, media, category } = selection;
-      return {
-        title,
-        subtitle: category ? `Category: ${category}` : '',
-        media,
-      };
+    select: { title: 'title', media: 'image', status: 'exclusivityStatus', cat: 'category', price: 'exclusivePrice' },
+    prepare({ title, media, status, cat, price }) {
+      const badge = status === 'sold' ? 'SOLD' : status === 'reserved' ? 'RESERVED' : 'AVAILABLE'
+      const subtitle = `${badge} - ${cat || 'uncategorized'}${price ? ` - $${price}` : ''}`
+      return { title, media, subtitle }
     },
   },
-}
+})
