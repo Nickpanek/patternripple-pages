@@ -1,4 +1,7 @@
+"use client";
+
 import Link from 'next/link';
+import { useState } from 'react';
 
 const products = [
   {
@@ -7,166 +10,78 @@ const products = [
     subtitle: "Dusty Rose Collection",
     price: 125,
     sku: "PR-flo-20250916-001",
-    stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T", // UPDATE THIS
+    stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T", // UPDATE THIS WITH YOUR LIVE STRIPE ID
     exclusive: true,
     available: true
   }
 ];
 
 export default function HomePage() {
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      paddingBottom: '2rem'
-    }}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
       {/* Hero Section */}
-      <header style={{ 
-        background: 'rgba(255, 255, 255, 0.95)',
-        padding: '3rem 1rem',
-        textAlign: 'center',
-        borderBottom: '1px solid rgba(0,0,0,0.1)'
-      }}>
-        <h1 style={{ 
-          fontSize: '3.5rem',
-          fontWeight: '300',
-          letterSpacing: '-0.02em',
-          marginBottom: '1rem',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
-        }}>
-          PatternRipple
-        </h1>
-        <p style={{ 
-          fontSize: '1.25rem',
-          color: '#4a5568',
-          maxWidth: '600px',
-          margin: '0 auto'
-        }}>
-          Exclusive digital patterns that no one else will have.
-          <span style={{ 
-            display: 'block',
-            marginTop: '0.5rem',
-            color: '#764ba2',
-            fontWeight: '500'
-          }}>
-            Once sold, it's yours forever.
-          </span>
-        </p>
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-12">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h1 className="text-5xl font-thin tracking-wide text-gray-900 mb-4">
+            PatternRipple
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Exclusive digital patterns that no one else will have.
+            <span className="block mt-2 text-purple-600 font-medium">
+              Once sold, it's yours forever.
+            </span>
+          </p>
+        </div>
       </header>
 
       {/* Products Grid */}
-      <main style={{ 
-        maxWidth: '1200px',
-        margin: '3rem auto',
-        padding: '0 1rem'
-      }}>
-        <div style={{ 
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-          gap: '2rem'
-        }}>
+      <main className="max-w-6xl mx-auto px-4 py-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
             <article 
               key={product.sku}
-              style={{
-                background: 'white',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                border: '3px solid #fbbf24',
-                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 25px 30px -5px rgba(0, 0, 0, 0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1)';
-              }}
+              className={`bg-white rounded-xl overflow-hidden transition-all duration-300 ${
+                hoveredCard === product.sku 
+                  ? 'shadow-2xl transform -translate-y-1 ring-4 ring-purple-400' 
+                  : 'shadow-lg ring-4 ring-amber-400'
+              }`}
+              onMouseEnter={() => setHoveredCard(product.sku)}
+              onMouseLeave={() => setHoveredCard(null)}
             >
               {/* Exclusive Badge */}
               {product.exclusive && (
-                <div style={{
-                  background: 'linear-gradient(90deg, #f59e0b, #fbbf24)',
-                  color: 'white',
-                  padding: '0.5rem',
-                  textAlign: 'center',
-                  fontSize: '0.75rem',
-                  fontWeight: 'bold',
-                  letterSpacing: '0.1em'
-                }}>
+                <div className="bg-gradient-to-r from-amber-500 to-yellow-400 text-white text-xs font-bold py-2 text-center tracking-wider">
                   EXCLUSIVE PATTERN
                 </div>
               )}
               
-              {/* Pattern Preview */}
-              <div style={{
-                height: '300px',
-                background: 'linear-gradient(135deg, #fde2e4, #fad2e1, #e2ece9)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '5rem'
-              }}>
-                🌸
+              {/* Pattern Preview Area */}
+              <div className="h-64 bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                <div className="text-center">
+                  <span className="text-7xl mb-2 block">🌸</span>
+                  <p className="text-gray-500 text-sm">Pattern Preview</p>
+                </div>
               </div>
               
               {/* Product Info */}
-              <div style={{ padding: '1.5rem' }}>
-                <h2 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '300',
-                  marginBottom: '0.5rem',
-                  color: '#1a202c'
-                }}>
+              <div className="p-6">
+                <h2 className="text-xl font-light text-gray-900 mb-2">
                   {product.title}
                 </h2>
-                <p style={{
-                  color: '#718096',
-                  marginBottom: '1.5rem'
-                }}>
+                <p className="text-gray-600 text-sm mb-4">
                   {product.subtitle}
                 </p>
                 
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '1.5rem',
-                  paddingTop: '1rem',
-                  borderTop: '1px solid #e2e8f0'
-                }}>
-                  <span style={{
-                    fontSize: '2rem',
-                    fontWeight: '300'
-                  }}>
-                    ${product.price}
-                  </span>
-                  <span style={{
-                    color: '#48bb78',
-                    fontSize: '0.875rem'
-                  }}>
-                    Available
-                  </span>
+                <div className="flex justify-between items-center pb-4 mb-4 border-b border-gray-100">
+                  <span className="text-2xl font-light">${product.price}</span>
+                  <span className="text-green-600 text-sm">Available</span>
                 </div>
                 
                 <Link 
                   href={`/p/${product.slug}`}
-                  style={{
-                    display: 'block',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: 'white',
-                    textAlign: 'center',
-                    padding: '0.75rem',
-                    borderRadius: '8px',
-                    textDecoration: 'none',
-                    transition: 'opacity 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
-                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                  className="block w-full bg-gray-900 text-white text-center py-3 rounded-lg hover:bg-purple-600 transition-colors duration-300"
                 >
                   View Pattern
                 </Link>
@@ -176,39 +91,15 @@ export default function HomePage() {
         </div>
 
         {/* VIP Section */}
-        <section style={{
-          marginTop: '5rem',
-          background: 'white',
-          borderRadius: '16px',
-          padding: '3rem',
-          textAlign: 'center',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-        }}>
-          <h2 style={{
-            fontSize: '2rem',
-            fontWeight: '300',
-            marginBottom: '1rem'
-          }}>
+        <section className="mt-16 bg-white rounded-xl p-12 shadow-xl text-center">
+          <h2 className="text-3xl font-light text-gray-900 mb-4">
             More Exclusive Patterns Coming Daily
           </h2>
-          <p style={{
-            color: '#718096',
-            marginBottom: '2rem',
-            fontSize: '1.125rem'
-          }}>
+          <p className="text-gray-600 mb-8 text-lg max-w-2xl mx-auto">
             Join our VIP list to get notified the moment new exclusive patterns drop.
             Once they're sold, they're gone forever.
           </p>
-          <button style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            padding: '1rem 2rem',
-            borderRadius: '9999px',
-            border: 'none',
-            fontSize: '1.125rem',
-            cursor: 'pointer',
-            transition: 'transform 0.3s ease'
-          }}>
+          <button className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors">
             Join VIP List →
           </button>
         </section>
