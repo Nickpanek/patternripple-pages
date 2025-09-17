@@ -1,2 +1,2 @@
 coming soon
-hopefully
+hopefully soon
