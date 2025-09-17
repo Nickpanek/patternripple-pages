@@ -11,6 +11,7 @@ const products = [
     price: 125,
     sku: "PR-flo-20250916-001",
     stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T", // UPDATE THIS WITH YOUR LIVE STRIPE ID
+    thumbnail: "https://files.patternripple.com/PR-flo-20250916-001-thumb.jpg",
     exclusive: true,
     available: true
   }
@@ -58,11 +59,12 @@ export default function HomePage() {
               )}
               
               {/* Pattern Preview Area */}
-              <div className="h-64 bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="text-7xl mb-2 block">🌸</span>
-                  <p className="text-gray-500 text-sm">Pattern Preview</p>
-                </div>
+              <div className="h-64 bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden">
+                <img 
+                  src={product.thumbnail}
+                  alt={product.title}
+                  className="w-full h-full object-cover"
+                />
               </div>
               
               {/* Product Info */}
