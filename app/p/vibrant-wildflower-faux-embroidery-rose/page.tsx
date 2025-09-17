@@ -1,5 +1,4 @@
 import BuyButton from "@/components/BuyButton";
-import Image from 'next/image';
 
 export default function ProductPage() {
   const product = {
@@ -7,7 +6,7 @@ export default function ProductPage() {
     subtitle: "Dusty Rose Collection",
     sku: "PR-flo-20250916-001",
     stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T", // UPDATE THIS WITH YOUR LIVE PRICE ID
-    previewImage: "https://files.patternripple.com/previews/PR-flo-20250916-001-preview.jpg",
+    previewImage: "https://files.patternripple.com/PR-flo-20250916-001-preview.jpg",
     description: "Exclusive seamless faux embroidery floral pattern on dusty rose. This intricate design features delicate wildflowers with embroidered texture effects, perfect for luxury fabric design, high-end fashion, or premium home decor applications.",
     details: [
       "6000px x 6000px source file",
@@ -24,12 +23,12 @@ export default function ProductPage() {
         {/* Left: Image Preview */}
         <div className="space-y-4">
           <div className="bg-white rounded-2xl p-2 shadow-[0_0_0_3px_rgba(251,191,36,0.5)]">
-            <div className="aspect-square bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl flex items-center justify-center">
-              {/* Replace with actual image when available */}
-              <div className="text-center p-8">
-                <span className="text-9xl block mb-4">🌸</span>
-                <p className="text-gray-500 font-light">Pattern preview will display here</p>
-              </div>
+            <div className="aspect-square bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl overflow-hidden">
+              <img 
+                src={product.previewImage}
+                alt={product.title}
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
           <p className="text-sm text-gray-500 text-center font-light">
