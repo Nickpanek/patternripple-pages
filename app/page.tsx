@@ -7,8 +7,7 @@ const products = [
     subtitle: "Dusty Rose Collection",
     price: 125,
     sku: "PR-flo-20250916-001",
-    stripePriceId: "price_YOUR_LIVE_PRICE_ID", // UPDATE THIS
-    thumbnail: "https://files.patternripple.com/thumbnails/PR-flo-20250916-001-thumb.jpg",
+    stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T", // UPDATE THIS
     exclusive: true,
     available: true
   }
@@ -16,83 +15,200 @@ const products = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      paddingBottom: '2rem'
+    }}>
       {/* Hero Section */}
-      <header className="py-16 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-light tracking-tight text-gray-900 mb-4">
-            PatternRipple
-          </h1>
-          <p className="text-xl text-gray-700 font-light max-w-2xl mx-auto">
-            Exclusive digital patterns that no one else will have.{' '}
-            <span className="block mt-2 text-purple-600 font-medium">
-              Once sold, it's yours forever.
-            </span>
-          </p>
-        </div>
+      <header style={{ 
+        background: 'rgba(255, 255, 255, 0.95)',
+        padding: '3rem 1rem',
+        textAlign: 'center',
+        borderBottom: '1px solid rgba(0,0,0,0.1)'
+      }}>
+        <h1 style={{ 
+          fontSize: '3.5rem',
+          fontWeight: '300',
+          letterSpacing: '-0.02em',
+          marginBottom: '1rem',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent'
+        }}>
+          PatternRipple
+        </h1>
+        <p style={{ 
+          fontSize: '1.25rem',
+          color: '#4a5568',
+          maxWidth: '600px',
+          margin: '0 auto'
+        }}>
+          Exclusive digital patterns that no one else will have.
+          <span style={{ 
+            display: 'block',
+            marginTop: '0.5rem',
+            color: '#764ba2',
+            fontWeight: '500'
+          }}>
+            Once sold, it's yours forever.
+          </span>
+        </p>
       </header>
 
       {/* Products Grid */}
-      <main className="max-w-6xl mx-auto px-4 pb-20">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <main style={{ 
+        maxWidth: '1200px',
+        margin: '3rem auto',
+        padding: '0 1rem'
+      }}>
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+          gap: '2rem'
+        }}>
           {products.map((product) => (
             <article 
-              key={product.sku} 
-              className="group relative bg-white rounded-2xl p-1 shadow-[0_0_0_3px_rgba(251,191,36,0.5)] hover:shadow-[0_0_0_3px_rgba(147,51,234,0.5)] transition-all duration-300"
+              key={product.sku}
+              style={{
+                background: 'white',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                border: '3px solid #fbbf24',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 25px 30px -5px rgba(0, 0, 0, 0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1)';
+              }}
             >
-              <div className="rounded-xl overflow-hidden bg-white">
-                {/* Exclusive Badge */}
-                {product.exclusive && (
-                  <div className="bg-gradient-to-r from-amber-500 to-yellow-400 text-white text-xs font-bold py-2 text-center tracking-wider">
-                    EXCLUSIVE
-                  </div>
-                )}
+              {/* Exclusive Badge */}
+              {product.exclusive && (
+                <div style={{
+                  background: 'linear-gradient(90deg, #f59e0b, #fbbf24)',
+                  color: 'white',
+                  padding: '0.5rem',
+                  textAlign: 'center',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold',
+                  letterSpacing: '0.1em'
+                }}>
+                  EXCLUSIVE PATTERN
+                </div>
+              )}
+              
+              {/* Pattern Preview */}
+              <div style={{
+                height: '300px',
+                background: 'linear-gradient(135deg, #fde2e4, #fad2e1, #e2ece9)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '5rem'
+              }}>
+                🌸
+              </div>
+              
+              {/* Product Info */}
+              <div style={{ padding: '1.5rem' }}>
+                <h2 style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '300',
+                  marginBottom: '0.5rem',
+                  color: '#1a202c'
+                }}>
+                  {product.title}
+                </h2>
+                <p style={{
+                  color: '#718096',
+                  marginBottom: '1.5rem'
+                }}>
+                  {product.subtitle}
+                </p>
                 
-                {/* Pattern Preview */}
-                <div className="aspect-square bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center text-8xl">
-                  🌸
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '1.5rem',
+                  paddingTop: '1rem',
+                  borderTop: '1px solid #e2e8f0'
+                }}>
+                  <span style={{
+                    fontSize: '2rem',
+                    fontWeight: '300'
+                  }}>
+                    ${product.price}
+                  </span>
+                  <span style={{
+                    color: '#48bb78',
+                    fontSize: '0.875rem'
+                  }}>
+                    Available
+                  </span>
                 </div>
                 
-                {/* Product Info */}
-                <div className="p-6 space-y-4">
-                  <div>
-                    <h2 className="font-light text-2xl text-gray-900 leading-tight">
-                      {product.title}
-                    </h2>
-                    <p className="text-gray-600 mt-1 font-light">
-                      {product.subtitle}
-                    </p>
-                  </div>
-                  
-                  <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-                    <span className="text-3xl font-light">${product.price}</span>
-                    <span className="text-sm text-emerald-600 font-medium">
-                      Available
-                    </span>
-                  </div>
-                  
-                  <Link 
-                    href={`/p/${product.slug}`}
-                    className="block w-full bg-gradient-to-r from-gray-900 to-gray-700 text-white text-center py-3 rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-300 font-light tracking-wide"
-                  >
-                    View Pattern
-                  </Link>
-                </div>
+                <Link 
+                  href={`/p/${product.slug}`}
+                  style={{
+                    display: 'block',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    textAlign: 'center',
+                    padding: '0.75rem',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    transition: 'opacity 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                >
+                  View Pattern
+                </Link>
               </div>
             </article>
           ))}
         </div>
 
         {/* VIP Section */}
-        <section className="mt-24 bg-white rounded-2xl p-12 shadow-xl text-center">
-          <h2 className="text-3xl font-light text-gray-900 mb-4">
+        <section style={{
+          marginTop: '5rem',
+          background: 'white',
+          borderRadius: '16px',
+          padding: '3rem',
+          textAlign: 'center',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h2 style={{
+            fontSize: '2rem',
+            fontWeight: '300',
+            marginBottom: '1rem'
+          }}>
             More Exclusive Patterns Coming Daily
           </h2>
-          <p className="text-gray-600 mb-8 font-light text-lg max-w-2xl mx-auto">
-            Join our VIP list to get notified the moment new exclusive patterns drop.{' '}
+          <p style={{
+            color: '#718096',
+            marginBottom: '2rem',
+            fontSize: '1.125rem'
+          }}>
+            Join our VIP list to get notified the moment new exclusive patterns drop.
             Once they're sold, they're gone forever.
           </p>
-          <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full hover:shadow-xl transition-all duration-300 font-light tracking-wide text-lg">
+          <button style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            padding: '1rem 2rem',
+            borderRadius: '9999px',
+            border: 'none',
+            fontSize: '1.125rem',
+            cursor: 'pointer',
+            transition: 'transform 0.3s ease'
+          }}>
             Join VIP List →
           </button>
         </section>
