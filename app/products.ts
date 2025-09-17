@@ -8,15 +8,5 @@ export const products = [
     thumbnail: "/images/thumb-wildflower-rose.jpg",
     exclusive: true
   },
-  // Add more products here as you create them
-  {
-    slug: "luxury-geometric-gold",
-    title: "Luxury Geometric Pattern - Gold",
-    price: "$125",
-    sku: "PR-geo-20250117-001", 
-    stripePriceId: "price_YOUR_STRIPE_ID_HERE",
-    thumbnail: "/images/thumb-geometric-gold.jpg",
-    exclusive: true
-  },
-  // Keep adding products...
+  // Remove or comment out products that don't exist yet
 ];
