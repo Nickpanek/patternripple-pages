@@ -36,11 +36,11 @@ export default function BuyButton({ priceId, sku }: { priceId: string; sku: stri
 
   if (error) {
     return (
-      <div>
-        <div className="text-red-600 mb-2">{error}</div>
+      <div className="space-y-3">
+        <div className="text-red-600 text-sm">{error}</div>
         <button 
           onClick={handleClick}
-          className="bg-black text-white px-6 py-3 rounded hover:bg-gray-800"
+          className="w-full bg-gradient-to-r from-gray-900 to-gray-700 text-white py-4 rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-300 font-light tracking-wide"
         >
           Try Again
         </button>
@@ -52,9 +52,9 @@ export default function BuyButton({ priceId, sku }: { priceId: string; sku: stri
     <button 
       onClick={handleClick}
       disabled={loading}
-      className="bg-black text-white px-6 py-3 rounded hover:bg-gray-800 disabled:bg-gray-400"
+      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 font-light tracking-wide text-lg"
     >
-      {loading ? "Redirecting..." : "Buy Now - $125"}
+      {loading ? "Redirecting to checkout..." : "Buy Now - $125"}
     </button>
   );
 }
