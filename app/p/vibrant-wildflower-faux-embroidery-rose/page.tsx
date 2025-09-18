@@ -3,8 +3,11 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
-// turn off SSR for BuyButton (browser-only)
+// Disable SSR for BuyButton to avoid build errors
 const BuyButton = dynamic(() => import("@/components/BuyButton"), { ssr: false });
+
+// Force this route to build statically (avoids SSR pitfalls)
+export const dynamic = "force-static";
 
 export default function ProductPage() {
   const product = {
@@ -66,7 +69,7 @@ export default function ProductPage() {
           </div>
 
           <p className="text-sm text-gray-500 text-center font-light">
-            Watermarked preview - Full resolution upon purchase
+            Watermarked preview • Full resolution upon purchase
           </p>
         </div>
 
@@ -107,7 +110,7 @@ export default function ProductPage() {
             </div>
             <BuyButton priceId={product.stripePriceId} sku={product.sku} />
             <p className="text-sm text-gray-500 font-light">
-              Secure checkout via Stripe - Instant download after purchase
+              Secure checkout via Stripe • Instant download after purchase
             </p>
           </div>
         </div>
