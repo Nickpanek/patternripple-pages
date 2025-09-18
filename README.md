@@ -1,1 +1,1 @@
-coming soonish
+coming soon
