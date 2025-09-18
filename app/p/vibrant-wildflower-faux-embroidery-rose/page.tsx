@@ -1,12 +1,12 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import NextDynamic from "next/dynamic";
 import { useState } from "react";
 
-// Disable SSR for BuyButton to avoid build errors
-const BuyButton = dynamic(() => import("@/components/BuyButton"), { ssr: false });
+// client-only BuyButton - no SSR
+const BuyButton = NextDynamic(() => import("@/components/BuyButton"), { ssr: false });
 
-// Force this route to build statically (avoids SSR pitfalls)
+// keep this - Next uses it - do not rename
 export const dynamic = "force-static";
 
 export default function ProductPage() {
@@ -45,6 +45,7 @@ export default function ProductPage() {
                 src={product.images[selectedImage]}
                 alt={product.title}
                 className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
               />
             </div>
           </div>
@@ -63,13 +64,14 @@ export default function ProductPage() {
                   src={image}
                   alt={`View ${index + 1}`}
                   className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
                 />
               </button>
             ))}
           </div>
 
           <p className="text-sm text-gray-500 text-center font-light">
-            Watermarked preview • Full resolution upon purchase
+            Watermarked preview - Full resolution upon purchase
           </p>
         </div>
 
@@ -110,7 +112,7 @@ export default function ProductPage() {
             </div>
             <BuyButton priceId={product.stripePriceId} sku={product.sku} />
             <p className="text-sm text-gray-500 font-light">
-              Secure checkout via Stripe • Instant download after purchase
+              Secure checkout via Stripe - Instant download after purchase
             </p>
           </div>
         </div>
