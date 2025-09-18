@@ -16,7 +16,7 @@ const products = [
     available: true
   },
   {
-    slug: "gilded-floral-faux-embroidery-emerald",
+    slug: "pr-flo-20250918-001",
     title: "Gilded Floral Faux Embroidery on Emerald",
     subtitle: "Botanical Collection",
     price: 125,
