@@ -10,8 +10,19 @@ const products = [
     subtitle: "Dusty Rose Collection",
     price: 125,
     sku: "PR-flo-20250916-001",
-    stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T", // UPDATE THIS WITH YOUR LIVE STRIPE ID
+    stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T",
     thumbnail: "https://files.patternripple.com/PR-flo-20250916-001-thumb.jpg",
+    exclusive: true,
+    available: true
+  },
+  {
+    slug: "gilded-floral-faux-embroidery-emerald",
+    title: "Gilded Floral Faux Embroidery on Emerald",
+    subtitle: "Botanical Collection",
+    price: 125,
+    sku: "PR-flo-20250918-001",
+    stripePriceId: "price_1S8q3ZBB8R6OUfKVMNkqQFb7", // ADD YOUR STRIPE PRICE ID HERE
+    thumbnail: "https://files.patternripple.com/PR-flo-20250918-001-thumb.jpg",
     exclusive: true,
     available: true
   }
