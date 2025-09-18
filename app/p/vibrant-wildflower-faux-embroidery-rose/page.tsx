@@ -1,4 +1,7 @@
+"use client";
+
 import BuyButton from "@/components/BuyButton";
+import { useState } from 'react';
 
 export default function ProductPage() {
   const product = {
@@ -6,7 +9,12 @@ export default function ProductPage() {
     subtitle: "Dusty Rose Collection",
     sku: "PR-flo-20250916-001",
     stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T", // UPDATE THIS WITH YOUR LIVE PRICE ID
-    previewImage: "https://files.patternripple.com/PR-flo-20250916-001-preview.jpg",
+    images: [
+      "https://files.patternripple.com/PR-flo-20250916-001-preview.jpg",
+      "https://files.patternripple.com/PR-flo-20250916-001-mockup1.jpg",
+      "https://files.patternripple.com/PR-flo-20250916-001-mockup2.jpg",
+      "https://files.patternripple.com/PR-flo-20250916-001-mockup3.jpg",
+    ],
     description: "Exclusive seamless faux embroidery floral pattern on dusty rose. This intricate design features delicate wildflowers with embroidered texture effects, perfect for luxury fabric design, high-end fashion, or premium home decor applications.",
     details: [
       "6000px x 6000px source file",
@@ -17,20 +25,42 @@ export default function ProductPage() {
     ]
   };
 
+  const [selectedImage, setSelectedImage] = useState(0);
+
   return (
     <main className="max-w-7xl mx-auto px-4 py-12">
       <div className="grid lg:grid-cols-2 gap-12">
-        {/* Left: Image Preview */}
+        {/* Left: Image Gallery */}
         <div className="space-y-4">
           <div className="bg-white rounded-2xl p-2 shadow-[0_0_0_3px_rgba(251,191,36,0.5)]">
             <div className="aspect-square bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl overflow-hidden">
               <img 
-                src={product.previewImage}
+                src={product.images[selectedImage]}
                 alt={product.title}
                 className="w-full h-full object-cover"
               />
             </div>
           </div>
+          
+          {/* Thumbnail Gallery */}
+          <div className="grid grid-cols-4 gap-2">
+            {product.images.map((image, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedImage(index)}
+                className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                  selectedImage === index ? 'border-purple-600' : 'border-gray-200'
+                }`}
+              >
+                <img 
+                  src={image}
+                  alt={`View ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
+          
           <p className="text-sm text-gray-500 text-center font-light">
             Watermarked preview • Full resolution upon purchase
           </p>
