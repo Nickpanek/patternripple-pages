@@ -11,9 +11,9 @@ export default function ProductPage() {
     stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T", // UPDATE THIS WITH YOUR LIVE PRICE ID
     images: [
       "https://files.patternripple.com/PR-flo-20250916-001-preview.jpg",
-      "https://files.patternripple.com/PR-flo-20250916-001-mockup1.png",
-      "https://files.patternripple.com/PR-flo-20250916-001-mockup2.png",
-      "https://files.patternripple.com/PR-flo-20250916-001-mockup3.png",
+      "https://files.patternripple.com/PR-flo-20250916-001-mockup1.jpg",
+      "https://files.patternripple.com/PR-flo-20250916-001-mockup2.jpg",
+      "https://files.patternripple.com/PR-flo-20250916-001-mockup3.jpg",
     ],
     description: "Exclusive seamless faux embroidery floral pattern on dusty rose. This intricate design features delicate wildflowers with embroidered texture effects, perfect for luxury fabric design, high-end fashion, or premium home decor applications.",
     details: [
