@@ -5,6 +5,17 @@ import { useState } from 'react';
 
 const products = [
   {
+  slug: "pr-geo-20250919-001",
+  title: "Atomic Matchstick Geometric",
+  subtitle: "Mid-Century Collection",
+  price: 125,
+  sku: "PR-geo-20250919-001",
+  stripePriceId: "price_1S91pvBB8R6OUfKVfz51JXSY",  // ADD AFTER CREATING IN STRIPE
+  thumbnail: "https://files.patternripple.com/PR-geo-20250919-001-thumb.jpg",
+  exclusive: true,
+  available: true
+  }
+  {
     slug: "vibrant-wildflower-faux-embroidery-rose",
     title: "Vibrant Wildflower Faux Embroidery",
     subtitle: "Dusty Rose Collection",
