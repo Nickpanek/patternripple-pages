@@ -15,7 +15,7 @@ export default function ProductPage() {
     title: "Atomic Matchstick Geometric",
     subtitle: "Mid-Century Collection",
     sku: "PR-geo-20250919-001",
-    stripePriceId: "REPLACE_WITH_STRIPE_PRICE_ID", // set your live Stripe price ID
+    stripePriceId: "price_1S91pvBB8R6OUfKVfz51JXSY", // set your live Stripe price ID
     images: [
       "https://files.patternripple.com/PR-geo-20250919-001-preview.jpg",
       "https://files.patternripple.com/PR-geo-20250919-001-mockup1.jpg",
