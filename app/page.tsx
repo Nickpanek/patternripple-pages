@@ -14,7 +14,7 @@ const products = [
   thumbnail: "https://files.patternripple.com/PR-geo-20250919-001-thumb.jpg",
   exclusive: true,
   available: true
-  }
+  },
   {
     slug: "vibrant-wildflower-faux-embroidery-rose",
     title: "Vibrant Wildflower Faux Embroidery",
