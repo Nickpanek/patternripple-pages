@@ -1,19 +1,31 @@
 "use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
+import Link from "next/link";
+import { useState } from "react";
 
-const products = [
+type Product = {
+  slug: string;
+  title: string;
+  subtitle: string;
+  price: number;
+  sku: string;
+  stripePriceId: string;
+  thumbnail: string;
+  exclusive: boolean;
+  available: boolean;
+};
+
+const products: Product[] = [
   {
-  slug: "pr-geo-20250919-001",
-  title: "Atomic Matchstick Geometric",
-  subtitle: "Mid-Century Collection",
-  price: 125,
-  sku: "PR-geo-20250919-001",
-  stripePriceId: "price_1S91pvBB8R6OUfKVfz51JXSY",  // ADD AFTER CREATING IN STRIPE
-  thumbnail: "https://files.patternripple.com/PR-geo-20250919-001-thumb.jpg",
-  exclusive: true,
-  available: true
+    slug: "pr-geo-20250919-001",
+    title: "Atomic Matchstick Geometric",
+    subtitle: "Mid-Century Collection",
+    price: 125,
+    sku: "PR-geo-20250919-001",
+    stripePriceId: "price_1S91pvBB8R6OUfKVfz51JXSY", // ADD AFTER CREATING IN STRIPE
+    thumbnail: "https://files.patternripple.com/PR-geo-20250919-001-thumb.jpg",
+    exclusive: true,
+    available: true,
   },
   {
     slug: "vibrant-wildflower-faux-embroidery-rose",
@@ -24,7 +36,7 @@ const products = [
     stripePriceId: "price_1S7wFfBB8R6OUfKVYDvR9B5T",
     thumbnail: "https://files.patternripple.com/PR-flo-20250916-001-thumb.jpg",
     exclusive: true,
-    available: true
+    available: true,
   },
   {
     slug: "pr-flo-20250918-001",
@@ -35,8 +47,8 @@ const products = [
     stripePriceId: "price_1S8q3ZBB8R6OUfKVMNkqQFb7", // ADD YOUR STRIPE PRICE ID HERE
     thumbnail: "https://files.patternripple.com/PR-flo-20250918-001-thumb.jpg",
     exclusive: true,
-    available: true
-  }
+    available: true,
+  },
 ];
 
 export default function HomePage() {
@@ -53,7 +65,7 @@ export default function HomePage() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Exclusive digital patterns that no one else will have.
             <span className="block mt-2 text-purple-600 font-medium">
-              Once sold, it's yours forever.
+              Once sold, it&apos;s yours forever.
             </span>
           </p>
         </div>
@@ -63,12 +75,12 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
-            <article 
+            <article
               key={product.sku}
               className={`bg-white rounded-xl overflow-hidden transition-all duration-300 ${
-                hoveredCard === product.sku 
-                  ? 'shadow-2xl transform -translate-y-1 ring-4 ring-purple-400' 
-                  : 'shadow-lg ring-4 ring-amber-400'
+                hoveredCard === product.sku
+                  ? "shadow-2xl -translate-y-1 ring-4 ring-purple-400"
+                  : "shadow-lg ring-4 ring-amber-400"
               }`}
               onMouseEnter={() => setHoveredCard(product.sku)}
               onMouseLeave={() => setHoveredCard(null)}
@@ -79,31 +91,31 @@ export default function HomePage() {
                   EXCLUSIVE PATTERN
                 </div>
               )}
-              
+
               {/* Pattern Preview Area */}
               <div className="h-64 bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden">
-                <img 
+                <img
                   src={product.thumbnail}
                   alt={product.title}
                   className="w-full h-full object-cover"
                 />
               </div>
-              
+
               {/* Product Info */}
               <div className="p-6">
                 <h2 className="text-xl font-light text-gray-900 mb-2">
                   {product.title}
                 </h2>
-                <p className="text-gray-600 text-sm mb-4">
-                  {product.subtitle}
-                </p>
-                
+                <p className="text-gray-600 text-sm mb-4">{product.subtitle}</p>
+
                 <div className="flex justify-between items-center pb-4 mb-4 border-b border-gray-100">
                   <span className="text-2xl font-light">${product.price}</span>
-                  <span className="text-green-600 text-sm">Available</span>
+                  <span className="text-green-600 text-sm">
+                    {product.available ? "Available" : "Sold"}
+                  </span>
                 </div>
-                
-                <Link 
+
+                <Link
                   href={`/p/${product.slug}`}
                   className="block w-full bg-gray-900 text-white text-center py-3 rounded-lg hover:bg-purple-600 transition-colors duration-300"
                 >
@@ -120,8 +132,8 @@ export default function HomePage() {
             More Exclusive Patterns Coming Daily
           </h2>
           <p className="text-gray-600 mb-8 text-lg max-w-2xl mx-auto">
-            Join our VIP list to get notified the moment new exclusive patterns drop.
-            Once they're sold, they're gone forever.
+            Join our VIP list to get notified the moment new exclusive patterns
+            drop. Once they&apos;re sold, they&apos;re gone forever.
           </p>
           <button className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors">
             Join VIP List →
