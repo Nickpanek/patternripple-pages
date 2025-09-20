@@ -38,6 +38,17 @@ const products: Product[] = [
   exclusive: true,
   available: true
 },
+    {
+  slug: "pr-hor-20250919-001",  // lowercase 'pr'
+  title: "Impasto Skulls in Crimson",
+  subtitle: "Horror Collection",
+  price: 125,
+  sku: "PR-hor-20250919-001",  // uppercase 'PR' 
+  stripePriceId: "price_1S9FdNBB8R6OUfKVd4lb36fk",  // PASTE STRIPE ID
+  thumbnail: "https://files.patternripple.com/PR-hor-20250919-001-thumb.jpg",
+  exclusive: true,
+  available: true
+},
   {
   slug: "pr-sea-20250919-001",  // lowercase 'pr'
   title: "Winter Village Faux Embroidery on Navy",
