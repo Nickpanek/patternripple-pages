@@ -50,6 +50,17 @@ const products: Product[] = [
   available: true
 },
   {
+  slug: "pr-flo-20250919-007",  // lowercase 'pr'
+  title: "Vibrant Impasto Floral",
+  subtitle: "Floral Collection",
+  price: 125,
+  sku: "PR-flo-20250919-007",  // uppercase 'PR' 
+  stripePriceId: "price_1S9FzSBB8R6OUfKVq5fzIpQw",  // PASTE STRIPE ID
+  thumbnail: "https://files.patternripple.com/PR-flo-20250919-007-thumb.jpg",
+  exclusive: true,
+  available: true
+},
+  {
   slug: "pr-sea-20250919-001",  // lowercase 'pr'
   title: "Winter Village Faux Embroidery on Navy",
   subtitle: "Christmas Collection",
