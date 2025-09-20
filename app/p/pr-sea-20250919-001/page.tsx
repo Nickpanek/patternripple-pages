@@ -14,7 +14,7 @@ export default function ProductPage() {
     title: "Winter Village Faux Embroidery on Navy",
     subtitle: "Seasonal Christmas Collection",
     sku: "PR-sea-20250919-001",
-    stripePriceId: "price_REPLACE_WITH_YOUR_STRIPE_PRICE_ID",  // REPLACE WITH YOUR STRIPE PRICE ID
+    stripePriceId: "price_1S9ELeBB8R6OUfKV0i5vtwZO",  // REPLACE WITH YOUR STRIPE PRICE ID
     images: [
       "https://files.patternripple.com/PR-sea-20250919-001-preview.jpg",
       "https://files.patternripple.com/PR-sea-20250919-001-mockup1.jpg",
