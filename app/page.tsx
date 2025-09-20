@@ -28,6 +28,17 @@ const products: Product[] = [
     available: true,
   },
   {
+  slug: "pr-sea-20250919-001",  // lowercase 'pr'
+  title: "Winter Village Faux Embroidery on Navy",
+  subtitle: "Christmas Collection",
+  price: 125,
+  sku: "PR-sea-20250919-001",  // uppercase 'PR' 
+  stripePriceId: "price_1S9ELeBB8R6OUfKV0i5vtwZO",  // PASTE STRIPE ID
+  thumbnail: "https://files.patternripple.com/PR-xxx-YYYYMMDD-###-thumb.jpg",
+  exclusive: true,
+  available: true
+},
+  {
     slug: "vibrant-wildflower-faux-embroidery-rose",
     title: "Vibrant Wildflower Faux Embroidery",
     subtitle: "Dusty Rose Collection",
