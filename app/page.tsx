@@ -28,6 +28,17 @@ const products: Product[] = [
     available: true,
   },
   {
+  slug: "pr-sea-20250919-002",  // lowercase 'pr'
+  title: "Autumn UFO Landing Faux Embroidery",
+  subtitle: "Autumn Collection",
+  price: 125,
+  sku: "PR-sea-20250919-002",  // uppercase 'PR' 
+  stripePriceId: "price_1S9F4UBB8R6OUfKV1SqJ3VWd",  // PASTE STRIPE ID
+  thumbnail: "https://files.patternripple.com/PR-sea-20250919-002-thumb.jpg",
+  exclusive: true,
+  available: true
+},
+  {
   slug: "pr-sea-20250919-001",  // lowercase 'pr'
   title: "Winter Village Faux Embroidery on Navy",
   subtitle: "Christmas Collection",
