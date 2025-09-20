@@ -34,7 +34,7 @@ const products: Product[] = [
   price: 125,
   sku: "PR-sea-20250919-001",  // uppercase 'PR' 
   stripePriceId: "price_1S9ELeBB8R6OUfKV0i5vtwZO",  // PASTE STRIPE ID
-  thumbnail: "https://files.patternripple.com/PR-xxx-YYYYMMDD-###-thumb.jpg",
+  thumbnail: "https://files.patternripple.com/PR-sea-20250919-001-thumb.jpg",
   exclusive: true,
   available: true
 },
