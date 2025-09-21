@@ -28,6 +28,17 @@ const products: Product[] = [
     available: true,
   },
   {
+  slug: "8-bit-invader-faux-embroidery-black",
+  title: "8-Bit Invader Faux Embroidery on Black",
+  subtitle: "Floral Collection",
+  price: 125,
+  sku: "PR-geo-20250921-011",
+  stripePriceId: "price_1S9saKBB8R6OUfKVBnQu3S95", // replace with your live Stripe price ID if needed
+  thumbnail: "https://files.patternripple.com/8-bit-invader-faux-embroidery-black.jpg",
+  exclusive: true,
+  available: true,
+},
+  {
   slug: "vibrant-floral-faux-embroidery-navy",
   title: "Vibrant Floral Faux Embroidery on Navy",
   subtitle: "Floral Collection",
