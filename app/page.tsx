@@ -28,6 +28,17 @@ const products: Product[] = [
     available: true,
   },
   {
+    slug: "monochrome-labyrinth-geometric-pattern",
+    title: "Monochrome Labyrinth Geometric Pattern",
+    subtitle: "OP Art Collection",
+    price: 125,
+    sku: "PR-geo-20250921-001",
+    stripePriceId: "price_1S9lZWBB8R6OUfKVC6pTDVfr", // ADD AFTER CREATING IN STRIPE
+    thumbnail: "https://files.patternripple.com/PR-geo-20250921-001-thumb.jpg",
+    exclusive: true,
+    available: true,
+  },
+  {
   slug: "pr-sea-20250919-002",  // lowercase 'pr'
   title: "Autumn UFO Landing Faux Embroidery",
   subtitle: "Autumn Collection",
