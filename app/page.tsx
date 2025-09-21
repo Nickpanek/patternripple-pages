@@ -34,7 +34,7 @@ const products: Product[] = [
     price: 125,
     sku: "PR-geo-20250921-001",
     stripePriceId: "price_1S9lZWBB8R6OUfKVC6pTDVfr", // ADD AFTER CREATING IN STRIPE
-    thumbnail: "https://files.patternripple.com/PR-geo-20250921-001-thumb.jpg",
+    thumbnail: "https://files.patternripple.com/monochrome-labyrinth-geometric-pattern-thumb.jpg",
     exclusive: true,
     available: true,
   },
