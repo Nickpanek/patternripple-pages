@@ -1,4 +1,3 @@
-// app/data/products.json
 {
   "products": [
     {
@@ -240,6 +239,72 @@
         "title": "Wildflower Faux Embroidery Pattern - Exclusive Dusty Rose",
         "description": "Exclusive seamless faux embroidery wildflower pattern in dusty rose. Premium digital pattern for luxury fabric and fashion design. Shop this exclusive pattern.",
         "keywords": "faux embroidery pattern, wildflower seamless design, dusty rose floral, exclusive digital pattern, luxury textile design"
+      }
+    },
+    {
+      "slug": "op-art-tunnel-illusion-black-white",
+      "sku": "PR-geo-20250921-008",
+      "title": "Op Art Tunnel Illusion in Monochrome",
+      "subtitle": "Geometric Collection",
+      "price": 125,
+      "stripePriceId": "price_1S9mKjBB8R6OUfKVRjVFkwn1",
+      "category": "geometric",
+      "subcategory": "optical-illusion",
+      "tags": [
+        "op art pattern",
+        "geometric illusion",
+        "black and white",
+        "monochrome design",
+        "tunnel vision",
+        "abstract geometric",
+        "minimalist pattern",
+        "bold graphic",
+        "modern wallpaper",
+        "contemporary art",
+        "fabric print",
+        "modern decor",
+        "hypnotic pattern",
+        "kinetic art",
+        "wrapping paper"
+      ],
+      "exclusive": true,
+      "available": true,
+      "listingDate": "2025-09-21",
+      
+      "images": {
+        "thumbnail": "https://files.patternripple.com/op-art-tunnel-illusion-black-white-thumb.jpg",
+        "preview": "https://files.patternripple.com/op-art-tunnel-illusion-black-white-preview.jpg",
+        "mockups": [
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup1.jpg",
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup2.jpg",
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup3.jpg",
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup4.jpg",
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup5.jpg",
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup6.jpg",
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup7.jpg",
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup8.jpg",
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup9.jpg",
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup10.jpg",
+          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup11.jpg"
+        ]
+      },
+      
+      "description": "A striking seamless pattern featuring a minimalist op-art tunnel illusion. The clean lines and contrasting monochrome palette create a hypnotic, sophisticated effect perfect for modern statement pieces.",
+      
+      "altText": "Seamless op-art tunnel illusion pattern in black and white.",
+      
+      "details": [
+        "6000px x 6000px source file",
+        "Seamless repeat pattern",
+        "Certificate of exclusivity",
+        "Commercial usage rights",
+        "Lifetime ownership"
+      ],
+      
+      "seo": {
+        "title": "Op Art Tunnel Pattern - Black White Geometric | PatternRipple",
+        "description": "Bold seamless op-art pattern with a geometric tunnel illusion in black and white. A minimalist design for modern interiors and textiles. Shop this exclusive pattern.",
+        "keywords": "op art pattern, geometric illusion, black and white, monochrome design, tunnel vision, abstract geometric, minimalist pattern, bold graphic, modern wallpaper, contemporary art, fabric print, modern decor, hypnotic pattern, kinetic art, wrapping paper"
       }
     }
   ]
