@@ -113,7 +113,6 @@ export default function ProductPage() {
         <meta property="og:image" content={product.images[0]} />
         <meta property="og:url" content={product.url} />
         <meta name="twitter:card" content="summary_large_image" />
-        <link rel="preload" as="image" href={product.images[0]} imagesrcset={`${product.images[0]} 1200w`} />
       </Head>
 
       <main className="max-w-7xl mx-auto px-4 py-12">
