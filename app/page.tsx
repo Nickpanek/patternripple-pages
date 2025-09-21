@@ -115,6 +115,17 @@ const products: Product[] = [
     exclusive: true,
     available: true,
   },
+  {
+    slug: "carved-stone-architectural-grid-neutral",
+    title: "Carved Stone Architectural Grid",
+    subtitle: "Architecture Collection",
+    price: 125,
+    sku: "PR-arc-20250921-001",
+    stripePriceId: "price_1S9maXBB8R6OUfKV4YShXYMt", // ADD YOUR STRIPE PRICE ID HERE
+    thumbnail: "https://files.patternripple.com/carved-stone-architectural-grid-neutral-thumb.jpg",
+    exclusive: true,
+    available: true,
+  },
 ];
 
 export default function HomePage() {
