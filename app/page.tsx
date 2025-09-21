@@ -52,7 +52,7 @@ const products: Product[] = [
   {
    slug: "gilded-art-deco-geometric-black",
    title: "Gilded Art Deco Geometric in Black",
-   subtitle: "geometric Collection",
+   subtitle: "Geometric Collection",
    price: 125,
    sku: "PR-geo-20250921-002",
    stripePriceId: "price_1S9nUoBB8R6OUfKV75USAunw", // ADD AFTER CREATING IN STRIPE
@@ -82,6 +82,17 @@ const products: Product[] = [
   exclusive: true,
   available: true
 },
+  {
+    slug: "mid-century-modern-stripes",
+    title: "Mid-Century Modernist Stripes",
+    subtitle: "Geometric Collection",
+    price: 125,
+    sku: "PR-geo-20250921-004",
+    stripePriceId: "price_1S9o6MBB8R6OUfKVwq0mmUyi", // ADD AFTER CREATING IN STRIPE
+    thumbnail: "https://files.patternripple.com/mid-century-modern-stripes-thumb.jpg",
+    exclusive: true,
+    available: true,
+  },
     {
   slug: "pr-hor-20250919-001",  // lowercase 'pr'
   title: "Impasto Skulls in Crimson",
