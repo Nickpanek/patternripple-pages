@@ -72,6 +72,17 @@ const products: Product[] = [
     available: true,
   },
   {
+    slug: "op-art-tunnel-illusion-black-white",
+    title: "Op Art Tunnel Illusion in Monochrome",
+    subtitle: "Op Art Collection",
+    price: 125,
+    sku: "PR-geo-20250921-008",
+    stripePriceId: "price_1S9wTvBB8R6OUfKV2jsZV0sK", // ADD AFTER CREATING IN STRIPE
+    thumbnail: "https://files.patternripple.com/op-art-tunnel-illusion-black-white-thumb.jpg",
+    exclusive: true,
+    available: true,
+  },
+  {
    slug: "gilded-art-deco-geometric-black",
    title: "Gilded Art Deco Geometric in Black",
    subtitle: "Geometric Collection",
