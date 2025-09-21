@@ -27,6 +27,17 @@ const products: Product[] = [
     exclusive: true,
     available: true,
   },
+   {
+    slug: "pastel-doodle-easter-eggs-pink",
+    title: "Pastel Doodle Easter Eggs on Pink",
+    subtitle: "Easter Collection",
+    price: 125,
+    sku: "PR-sea-20250921-001",
+    stripePriceId: "price_1S9mKjBB8R6OUfKVRjVFkwn1", // ADD AFTER CREATING IN STRIPE
+    thumbnail: "https://files.patternripple.com/pastel-doodle-easter-eggs-pink-thumb.jpg",
+    exclusive: true,
+    available: true,
+  },
   {
     slug: "monochrome-labyrinth-geometric-pattern",
     title: "Monochrome Labyrinth Geometric Pattern",
