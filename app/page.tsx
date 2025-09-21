@@ -83,6 +83,17 @@ const products: Product[] = [
     available: true,
   },
   {
+  slug: "painterly-woven-stripes-indigo",
+  title: "Painterly Woven Stripes in Indigo",
+  subtitle: "Geometric Collection",
+  price: 125,
+  sku: "PR-geo-20250921-010",
+  stripePriceId: "price_1S9ppGBB8R6OUfKVTfctJrtG", // replace with your live Stripe price ID if needed
+  thumbnail: "https://files.patternripple.com/painterly-woven-stripes-indigo.jpg",
+  exclusive: true,
+  available: true,
+},
+  {
     slug: "monochrome-labyrinth-geometric-pattern",
     title: "Monochrome Labyrinth Geometric Pattern",
     subtitle: "OP Art Collection",
