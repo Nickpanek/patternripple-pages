@@ -72,6 +72,17 @@ const products: Product[] = [
    available: true,
  },
   {
+    slug: "tactical-pixel-camo-desert-taupe",
+    title: "Tactical Pixel Camo in Desert Taupe",
+    subtitle: "Camo Collection",
+    price: 125,
+    sku: "PR-abs-20250921-001",
+    stripePriceId: "price_1S9oroBB8R6OUfKVFDwtadEl", // ADD AFTER CREATING IN STRIPE
+    thumbnail: "https://files.patternripple.com/tactical-pixel-camo-desert-taupe-thumb.jpg",
+    exclusive: true,
+    available: true,
+  },
+  {
     slug: "monochrome-labyrinth-geometric-pattern",
     title: "Monochrome Labyrinth Geometric Pattern",
     subtitle: "OP Art Collection",
