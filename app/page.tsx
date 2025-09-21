@@ -34,7 +34,7 @@ const products: Product[] = [
   price: 125,
   sku: "PR-geo-20250921-011",
   stripePriceId: "price_1S9saKBB8R6OUfKVBnQu3S95", // replace with your live Stripe price ID if needed
-  thumbnail: "https://files.patternripple.com/8-bit-invader-faux-embroidery-black.jpg",
+  thumbnail: "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-thumb.jpg",
   exclusive: true,
   available: true,
 },
