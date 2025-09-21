@@ -10,30 +10,13 @@ export const dynamic = "force-static";
 
 const BuyButton = NextDynamic(() => import("@/components/BuyButton"), { ssr: false });
 
-const slug = "painterly-woven-stripes-indigo";
-
-const defaultImages = [
-  `https://files.patternripple.com/${slug}-preview.jpg`,
-  `https://files.patternripple.com/${slug}-mockup1.jpg`,
-  `https://files.patternripple.com/${slug}-mockup2.jpg`,
-  `https://files.patternripple.com/${slug}-mockup3.jpg`,
-  `https://files.patternripple.com/${slug}-mockup4.jpg`,
-  `https://files.patternripple.com/${slug}-mockup5.jpg`,
-  `https://files.patternripple.com/${slug}-mockup6.jpg`,
-  `https://files.patternripple.com/${slug}-mockup7.jpg`,
-  `https://files.patternripple.com/${slug}-mockup8.jpg`,
-  `https://files.patternripple.com/${slug}-mockup9.jpg`,
-  `https://files.patternripple.com/${slug}-mockup10.jpg`,
-  `https://files.patternripple.com/${slug}-mockup11.jpg`,
-];
-
 export default function ProductPage() {
   const product = {
     title: "Painterly Woven Stripes in Indigo",
     subtitle: "geometric Collection",
     sku: "PR-geo-20250921-010",
     price: 125,
-    url: `https://patternripple.com/p/${slug}`,
+    url: "https://patternripple.com/p/painterly-woven-stripes-indigo",
     brand: "PatternRipple",
     description:
       "A sophisticated seamless pattern featuring hand-painted indigo and sky blue stripes arranged in a modern woven structure. The visible texture adds depth, making it ideal for contemporary textiles, bold wallpaper, and refined stationery.",
@@ -56,17 +39,31 @@ export default function ProductPage() {
       "home decor print",
       "stationery design"
     ],
-    images: defaultImages,
+    images: [
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-preview.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup1.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup2.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup3.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup4.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup5.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup6.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup7.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup8.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup9.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup10.jpg",
+      "https://files.patternripple.com/painterly-woven-stripes-indigo-mockup11.jpg"
+    ],
     altText:
       "Seamless geometric pattern with painterly indigo and blue woven stripes on a dark background.",
     isExclusive: true,
     exclusivityStatus: "available",
+    stripePriceId: "price_1S9ppGBB8R6OUfKVTfctJrtG"
   };
 
   const seo = {
     title: "Indigo Woven Stripes Geometric Pattern",
     description:
-      "Discover a modern geometric seamless pattern with painterly indigo woven stripes. Perfect for contemporary textiles, wallpaper, and stationery. Shop this exclusive pattern.",
+      "Discover a modern geometric seamless pattern with painterly indigo woven stripes. Perfect for contemporary textiles, wallpaper, and stationery. Shop this exclusive pattern."
   };
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -129,7 +126,9 @@ export default function ProductPage() {
               ))}
             </div>
 
-            <p className="text-sm text-gray-500 text-center mt-3">Watermarked preview - full resolution after purchase</p>
+            <p className="text-sm text-gray-500 text-center mt-3">
+              Watermarked preview - full resolution after purchase
+            </p>
           </section>
 
           {/* Details */}
@@ -162,8 +161,7 @@ export default function ProductPage() {
                 <span className="text-4xl font-light text-gray-900">${product.price ?? 125}</span>
                 <span className="text-sm text-gray-500">SKU: {product.sku}</span>
               </div>
-              {/* Pass only sku if you do not have a Stripe price id yet */}
-              <BuyButton sku={product.sku} />
+              <BuyButton priceId={product.stripePriceId} sku={product.sku} />
               <p className="text-sm text-gray-500">Secure checkout via Stripe - instant download after purchase</p>
             </div>
 
@@ -198,10 +196,10 @@ export default function ProductPage() {
                 price: String(product.price ?? 125),
                 priceCurrency: "USD",
                 availability: "https://schema.org/InStock",
-                url: product.url,
+                url: product.url
               },
-              keywords: product.tags.join(", "),
-            }),
+              keywords: product.tags.join(", ")
+            })
           }}
         />
       </main>
