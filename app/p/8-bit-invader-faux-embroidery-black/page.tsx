@@ -13,7 +13,7 @@ const BuyButton = NextDynamic(() => import("@/components/BuyButton"), { ssr: fal
 export default function ProductPage() {
   const product = {
     title: "8-Bit Invader Faux Embroidery on Black",
-    subtitle: "geometric Collection",
+    subtitle: "Faux Embroidery Collection",
     sku: "PR-geo-20250921-011",
     price: 125,
     url: "https://patternripple.com/p/8-bit-invader-faux-embroidery-black",
