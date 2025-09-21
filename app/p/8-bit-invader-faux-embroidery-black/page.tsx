@@ -57,7 +57,7 @@ export default function ProductPage() {
       "Seamless 8-bit invader faux embroidery pattern with multicolor pixel aliens on a black background."
   };
 
-  const stripePriceId = "price_1S9mKjBB8R6OUfKVRjVFkwn1";
+  const stripePriceId = "price_1S9saKBB8R6OUfKVBnQu3S95";
 
   const [selectedImage, setSelectedImage] = useState(0);
 
