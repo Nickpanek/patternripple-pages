@@ -17,7 +17,7 @@ export default function ProductPage() {
     title: "Tactical Pixel Camo in Desert Taupe",
     subtitle: "abstract Collection",
     sku: "PR-abs-20250921-001",
-    stripePriceId: "price_1S9lZWBB8R6OUfKVC6pTDVfr",
+    stripePriceId: "price_1S9oroBB8R6OUfKVFDwtadEl",
     images: [
       "https://files.patternripple.com/tactical-pixel-camo-desert-taupe-preview.jpg",
       "https://files.patternripple.com/tactical-pixel-camo-desert-taupe-mockup1.jpg",
