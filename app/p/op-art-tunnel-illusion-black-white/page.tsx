@@ -1,3 +1,5 @@
+// app/p/op-art-tunnel-illusion-black-white/page.tsx
+
 "use client";
 
 import NextHead from "next/head";
@@ -86,7 +88,7 @@ export default function ProductPage() {
               />
             </div>
             <div className="grid grid-cols-5 gap-2">
-              {product.images.slice(0, 5).map((img, index) => (
+              {product.images.map((img, index) => (
                 <button
                   key={img}
                   onClick={() => setSelectedImage(index)}
@@ -138,7 +140,7 @@ export default function ProductPage() {
               "@type": "Brand",
               "name": "PatternRipple"
             },
-            "image": product.images.slice(0, 3),
+            "image": product.images,
             "offers": {
               "@type": "Offer",
               "price": String(product.price),
