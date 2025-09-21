@@ -27,6 +27,17 @@ const products: Product[] = [
     exclusive: true,
     available: true,
   },
+  {
+    slug: "gilded-stripe-circles-olive-geometric",
+    title: "Gilded Stripe Circles on Olive",
+    subtitle: "Geometric Collection",
+    price: 125,
+    sku: "PR-geo-20250921-001",
+    stripePriceId: "price_1S9mssBB8R6OUfKVZYZoIF7e", // ADD AFTER CREATING IN STRIPE
+    thumbnail: "https://files.patternripple.com/gilded-stripe-circles-olive-geometric-thumb.jpg",
+    exclusive: true,
+    available: true,
+  },
    {
     slug: "pastel-doodle-easter-eggs-pink",
     title: "Pastel Doodle Easter Eggs on Pink",
