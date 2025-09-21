@@ -89,7 +89,7 @@ const products: Product[] = [
   price: 125,
   sku: "PR-geo-20250921-010",
   stripePriceId: "price_1S9ppGBB8R6OUfKVTfctJrtG", // replace with your live Stripe price ID if needed
-  thumbnail: "https://files.patternripple.com/painterly-woven-stripes-indigo.jpg",
+  thumbnail: "https://files.patternripple.com/painterly-woven-stripes-indigo-thumb.jpg",
   exclusive: true,
   available: true,
 },
