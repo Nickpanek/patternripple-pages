@@ -27,6 +27,17 @@ const products: Product[] = [
     exclusive: true,
     available: true,
   },
+    {
+    slug: "japandi-brushstrokes-plum-mauve",
+    title: "Japandi Brushstrokes in Plum and Mauve",
+    subtitle: "Geometric Collection",
+    price: 125,
+    sku: "PR-abs-20250921-019",
+    stripePriceId: "price_1S9wwJBB8R6OUfKVmseB0xm4", // ADD AFTER CREATING IN STRIPE
+    thumbnail: "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-thumb.jpg",
+    exclusive: true,
+    available: true,
+  },
   {
   slug: "8-bit-invader-faux-embroidery-black",
   title: "8-Bit Invader Faux Embroidery on Black",
