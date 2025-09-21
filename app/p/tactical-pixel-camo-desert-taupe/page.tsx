@@ -1,15 +1,15 @@
 "use client";
 
 import Head from "next/head";
-import dynamic from "next/dynamic";
+import NextDynamic from "next/dynamic"; // alias to avoid name collision
 import Image from "next/image";
 import { useState } from "react";
 import Script from "next/script";
 
 // client-only BuyButton - no SSR
-const BuyButton = dynamic(() => import("@/components/BuyButton"), { ssr: false });
+const BuyButton = NextDynamic(() => import("@/components/BuyButton"), { ssr: false });
 
-// keep this - Next uses it - do not rename
+// Next.js runtime hint - keep this export name exactly
 export const dynamic = "force-static";
 
 export default function ProductPage() {
@@ -17,7 +17,7 @@ export default function ProductPage() {
     title: "Tactical Pixel Camo in Desert Taupe",
     subtitle: "abstract Collection",
     sku: "PR-abs-20250921-001",
-    stripePriceId: "price_1S9oroBB8R6OUfKVFDwtadEl",
+    stripePriceId: "price_1S9lZWBB8R6OUfKVC6pTDVfr",
     images: [
       "https://files.patternripple.com/tactical-pixel-camo-desert-taupe-preview.jpg",
       "https://files.patternripple.com/tactical-pixel-camo-desert-taupe-mockup1.jpg",
@@ -152,7 +152,7 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Thumbnails */}
+            {/* Thumbnails 1-8 */}
             <div className="grid grid-cols-4 gap-2">
               {product.images.slice(0, 8).map((image, index) => (
                 <button
@@ -170,6 +170,7 @@ export default function ProductPage() {
               ))}
             </div>
 
+            {/* Thumbnails 9-12 */}
             <div className="grid grid-cols-4 gap-2">
               {product.images.slice(8, 12).map((image, i) => {
                 const idx = i + 8;
@@ -190,7 +191,7 @@ export default function ProductPage() {
               })}
             </div>
 
-            <p className="text-sm text-gray-500 text-center font-light">Watermarked preview — Full resolution upon purchase</p>
+            <p className="text-sm text-gray-500 text-center font-light">Watermarked preview - Full resolution upon purchase</p>
           </div>
 
           {/* Right: Product Details */}
@@ -256,11 +257,11 @@ export default function ProductPage() {
 
             <div className="space-y-4">
               <div className="flex items-baseline justify-between">
-                <span className="text-4xl font-light text-gray-900">${""}{product.price}</span>
+                <span className="text-4xl font-light text-gray-900">${product.price}</span>
                 <span className="text-sm text-gray-500">SKU: {product.sku}</span>
               </div>
               <BuyButton priceId={product.stripePriceId} sku={product.sku} />
-              <p className="text-sm text-gray-500 font-light">Secure checkout via Stripe — Instant download after purchase</p>
+              <p className="text-sm text-gray-500 font-light">Secure checkout via Stripe - Instant download after purchase</p>
             </div>
           </div>
         </div>
