@@ -15,7 +15,7 @@ export default function ProductPage() {
     title: "Mid-Century Modernist Stripes",
     subtitle: "Geometric Collection",
     sku: "PR-geo-20250921-004",
-    stripePriceId: "price_1S9lZWBB8R6OUfKVC6pTDVfr", // REPLACE WITH YOUR STRIPE PRICE ID
+    stripePriceId: "price_1S9o6MBB8R6OUfKVwq0mmUyi", // REPLACE WITH YOUR STRIPE PRICE ID
     images: [
       "https://files.patternripple.com/mid-century-modern-stripes-preview.jpg",
       "https://files.patternripple.com/mid-century-modern-stripes-mockup1.jpg",
