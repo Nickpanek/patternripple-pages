@@ -50,6 +50,17 @@ const products: Product[] = [
     available: true,
   },
   {
+   slug: "gilded-art-deco-geometric-black",
+   title: "Gilded Art Deco Geometric in Black",
+   subtitle: "geometric Collection",
+   price: 125,
+   sku: "PR-geo-20250921-002",
+   stripePriceId: "price_1S9nUoBB8R6OUfKV75USAunw", // ADD AFTER CREATING IN STRIPE
+   thumbnail: "https://files.patternripple.com/gilded-art-deco-geometric-black-thumb.jpg",
+   exclusive: true,
+   available: true,
+ },
+  {
     slug: "monochrome-labyrinth-geometric-pattern",
     title: "Monochrome Labyrinth Geometric Pattern",
     subtitle: "OP Art Collection",
