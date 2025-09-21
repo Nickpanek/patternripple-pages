@@ -28,6 +28,17 @@ const products: Product[] = [
     available: true,
   },
   {
+  slug: "vibrant-floral-faux-embroidery-navy",
+  title: "Vibrant Floral Faux Embroidery on Navy",
+  subtitle: "Floral Collection",
+  price: 125,
+  sku: "PR-flo-20250921-006",
+  stripePriceId: "price_1S9oRyBB8R6OUfKVkOVUZcAx", // replace with your live Stripe price ID if needed
+  thumbnail: "https://files.patternripple.com/vibrant-floral-faux-embroidery-navy-thumb.jpg",
+  exclusive: true,
+  available: true,
+},
+  {
     slug: "gilded-stripe-circles-olive-geometric",
     title: "Gilded Stripe Circles on Olive",
     subtitle: "Geometric Collection",
