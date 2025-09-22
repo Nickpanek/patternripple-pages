@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import Script from "next/script"; // <-- add this
 
 // stop Next from preloading the font to remove preload warnings
 const inter = Inter({ subsets: ["latin"], display: "swap", preload: false });
@@ -21,10 +22,27 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* keep it lean - no analytics/beacon scripts here */}
         <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-SEHPVEP1TM"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-SEHPVEP1TM', {
+              page_path: window.location.pathname,
+            });
+          `}
+        </Script>
       </head>
-      <body className={`${inter.className} bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen`}>
+      <body
+        className={`${inter.className} bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen`}
+      >
         <nav className="bg-white/90 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 py-3">
             <Link
