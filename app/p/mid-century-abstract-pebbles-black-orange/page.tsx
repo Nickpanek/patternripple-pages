@@ -121,7 +121,7 @@ export default function ProductPage() {
               />
             </div>
             <div className="grid grid-cols-5 gap-2">
-              {product.images.slice(0, 5).map((img, index) => (
+              {product.images.slice(0, 11).map((img, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
