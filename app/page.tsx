@@ -23,7 +23,7 @@ const products: Product[] = [
     price: 125,
     sku: "PR-abs-20250922-011",
     stripePriceId: "price_1SA9SUBB8R6OUfKV2Q1ewLS4", // ADD AFTER CREATING IN STRIPE
-    thumbnail: "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange.jpg",
+    thumbnail: "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-thumb.jpg",
     exclusive: true,
     available: true,
   },
