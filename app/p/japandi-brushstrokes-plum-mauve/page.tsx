@@ -1,5 +1,3 @@
-// file: app/p/japandi-brushstrokes-plum-mauve/page.tsx
-
 "use client";
 
 import NextHead from "next/head";
