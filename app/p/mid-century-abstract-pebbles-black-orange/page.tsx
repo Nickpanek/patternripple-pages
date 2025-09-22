@@ -6,8 +6,6 @@ import Image from "next/image";
 import Script from "next/script";
 import { useState } from "react";
 
-export const dynamic = "force-static";
-
 const BuyButton = NextDynamic(() => import("@/components/BuyButton"), { ssr: false });
 
 export default function ProductPage() {
@@ -61,7 +59,7 @@ export default function ProductPage() {
   const seoTitle = "Mid-Century Abstract Pattern - Black Orange Pink";
   const seoDescription =
     "Bold mid-century modern seamless pattern with abstract pebble shapes in black, orange, and pink. Perfect for retro interiors and textiles. Shop this exclusive pattern.";
-  const stripePriceId = "price_1SA9SUBB8R6OUfKV2Q1ewLS4"; // replace with live Stripe price id
+  const stripePriceId = "price_1SA9SUBB8R6OUfKV2Q1ewLS4";
 
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -79,7 +77,6 @@ export default function ProductPage() {
       </NextHead>
 
       <main className="max-w-7xl mx-auto px-4 py-12">
-        {/* Breadcrumbs */}
         <nav aria-label="Breadcrumb" className="text-sm text-gray-600">
           <ol className="flex gap-2">
             <li>
@@ -100,7 +97,6 @@ export default function ProductPage() {
           </ol>
         </nav>
 
-        {/* Header */}
         <div className="mt-6 flex items-center gap-3">
           <span className="text-xs font-semibold text-blue-700 bg-blue-100 py-1 px-3 rounded-full">
             {product.subtitle}
@@ -112,9 +108,7 @@ export default function ProductPage() {
           )}
         </div>
 
-        {/* Product Layout */}
         <section className="grid md:grid-cols-2 gap-12 mt-6">
-          {/* Image Gallery */}
           <div>
             <div className="mb-4">
               <Image
@@ -148,7 +142,6 @@ export default function ProductPage() {
             </div>
           </div>
 
-          {/* Product Details */}
           <div>
             <h1 className="text-4xl font-bold tracking-tight">{product.title}</h1>
             <p className="text-gray-600 mt-2">SKU: {product.sku}</p>
@@ -172,12 +165,11 @@ export default function ProductPage() {
             </div>
 
             <div className="mt-8">
-              <BuyButton product={{ name: product.title, priceId: stripePriceId, sku: product.sku }} />
+              <BuyButton priceId={stripePriceId} sku={product.sku} />
             </div>
           </div>
         </section>
 
-        {/* Tag list */}
         <section className="mt-12">
           <h2 className="text-lg font-semibold mb-3">Keywords</h2>
           <div className="flex flex-wrap gap-2">
