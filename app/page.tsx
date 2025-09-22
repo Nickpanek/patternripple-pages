@@ -17,6 +17,17 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "mid-century-abstract-pebbles-black-orange",
+    title: "Mid-Century Abstract Pebbles in Black and Orange",
+    subtitle: "Abstract Collection",
+    price: 125,
+    sku: "PR-abs-20250922-011",
+    stripePriceId: "price_1SA9SUBB8R6OUfKV2Q1ewLS4", // ADD AFTER CREATING IN STRIPE
+    thumbnail: "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange.jpg",
+    exclusive: true,
+    available: true,
+  },
+  {
     slug: "pr-geo-20250919-001",
     title: "Atomic Matchstick Geometric",
     subtitle: "Mid-Century Collection",
