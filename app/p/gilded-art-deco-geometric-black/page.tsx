@@ -1,217 +1,215 @@
-"use client";
+// app/p/art-deco-ogee-gold-black/page.tsx
 
-import Link from "next/link";
-import { useState } from "react";
+import type { Metadata } from "next";
+import Image from "next/image";
+import Script from "next/script";
+import dynamic from "next/dynamic";
 
-// Full products array - same as your homepage
-const products = [
-  {
-    slug: "mid-century-abstract-pebbles-black-orange",
-    title: "Mid-Century Abstract Pebbles in Black and Orange",
-    subtitle: "Abstract Collection",
-    price: 125,
-    sku: "PR-abs-20250922-011",
-    stripePriceId: "price_1SA9SUBB8R6OUfKV2Q1ewLS4",
-    thumbnail: "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "abstract"
-  },
-  {
-    slug: "pr-geo-20250919-001",
-    title: "Atomic Matchstick Geometric",
-    subtitle: "Mid-Century Collection",
-    price: 125,
-    sku: "PR-geo-20250919-001",
-    stripePriceId: "price_1S91pvBB8R6OUfKVfz51JXSY",
-    thumbnail: "https://files.patternripple.com/PR-geo-20250919-001-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "japandi-brushstrokes-plum-mauve",
-    title: "Japandi Brushstrokes in Plum and Mauve",
-    subtitle: "Geometric Collection",
-    price: 125,
-    sku: "PR-abs-20250921-019",
-    stripePriceId: "price_1S9wwJBB8R6OUfKVmseB0xm4",
-    thumbnail: "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "gilded-stripe-circles-olive-geometric",
-    title: "Gilded Stripe Circles on Olive",
-    subtitle: "Geometric Collection",
-    price: 125,
-    sku: "PR-geo-20250921-001",
-    stripePriceId: "price_1S9mssBB8R6OUfKVZYZoIF7e",
-    thumbnail: "https://files.patternripple.com/gilded-stripe-circles-olive-geometric-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "op-art-tunnel-illusion-black-white",
-    title: "Op Art Tunnel Illusion in Monochrome",
-    subtitle: "Op Art Collection",
-    price: 125,
-    sku: "PR-geo-20250921-008",
-    stripePriceId: "price_1S9wTvBB8R6OUfKV2jsZV0sK",
-    thumbnail: "https://files.patternripple.com/op-art-tunnel-illusion-black-white-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "gilded-art-deco-geometric-black",
-    title: "Gilded Art Deco Geometric in Black",
-    subtitle: "Geometric Collection",
-    price: 125,
-    sku: "PR-geo-20250921-002",
-    stripePriceId: "price_1S9nUoBB8R6OUfKV75USAunw",
-    thumbnail: "https://files.patternripple.com/gilded-art-deco-geometric-black-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "painterly-woven-stripes-indigo",
-    title: "Painterly Woven Stripes in Indigo",
-    subtitle: "Geometric Collection",
-    price: 125,
-    sku: "PR-geo-20250921-010",
-    stripePriceId: "price_1S9ppGBB8R6OUfKVTfctJrtG",
-    thumbnail: "https://files.patternripple.com/painterly-woven-stripes-indigo-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "monochrome-labyrinth-geometric-pattern",
-    title: "Monochrome Labyrinth Geometric Pattern",
-    subtitle: "OP Art Collection",
-    price: 125,
-    sku: "PR-geo-20250921-001",
-    stripePriceId: "price_1S9lZWBB8R6OUfKVC6pTDVfr",
-    thumbnail: "https://files.patternripple.com/monochrome-labyrinth-geometric-pattern-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "mid-century-modern-stripes",
-    title: "Mid-Century Modernist Stripes",
-    subtitle: "Geometric Collection",
-    price: 125,
-    sku: "PR-geo-20250921-004",
-    stripePriceId: "price_1S9o6MBB8R6OUfKVwq0mmUyi",
-    thumbnail: "https://files.patternripple.com/mid-century-modern-stripes-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "carved-stone-architectural-grid-neutral",
-    title: "Carved Stone Architectural Grid",
-    subtitle: "Architecture Collection",
-    price: 125,
-    sku: "PR-arc-20250921-001",
-    stripePriceId: "price_1S9maXBB8R6OUfKV4YShXYMt",
-    thumbnail: "https://files.patternripple.com/carved-stone-architectural-grid-neutral-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  }
-];
+// Force static generation for this product page
+export const dynamic = "force-static";
 
-export default function GeometricCollectionPage() {
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  
-  // Filter only geometric patterns
-  const geometricProducts = products.filter(p => p.category === "geometric");
+const product = {
+  slug: "art-deco-ogee-gold-black",
+  title: "Art Deco Ogee in Gold and Black",
+  subtitle: "Geometric Collection",
+  sku: "PR-geo-20250921-007",
+  price: 125,
+  url: "https://patternripple.com/p/art-deco-ogee-gold-black",
+  brand: "PatternRipple",
+  description:
+    "A bold and sophisticated seamless pattern featuring a classic ogee motif with an Art Deco influence. The interplay of textured gold and deep black creates a dramatic, luxurious effect perfect for statement wallpaper, upholstery, and high-end fashion.",
+  category: "geometric",
+  subcategory: "ogee",
+  tags: [
+    "ogee pattern",
+    "art deco design",
+    "geometric seamless",
+    "bold graphic",
+    "modernist pattern",
+    "luxury geometric",
+    "abstract ogee",
+    "gold and black",
+    "yellow pattern",
+    "wallpaper pattern",
+    "fabric print",
+    "upholstery design",
+    "gift wrap",
+    "modern decor",
+  ],
+  images: [
+    "https://files.patternripple.com/art-deco-ogee-gold-black-preview.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup1.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup2.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup3.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup4.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup5.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup6.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup7.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup8.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup9.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup10.jpg",
+    "https://files.patternripple.com/art-deco-ogee-gold-black-mockup11.jpg",
+  ],
+  altText: "Seamless Art Deco ogee pattern in gold and black.",
+} as const;
 
+// Stripe
+const stripePriceId = "price_1S9nUoBB8R6OUfKV75USAunw"; // replace as needed
+
+// ---- SEO (App Router) ----
+export async function generateMetadata(): Promise<Metadata> {
+  const title = "Art Deco Ogee Pattern - Gold and Black | PatternRipple";
+  const description =
+    "Sophisticated seamless Art Deco ogee pattern in gold and black. Bold geometric design for luxury wallpaper and modern textiles. Shop this exclusive pattern.";
+  return {
+    title,
+    description,
+    alternates: { canonical: product.url },
+    openGraph: {
+      title,
+      description,
+      url: product.url,
+      type: "product",
+      images: [{ url: product.images[0] }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [product.images[0]],
+    },
+  };
+}
+
+// ---- Client bits (gallery + BuyButton) ----
+const BuyButton = dynamic(() => import("@/components/BuyButton"), { ssr: false });
+
+// isolated client component for interactivity
+function ClientGallery({
+  images,
+  alt,
+}: {
+  images: string[];
+  alt: string;
+}) {
+  "use client";
+  const [selected, setSelected] = React.useState(0);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-16">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h1 className="text-4xl font-thin tracking-wide text-gray-900 mb-4">
-            Geometric Collection
-          </h1>
-          <p className="text-lg text-gray-600">
-            Modern geometric patterns including Art Deco, Op Art, and contemporary designs
-          </p>
-        </div>
-      </header>
-
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3">
-        <div className="max-w-6xl mx-auto px-4 text-center text-sm">
-          {geometricProducts.length} Exclusive Geometric Patterns Available
-        </div>
+    <div>
+      <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+        <Image
+          src={images[selected]}
+          alt={alt}
+          width={2048}
+          height={2048}
+          className="w-full h-full object-cover"
+          priority
+        />
       </div>
+      <div className="grid grid-cols-5 gap-2 mt-2">
+        {images.slice(0, 5).map((img, i) => (
+          <button
+            key={i}
+            onClick={() => setSelected(i)}
+            className={`aspect-square rounded-md overflow-hidden border-2 ${
+              selected === i ? "border-blue-500" : "border-transparent"
+            }`}
+            aria-label={`Select view ${i + 1}`}
+          >
+            <Image
+              src={img}
+              alt={`${alt} - view ${i + 1}`}
+              width={400}
+              height={400}
+              className="w-full h-full object-cover"
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        <div className="mb-8">
-          <Link href="/collections" className="inline-flex items-center text-purple-600 hover:text-purple-700">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to All Collections
-          </Link>
-        </div>
+// Use React from next's runtime without explicit import in server components
+import React from "react";
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {geometricProducts.map((product) => (
-            <article
-              key={product.sku}
-              className={`bg-white rounded-xl overflow-hidden transition-all duration-300 ${
-                hoveredCard === product.sku
-                  ? "shadow-2xl -translate-y-1 ring-4 ring-purple-400"
-                  : "shadow-lg ring-4 ring-blue-400"
-              }`}
-              onMouseEnter={() => setHoveredCard(product.sku)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              {product.exclusive && (
-                <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold py-2 text-center tracking-wider">
-                  EXCLUSIVE PATTERN
-                </div>
-              )}
+export default function ProductPage() {
+  return (
+    <>
+      <main className="max-w-7xl mx-auto px-4 py-12">
+        {/* Breadcrumbs */}
+        <nav aria-label="Breadcrumb" className="text-sm breadcrumbs">
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href={`/c/${product.category}`}>Geometric</a></li>
+            <li aria-current="page">{product.title}</li>
+          </ul>
+        </nav>
 
-              <div className="h-64 bg-gradient-to-br from-blue-100 to-purple-100 overflow-hidden">
-                <img
-                  src={product.thumbnail}
-                  alt={product.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+        {/* Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-6">
+          {/* Gallery */}
+          <ClientGallery images={product.images} alt={product.altText} />
 
-              <div className="p-6">
-                <h2 className="text-xl font-light text-gray-900 mb-2">
-                  {product.title}
-                </h2>
-                <p className="text-gray-600 text-sm mb-4">{product.subtitle}</p>
+          {/* Details */}
+          <section>
+            <h1 className="text-3xl font-bold tracking-tight">{product.title}</h1>
+            <p className="text-lg text-gray-600 mt-1">{product.subtitle}</p>
+            <p className="text-2xl font-semibold mt-4">${product.price.toFixed(2)}</p>
 
-                <div className="flex justify-between items-center pb-4 mb-4 border-b border-gray-100">
-                  <span className="text-2xl font-light">${product.price}</span>
-                  <span className="text-green-600 text-sm">
-                    {product.available ? "Available" : "Sold"}
-                  </span>
-                </div>
+            <div className="mt-4">
+              {/* BuyButton expects { priceId, sku } based on your component definition */}
+              <BuyButton priceId={stripePriceId} sku={product.sku} />
+            </div>
 
-                <Link
-                  href={`/p/${product.slug}`}
-                  className="block w-full bg-gray-900 text-white text-center py-3 rounded-lg hover:bg-purple-600 transition-colors duration-300"
-                >
-                  View Pattern
-                </Link>
-              </div>
-            </article>
-          ))}
+            <div className="mt-6">
+              <h3 className="text-md font-semibold border-b pb-2">Description</h3>
+              <p className="text-gray-700 mt-3">{product.description}</p>
+            </div>
+
+            <div className="mt-6">
+              <h3 className="text-md font-semibold border-b pb-2">Details</h3>
+              <ul className="list-disc list-inside text-gray-700 mt-3 space-y-1">
+                <li>SKU: {product.sku}</li>
+                <li>
+                  Category:{" "}
+                  <a href={`/c/${product.category}`} className="underline hover:text-blue-600">
+                    {product.category}
+                  </a>
+                </li>
+                <li>License: Exclusive Commercial Use</li>
+                <li>Asset Files: PNG (6000x6000), JPG (Preview), PDF (Certificate)</li>
+              </ul>
+            </div>
+          </section>
         </div>
       </main>
-    </div>
+
+      {/* JSON-LD */}
+      <Script
+        id="product-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            name: product.title,
+            description: product.description,
+            sku: product.sku,
+            category: product.category,
+            brand: { "@type": "Brand", name: product.brand },
+            image: product.images.slice(0, 3),
+            offers: {
+              "@type": "Offer",
+              price: String(product.price),
+              priceCurrency: "USD",
+              availability: "https://schema.org/InStock",
+              url: product.url,
+            },
+            keywords: product.tags.join(", "),
+          }),
+        }}
+      />
+    </>
   );
 }
