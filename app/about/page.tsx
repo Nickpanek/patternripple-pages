@@ -134,7 +134,7 @@ Where exclusivity meets creativity
     </div>
   </main>
 </div>
-```
+
 
 );
 }
