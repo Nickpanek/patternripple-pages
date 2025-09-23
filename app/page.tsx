@@ -13,6 +13,7 @@ type Product = {
   thumbnail: string;
   exclusive: boolean;
   available: boolean;
+  category?: string;
 };
 
 const products: Product[] = [
@@ -22,10 +23,11 @@ const products: Product[] = [
     subtitle: "Abstract Collection",
     price: 125,
     sku: "PR-abs-20250922-011",
-    stripePriceId: "price_1SA9SUBB8R6OUfKV2Q1ewLS4", // ADD AFTER CREATING IN STRIPE
+    stripePriceId: "price_1SA9SUBB8R6OUfKV2Q1ewLS4",
     thumbnail: "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "abstract"
   },
   {
     slug: "pr-geo-20250919-001",
@@ -33,65 +35,71 @@ const products: Product[] = [
     subtitle: "Mid-Century Collection",
     price: 125,
     sku: "PR-geo-20250919-001",
-    stripePriceId: "price_1S91pvBB8R6OUfKVfz51JXSY", // ADD AFTER CREATING IN STRIPE
+    stripePriceId: "price_1S91pvBB8R6OUfKVfz51JXSY",
     thumbnail: "https://files.patternripple.com/PR-geo-20250919-001-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "geometric"
   },
-    {
+  {
     slug: "japandi-brushstrokes-plum-mauve",
     title: "Japandi Brushstrokes in Plum and Mauve",
     subtitle: "Geometric Collection",
     price: 125,
     sku: "PR-abs-20250921-019",
-    stripePriceId: "price_1S9wwJBB8R6OUfKVmseB0xm4", // ADD AFTER CREATING IN STRIPE
+    stripePriceId: "price_1S9wwJBB8R6OUfKVmseB0xm4",
     thumbnail: "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "geometric"
   },
   {
-  slug: "8-bit-invader-faux-embroidery-black",
-  title: "8-Bit Invader Faux Embroidery on Black",
-  subtitle: "Faux Embroidery Collection",
-  price: 125,
-  sku: "PR-geo-20250921-011",
-  stripePriceId: "price_1S9saKBB8R6OUfKVBnQu3S95", // replace with your live Stripe price ID if needed
-  thumbnail: "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-thumb.jpg",
-  exclusive: true,
-  available: true,
-},
+    slug: "8-bit-invader-faux-embroidery-black",
+    title: "8-Bit Invader Faux Embroidery on Black",
+    subtitle: "Faux Embroidery Collection",
+    price: 125,
+    sku: "PR-geo-20250921-011",
+    stripePriceId: "price_1S9saKBB8R6OUfKVBnQu3S95",
+    thumbnail: "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "faux-embroidery"
+  },
   {
-  slug: "vibrant-floral-faux-embroidery-navy",
-  title: "Vibrant Floral Faux Embroidery on Navy",
-  subtitle: "Floral Collection",
-  price: 125,
-  sku: "PR-flo-20250921-006",
-  stripePriceId: "price_1S9oRyBB8R6OUfKVkOVUZcAx", // replace with your live Stripe price ID if needed
-  thumbnail: "https://files.patternripple.com/vibrant-floral-faux-embroidery-navy-thumb.jpg",
-  exclusive: true,
-  available: true,
-},
+    slug: "vibrant-floral-faux-embroidery-navy",
+    title: "Vibrant Floral Faux Embroidery on Navy",
+    subtitle: "Floral Collection",
+    price: 125,
+    sku: "PR-flo-20250921-006",
+    stripePriceId: "price_1S9oRyBB8R6OUfKVkOVUZcAx",
+    thumbnail: "https://files.patternripple.com/vibrant-floral-faux-embroidery-navy-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "floral"
+  },
   {
     slug: "gilded-stripe-circles-olive-geometric",
     title: "Gilded Stripe Circles on Olive",
     subtitle: "Geometric Collection",
     price: 125,
     sku: "PR-geo-20250921-001",
-    stripePriceId: "price_1S9mssBB8R6OUfKVZYZoIF7e", // ADD AFTER CREATING IN STRIPE
+    stripePriceId: "price_1S9mssBB8R6OUfKVZYZoIF7e",
     thumbnail: "https://files.patternripple.com/gilded-stripe-circles-olive-geometric-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "geometric"
   },
-   {
+  {
     slug: "pastel-doodle-easter-eggs-pink",
     title: "Pastel Doodle Easter Eggs on Pink",
     subtitle: "Easter Collection",
     price: 125,
     sku: "PR-sea-20250921-001",
-    stripePriceId: "price_1S9mKjBB8R6OUfKVRjVFkwn1", // ADD AFTER CREATING IN STRIPE
+    stripePriceId: "price_1S9mKjBB8R6OUfKVRjVFkwn1",
     thumbnail: "https://files.patternripple.com/pastel-doodle-easter-eggs-pink-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "seasonal"
   },
   {
     slug: "op-art-tunnel-illusion-black-white",
@@ -99,110 +107,120 @@ const products: Product[] = [
     subtitle: "Op Art Collection",
     price: 125,
     sku: "PR-geo-20250921-008",
-    stripePriceId: "price_1S9wTvBB8R6OUfKV2jsZV0sK", // ADD AFTER CREATING IN STRIPE
+    stripePriceId: "price_1S9wTvBB8R6OUfKV2jsZV0sK",
     thumbnail: "https://files.patternripple.com/op-art-tunnel-illusion-black-white-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "geometric"
   },
   {
-   slug: "gilded-art-deco-geometric-black",
-   title: "Gilded Art Deco Geometric in Black",
-   subtitle: "Geometric Collection",
-   price: 125,
-   sku: "PR-geo-20250921-002",
-   stripePriceId: "price_1S9nUoBB8R6OUfKV75USAunw", // ADD AFTER CREATING IN STRIPE
-   thumbnail: "https://files.patternripple.com/gilded-art-deco-geometric-black-thumb.jpg",
-   exclusive: true,
-   available: true,
- },
+    slug: "gilded-art-deco-geometric-black",
+    title: "Gilded Art Deco Geometric in Black",
+    subtitle: "Geometric Collection",
+    price: 125,
+    sku: "PR-geo-20250921-002",
+    stripePriceId: "price_1S9nUoBB8R6OUfKV75USAunw",
+    thumbnail: "https://files.patternripple.com/gilded-art-deco-geometric-black-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "geometric"
+  },
   {
     slug: "tactical-pixel-camo-desert-taupe",
     title: "Tactical Pixel Camo in Desert Taupe",
     subtitle: "Camo Collection",
     price: 125,
     sku: "PR-abs-20250921-001",
-    stripePriceId: "price_1S9oroBB8R6OUfKVFDwtadEl", // ADD AFTER CREATING IN STRIPE
+    stripePriceId: "price_1S9oroBB8R6OUfKVFDwtadEl",
     thumbnail: "https://files.patternripple.com/tactical-pixel-camo-desert-taupe-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "abstract"
   },
   {
-  slug: "painterly-woven-stripes-indigo",
-  title: "Painterly Woven Stripes in Indigo",
-  subtitle: "Geometric Collection",
-  price: 125,
-  sku: "PR-geo-20250921-010",
-  stripePriceId: "price_1S9ppGBB8R6OUfKVTfctJrtG", // replace with your live Stripe price ID if needed
-  thumbnail: "https://files.patternripple.com/painterly-woven-stripes-indigo-thumb.jpg",
-  exclusive: true,
-  available: true,
-},
+    slug: "painterly-woven-stripes-indigo",
+    title: "Painterly Woven Stripes in Indigo",
+    subtitle: "Geometric Collection",
+    price: 125,
+    sku: "PR-geo-20250921-010",
+    stripePriceId: "price_1S9ppGBB8R6OUfKVTfctJrtG",
+    thumbnail: "https://files.patternripple.com/painterly-woven-stripes-indigo-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "geometric"
+  },
   {
     slug: "monochrome-labyrinth-geometric-pattern",
     title: "Monochrome Labyrinth Geometric Pattern",
     subtitle: "OP Art Collection",
     price: 125,
     sku: "PR-geo-20250921-001",
-    stripePriceId: "price_1S9lZWBB8R6OUfKVC6pTDVfr", // ADD AFTER CREATING IN STRIPE
+    stripePriceId: "price_1S9lZWBB8R6OUfKVC6pTDVfr",
     thumbnail: "https://files.patternripple.com/monochrome-labyrinth-geometric-pattern-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "geometric"
   },
   {
-  slug: "pr-sea-20250919-002",  // lowercase 'pr'
-  title: "Autumn UFO Landing Faux Embroidery",
-  subtitle: "Autumn Collection",
-  price: 125,
-  sku: "PR-sea-20250919-002",  // uppercase 'PR' 
-  stripePriceId: "price_1S9F4UBB8R6OUfKV1SqJ3VWd",  // PASTE STRIPE ID
-  thumbnail: "https://files.patternripple.com/PR-sea-20250919-002-thumb.jpg",
-  exclusive: true,
-  available: true
-},
+    slug: "pr-sea-20250919-002",
+    title: "Autumn UFO Landing Faux Embroidery",
+    subtitle: "Autumn Collection",
+    price: 125,
+    sku: "PR-sea-20250919-002",
+    stripePriceId: "price_1S9F4UBB8R6OUfKV1SqJ3VWd",
+    thumbnail: "https://files.patternripple.com/PR-sea-20250919-002-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "seasonal"
+  },
   {
     slug: "mid-century-modern-stripes",
     title: "Mid-Century Modernist Stripes",
     subtitle: "Geometric Collection",
     price: 125,
     sku: "PR-geo-20250921-004",
-    stripePriceId: "price_1S9o6MBB8R6OUfKVwq0mmUyi", // ADD AFTER CREATING IN STRIPE
+    stripePriceId: "price_1S9o6MBB8R6OUfKVwq0mmUyi",
     thumbnail: "https://files.patternripple.com/mid-century-modern-stripes-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "geometric"
   },
-    {
-  slug: "pr-hor-20250919-001",  // lowercase 'pr'
-  title: "Impasto Skulls in Crimson",
-  subtitle: "Horror Collection",
-  price: 125,
-  sku: "PR-hor-20250919-001",  // uppercase 'PR' 
-  stripePriceId: "price_1S9FdNBB8R6OUfKVd4lb36fk",  // PASTE STRIPE ID
-  thumbnail: "https://files.patternripple.com/PR-hor-20250919-001-thumb.jpg",
-  exclusive: true,
-  available: true
-},
   {
-  slug: "pr-flo-20250919-007",  // lowercase 'pr'
-  title: "Vibrant Impasto Floral",
-  subtitle: "Floral Collection",
-  price: 125,
-  sku: "PR-flo-20250919-007",  // uppercase 'PR' 
-  stripePriceId: "price_1S9FzSBB8R6OUfKVq5fzIpQw",  // PASTE STRIPE ID
-  thumbnail: "https://files.patternripple.com/PR-flo-20250919-007-thumb.jpg",
-  exclusive: true,
-  available: true
-},
+    slug: "pr-hor-20250919-001",
+    title: "Impasto Skulls in Crimson",
+    subtitle: "Horror Collection",
+    price: 125,
+    sku: "PR-hor-20250919-001",
+    stripePriceId: "price_1S9FdNBB8R6OUfKVd4lb36fk",
+    thumbnail: "https://files.patternripple.com/PR-hor-20250919-001-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "horror"
+  },
   {
-  slug: "pr-sea-20250919-001",  // lowercase 'pr'
-  title: "Winter Village Faux Embroidery on Navy",
-  subtitle: "Christmas Collection",
-  price: 125,
-  sku: "PR-sea-20250919-001",  // uppercase 'PR' 
-  stripePriceId: "price_1S9ELeBB8R6OUfKV0i5vtwZO",  // PASTE STRIPE ID
-  thumbnail: "https://files.patternripple.com/PR-sea-20250919-001-thumb.jpg",
-  exclusive: true,
-  available: true
-},
+    slug: "pr-flo-20250919-007",
+    title: "Vibrant Impasto Floral",
+    subtitle: "Floral Collection",
+    price: 125,
+    sku: "PR-flo-20250919-007",
+    stripePriceId: "price_1S9FzSBB8R6OUfKVq5fzIpQw",
+    thumbnail: "https://files.patternripple.com/PR-flo-20250919-007-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "floral"
+  },
+  {
+    slug: "pr-sea-20250919-001",
+    title: "Winter Village Faux Embroidery on Navy",
+    subtitle: "Christmas Collection",
+    price: 125,
+    sku: "PR-sea-20250919-001",
+    stripePriceId: "price_1S9ELeBB8R6OUfKV0i5vtwZO",
+    thumbnail: "https://files.patternripple.com/PR-sea-20250919-001-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "seasonal"
+  },
   {
     slug: "vibrant-wildflower-faux-embroidery-rose",
     title: "Vibrant Wildflower Faux Embroidery",
@@ -213,6 +231,7 @@ const products: Product[] = [
     thumbnail: "https://files.patternripple.com/PR-flo-20250916-001-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "faux-embroidery"
   },
   {
     slug: "pr-flo-20250918-001",
@@ -220,10 +239,11 @@ const products: Product[] = [
     subtitle: "Botanical Collection",
     price: 125,
     sku: "PR-flo-20250918-001",
-    stripePriceId: "price_1S8q3ZBB8R6OUfKVMNkqQFb7", // ADD YOUR STRIPE PRICE ID HERE
+    stripePriceId: "price_1S8q3ZBB8R6OUfKVMNkqQFb7",
     thumbnail: "https://files.patternripple.com/PR-flo-20250918-001-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "faux-embroidery"
   },
   {
     slug: "carved-stone-architectural-grid-neutral",
@@ -231,15 +251,19 @@ const products: Product[] = [
     subtitle: "Architecture Collection",
     price: 125,
     sku: "PR-arc-20250921-001",
-    stripePriceId: "price_1S9maXBB8R6OUfKV4YShXYMt", // ADD YOUR STRIPE PRICE ID HERE
+    stripePriceId: "price_1S9maXBB8R6OUfKV4YShXYMt",
     thumbnail: "https://files.patternripple.com/carved-stone-architectural-grid-neutral-thumb.jpg",
     exclusive: true,
     available: true,
+    category: "geometric"
   },
 ];
 
 export default function HomePage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
+  // Get unique categories for quick links
+  const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean)));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
@@ -257,6 +281,67 @@ export default function HomePage() {
           </p>
         </div>
       </header>
+
+      {/* Quick Navigation */}
+      <nav className="bg-white/50 backdrop-blur-sm border-b border-gray-100 sticky top-14 z-40">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link 
+              href="/collections" 
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors"
+            >
+              All Collections
+            </Link>
+            <span className="text-gray-300">|</span>
+            <Link 
+              href="/collections/floral" 
+              className="text-gray-600 hover:text-purple-600 transition-colors"
+            >
+              Floral
+            </Link>
+            <Link 
+              href="/collections/geometric" 
+              className="text-gray-600 hover:text-purple-600 transition-colors"
+            >
+              Geometric
+            </Link>
+            <Link 
+              href="/collections/faux-embroidery" 
+              className="text-gray-600 hover:text-purple-600 transition-colors"
+            >
+              Faux Embroidery
+            </Link>
+            <Link 
+              href="/collections/seasonal" 
+              className="text-gray-600 hover:text-purple-600 transition-colors"
+            >
+              Seasonal
+            </Link>
+            <span className="text-gray-300">|</span>
+            <Link 
+              href="/about" 
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors"
+            >
+              About
+            </Link>
+            <Link 
+              href="/blog" 
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors"
+            >
+              Blog
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Stats Bar */}
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3">
+        <div className="max-w-6xl mx-auto px-4 flex justify-center items-center gap-8 text-sm">
+          <span>✨ {products.filter(p => p.available).length} Exclusive Patterns Available</span>
+          <span>🔐 Commercial Rights Included</span>
+          <span>💎 One-Time Purchase</span>
+        </div>
+      </div>
 
       {/* Products Grid */}
       <main className="max-w-6xl mx-auto px-4 py-12">
@@ -312,21 +397,41 @@ export default function HomePage() {
             </article>
           ))}
         </div>
-
-        {/* VIP Section */}
-        <section className="mt-16 bg-white rounded-xl p-12 shadow-xl text-center">
-          <h2 className="text-3xl font-light text-gray-900 mb-4">
-            More Exclusive Patterns Coming Daily
-          </h2>
-          <p className="text-gray-600 mb-8 text-lg max-w-2xl mx-auto">
-            Join our VIP list to get notified the moment new exclusive patterns
-            drop. Once they&apos;re sold, they&apos;re gone forever.
-          </p>
-          <button className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors">
-            Join VIP List →
-          </button>
-        </section>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 mt-20">
+        <div className="max-w-6xl mx-auto px-4 py-12">
+          <div className="grid md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="text-white font-medium mb-4">PatternRipple</h3>
+              <p className="text-sm">
+                Exclusive digital patterns for designers who value uniqueness.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-white font-medium mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/collections" className="hover:text-white">All Collections</Link></li>
+                <li><Link href="/about" className="hover:text-white">About</Link></li>
+                <li><Link href="/blog" className="hover:text-white">Blog</Link></li>
+                <li><a href="mailto:nick@patternripple.com" className="hover:text-white">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-white font-medium mb-4">Legal</h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/terms" className="hover:text-white">Terms of Service</Link></li>
+                <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+                <li><Link href="/licenses" className="hover:text-white">License Agreement</Link></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+            <p>&copy; 2025 PatternRipple. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
