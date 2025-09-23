@@ -1,41 +1,3 @@
-import Link from "next/link";
-
-// Mock blog posts - you can later move this to a database or CMS
-const blogPosts = [
-  {
-    slug: "why-exclusive-patterns-matter",
-    title: "Why Exclusive Patterns Matter in Modern Design",
-    excerpt: "In a world saturated with stock designs, standing out has never been more important. Discover why exclusive patterns are becoming the secret weapon of successful designers.",
-    date: "January 15, 2025",
-    category: "Design Insights",
-    readTime: "5 min read"
-  },
-  {
-    slug: "faux-embroidery-trend-2025",
-    title: "The Faux Embroidery Trend: What's Hot in 2025",
-    excerpt: "Faux embroidery patterns are taking the design world by storm. Learn how to incorporate these textured beauties into your next project.",
-    date: "January 10, 2025",
-    category: "Trends",
-    readTime: "3 min read"
-  },
-  {
-    slug: "commercial-rights-explained",
-    title: "Understanding Commercial Rights for Digital Patterns",
-    excerpt: "What can you actually do with your PatternRipple purchase? We break down commercial usage rights in simple terms.",
-    date: "January 5, 2025",
-    category: "Legal",
-    readTime: "4 min read"
-  },
-  {
-    slug: "geometric-patterns-interior-design",
-    title: "Using Geometric Patterns in Interior Design",
-    excerpt: "From wallpapers to textiles, geometric patterns are transforming spaces. Here's how to use them effectively.",
-    date: "December 28, 2024",
-    category: "Interior Design",
-    readTime: "6 min read"
-  }
-];
-
 export default function BlogPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
@@ -51,52 +13,38 @@ export default function BlogPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-12">
-        <div className="space-y-8">
-          {blogPosts.map((post) => (
-            <article key={post.slug} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-              <div className="p-8">
-                <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                  <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
-                    {post.category}
-                  </span>
-                  <span>{post.date}</span>
-                  <span>•</span>
-                  <span>{post.readTime}</span>
-                </div>
-                
-                <h2 className="text-2xl font-light text-gray-900 mb-3">
-                  <Link href={`/blog/${post.slug}`} className="hover:text-purple-600 transition-colors">
-                    {post.title}
-                  </Link>
-                </h2>
-                
-                <p className="text-gray-600 mb-4 leading-relaxed">
-                  {post.excerpt}
-                </p>
-                
-                <Link 
-                  href={`/blog/${post.slug}`}
-                  className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium"
-                >
-                  Read More
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {/* Coming Soon Notice */}
-        <div className="mt-12 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-8 text-center">
-          <h3 className="text-xl font-light text-gray-900 mb-3">
-            More Articles Coming Soon
-          </h3>
-          <p className="text-gray-600">
-            We're working on more in-depth guides and tutorials. Check back soon!
+      <main className="max-w-4xl mx-auto px-4 py-20">
+        {/* Coming Soon Card */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-12 text-center shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-md mb-6">
+            <svg className="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          
+          <h2 className="text-2xl font-light text-gray-900 mb-4">
+            Articles Coming Soon
+          </h2>
+          
+          <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            We're working on in-depth guides about pattern design, commercial usage tips, 
+            and creative inspiration. Check back soon or follow us for updates!
           </p>
+          
+          <div className="flex gap-4 justify-center">
+            <a 
+              href="mailto:nick@patternripple.com" 
+              className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Get Notified
+            </a>
+            <a 
+              href="/" 
+              className="inline-flex items-center gap-2 bg-white text-gray-700 px-6 py-3 rounded-lg shadow hover:shadow-md transition-shadow"
+            >
+              Browse Patterns
+            </a>
+          </div>
         </div>
       </main>
     </div>
