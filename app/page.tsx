@@ -262,9 +262,6 @@ const products: Product[] = [
 export default function HomePage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
-  // Get unique categories for quick links
-  const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean)));
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
       {/* Hero Section */}
