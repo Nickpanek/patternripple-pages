@@ -11,19 +11,18 @@
     "exclusive": true,
     "available": true
   },
-  {
+{
   "slug": "impasto-poinsettia-christmas-floral-red",
+  "sku": "PR-sea-20250923-018",
   "title": "Impasto Poinsettia Christmas Floral",
   "subtitle": "Seasonal Collection",
   "price": 125,
-  "sku": "PR-sea-20250923-018",
   "stripePriceId": "price_1SAk2xBB8R6OUfKV7DMeAJrC",
+  "category": "seasonal",
   "thumbnail": "https://files.patternripple.com/impasto-poinsettia-christmas-floral-red-thumb.jpg",
   "exclusive": true,
-  "available": true,
-  "category": "seasonal"
+  "available": true
 }
-
   {
     "slug": "8-bit-invader-faux-embroidery-black",
     "sku": "PR-geo-20250921-011",
