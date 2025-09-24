@@ -1,12 +1,17 @@
+// app/collections/faux-embroidery/page.tsx
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { products } from "@/app/data/products";
+import { useMemo, useState } from "react";
+import { products } from "../../data/products";
+import { filterByCollection, countAvailable } from "../../lib/collections";
 
 export default function FauxEmbroideryCollectionPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const fauxEmbroideryProducts = products.filter(p => p.category === "faux-embroidery");
+
+  // Handles category as string or string[]
+  const fauxEmbroideryProducts = useMemo(() => filterByCollection(products, "faux-embroidery"), []);
+  const availableCount = useMemo(() => countAvailable(products, "faux-embroidery"), []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
@@ -23,69 +28,77 @@ export default function FauxEmbroideryCollectionPage() {
 
       <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white py-3">
         <div className="max-w-6xl mx-auto px-4 text-center text-sm">
-          {fauxEmbroideryProducts.filter(p => p.available).length} Exclusive Faux Embroidery Patterns Available
+          {fauxEmbroideryProducts.length === 0 ? "No Faux Embroidery Patterns Available" : `${availableCount} Exclusive Faux Embroidery Patterns Available`}
         </div>
       </div>
 
       <main className="max-w-6xl mx-auto px-4 py-12">
         <div className="mb-8">
           <Link href="/collections" className="inline-flex items-center text-amber-600 hover:text-amber-700">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back to All Collections
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {fauxEmbroideryProducts.map((product) => (
-            <article
-              key={product.sku}
-              className={`bg-white rounded-xl overflow-hidden transition-all duration-300 ${
-                hoveredCard === product.sku
-                  ? "shadow-2xl -translate-y-1 ring-4 ring-orange-400"
-                  : "shadow-lg ring-4 ring-amber-300"
-              }`}
-              onMouseEnter={() => setHoveredCard(product.sku)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              {product.exclusive && (
-                <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white text-xs font-bold py-2 text-center tracking-wider">
-                  EXCLUSIVE PATTERN
-                </div>
-              )}
+        {fauxEmbroideryProducts.length === 0 ? (
+          <div className="text-center text-gray-600 py-24">
+            <p>No faux embroidery patterns available right now.</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {fauxEmbroideryProducts.map((product) => (
+              <article
+                key={product.sku}
+                className={`bg-white rounded-xl overflow-hidden transition-all duration-300 ${
+                  hoveredCard === product.sku
+                    ? "shadow-2xl -translate-y-1 ring-4 ring-orange-400"
+                    : "shadow-lg ring-4 ring-amber-300"
+                }`}
+                onMouseEnter={() => setHoveredCard(product.sku)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                {product.exclusive && (
+                  <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white text-xs font-bold py-2 text-center tracking-wider">
+                    EXCLUSIVE PATTERN
+                  </div>
+                )}
 
-              <div className="h-64 bg-gradient-to-br from-amber-100 to-orange-100 overflow-hidden">
-                <img
-                  src={product.thumbnail}
-                  alt={product.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              <div className="p-6">
-                <h2 className="text-xl font-light text-gray-900 mb-2">
-                  {product.title}
-                </h2>
-                <p className="text-gray-600 text-sm mb-4">{product.subtitle}</p>
-
-                <div className="flex justify-between items-center pb-4 mb-4 border-b border-gray-100">
-                  <span className="text-2xl font-light">${product.price}</span>
-                  <span className="text-green-600 text-sm">
-                    {product.available ? "Available" : "Sold"}
-                  </span>
+                <div className="h-64 bg-gradient-to-br from-amber-100 to-orange-100 overflow-hidden">
+                  <img
+                    src={product.thumbnail as string}
+                    alt={product.title as string}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
 
-                <Link
-                  href={`/p/${product.slug}`}
-                  className="block w-full bg-gray-900 text-white text-center py-3 rounded-lg hover:bg-amber-600 transition-colors duration-300"
-                >
-                  View Pattern
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                <div className="p-6">
+                  <h2 className="text-xl font-light text-gray-900 mb-2">
+                    {product.title}
+                  </h2>
+                  <p className="text-gray-600 text-sm mb-4">{product.subtitle}</p>
+
+                  <div className="flex justify-between items-center pb-4 mb-4 border-b border-gray-100">
+                    <span className="text-2xl font-light">${product.price}</span>
+                    <span className={`text-sm ${product.available ? "text-green-600" : "text-gray-400"}`}>
+                      {product.available ? "Available" : "Sold"}
+                    </span>
+                  </div>
+
+                  <Link
+                    href={`/p/${product.slug}`}
+                    className="block w-full bg-gray-900 text-white text-center py-3 rounded-lg hover:bg-amber-600 transition-colors duration-300"
+                  >
+                    View Pattern
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
