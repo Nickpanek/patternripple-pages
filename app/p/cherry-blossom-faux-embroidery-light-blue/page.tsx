@@ -57,7 +57,7 @@ export default function ProductPage() {
       "Seamless cherry blossom faux embroidery pattern with pink flowers on a light blue background."
   };
 
-  const stripePriceId = "price_1S9mKjBB8R6OUfKVRjVFkwn1";
+  const stripePriceId = "price_1SAjW6BB8R6OUfKVOTLQoom0";
 
   const [selectedImage, setSelectedImage] = useState(0);
 
