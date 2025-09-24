@@ -36,7 +36,7 @@ const products: Product[] = [
     price: 125,
     sku: "PR-emb-20250923-001",
     stripePriceId: "price_1SAjW6BB8R6OUfKVOTLQoom0",
-    thumbnail: "https://files.patternripple.com/cherry-blossom-faux-embroidery-light-blue.jpg",
+    thumbnail: "https://files.patternripple.com/cherry-blossom-faux-embroidery-light-blue-thumb.jpg",
     exclusive: true,
     available: true,
     category: "faux-embroidery"
