@@ -1,3 +1,5 @@
+app/collections/abstract/page.tsx
+
 "use client";
 
 import Link from "next/link";
@@ -6,7 +8,11 @@ import { products } from "@/app/data/products";
 
 export default function AbstractCollectionPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const abstractProducts = products.filter(p => p.category === "abstract");
+
+  // Updated to support category as string or string[]
+  const abstractProducts = products.filter((p) =>
+    Array.isArray(p.category) ? p.category.includes("abstract") : p.category === "abstract"
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
@@ -23,7 +29,7 @@ export default function AbstractCollectionPage() {
 
       <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white py-3">
         <div className="max-w-6xl mx-auto px-4 text-center text-sm">
-          {abstractProducts.filter(p => p.available).length} Exclusive Abstract Patterns Available
+          {abstractProducts.filter((p) => p.available).length} Exclusive Abstract Patterns Available
         </div>
       </div>
 
