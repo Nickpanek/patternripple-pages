@@ -6,24 +6,19 @@ import Link from "next/link";
 import { useState } from "react";
 import { products } from "@/app/data/products";
 
-function thumbSrc(p: { thumbnail?: string; slug: string }) {
-  if (p.thumbnail && p.thumbnail.trim().length > 0) return p.thumbnail.trim();
-  return `https://files.patternripple.com/${p.slug}-thumb.jpg`;
-}
+const DEFAULT_THUMB = "https://files.patternripple.com/thumb-default.jpg";
 
 export default function FloralCollectionPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   const items = products.filter(
-    (p) =>
-      p.category === "floral" ||
-      p.subtitle.toLowerCase().includes("floral")
+    (p) => p.category === "floral" || p.subtitle.toLowerCase().includes("floral")
   );
 
   return (
     <main className="mx-auto max-w-6xl p-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((p) => {
-        const src = thumbSrc(p as any);
+        const initialSrc = p.thumbnail?.trim() || DEFAULT_THUMB;
         return (
           <Link
             key={p.slug}
@@ -34,15 +29,16 @@ export default function FloralCollectionPage() {
           >
             <div className="aspect-square relative">
               <Image
-                src={src}
+                src={initialSrc}
                 alt={`${p.title} - seamless pattern`}
                 fill
                 sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
                 className="object-cover"
                 onError={(e) => {
                   const t = e.currentTarget as HTMLImageElement;
-                  const slugFallback = `https://files.patternripple.com/${p.slug}-thumb.jpg`;
-                  if (t.src !== slugFallback) t.src = slugFallback;
+                  if (t.src !== DEFAULT_THUMB) {
+                    t.src = DEFAULT_THUMB;
+                  }
                 }}
               />
             </div>
