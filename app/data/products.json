@@ -1,438 +1,242 @@
-{
-  "slug": "mid-century-abstract-pebbles-black-orange",
-  "sku": "PR-abs-20250922-011",
-  "title": "Mid-Century Abstract Pebbles in Black and Orange",
-  "subtitle": "Abstract Collection",
-  "price": 125,
-  "stripePriceId": "price_1S9mKjBB8R6OUfKVRjVFkwn1",
-  "category": "abstract",
-  "subcategory": "mid-century",
-  "tags": [
-    "mid-century modern",
-    "abstract pattern",
-    "retro design",
-    "organic shapes",
-    "pebble pattern",
-    "graphic print",
-    "1960s style",
-    "minimalist art",
-    "black and orange",
-    "bold pink",
-    "cream background",
-    "wallpaper pattern",
-    "fabric print",
-    "gift wrap",
-    "home decor"
-  ],
-  "exclusive": true,
-  "available": true,
-  "listingDate": "2025-09-22",
-  "images": {
+[
+  {
+    "slug": "mid-century-abstract-pebbles-black-orange",
+    "sku": "PR-abs-20250922-011",
+    "title": "Mid-Century Abstract Pebbles in Black and Orange",
+    "subtitle": "Abstract Collection",
+    "price": 125,
+    "stripePriceId": "price_1SA9SUBB8R6OUfKV2Q1ewLS4",
+    "category": "abstract",
     "thumbnail": "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-thumb.jpg",
-    "preview": "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-preview.jpg",
-    "mockups": [
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup1.jpg",
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup2.jpg",
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup3.jpg",
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup4.jpg",
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup5.jpg",
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup6.jpg",
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup7.jpg",
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup8.jpg",
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup9.jpg",
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup10.jpg",
-      "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-mockup11.jpg"
-    ]
+    "exclusive": true,
+    "available": true
   },
-  "description": "A sophisticated seamless pattern featuring layered, organic pebble shapes in a classic mid-century modern palette of black, orange, and pink. This bold, retro design brings a timeless graphic statement to textiles and interiors.",
-  "altText": "Seamless mid-century abstract pebble pattern in black, orange, and pink.",
-  "details": [
-    "6000px x 6000px source file",
-    "Seamless repeat pattern",
-    "Certificate of exclusivity",
-    "Commercial usage rights",
-    "Lifetime ownership"
-  ],
-  "seo": {
-    "title": "Mid-Century Abstract Pattern - Black Orange Pink | PatternRipple",
-    "description": "Bold mid-century modern seamless pattern with abstract pebble shapes in black, orange, and pink. Perfect for retro interiors and textiles. Shop this exclusive pattern.",
-    "keywords": "mid-century modern, abstract pattern, retro design, organic shapes, pebble pattern, graphic print, 1960s style, minimalist art, black and orange, bold pink, cream background, wallpaper pattern, fabric print, gift wrap, home decor"
+  {
+    "slug": "8-bit-invader-faux-embroidery-black",
+    "sku": "PR-geo-20250921-011",
+    "title": "8-Bit Invader Faux Embroidery on Black",
+    "subtitle": "Faux Embroidery Collection",
+    "price": 125,
+    "stripePriceId": "price_1S9saKBB8R6OUfKVBnQu3S95",
+    "category": "faux-embroidery",
+    "thumbnail": "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-thumb.jpg",
+    "exclusive": true,
+    "available": true
+  },
+  {
+    "slug": "pr-geo-20250919-001",
+    "title": "Atomic Matchstick Geometric",
+    "subtitle": "Mid-Century Collection",
+    "price": 125,
+    "sku": "PR-geo-20250919-001",
+    "stripePriceId": "price_1S91pvBB8R6OUfKVfz51JXSY",
+    "thumbnail": "https://files.patternripple.com/PR-geo-20250919-001-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "geometric"
+  },
+  {
+    "slug": "japandi-brushstrokes-plum-mauve",
+    "title": "Japandi Brushstrokes in Plum and Mauve",
+    "subtitle": "Geometric Collection",
+    "price": 125,
+    "sku": "PR-abs-20250921-019",
+    "stripePriceId": "price_1S9wwJBB8R6OUfKVmseB0xm4",
+    "thumbnail": "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "geometric"
+  },
+  {
+    "slug": "vibrant-floral-faux-embroidery-navy",
+    "title": "Vibrant Floral Faux Embroidery on Navy",
+    "subtitle": "Floral Collection",
+    "price": 125,
+    "sku": "PR-flo-20250921-006",
+    "stripePriceId": "price_1S9oRyBB8R6OUfKVkOVUZcAx",
+    "thumbnail": "https://files.patternripple.com/vibrant-floral-faux-embroidery-navy-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "floral"
+  },
+  {
+    "slug": "gilded-stripe-circles-olive-geometric",
+    "title": "Gilded Stripe Circles on Olive",
+    "subtitle": "Geometric Collection",
+    "price": 125,
+    "sku": "PR-geo-20250921-001",
+    "stripePriceId": "price_1S9mssBB8R6OUfKVZYZoIF7e",
+    "thumbnail": "https://files.patternripple.com/gilded-stripe-circles-olive-geometric-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "geometric"
+  },
+  {
+    "slug": "pastel-doodle-easter-eggs-pink",
+    "title": "Pastel Doodle Easter Eggs on Pink",
+    "subtitle": "Easter Collection",
+    "price": 125,
+    "sku": "PR-sea-20250921-001",
+    "stripePriceId": "price_1S9mKjBB8R6OUfKVRjVFkwn1",
+    "thumbnail": "https://files.patternripple.com/pastel-doodle-easter-eggs-pink-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "seasonal"
+  },
+  {
+    "slug": "op-art-tunnel-illusion-black-white",
+    "title": "Op Art Tunnel Illusion in Monochrome",
+    "subtitle": "Op Art Collection",
+    "price": 125,
+    "sku": "PR-geo-20250921-008",
+    "stripePriceId": "price_1S9wTvBB8R6OUfKV2jsZV0sK",
+    "thumbnail": "https://files.patternripple.com/op-art-tunnel-illusion-black-white-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "geometric"
+  },
+  {
+    "slug": "gilded-art-deco-geometric-black",
+    "title": "Gilded Art Deco Geometric in Black",
+    "subtitle": "Geometric Collection",
+    "price": 125,
+    "sku": "PR-geo-20250921-002",
+    "stripePriceId": "price_1S9nUoBB8R6OUfKV75USAunw",
+    "thumbnail": "https://files.patternripple.com/gilded-art-deco-geometric-black-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "geometric"
+  },
+  {
+    "slug": "tactical-pixel-camo-desert-taupe",
+    "title": "Tactical Pixel Camo in Desert Taupe",
+    "subtitle": "Camo Collection",
+    "price": 125,
+    "sku": "PR-abs-20250921-001",
+    "stripePriceId": "price_1S9oroBB8R6OUfKVFDwtadEl",
+    "thumbnail": "https://files.patternripple.com/tactical-pixel-camo-desert-taupe-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "abstract"
+  },
+  {
+    "slug": "painterly-woven-stripes-indigo",
+    "title": "Painterly Woven Stripes in Indigo",
+    "subtitle": "Geometric Collection",
+    "price": 125,
+    "sku": "PR-geo-20250921-010",
+    "stripePriceId": "price_1S9ppGBB8R6OUfKVTfctJrtG",
+    "thumbnail": "https://files.patternripple.com/painterly-woven-stripes-indigo-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "geometric"
+  },
+  {
+    "slug": "monochrome-labyrinth-geometric-pattern",
+    "title": "Monochrome Labyrinth Geometric Pattern",
+    "subtitle": "OP Art Collection",
+    "price": 125,
+    "sku": "PR-geo-20250921-001",
+    "stripePriceId": "price_1S9lZWBB8R6OUfKVC6pTDVfr",
+    "thumbnail": "https://files.patternripple.com/monochrome-labyrinth-geometric-pattern-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "geometric"
+  },
+  {
+    "slug": "pr-sea-20250919-002",
+    "title": "Autumn UFO Landing Faux Embroidery",
+    "subtitle": "Autumn Collection",
+    "price": 125,
+    "sku": "PR-sea-20250919-002",
+    "stripePriceId": "price_1S9F4UBB8R6OUfKV1SqJ3VWd",
+    "thumbnail": "https://files.patternripple.com/PR-sea-20250919-002-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "seasonal"
+  },
+  {
+    "slug": "mid-century-modern-stripes",
+    "title": "Mid-Century Modernist Stripes",
+    "subtitle": "Geometric Collection",
+    "price": 125,
+    "sku": "PR-geo-20250921-004",
+    "stripePriceId": "price_1S9o6MBB8R6OUfKVwq0mmUyi",
+    "thumbnail": "https://files.patternripple.com/mid-century-modern-stripes-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "geometric"
+  },
+  {
+    "slug": "pr-hor-20250919-001",
+    "title": "Impasto Skulls in Crimson",
+    "subtitle": "Horror Collection",
+    "price": 125,
+    "sku": "PR-hor-20250919-001",
+    "stripePriceId": "price_1S9FdNBB8R6OUfKVd4lb36fk",
+    "thumbnail": "https://files.patternripple.com/PR-hor-20250919-001-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "horror"
+  },
+  {
+    "slug": "pr-flo-20250919-007",
+    "title": "Vibrant Impasto Floral",
+    "subtitle": "Floral Collection",
+    "price": 125,
+    "sku": "PR-flo-20250919-007",
+    "stripePriceId": "price_1S9FzSBB8R6OUfKVq5fzIpQw",
+    "thumbnail": "https://files.patternripple.com/PR-flo-20250919-007-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "floral"
+  },
+  {
+    "slug": "pr-sea-20250919-001",
+    "title": "Winter Village Faux Embroidery on Navy",
+    "subtitle": "Christmas Collection",
+    "price": 125,
+    "sku": "PR-sea-20250919-001",
+    "stripePriceId": "price_1S9ELeBB8R6OUfKV0i5vtwZO",
+    "thumbnail": "https://files.patternripple.com/PR-sea-20250919-001-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "seasonal"
+  },
+  {
+    "slug": "vibrant-wildflower-faux-embroidery-rose",
+    "title": "Vibrant Wildflower Faux Embroidery",
+    "subtitle": "Dusty Rose Collection",
+    "price": 125,
+    "sku": "PR-flo-20250916-001",
+    "stripePriceId": "price_1S7wFfBB8R6OUfKVYDvR9B5T",
+    "thumbnail": "https://files.patternripple.com/PR-flo-20250916-001-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "faux-embroidery"
+  },
+  {
+    "slug": "pr-flo-20250918-001",
+    "title": "Gilded Floral Faux Embroidery on Emerald",
+    "subtitle": "Botanical Collection",
+    "price": 125,
+    "sku": "PR-flo-20250918-001",
+    "stripePriceId": "price_1S8q3ZBB8R6OUfKVMNkqQFb7",
+    "thumbnail": "https://files.patternripple.com/PR-flo-20250918-001-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "faux-embroidery"
+  },
+  {
+    "slug": "carved-stone-architectural-grid-neutral",
+    "title": "Carved Stone Architectural Grid",
+    "subtitle": "Architecture Collection",
+    "price": 125,
+    "sku": "PR-arc-20250921-001",
+    "stripePriceId": "price_1S9maXBB8R6OUfKV4YShXYMt",
+    "thumbnail": "https://files.patternripple.com/carved-stone-architectural-grid-neutral-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "geometric"
   }
-}
-{
-  "products": [
-    {
-      "slug": "8-bit-invader-faux-embroidery-black",
-      "sku": "PR-geo-20250921-011",
-      "title": "8-Bit Invader Faux Embroidery on Black",
-      "subtitle": "Geometric Collection",
-      "price": 125,
-      "stripePriceId": "price_1S9saKBB8R6OUfKVBnQu3S95",
-      "category": "geometric",
-      "subcategory": "pixel-art",
-      "tags": [
-        "8 bit pattern",
-        "pixel art seamless",
-        "faux embroidery design",
-        "arcade invaders pattern",
-        "retro gaming print",
-        "nostalgic pixel art",
-        "video game pattern",
-        "colorful pixel art",
-        "multicolor on black",
-        "jewel tone pattern",
-        "gaming wallpaper",
-        "retro fabric print",
-        "tech accessories pattern",
-        "unique gift wrap",
-        "modern apparel pattern"
-      ],
-      "exclusive": true,
-      "available": true,
-      "listingDate": "2025-01-21",
-      
-      "images": {
-        "thumbnail": "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-thumb.jpg",
-        "preview": "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-preview.jpg",
-        "mockups": [
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup1.jpg",
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup2.jpg",
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup3.jpg",
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup4.jpg",
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup5.jpg",
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup6.jpg",
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup7.jpg",
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup8.jpg",
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup9.jpg",
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup10.jpg",
-          "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-mockup11.jpg"
-        ]
-      },
-      
-      "description": "A vibrant, 8-bit inspired seamless pattern featuring classic arcade invader motifs. Rendered in a detailed faux embroidery style on a deep black background, this design merges nostalgic gaming culture with refined textile artistry. Perfect for unique apparel, statement wallpaper, and tech accessories.",
-      
-      "altText": "Seamless 8-bit invader faux embroidery pattern with multicolor pixel aliens on a black background",
-      
-      "details": [
-        "6000px x 6000px source file",
-        "Seamless repeat pattern",
-        "Certificate of exclusivity",
-        "Commercial usage rights",
-        "Lifetime ownership"
-      ],
-      
-      "seo": {
-        "title": "8-Bit Invader Faux Embroidery Pattern on Black | PatternRipple",
-        "description": "Discover a nostalgic 8-bit invader seamless pattern in vibrant faux embroidery style. Perfect for unique fabric and wallpaper. Shop this exclusive pattern.",
-        "keywords": "8-bit pattern, pixel art seamless, faux embroidery, arcade invaders, retro gaming print, video game pattern, exclusive digital pattern"
-      }
-    },
-    {
-      "slug": "atomic-matchstick-geometric",
-      "sku": "PR-geo-20250919-001",
-      "title": "Atomic Matchstick Geometric",
-      "subtitle": "Mid-Century Collection",
-      "price": 125,
-      "stripePriceId": "price_1S91pvBB8R6OUfKVfz51JXSY",
-      "category": "geometric",
-      "subcategory": "mid-century",
-      "tags": [
-        "atomic pattern",
-        "matchstick design",
-        "mid-century modern",
-        "geometric seamless",
-        "retro pattern",
-        "vintage inspired",
-        "abstract geometric",
-        "minimalist design",
-        "modern pattern",
-        "wallpaper pattern",
-        "fabric print",
-        "home decor",
-        "gift wrap design",
-        "interior design",
-        "contemporary pattern"
-      ],
-      "exclusive": true,
-      "available": true,
-      "listingDate": "2025-01-19",
-      
-      "images": {
-        "thumbnail": "https://files.patternripple.com/PR-geo-20250919-001-thumb.jpg",
-        "preview": "https://files.patternripple.com/PR-geo-20250919-001-preview.jpg",
-        "mockups": [
-          "https://files.patternripple.com/PR-geo-20250919-001-mockup1.jpg",
-          "https://files.patternripple.com/PR-geo-20250919-001-mockup2.jpg",
-          "https://files.patternripple.com/PR-geo-20250919-001-mockup3.jpg"
-        ]
-      },
-      
-      "description": "A sophisticated mid-century modern pattern featuring atomic-era matchstick motifs in a rhythmic geometric arrangement. This timeless design captures the optimistic spirit of 1950s design with clean lines and balanced composition.",
-      
-      "altText": "Seamless atomic matchstick geometric pattern in mid-century style",
-      
-      "details": [
-        "6000px x 6000px source file",
-        "Seamless repeat pattern",
-        "Certificate of exclusivity",
-        "Commercial usage rights",
-        "Lifetime ownership"
-      ],
-      
-      "seo": {
-        "title": "Atomic Matchstick Geometric Pattern - Mid-Century Modern",
-        "description": "Exclusive seamless atomic matchstick pattern in mid-century modern style. Perfect for retro wallpaper and vintage-inspired textiles. Shop this exclusive pattern.",
-        "keywords": "atomic pattern, matchstick design, mid-century modern, geometric seamless, retro pattern, exclusive digital pattern"
-      }
-    },
-    {
-      "slug": "painterly-woven-stripes-indigo",
-      "sku": "PR-tex-20250920-001",
-      "title": "Painterly Woven Stripes",
-      "subtitle": "Indigo Collection",
-      "price": 125,
-      "stripePriceId": "price_1S9ppGBB8R6OUfKVTfctJrtG",
-      "category": "geometric",
-      "subcategory": "stripes",
-      "tags": [
-        "woven stripes",
-        "indigo pattern",
-        "painterly texture",
-        "textile design",
-        "luxury fabric",
-        "blue stripes",
-        "organic pattern",
-        "brushwork texture",
-        "contemporary design",
-        "surface pattern",
-        "wallpaper pattern",
-        "fabric print",
-        "home textiles",
-        "interior design",
-        "artisan pattern"
-      ],
-      "exclusive": true,
-      "available": true,
-      "listingDate": "2025-01-20",
-      
-      "images": {
-        "thumbnail": "https://files.patternripple.com/PR-tex-20250920-001-thumb.jpg",
-        "preview": "https://files.patternripple.com/PR-tex-20250920-001-preview.jpg",
-        "mockups": [
-          "https://files.patternripple.com/PR-tex-20250920-001-mockup1.jpg",
-          "https://files.patternripple.com/PR-tex-20250920-001-mockup2.jpg",
-          "https://files.patternripple.com/PR-tex-20250920-001-mockup3.jpg"
-        ]
-      },
-      
-      "description": "Exclusive painterly woven stripe pattern featuring rich indigo tones with organic brushwork texture. This sophisticated design combines traditional weaving patterns with contemporary artistic expression, perfect for luxury textiles and high-end surface design.",
-      
-      "altText": "Seamless painterly woven stripes pattern in deep indigo blue with organic texture",
-      
-      "details": [
-        "6000px x 6000px source file",
-        "Seamless repeat pattern",
-        "Certificate of exclusivity",
-        "Commercial usage rights",
-        "Lifetime ownership"
-      ],
-      
-      "seo": {
-        "title": "Painterly Woven Stripes Indigo - Exclusive Digital Pattern",
-        "description": "Exclusive seamless woven stripe pattern with painterly texture in indigo. High-res digital download for luxury textile and surface design. Shop this exclusive pattern.",
-        "keywords": "woven stripes pattern, indigo textile design, painterly seamless pattern, exclusive digital pattern, luxury surface design"
-      }
-    },
-    {
-      "slug": "vibrant-wildflower-faux-embroidery-rose",
-      "sku": "PR-flo-20250916-001",
-      "title": "Vibrant Wildflower Faux Embroidery",
-      "subtitle": "Dusty Rose Collection",
-      "price": 125,
-      "stripePriceId": "price_1S7wFfBB8R6OUfKVYDvR9B5T",
-      "category": "faux-embroidery",
-      "subcategory": "floral",
-      "tags": [
-        "floral embroidery",
-        "wildflower pattern",
-        "dusty rose",
-        "faux embroidery",
-        "vintage floral",
-        "textile design",
-        "seamless flowers",
-        "romantic pattern",
-        "cottage core",
-        "botanical design",
-        "wallpaper pattern",
-        "fabric print",
-        "gift wrap design",
-        "fashion textile",
-        "luxury pattern"
-      ],
-      "exclusive": true,
-      "available": true,
-      "listingDate": "2025-01-16",
-      
-      "images": {
-        "thumbnail": "https://files.patternripple.com/PR-flo-20250916-001-thumb.jpg",
-        "preview": "https://files.patternripple.com/PR-flo-20250916-001-preview.jpg",
-        "mockups": [
-          "https://files.patternripple.com/PR-flo-20250916-001-mockup1.jpg",
-          "https://files.patternripple.com/PR-flo-20250916-001-mockup2.jpg",
-          "https://files.patternripple.com/PR-flo-20250916-001-mockup3.jpg",
-          "https://files.patternripple.com/PR-flo-20250916-001-mockup4.jpg"
-        ]
-      },
-      
-      "description": "Exclusive seamless faux embroidery floral pattern on dusty rose. This intricate design features delicate wildflowers with embroidered texture effects, perfect for luxury fabric design, high-end fashion, or premium home decor applications.",
-      
-      "altText": "Seamless wildflower faux embroidery pattern with delicate florals on dusty rose background",
-      
-      "details": [
-        "6000px x 6000px source file",
-        "Seamless repeat pattern",
-        "Certificate of exclusivity",
-        "Commercial usage rights",
-        "Lifetime ownership"
-      ],
-      
-      "seo": {
-        "title": "Wildflower Faux Embroidery Pattern - Exclusive Dusty Rose",
-        "description": "Exclusive seamless faux embroidery wildflower pattern in dusty rose. Premium digital pattern for luxury fabric and fashion design. Shop this exclusive pattern.",
-        "keywords": "faux embroidery pattern, wildflower seamless design, dusty rose floral, exclusive digital pattern, luxury textile design"
-      }
-    },
-    {
-      "slug": "op-art-tunnel-illusion-black-white",
-      "sku": "PR-geo-20250921-008",
-      "title": "Op Art Tunnel Illusion in Monochrome",
-      "subtitle": "Geometric Collection",
-      "price": 125,
-      "stripePriceId": "price_1S9wTvBB8R6OUfKV2jsZV0sK",
-      "category": "geometric",
-      "subcategory": "optical-illusion",
-      "tags": [
-        "op art pattern",
-        "geometric illusion",
-        "black and white",
-        "monochrome design",
-        "tunnel vision",
-        "abstract geometric",
-        "minimalist pattern",
-        "bold graphic",
-        "modern wallpaper",
-        "contemporary art",
-        "fabric print",
-        "modern decor",
-        "hypnotic pattern",
-        "kinetic art",
-        "wrapping paper"
-      ],
-      "exclusive": true,
-      "available": true,
-      "listingDate": "2025-09-21",
-      
-      "images": {
-        "thumbnail": "https://files.patternripple.com/op-art-tunnel-illusion-black-white-thumb.jpg",
-        "preview": "https://files.patternripple.com/op-art-tunnel-illusion-black-white-preview.jpg",
-        "mockups": [
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup1.jpg",
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup2.jpg",
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup3.jpg",
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup4.jpg",
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup5.jpg",
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup6.jpg",
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup7.jpg",
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup8.jpg",
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup9.jpg",
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup10.jpg",
-          "https://files.patternripple.com/op-art-tunnel-illusion-black-white-mockup11.jpg"
-        ]
-      },
-      
-      "description": "A striking seamless pattern featuring a minimalist op-art tunnel illusion. The clean lines and contrasting monochrome palette create a hypnotic, sophisticated effect perfect for modern statement pieces.",
-      
-      "altText": "Seamless op-art tunnel illusion pattern in black and white.",
-      
-      "details": [
-        "6000px x 6000px source file",
-        "Seamless repeat pattern",
-        "Certificate of exclusivity",
-        "Commercial usage rights",
-        "Lifetime ownership"
-      ],
-      
-      "seo": {
-        "title": "Op Art Tunnel Pattern - Black White Geometric | PatternRipple",
-        "description": "Bold seamless op-art pattern with a geometric tunnel illusion in black and white. A minimalist design for modern interiors and textiles. Shop this exclusive pattern.",
-        "keywords": "op art pattern, geometric illusion, black and white, monochrome design, tunnel vision, abstract geometric, minimalist pattern, bold graphic, modern wallpaper, contemporary art, fabric print, modern decor, hypnotic pattern, kinetic art, wrapping paper"
-      }
-    },
-    {
-      "slug": "japandi-brushstrokes-plum-mauve",
-      "sku": "PR-abs-20250921-019",
-      "title": "Japandi Brushstrokes in Plum and Mauve",
-      "subtitle": "Geometric Collection",
-      "price": 125,
-      "stripePriceId": "price_1S9wwJBB8R6OUfKVmseB0xm4",
-      "category": "abstract",
-      "subcategory": "painterly",
-      "tags": [
-        "Japandi pattern",
-        "abstract brushstrokes",
-        "painterly texture",
-        "plum and mauve",
-        "modern farmhouse",
-        "wabi-sabi design",
-        "minimalist pattern",
-        "artistic composition",
-        "purple abstract",
-        "sophisticated decor",
-        "wallpaper pattern",
-        "fabric print",
-        "gift wrap",
-        "home decor fabric",
-        "upholstery design"
-      ],
-      "exclusive": true,
-      "available": true,
-      "listingDate": "2025-09-21",
-      
-      "images": {
-        "thumbnail": "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-thumb.jpg",
-        "preview": "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-preview.jpg",
-        "mockups": [
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup1.jpg",
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup2.jpg",
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup3.jpg",
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup4.jpg",
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup5.jpg",
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup6.jpg",
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup7.jpg",
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup8.jpg",
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup9.jpg",
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup10.jpg",
-          "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-mockup11.jpg"
-        ]
-      },
-      
-      "description": "A modern abstract pattern featuring painterly brushstrokes in a sophisticated palette of plum, mauve, and black. This Japandi-inspired seamless design offers a textured, artistic feel for contemporary interiors and textiles.",
-      
-      "altText": "Seamless abstract pattern with painterly plum and mauve brushstrokes on cream.",
-      
-      "details": [
-        "6000px x 6000px source file",
-        "Seamless repeat pattern",
-        "Certificate of exclusivity",
-        "Commercial usage rights",
-        "Lifetime ownership"
-      ],
-      
-      "seo": {
-        "title": "Japandi Brushstrokes Pattern - Plum and Mauve | PatternRipple",
-        "description": "Sophisticated seamless pattern with abstract Japandi brushstrokes in plum and mauve. Modern painterly design for luxury textiles and wallpaper. Shop this exclusive pattern.",
-        "keywords": "Japandi pattern, abstract brushstrokes, painterly texture, plum and mauve, modern farmhouse, wabi-sabi design, minimalist pattern, artistic composition, purple abstract, sophisticated decor, wallpaper pattern, fabric print, gift wrap, home decor fabric, upholstery design"
-      }
-    }
-  ]
-}
+]
