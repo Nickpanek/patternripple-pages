@@ -1,15 +1,18 @@
+// app/collections/abstract/page.tsx
 "use client";
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { products } from "@/app/data/products";
-import { filterByCollection } from "@/app/lib/collections";
+import { products } from "../../data/products";
+import { filterByCollection, countAvailable } from "../../lib/collections";
 
 export default function AbstractCollectionPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   // Supports category as string or string[] via helper
   const abstractProducts = useMemo(() => filterByCollection(products, "abstract"), []);
+
+  const availableCount = useMemo(() => countAvailable(products, "abstract"), []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
@@ -26,14 +29,14 @@ export default function AbstractCollectionPage() {
 
       <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white py-3">
         <div className="max-w-6xl mx-auto px-4 text-center text-sm">
-          {abstractProducts.filter((p) => p.available).length} Exclusive Abstract Patterns Available
+          {availableCount} Exclusive Abstract Patterns Available
         </div>
       </div>
 
       <main className="max-w-6xl mx-auto px-4 py-12">
         <div className="mb-8">
           <Link href="/collections" className="inline-flex items-center text-purple-600 hover:text-purple-700">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back to All Collections
@@ -65,9 +68,11 @@ export default function AbstractCollectionPage() {
 
                 <div className="h-64 bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden">
                   <img
-                    src={product.thumbnail}
-                    alt={product.title}
+                    src={product.thumbnail as string}
+                    alt={product.title as string}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
 
