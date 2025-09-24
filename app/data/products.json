@@ -238,5 +238,17 @@
     "exclusive": true,
     "available": true,
     "category": "geometric"
+  },
+  {
+    "slug": "cherry-blossom-faux-embroidery-light-blue",
+    "sku": "PR-emb-20250923-001",
+    "title": "Cherry Blossom Faux Embroidery on Light Blue",
+    "subtitle": "Faux-Embroidery Collection",
+    "price": 125,
+    "stripePriceId": "price_1SAjW6BB8R6OUfKVOTLQoom0",
+    "category": "faux-embroidery",
+    "thumbnail": "https://files.patternripple.com/cherry-blossom-faux-embroidery-light-blue-thumb.jpg",
+    "exclusive": true,
+    "available": true
   }
 ]
