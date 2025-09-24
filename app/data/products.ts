@@ -8,7 +8,8 @@ export type Product = {
   subtitle: string;
   price: number;
   stripePriceId: string;
-  category: string;
+  category: string | string[];  // allow single or multiple
+  subcategory?: string;
   thumbnail: string;
   exclusive: boolean;
   available: boolean;
