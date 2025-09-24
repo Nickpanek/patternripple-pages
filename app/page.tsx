@@ -30,6 +30,18 @@ const products: Product[] = [
     category: "abstract"
   },
   {
+    slug: "cherry-blossom-faux-embroidery-light-blue",
+    title: "Cherry Blossom Faux Embroidery on Light Blue",
+    subtitle: "Floral Collection",
+    price: 125,
+    sku: "PR-emb-20250923-001",
+    stripePriceId: "price_1SAjW6BB8R6OUfKVOTLQoom0",
+    thumbnail: "https://files.patternripple.com/cherry-blossom-faux-embroidery-light-blue.jpg",
+    exclusive: true,
+    available: true,
+    category: "faux-embroidery"
+  },
+  {
     slug: "pr-geo-20250919-001",
     title: "Atomic Matchstick Geometric",
     subtitle: "Mid-Century Collection",
