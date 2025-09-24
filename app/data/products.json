@@ -11,18 +11,18 @@
     "exclusive": true,
     "available": true
   },
-{
-  "slug": "impasto-poinsettia-christmas-floral-red",
-  "sku": "PR-sea-20250923-018",
-  "title": "Impasto Poinsettia Christmas Floral",
-  "subtitle": "Seasonal Collection",
-  "price": 125,
-  "stripePriceId": "price_1SAk2xBB8R6OUfKV7DMeAJrC",
-  "category": ["seasonal", "floral"]
-  "thumbnail": "https://files.patternripple.com/impasto-poinsettia-christmas-floral-red-thumb.jpg",
-  "exclusive": true,
-  "available": true
-},
+  {
+    "slug": "impasto-poinsettia-christmas-floral-red",
+    "sku": "PR-sea-20250923-018",
+    "title": "Impasto Poinsettia Christmas Floral",
+    "subtitle": "Seasonal Collection",
+    "price": 125,
+    "stripePriceId": "price_1SAk2xBB8R6OUfKV7DMeAJrC",
+    "category": ["seasonal", "floral"],
+    "thumbnail": "https://files.patternripple.com/impasto-poinsettia-christmas-floral-red-thumb.jpg",
+    "exclusive": true,
+    "available": true
+  },
   {
     "slug": "8-bit-invader-faux-embroidery-black",
     "sku": "PR-geo-20250921-011",
@@ -264,17 +264,16 @@
     "available": true
   },
   {
-  "slug": "textured-gothic-skulls-charcoal",
-  "title": "Textured Gothic Skulls on Charcoal",
-  "subtitle": "Horror Collection",
-  "price": 125,
-  "sku": "PR-hor-20250923-007",
-  "stripePriceId": "price_1S9mKjBB8R6OUfKVRjVFkwn1",
-  "thumbnail": "https://files.patternripple.com/textured-gothic-skulls-charcoal-thumb.jpg",
-  "exclusive": true,
-  "available": true,
-  "category": "horror",
-  "subcategory": "gothic"
-}
-
+    "slug": "textured-gothic-skulls-charcoal",
+    "title": "Textured Gothic Skulls on Charcoal",
+    "subtitle": "Horror Collection",
+    "price": 125,
+    "sku": "PR-hor-20250923-007",
+    "stripePriceId": "price_1S9mKjBB8R6OUfKVRjVFkwn1",
+    "thumbnail": "https://files.patternripple.com/textured-gothic-skulls-charcoal-thumb.jpg",
+    "exclusive": true,
+    "available": true,
+    "category": "horror",
+    "subcategory": "gothic"
+  }
 ]
