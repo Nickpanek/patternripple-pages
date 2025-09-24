@@ -126,6 +126,18 @@ const products: Product[] = [
     category: "geometric"
   },
   {
+    slug: "impasto-poinsettia-christmas-floral-red",
+    title: "Impasto Poinsettia Christmas Floral",
+    subtitle: "Christmas Collection",
+    price: 125,
+    sku: "PR-sea-20250923-018",
+    stripePriceId: "price_1SAk2xBB8R6OUfKV7DMeAJrC",
+    thumbnail: "https://files.patternripple.com/impasto-poinsettia-christmas-floral-red-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "seasonal"
+  },
+  {
     slug: "gilded-art-deco-geometric-black",
     title: "Gilded Art Deco Geometric in Black",
     subtitle: "Geometric Collection",
