@@ -7,7 +7,7 @@ import { products } from "@/app/data/products";
 export default function FloralCollectionPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
-  // Updated: supports category as string or string[]
+  // supports category as string or string[]
   const floralProducts = products.filter((p) =>
     Array.isArray(p.category) ? p.category.includes("floral") : p.category === "floral"
   );
