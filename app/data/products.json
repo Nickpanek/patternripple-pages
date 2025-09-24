@@ -262,5 +262,17 @@
     "thumbnail": "https://files.patternripple.com/cherry-blossom-faux-embroidery-light-blue-thumb.jpg",
     "exclusive": true,
     "available": true
-  }
+  },
+  {
+  "slug": "textured-gothic-skulls-charcoal",
+  "title": "Textured Gothic Skulls on Charcoal",
+  "subtitle": "Horror Collection",
+  "price": 125,
+  "sku": "PR-hor-20250923-007",
+  "stripePriceId": "price_1SAkaGBB8R6OUfKVl8eTovxL",
+  "thumbnail": "https://files.patternripple.com/textured-gothic-skulls-charcoal-thumb.jpg",
+  "exclusive": true,
+  "available": true
+}
+
 ]
