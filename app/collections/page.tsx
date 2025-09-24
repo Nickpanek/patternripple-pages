@@ -1,4 +1,3 @@
-// app/collections/page.tsx
 "use client";
 
 import Image from "next/image";
@@ -16,20 +15,24 @@ type Col = {
   match: (p: any) => boolean;
 };
 
+function inCategory(p: any, key: string) {
+  return Array.isArray(p.category) ? p.category.includes(key) : p.category === key;
+}
+
 const COLLECTIONS: Col[] = [
   {
     key: "floral",
     title: "Floral Collection",
     blurb: "Elegant botanical and floral patterns featuring roses, wildflowers, and nature-inspired designs",
     href: "/collections/floral",
-    match: (p) => p.category === "floral" || p.subtitle?.toLowerCase().includes("floral"),
+    match: (p) => inCategory(p, "floral") || p.subtitle?.toLowerCase().includes("floral"),
   },
   {
     key: "geometric",
     title: "Geometric Collection",
     blurb: "Modern geometric patterns including Art Deco, Op Art, and contemporary abstract designs",
     href: "/collections/geometric",
-    match: (p) => p.category === "geometric" || p.subtitle?.toLowerCase().includes("geometric"),
+    match: (p) => inCategory(p, "geometric") || p.subtitle?.toLowerCase().includes("geometric"),
   },
   {
     key: "faux-embroidery",
@@ -37,7 +40,7 @@ const COLLECTIONS: Col[] = [
     blurb: "Patterns that mimic the texture and charm of hand-stitched embroidery work - label these as faux embroidery",
     href: "/collections/faux-embroidery",
     match: (p) =>
-      p.category === "faux-embroidery" ||
+      inCategory(p, "faux-embroidery") ||
       p.subtitle?.toLowerCase().includes("faux embroidery") ||
       p.title?.toLowerCase().includes("faux embroidery"),
   },
@@ -46,21 +49,28 @@ const COLLECTIONS: Col[] = [
     title: "Abstract Collection",
     blurb: "Expressive abstract designs with bold shapes, motion, and texture",
     href: "/collections/abstract",
-    match: (p) => p.category === "abstract" || p.subtitle?.toLowerCase().includes("abstract"),
+    match: (p) => inCategory(p, "abstract") || p.subtitle?.toLowerCase().includes("abstract"),
   },
   {
     key: "horror",
     title: "Horror Collection",
     blurb: "Dark motifs, skulls, and eerie textures for bold statements",
     href: "/collections/horror",
-    match: (p) => p.category === "horror" || p.subtitle?.toLowerCase().includes("horror"),
+    match: (p) => inCategory(p, "horror") || p.subtitle?.toLowerCase().includes("horror"),
   },
   {
     key: "seasonal",
     title: "Seasonal Collection",
     blurb: "Holiday and seasonal themes across the year",
     href: "/collections/seasonal",
-    match: (p) => p.category === "seasonal" || p.subtitle?.toLowerCase().includes("seasonal"),
+    match: (p) => inCategory(p, "seasonal") || p.subtitle?.toLowerCase().includes("seasonal"),
+  },
+  {
+    key: "camo",
+    title: "Camo Collection",
+    blurb: "Utility inspired camouflage designs from pixel to organic",
+    href: "/collections/camo",
+    match: (p) => inCategory(p, "camo") || p.subtitle?.toLowerCase().includes("camo"),
   },
 ];
 
@@ -107,7 +117,9 @@ export default function CollectionsPage() {
           <Link
             key={c.key}
             href={c.href}
-            className="group rounded-2xl overflow-hidden border bg-white"
+            className={`group rounded-2xl overflow-hidden border bg-white ${
+              hovered === c.key ? "shadow-xl" : "shadow"
+            }`}
             onMouseEnter={() => setHovered(c.key)}
             onMouseLeave={() => setHovered(null)}
           >
