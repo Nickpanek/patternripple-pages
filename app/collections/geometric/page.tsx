@@ -2,135 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
-
-// Full products array - same as your homepage
-const products = [
-  {
-    slug: "mid-century-abstract-pebbles-black-orange",
-    title: "Mid-Century Abstract Pebbles in Black and Orange",
-    subtitle: "Abstract Collection",
-    price: 125,
-    sku: "PR-abs-20250922-011",
-    stripePriceId: "price_1SA9SUBB8R6OUfKV2Q1ewLS4",
-    thumbnail: "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "abstract"
-  },
-  {
-    slug: "pr-geo-20250919-001",
-    title: "Atomic Matchstick Geometric",
-    subtitle: "Mid-Century Collection",
-    price: 125,
-    sku: "PR-geo-20250919-001",
-    stripePriceId: "price_1S91pvBB8R6OUfKVfz51JXSY",
-    thumbnail: "https://files.patternripple.com/PR-geo-20250919-001-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "japandi-brushstrokes-plum-mauve",
-    title: "Japandi Brushstrokes in Plum and Mauve",
-    subtitle: "Geometric Collection",
-    price: 125,
-    sku: "PR-abs-20250921-019",
-    stripePriceId: "price_1S9wwJBB8R6OUfKVmseB0xm4",
-    thumbnail: "https://files.patternripple.com/japandi-brushstrokes-plum-mauve-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "gilded-stripe-circles-olive-geometric",
-    title: "Gilded Stripe Circles on Olive",
-    subtitle: "Geometric Collection",
-    price: 125,
-    sku: "PR-geo-20250921-001",
-    stripePriceId: "price_1S9mssBB8R6OUfKVZYZoIF7e",
-    thumbnail: "https://files.patternripple.com/gilded-stripe-circles-olive-geometric-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "op-art-tunnel-illusion-black-white",
-    title: "Op Art Tunnel Illusion in Monochrome",
-    subtitle: "Op Art Collection",
-    price: 125,
-    sku: "PR-geo-20250921-008",
-    stripePriceId: "price_1S9wTvBB8R6OUfKV2jsZV0sK",
-    thumbnail: "https://files.patternripple.com/op-art-tunnel-illusion-black-white-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "gilded-art-deco-geometric-black",
-    title: "Gilded Art Deco Geometric in Black",
-    subtitle: "Geometric Collection",
-    price: 125,
-    sku: "PR-geo-20250921-002",
-    stripePriceId: "price_1S9nUoBB8R6OUfKV75USAunw",
-    thumbnail: "https://files.patternripple.com/gilded-art-deco-geometric-black-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "painterly-woven-stripes-indigo",
-    title: "Painterly Woven Stripes in Indigo",
-    subtitle: "Geometric Collection",
-    price: 125,
-    sku: "PR-geo-20250921-010",
-    stripePriceId: "price_1S9ppGBB8R6OUfKVTfctJrtG",
-    thumbnail: "https://files.patternripple.com/painterly-woven-stripes-indigo-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "monochrome-labyrinth-geometric-pattern",
-    title: "Monochrome Labyrinth Geometric Pattern",
-    subtitle: "OP Art Collection",
-    price: 125,
-    sku: "PR-geo-20250921-001",
-    stripePriceId: "price_1S9lZWBB8R6OUfKVC6pTDVfr",
-    thumbnail: "https://files.patternripple.com/monochrome-labyrinth-geometric-pattern-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "mid-century-modern-stripes",
-    title: "Mid-Century Modernist Stripes",
-    subtitle: "Geometric Collection",
-    price: 125,
-    sku: "PR-geo-20250921-004",
-    stripePriceId: "price_1S9o6MBB8R6OUfKVwq0mmUyi",
-    thumbnail: "https://files.patternripple.com/mid-century-modern-stripes-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  },
-  {
-    slug: "carved-stone-architectural-grid-neutral",
-    title: "Carved Stone Architectural Grid",
-    subtitle: "Architecture Collection",
-    price: 125,
-    sku: "PR-arc-20250921-001",
-    stripePriceId: "price_1S9maXBB8R6OUfKV4YShXYMt",
-    thumbnail: "https://files.patternripple.com/carved-stone-architectural-grid-neutral-thumb.jpg",
-    exclusive: true,
-    available: true,
-    category: "geometric"
-  }
-];
+import { products } from "@/app/data/products";
 
 export default function GeometricCollectionPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  
-  // Filter only geometric patterns
   const geometricProducts = products.filter(p => p.category === "geometric");
 
   return (
@@ -148,7 +23,7 @@ export default function GeometricCollectionPage() {
 
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3">
         <div className="max-w-6xl mx-auto px-4 text-center text-sm">
-          {geometricProducts.length} Exclusive Geometric Patterns Available
+          {geometricProducts.filter(p => p.available).length} Exclusive Geometric Patterns Available
         </div>
       </div>
 
@@ -175,7 +50,7 @@ export default function GeometricCollectionPage() {
               onMouseLeave={() => setHoveredCard(null)}
             >
               {product.exclusive && (
-                <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold py-2 text-center tracking-wider">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold py-2 text-center tracking-wider">
                   EXCLUSIVE PATTERN
                 </div>
               )}
