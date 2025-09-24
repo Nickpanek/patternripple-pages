@@ -1,3 +1,5 @@
+app/collections/floral/page.tsx
+
 "use client";
 
 import Link from "next/link";
@@ -6,7 +8,11 @@ import { products } from "@/app/data/products";
 
 export default function FloralCollectionPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const floralProducts = products.filter(p => p.category === "floral");
+
+  // Updated: supports category as string or string[]
+  const floralProducts = products.filter((p) =>
+    Array.isArray(p.category) ? p.category.includes("floral") : p.category === "floral"
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-100">
@@ -23,7 +29,7 @@ export default function FloralCollectionPage() {
 
       <div className="bg-gradient-to-r from-pink-500 to-rose-600 text-white py-3">
         <div className="max-w-6xl mx-auto px-4 text-center text-sm">
-          {floralProducts.filter(p => p.available).length} Exclusive Floral Patterns Available
+          {floralProducts.filter((p) => p.available).length} Exclusive Floral Patterns Available
         </div>
       </div>
 
