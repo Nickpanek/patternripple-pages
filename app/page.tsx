@@ -17,6 +17,18 @@ type Product = {
 };
 
 const products: Product[] = [
+   {
+    slug: "textured-gothic-skulls-charcoal",
+    title: "Textured Gothic Skulls on Charcoal",
+    subtitle: "Horror Collection",
+    price: 125,
+    sku: "PR-hor-20250923-007",
+    stripePriceId: "price_1SAkaGBB8R6OUfKVl8eTovxL",
+    thumbnail: "https://files.patternripple.com/textured-gothic-skulls-charcoal-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "horror"
+  },
   {
     slug: "mid-century-abstract-pebbles-black-orange",
     title: "Mid-Century Abstract Pebbles in Black and Orange",
