@@ -1,54 +1,92 @@
-// app/collections/floral/page.tsx
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { products } from "@/app/data/products";
 
-const DEFAULT_THUMB = "https://files.patternripple.com/thumb-default.jpg";
-
 export default function FloralCollectionPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-
-  const items = products.filter(
-    (p) => p.category === "floral" || p.subtitle.toLowerCase().includes("floral")
-  );
+  const floralProducts = products.filter(p => p.category === "floral");
 
   return (
-    <main className="mx-auto max-w-6xl p-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {items.map((p) => {
-        const initialSrc = p.thumbnail?.trim() || DEFAULT_THUMB;
-        return (
-          <Link
-            key={p.slug}
-            href={`/p/${p.slug}`}
-            className="group rounded-2xl overflow-hidden border"
-            onMouseEnter={() => setHoveredCard(p.slug)}
-            onMouseLeave={() => setHoveredCard(null)}
-          >
-            <div className="aspect-square relative">
-              <Image
-                src={initialSrc}
-                alt={`${p.title} - seamless pattern`}
-                fill
-                sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
-                className="object-cover"
-                onError={(e) => {
-                  const t = e.currentTarget as HTMLImageElement;
-                  if (t.src !== DEFAULT_THUMB) {
-                    t.src = DEFAULT_THUMB;
-                  }
-                }}
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="text-sm font-medium">{p.title}</h3>
-              <p className="text-xs opacity-70">{p.subtitle}</p>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-100">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-16">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h1 className="text-4xl font-thin tracking-wide text-gray-900 mb-4">
+            Floral Collection
+          </h1>
+          <p className="text-lg text-gray-600">
+            Elegant botanical and floral patterns featuring roses, wildflowers, and nature-inspired designs
+          </p>
+        </div>
+      </header>
+
+      <div className="bg-gradient-to-r from-pink-500 to-rose-600 text-white py-3">
+        <div className="max-w-6xl mx-auto px-4 text-center text-sm">
+          {floralProducts.filter(p => p.available).length} Exclusive Floral Patterns Available
+        </div>
+      </div>
+
+      <main className="max-w-6xl mx-auto px-4 py-12">
+        <div className="mb-8">
+          <Link href="/collections" className="inline-flex items-center text-rose-600 hover:text-rose-700">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to All Collections
           </Link>
-        );
-      })}
-    </main>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {floralProducts.map((product) => (
+            <article
+              key={product.sku}
+              className={`bg-white rounded-xl overflow-hidden transition-all duration-300 ${
+                hoveredCard === product.sku
+                  ? "shadow-2xl -translate-y-1 ring-4 ring-rose-400"
+                  : "shadow-lg ring-4 ring-pink-300"
+              }`}
+              onMouseEnter={() => setHoveredCard(product.sku)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
+              {product.exclusive && (
+                <div className="bg-gradient-to-r from-pink-500 to-rose-600 text-white text-xs font-bold py-2 text-center tracking-wider">
+                  EXCLUSIVE PATTERN
+                </div>
+              )}
+
+              <div className="h-64 bg-gradient-to-br from-pink-100 to-rose-100 overflow-hidden">
+                <img
+                  src={product.thumbnail}
+                  alt={product.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="p-6">
+                <h2 className="text-xl font-light text-gray-900 mb-2">
+                  {product.title}
+                </h2>
+                <p className="text-gray-600 text-sm mb-4">{product.subtitle}</p>
+
+                <div className="flex justify-between items-center pb-4 mb-4 border-b border-gray-100">
+                  <span className="text-2xl font-light">${product.price}</span>
+                  <span className="text-green-600 text-sm">
+                    {product.available ? "Available" : "Sold"}
+                  </span>
+                </div>
+
+                <Link
+                  href={`/p/${product.slug}`}
+                  className="block w-full bg-gray-900 text-white text-center py-3 rounded-lg hover:bg-rose-600 transition-colors duration-300"
+                >
+                  View Pattern
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </main>
+    </div>
   );
 }
