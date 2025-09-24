@@ -18,7 +18,7 @@
   "subtitle": "Seasonal Collection",
   "price": 125,
   "stripePriceId": "price_1SAk2xBB8R6OUfKV7DMeAJrC",
-  "category": "seasonal",
+  "category": "[seasonal", "floral"],
   "thumbnail": "https://files.patternripple.com/impasto-poinsettia-christmas-floral-red-thumb.jpg",
   "exclusive": true,
   "available": true
@@ -69,7 +69,7 @@
     "thumbnail": "https://files.patternripple.com/vibrant-floral-faux-embroidery-navy-thumb.jpg",
     "exclusive": true,
     "available": true,
-    "category": "floral"
+    "category": ["floral", "faux-embroidery"]
   },
   {
     "slug": "gilded-stripe-circles-olive-geometric",
@@ -129,7 +129,7 @@
     "thumbnail": "https://files.patternripple.com/tactical-pixel-camo-desert-taupe-thumb.jpg",
     "exclusive": true,
     "available": true,
-    "category": "abstract"
+    "category": "camo"
   },
   {
     "slug": "painterly-woven-stripes-indigo",
@@ -165,7 +165,7 @@
     "thumbnail": "https://files.patternripple.com/PR-sea-20250919-002-thumb.jpg",
     "exclusive": true,
     "available": true,
-    "category": "seasonal"
+    "category": ["seasonal", "faux-embroidery"]
   },
   {
     "slug": "mid-century-modern-stripes",
@@ -213,7 +213,7 @@
     "thumbnail": "https://files.patternripple.com/PR-sea-20250919-001-thumb.jpg",
     "exclusive": true,
     "available": true,
-    "category": "seasonal"
+    "category": ["seasonal", "faux-embroidery"]
   },
   {
     "slug": "vibrant-wildflower-faux-embroidery-rose",
@@ -225,7 +225,7 @@
     "thumbnail": "https://files.patternripple.com/PR-flo-20250916-001-thumb.jpg",
     "exclusive": true,
     "available": true,
-    "category": "faux-embroidery"
+    "category": ["faux-embroidery", "floral"]
   },
   {
     "slug": "pr-flo-20250918-001",
@@ -237,7 +237,7 @@
     "thumbnail": "https://files.patternripple.com/PR-flo-20250918-001-thumb.jpg",
     "exclusive": true,
     "available": true,
-    "category": "faux-embroidery"
+    "category": ["faux-embroidery", "floral"]
   },
   {
     "slug": "carved-stone-architectural-grid-neutral",
