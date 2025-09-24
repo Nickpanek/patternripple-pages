@@ -269,10 +269,12 @@
   "subtitle": "Horror Collection",
   "price": 125,
   "sku": "PR-hor-20250923-007",
-  "stripePriceId": "price_1SAkaGBB8R6OUfKVl8eTovxL",
+  "stripePriceId": "price_1S9mKjBB8R6OUfKVRjVFkwn1",
   "thumbnail": "https://files.patternripple.com/textured-gothic-skulls-charcoal-thumb.jpg",
   "exclusive": true,
-  "available": true
+  "available": true,
+  "category": "horror",
+  "subcategory": "gothic"
 }
 
 ]
