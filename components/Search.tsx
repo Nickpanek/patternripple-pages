@@ -1,61 +1,119 @@
+// components/Search.tsx
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import MiniSearch from "minisearch";
 import Link from "next/link";
 
+type Doc = {
+  id: string;
+  type: "product" | "blog" | "collection" | "page";
+  title: string;
+  subtitle?: string;
+  url: string;
+  thumb?: string;
+};
+
 export default function Search() {
   const [q, setQ] = useState("");
+  const [ready, setReady] = useState(false);
   const [results, setResults] = useState<any[]>([]);
-  const mini = useRef<MiniSearch | null>(null);
-  const docs = useRef<Record<string, any>>({});
+  const miniRef = useRef<MiniSearch | null>(null);
+  const docsRef = useRef<Record<string, Doc>>({});
 
   useEffect(() => {
+    let alive = true;
     async function load() {
       const [idxRes, docsRes] = await Promise.all([
         fetch("/search/index.json"),
         fetch("/search/docs.json"),
       ]);
       const idxJson = await idxRes.json();
-      const docsArr = await docsRes.json();
-      mini.current = MiniSearch.loadJSON(idxJson);
-      docs.current = Object.fromEntries(docsArr.map((d: any) => [d.id, d]));
+      const docsArr: Doc[] = await docsRes.json();
+
+      // loadJSON requires the original index options
+      miniRef.current = MiniSearch.loadJSON(idxJson, {
+        fields: ["title", "subtitle", "description", "tags", "category", "sku"],
+        storeFields: ["id", "type", "title", "subtitle", "url", "thumb"],
+        searchOptions: { prefix: true, fuzzy: 0.2, boost: { title: 3, subtitle: 2, tags: 2 } },
+      });
+
+      docsRef.current = Object.fromEntries(docsArr.map((d) => [d.id, d]));
+      if (alive) setReady(true);
     }
     load();
+    return () => {
+      alive = false;
+    };
   }, []);
 
   useEffect(() => {
-    if (!mini.current || !q.trim()) {
-      setResults([]);
-      return;
-    }
-    const r = mini.current.search(q.trim(), { prefix: true, fuzzy: 0.2 });
-    setResults(r);
-  }, [q]);
+    const t = setTimeout(() => {
+      if (!ready || !miniRef.current) {
+        setResults([]);
+        return;
+      }
+      const query = q.trim();
+      if (!query) {
+        setResults([]);
+        return;
+      }
+      const r = miniRef.current.search(query, {
+        prefix: true,
+        fuzzy: 0.2,
+        boost: { title: 3 },
+        combineWith: "AND",
+      });
+      setResults(r.slice(0, 12));
+    }, 120);
+    return () => clearTimeout(t);
+  }, [q, ready]);
+
+  const items = useMemo(() => {
+    return results
+      .map((r) => docsRef.current[String((r as any).id)])
+      .filter(Boolean) as Doc[];
+  }, [results]);
 
   return (
-    <div className="relative w-full max-w-md">
+    <div className="relative w-full max-w-xl">
       <input
+        id="site-search-input"
         type="search"
-        placeholder="Search site..."
+        placeholder="Search patterns, collections, posts..."
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        className="w-full rounded border px-3 py-2"
+        className="w-full rounded-2xl border px-4 py-2 text-base outline-none"
+        aria-label="Search site"
       />
-      {q && results.length > 0 && (
-        <div className="absolute mt-1 w-full rounded border bg-white shadow">
-          {results.slice(0, 10).map((r) => {
-            const d = docs.current[r.id];
-            return (
-              <Link
-                key={r.id}
-                href={d.url}
-                className="block px-3 py-2 hover:bg-gray-100"
-              >
-                {d.title}
-              </Link>
-            );
-          })}
+      {q && items.length > 0 && (
+        <div className="absolute z-50 mt-2 w-full rounded-2xl border bg-white p-2 shadow-xl">
+          <ul className="space-y-1">
+            {items.map((it) => (
+              <li key={it.id}>
+                <Link
+                  href={it.url}
+                  className="flex items-center gap-3 rounded-xl p-2 hover:bg-gray-100"
+                  onClick={() => setQ("")}
+                >
+                  {it.thumb ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={it.thumb} alt="" className="h-10 w-10 rounded-lg object-cover" />
+                  ) : (
+                    <div className="h-10 w-10 rounded-lg bg-gray-200" />
+                  )}
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-semibold">{it.title}</div>
+                    {it.subtitle ? (
+                      <div className="truncate text-xs text-gray-600">{it.subtitle}</div>
+                    ) : null}
+                    <div className="text-[10px] uppercase text-gray-500">{it.type}</div>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="px-2 pt-2 text-xs text-gray-500">Press / to focus • Esc to close</div>
         </div>
       )}
     </div>
