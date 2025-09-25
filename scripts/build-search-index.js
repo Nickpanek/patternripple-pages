@@ -1,6 +1,6 @@
-// scripts/build-search-index.js
-import fs from "fs";
-import path from "path";
+// scripts/build-search-index.mjs
+import fs from "node:fs";
+import path from "node:path";
 import MiniSearch from "minisearch";
 
 const PRODUCTS_JSON = path.resolve("app/data/products.json");
@@ -12,7 +12,13 @@ const products = JSON.parse(fs.readFileSync(PRODUCTS_JSON, "utf8")).map((p, i) =
   subtitle: p.subtitle,
   url: `/p/${p.slug}`,
   description: p.description || p.seoDescription || "",
-  tags: p.tags || p.seo?.keywords?.split(",").map((s) => s.trim()) || [],
+  tags:
+    p.tags ||
+    (p.seo && p.seo.keywords
+      ? String(p.seo.keywords)
+          .split(",")
+          .map((s) => s.trim())
+      : []),
   category: p.category,
   sku: p.sku,
   thumb: p.thumbnail,
@@ -27,10 +33,12 @@ const docs = [
 const miniSearch = new MiniSearch({
   fields: ["title", "subtitle", "description", "tags", "category", "sku"],
   storeFields: ["id", "type", "title", "subtitle", "url", "thumb"],
+  searchOptions: { prefix: true, fuzzy: 0.2, boost: { title: 3, subtitle: 2, tags: 2 } },
 });
 
 miniSearch.addAll(docs);
 
 fs.mkdirSync("public/search", { recursive: true });
-fs.writeFileSync("public/search/index.json", JSON.stringify(miniSearch.toJSON()));
-fs.writeFileSync("public/search/docs.json", JSON.stringify(docs));
+fs.writeFileSync("public/search/index.json", JSON.stringify(miniSearch.toJSON()), "utf8");
+fs.writeFileSync("public/search/docs.json", JSON.stringify(docs), "utf8");
+console.log(`Wrote ${docs.length} docs to public/search`);
