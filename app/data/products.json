@@ -11,6 +11,18 @@
     "exclusive": true,
     "available": true
   },
+   {
+    "slug": "monochrome-architectural-arches-pattern",
+    "sku": "PR-geo-20250925-017",
+    "title": "Monochrome Architectural Arches",
+    "subtitle": "Architecture Collection",
+    "price": 125,
+    "stripePriceId": "price_1SBJznBB8R6OUfKV8d09fYAX",
+    "category": ["geometric", "architecture"],
+    "thumbnail": "https://files.patternripple.com/mid-century-abstract-pebbles-black-orange-thumb.jpg",
+    "exclusive": true,
+    "available": true
+  },
   {
   "slug": "preppy-garden-trellis-pink-green",
   "title": "Preppy Garden Trellis in Pink and Green",
