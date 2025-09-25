@@ -1,39 +1,63 @@
-"use client";
-
-import Link from "next/link";
 import NextHead from "next/head";
+import Link from "next/link";
+import path from "path";
+import { promises as fs } from "fs";
 
 type PostMeta = {
   title: string;
   slug: string;
-  date: string; // ISO 8601
-  excerpt: string;
+  description?: string;
+  published: string; // ISO 8601
+  modified?: string; // ISO 8601
+  tags?: string[];
 };
-
-const posts: PostMeta[] = [
-  {
-    title: "Free Assets From Nick (PatternRipple) on Pixabay",
-    slug: "free-assets-on-pixabay",
-    date: "2025-09-25",
-    excerpt:
-      "I publish free creative assets on Pixabay under the profile nickpanek — music, illustrations, vectors, 3D models, and themed collections you can use in your projects.",
-  },
-  {
-    title: "Daily Pattern Drops at PatternRipple",
-    slug: "daily-pattern-drops",
-    date: "2025-09-25",
-    excerpt:
-      "Welcome to PatternRipple! I’m thrilled to announce that starting today, I’ll be releasing a new digital pattern every single day. Whether you’re a designer, crafter, or creator, you can count on fresh inspiration delivered daily.",
-  },
-];
 
 function toAbsolute(url: string) {
   return `https://patternripple.com${url}`;
 }
 
+async function loadPosts(): Promise<PostMeta[]> {
+  const blogDir = path.join(process.cwd(), "app", "blog");
+  const entries = await fs.readdir(blogDir, { withFileTypes: true });
+
+  const jsonFiles = entries
+    .filter((e) => e.isFile() && e.name.endsWith(".json"))
+    .map((e) => path.join(blogDir, e.name));
+
+  const posts: PostMeta[] = [];
+  for (const file of jsonFiles) {
+    try {
+      const raw = await fs.readFile(file, "utf8");
+      const data = JSON.parse(raw);
+      // Minimal shape validation
+      if (data?.title && data?.slug && data?.published) {
+        posts.push({
+          title: data.title,
+          slug: data.slug,
+          description: data.description ?? "",
+          published: data.published,
+          modified: data.modified ?? data.published,
+          tags: Array.isArray(data.tags) ? data.tags : [],
+        });
+      }
+    } catch {
+      // ignore malformed json
+    }
+  }
+
+  // Sort by published desc
+  posts.sort(
+    (a, b) =>
+      new Date(b.published).getTime() - new Date(a.published).getTime()
+  );
+  return posts;
+}
+
 export const dynamic = "force-static";
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const posts = await loadPosts();
+
   const pageTitle = "PatternRipple Blog | Daily patterns and design notes";
   const pageDesc =
     "Short reads about pattern design, licensing clarity, daily drops, and free creative assets from PatternRipple.";
@@ -94,48 +118,63 @@ export default function BlogPage() {
 
         {/* List */}
         <main className="max-w-4xl mx-auto px-4 py-16">
-          <ul className="space-y-8">
-            {posts.map((post) => (
-              <li
-                key={post.slug}
-                className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <article>
-                  <header className="mb-3">
-                    <h2 className="text-2xl font-light text-gray-900">
+          {posts.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-200 p-10 text-center text-gray-600">
+              No posts yet. Check back soon.
+            </div>
+          ) : (
+            <ul className="space-y-8">
+              {posts.map((post) => (
+                <li
+                  key={post.slug}
+                  className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <article itemScope itemType="https://schema.org/BlogPosting">
+                    <header className="mb-3">
+                      <h2 className="text-2xl font-light text-gray-900" itemProp="headline">
+                        <Link
+                          href={`/blog/${post.slug}`}
+                          className="hover:underline"
+                        >
+                          {post.title}
+                        </Link>
+                      </h2>
+                      <time
+                        className="text-sm text-gray-500"
+                        dateTime={post.published}
+                        suppressHydrationWarning
+                        itemProp="datePublished"
+                      >
+                        {new Date(post.published).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </time>
+                    </header>
+
+                    <p className="text-gray-700" itemProp="description">
+                      {(post.description || "").slice(0, 180)}
+                      {post.description && post.description.length > 180 ? "…" : ""}
+                      {" "}
                       <Link
                         href={`/blog/${post.slug}`}
-                        className="hover:underline"
+                        className="text-purple-700 hover:text-purple-800 underline underline-offset-4"
                       >
-                        {post.title}
+                        Read more
                       </Link>
-                    </h2>
-                    <time
-                      className="text-sm text-gray-500"
-                      dateTime={post.date}
-                      suppressHydrationWarning
-                    >
-                      {new Date(post.date).toLocaleDateString(undefined, {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </time>
-                  </header>
+                    </p>
 
-                  <p className="text-gray-700">
-                    {post.excerpt}{" "}
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="text-purple-700 hover:text-purple-800 underline underline-offset-4"
-                    >
-                      Read more
-                    </Link>
-                  </p>
-                </article>
-              </li>
-            ))}
-          </ul>
+                    {/* Microdata extras */}
+                    <meta itemProp="url" content={toAbsolute(`/blog/${post.slug}`)} />
+                    {post.modified && (
+                      <meta itemProp="dateModified" content={post.modified} />
+                    )}
+                  </article>
+                </li>
+              ))}
+            </ul>
+          )}
         </main>
       </div>
     </>
