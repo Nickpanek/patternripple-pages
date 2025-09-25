@@ -17,7 +17,19 @@ type Product = {
 };
 
 const products: Product[] = [
-   {
+  {
+    slug: "monochrome-architectural-arches-pattern",
+    title: "Monochrome Architectural Arches",
+    subtitle: "Architecture Collection",
+    price: 125,
+    sku: "PR-geo-20250925-017",
+    stripePriceId: "price_1SAkaGBB8R6OUfKVl8eTovxL",
+    thumbnail: "https://files.patternripple.com/monochrome-architectural-arches-pattern-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "architecture"
+  }, 
+  {
     slug: "textured-gothic-skulls-charcoal",
     title: "Textured Gothic Skulls on Charcoal",
     subtitle: "Horror Collection",
