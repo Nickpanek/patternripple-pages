@@ -30,8 +30,8 @@ const products: Product[] = [
     category: "horror"
   },
    {
-    slug: "Preppy Garden Trellis in Pink and Green",
-    title: "Textured Gothic Skulls on Charcoal",
+    slug: "preppy-garden-trellis-pink-green",
+    title: "Preppy Garden Trellis in Pink and Green",
     subtitle: "Preppy Collection",
     price: 125,
     sku: "PR-geo-20250925-001",
