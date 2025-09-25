@@ -72,21 +72,21 @@ export type CollectionMeta = {
 };
 
 export const collections: CollectionMeta[] = [
-  { key: "abstract",          name: "Abstract",             cover: "/abstractcollectionthumb.png" },
-  { key: "camo",              name: "Camo",                 cover: "/camocollectionthumb.png" },
-  { key: "faux-embroidery",   name: "Faux Embroidery",      cover: "/fauxcollectionthumb.png" },
-  { key: "geometric",         name: "Geometric",            cover: "/geometriccollectionthumb.png" },
-  { key: "horror",            name: "Horror",               cover: "/horrorcollectionthumb.png" },
-  { key: "seasonal",          name: "Seasonal",             cover: "/seasonalcollectionthumb.png" },
-  { key: "impasto",           name: "Impasto",              cover: "/impastocollectionthumb.png" },
-  { key: "ufo-cryptids",      name: "UFO & Cryptids",       cover: "/ufocollectionthumb.png" },
-  { key: "patchwork-quilt",   name: "Patchwork Quilt",      cover: "/patchcollectionthumb.png" },
-  { key: "preppy-posh",       name: "Preppy & Posh",        cover: "/preppycollectionthumb.png" },
-  { key: "old-west",          name: "Old West",             cover: "/westerncollectionthumb.png" },
-  { key: "groovy-psychedelic",name: "Groovy & Psychedelic", cover: "/groovycollectionthumb.png" },
-  { key: "architecture",      name: "Architecture",         cover: "/architecturecollectionthumb.png" },
-  { key: "cute-animals",      name: "Cute Animals",         cover: "/animalscollectionthumb.png" },
-  { key: "usa-patriotic",     name: "USA Patriotic",        cover: "/usacollectionthumb.png" },
+  { key: "abstract",           name: "Abstract",             cover: "https://files.patternripple.com/abstractcollectionthumb.png" },
+  { key: "camo",               name: "Camo",                 cover: "https://files.patternripple.com/camocollectionthumb.png" },
+  { key: "faux-embroidery",    name: "Faux Embroidery",      cover: "https://files.patternripple.com/fauxcollectionthumb.png" },
+  { key: "geometric",          name: "Geometric",            cover: "https://files.patternripple.com/geometriccollectionthumb.png" },
+  { key: "horror",             name: "Horror",               cover: "https://files.patternripple.com/horrorcollectionthumb.png" },
+  { key: "seasonal",           name: "Seasonal",             cover: "https://files.patternripple.com/seasonalcollectionthumb.png" },
+  { key: "impasto",            name: "Impasto",              cover: "https://files.patternripple.com/impastocollectionthumb.png" },
+  { key: "ufo-cryptids",       name: "UFO & Cryptids",       cover: "https://files.patternripple.com/ufocollectionthumb.png" },
+  { key: "patchwork-quilt",    name: "Patchwork Quilt",      cover: "https://files.patternripple.com/patchcollectionthumb.png" },
+  { key: "preppy-posh",        name: "Preppy & Posh",        cover: "https://files.patternripple.com/preppycollectionthumb.png" },
+  { key: "old-west",           name: "Old West",             cover: "https://files.patternripple.com/westerncollectionthumb.png" },
+  { key: "groovy-psychedelic", name: "Groovy & Psychedelic", cover: "https://files.patternripple.com/groovycollectionthumb.png" },
+  { key: "architecture",       name: "Architecture",         cover: "https://files.patternripple.com/architecturecollectionthumb.png" },
+  { key: "cute-animals",       name: "Cute Animals",         cover: "https://files.patternripple.com/animalscollectionthumb.png" },
+  { key: "usa-patriotic",      name: "USA Patriotic",        cover: "https://files.patternripple.com/usacollectionthumb.png" },
 ];
 
 // quick lookup by key
