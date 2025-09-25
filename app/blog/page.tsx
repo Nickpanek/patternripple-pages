@@ -1,3 +1,7 @@
+"use client";
+
+import Link from "next/link";
+
 export default function BlogPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
@@ -13,39 +17,57 @@ export default function BlogPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-20">
-        {/* Coming Soon Card */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-12 text-center shadow-lg">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-md mb-6">
-            <svg className="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
-          
-          <h2 className="text-2xl font-light text-gray-900 mb-4">
-            Articles Coming Soon
+      <main className="max-w-4xl mx-auto px-4 py-20 space-y-12">
+        {/* First Blog Post */}
+        <article className="bg-white rounded-xl shadow-md p-10">
+          <h2 className="text-3xl font-light text-gray-900 mb-6">
+            Daily Pattern Drops at PatternRipple
           </h2>
-          
-          <p className="text-gray-600 mb-8 max-w-md mx-auto">
-            We're working on in-depth guides about pattern design, commercial usage tips, 
-            and creative inspiration. Check back soon or follow us for updates!
-          </p>
-          
-          <div className="flex gap-4 justify-center">
-            <a 
-              href="mailto:nick@patternripple.com" 
-              className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              Get Notified
-            </a>
-            <a 
-              href="/" 
-              className="inline-flex items-center gap-2 bg-white text-gray-700 px-6 py-3 rounded-lg shadow hover:shadow-md transition-shadow"
-            >
-              Browse Patterns
-            </a>
+
+          <div className="prose prose-lg max-w-none text-gray-700">
+            <p>
+              Welcome to PatternRipple! I’m thrilled to announce that starting today, I’ll
+              be releasing a <strong>new digital pattern every single day</strong>. Whether you’re a
+              designer, crafter, or creator, you can count on fresh inspiration delivered daily.
+            </p>
+
+            <h3>How Daily Pattern Drops Work</h3>
+            <ul>
+              <li>High-quality previews and mockups to showcase the design.</li>
+              <li>Clear descriptions so you know exactly what makes each pattern unique.</li>
+              <li>Transparent pricing and licensing info for confidence in your purchase.</li>
+            </ul>
+
+            <h3>Built on Trust and Transparency</h3>
+            <p>
+              PatternRipple is about more than just patterns — it’s a commitment to clarity and quality.
+              Explore these key resources:
+            </p>
+            <ul>
+              <li><Link href="/about">About</Link></li>
+              <li><Link href="/terms">Terms</Link></li>
+              <li><Link href="/privacy">Privacy</Link></li>
+              <li><Link href="/licenses">Licenses</Link></li>
+            </ul>
+
+            <h3>Explore Our Pattern Collections</h3>
+            <p>
+              PatternRipple offers a wide range of curated <Link href="/collections">pattern collections</Link>, each with its own unique style and mood. Categories include Abstract, Faux Embroidery, Geometric, Groovy & Psychedelic, Patchwork Quilt, Seasonal, Cute Animals, Horror, Architecture, Old West, Preppy & Posh, UFO & Cryptids, and more.
+            </p>
+
+            <h3>Why PatternRipple?</h3>
+            <ul>
+              <li>Daily updates — a new design every day.</li>
+              <li>Creative variety — from playful and bold to timeless and minimal.</li>
+              <li>Designed with care — each pattern crafted for beauty and versatility.</li>
+            </ul>
+
+            <h3>Stay Inspired Every Day</h3>
+            <p>
+              PatternRipple is your go-to hub for fresh <strong>digital patterns</strong>, textures, and design assets. Add us to your bookmarks and check back daily for the latest releases. Tomorrow’s drop is already lined up — don’t miss it!
+            </p>
           </div>
-        </div>
+        </article>
       </main>
     </div>
   );
