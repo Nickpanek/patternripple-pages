@@ -29,6 +29,18 @@ const products: Product[] = [
     available: true,
     category: "horror"
   },
+   {
+    slug: "Preppy Garden Trellis in Pink and Green",
+    title: "Textured Gothic Skulls on Charcoal",
+    subtitle: "Preppy Collection",
+    price: 125,
+    sku: "PR-geo-20250925-001",
+    stripePriceId: "price_1SBJ6gBB8R6OUfKVfoUiAoHG",
+    thumbnail: "https://files.patternripple.com/preppy-garden-trellis-pink-green-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "preppy"
+  },
   {
     slug: "mid-century-abstract-pebbles-black-orange",
     title: "Mid-Century Abstract Pebbles in Black and Orange",
