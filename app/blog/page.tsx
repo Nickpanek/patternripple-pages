@@ -12,13 +12,19 @@ type PostMeta = {
 
 const posts: PostMeta[] = [
   {
+    title: "Free Assets From Nick (PatternRipple) on Pixabay",
+    slug: "free-assets-on-pixabay",
+    date: "2025-09-25",
+    excerpt:
+      "I publish free creative assets on Pixabay under the profile nickpanek — music, illustrations, vectors, 3D models, and themed collections you can use in your projects.",
+  },
+  {
     title: "Daily Pattern Drops at PatternRipple",
     slug: "daily-pattern-drops",
     date: "2025-09-25",
     excerpt:
       "Welcome to PatternRipple! I’m thrilled to announce that starting today, I’ll be releasing a new digital pattern every single day. Whether you’re a designer, crafter, or creator, you can count on fresh inspiration delivered daily.",
   },
-  // Add more posts here as you publish them
 ];
 
 function toAbsolute(url: string) {
@@ -30,7 +36,7 @@ export const dynamic = "force-static";
 export default function BlogPage() {
   const pageTitle = "PatternRipple Blog | Daily patterns and design notes";
   const pageDesc =
-    "Short reads about pattern design, licensing clarity, and daily drops from PatternRipple. Skim titles and first lines, then dive into any full post.";
+    "Short reads about pattern design, licensing clarity, daily drops, and free creative assets from PatternRipple.";
   const pageUrl = toAbsolute("/blog");
 
   const itemListJsonLd = {
