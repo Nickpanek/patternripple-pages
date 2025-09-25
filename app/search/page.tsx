@@ -4,7 +4,6 @@ import SearchPageClient from "./search-client";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-export const prerender = false; // stop static export from trying to prerender this route
 
 export default function Page() {
   return (
