@@ -39,7 +39,7 @@ const products: Product[] = [
     thumbnail: "https://files.patternripple.com/preppy-garden-trellis-pink-green-thumb.jpg",
     exclusive: true,
     available: true,
-    category: "preppy"
+    category: "preppy-posh"
   },
   {
     slug: "mid-century-abstract-pebbles-black-orange",
