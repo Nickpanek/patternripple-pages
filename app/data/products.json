@@ -30,7 +30,7 @@
     "subtitle": "Faux Embroidery Collection",
     "price": 125,
     "stripePriceId": "price_1S9saKBB8R6OUfKVBnQu3S95",
-    "category": "faux-embroidery",
+    "category": ["faux-embroidery", "ufo-cryptids"],
     "thumbnail": "https://files.patternripple.com/8-bit-invader-faux-embroidery-black-thumb.jpg",
     "exclusive": true,
     "available": true
@@ -189,7 +189,7 @@
     "thumbnail": "https://files.patternripple.com/PR-hor-20250919-001-thumb.jpg",
     "exclusive": true,
     "available": true,
-    "category": "horror"
+    "category": ["horror", "impasto"]
   },
   {
     "slug": "pr-flo-20250919-007",
@@ -201,7 +201,7 @@
     "thumbnail": "https://files.patternripple.com/PR-flo-20250919-007-thumb.jpg",
     "exclusive": true,
     "available": true,
-    "category": "floral"
+    "category": ["floral", "impasto"]
   },
   {
     "slug": "pr-sea-20250919-001",
@@ -249,7 +249,7 @@
     "thumbnail": "https://files.patternripple.com/carved-stone-architectural-grid-neutral-thumb.jpg",
     "exclusive": true,
     "available": true,
-    "category": "geometric"
+    "category": ["geometric", "architecture"]
   },
   {
     "slug": "cherry-blossom-faux-embroidery-light-blue",
@@ -258,7 +258,7 @@
     "subtitle": "Faux-Embroidery Collection",
     "price": 125,
     "stripePriceId": "price_1SAjW6BB8R6OUfKVOTLQoom0",
-    "category": "faux-embroidery",
+    "category": ["faux-embroidery", "floral"],
     "thumbnail": "https://files.patternripple.com/cherry-blossom-faux-embroidery-light-blue-thumb.jpg",
     "exclusive": true,
     "available": true
@@ -274,6 +274,6 @@
     "exclusive": true,
     "available": true,
     "category": "horror",
-    "subcategory": "gothic"
+    "subcategory": ["gothic", "impasto"]
   }
 ]
