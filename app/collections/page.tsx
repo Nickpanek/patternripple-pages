@@ -3,95 +3,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { products } from "@/app/data/products";
+import { products } from "../data/products";
+import {
+  collections as COLLECTIONS,
+  pickCollectionCover,
+  filterByCollection,
+  collectionHref,
+} from "../lib/collections";
 
+// safety net only - each collection now has its own R2 cover
 const DEFAULT_THUMB = "https://files.patternripple.com/thumb-default.jpg";
-
-type Col = {
-  key: string;
-  title: string;
-  blurb: string;
-  href: string;
-  match: (p: any) => boolean;
-};
-
-function inCategory(p: any, key: string) {
-  return Array.isArray(p.category) ? p.category.includes(key) : p.category === key;
-}
-
-const COLLECTIONS: Col[] = [
-  {
-    key: "floral",
-    title: "Floral Collection",
-    blurb: "Elegant botanical and floral patterns featuring roses, wildflowers, and nature-inspired designs",
-    href: "/collections/floral",
-    match: (p) => inCategory(p, "floral") || p.subtitle?.toLowerCase().includes("floral"),
-  },
-  {
-    key: "geometric",
-    title: "Geometric Collection",
-    blurb: "Modern geometric patterns including Art Deco, Op Art, and contemporary abstract designs",
-    href: "/collections/geometric",
-    match: (p) => inCategory(p, "geometric") || p.subtitle?.toLowerCase().includes("geometric"),
-  },
-  {
-    key: "faux-embroidery",
-    title: "Faux Embroidery Collection",
-    blurb: "Patterns that mimic the texture and charm of hand-stitched embroidery work - label these as faux embroidery",
-    href: "/collections/faux-embroidery",
-    match: (p) =>
-      inCategory(p, "faux-embroidery") ||
-      p.subtitle?.toLowerCase().includes("faux embroidery") ||
-      p.title?.toLowerCase().includes("faux embroidery"),
-  },
-  {
-    key: "abstract",
-    title: "Abstract Collection",
-    blurb: "Expressive abstract designs with bold shapes, motion, and texture",
-    href: "/collections/abstract",
-    match: (p) => inCategory(p, "abstract") || p.subtitle?.toLowerCase().includes("abstract"),
-  },
-  {
-    key: "horror",
-    title: "Horror Collection",
-    blurb: "Dark motifs, skulls, and eerie textures for bold statements",
-    href: "/collections/horror",
-    match: (p) => inCategory(p, "horror") || p.subtitle?.toLowerCase().includes("horror"),
-  },
-  {
-    key: "seasonal",
-    title: "Seasonal Collection",
-    blurb: "Holiday and seasonal themes across the year",
-    href: "/collections/seasonal",
-    match: (p) => inCategory(p, "seasonal") || p.subtitle?.toLowerCase().includes("seasonal"),
-  },
-  {
-    key: "camo",
-    title: "Camo Collection",
-    blurb: "Utility inspired camouflage designs from pixel to organic",
-    href: "/collections/camo",
-    match: (p) => inCategory(p, "camo") || p.subtitle?.toLowerCase().includes("camo"),
-  },
-];
-
-function pickCoverSrc(items: any[]): string {
-  // 1 - first explicit thumbnail
-  const withThumb = items.find((p) => p.thumbnail && p.thumbnail.trim().length > 0);
-  if (withThumb) return withThumb.thumbnail.trim();
-  // 2 - construct from slug if we must
-  const withSlug = items.find((p) => p.slug && p.slug.trim().length > 0);
-  if (withSlug) return `https://files.patternripple.com/${withSlug.slug}-thumb.jpg`;
-  // 3 - hard default
-  return DEFAULT_THUMB;
-}
 
 export default function CollectionsPage() {
   const data = useMemo(() => {
     return COLLECTIONS.map((c) => {
-      const items = products.filter(c.match);
+      const items = filterByCollection(products, c.key);
       const count = items.length;
-      const src = pickCoverSrc(items);
-      return { ...c, count, src };
+      // prefers a real product thumbnail if any; else c.cover from R2
+      const src = pickCollectionCover(products, c.key);
+      const href = collectionHref(c.key);
+      // simple fallback blurb
+      const blurb = `${c.name} patterns and prints`;
+      return { key: c.key, title: c.name, blurb, href, src, count };
     });
   }, []);
 
@@ -99,7 +32,6 @@ export default function CollectionsPage() {
 
   return (
     <main className="mx-auto max-w-7xl p-6 space-y-6">
-      {/* top stats - adjust or remove as you wish */}
       <div className="flex flex-wrap gap-3 justify-center text-sm">
         <span className="px-3 py-1 rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white">
           {data.length} Collections
