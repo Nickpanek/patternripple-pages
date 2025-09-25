@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import Script from "next/script"; // <-- add this
+import Script from "next/script";
+import Search from "@/components/Search";
 
 // stop Next from preloading the font to remove preload warnings
 const inter = Inter({ subsets: ["latin"], display: "swap", preload: false });
@@ -44,13 +45,14 @@ export default function RootLayout({
         className={`${inter.className} bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen`}
       >
         <nav className="bg-white/90 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
             <Link
               href="/"
               className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
             >
               PatternRipple
             </Link>
+            <Search />
           </div>
         </nav>
         {children}
