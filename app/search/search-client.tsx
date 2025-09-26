@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
 type Result = {
@@ -17,52 +18,50 @@ type Result = {
 };
 
 export default function SearchPageClient() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Result[]>([]);
-  const [touched, setTouched] = useState(false);
 
+  // keep local state in sync with the URL at all times
   useEffect(() => {
-    const initQ = new URLSearchParams(window.location.search).get("q") || "";
-    if (initQ) {
-      setQ(initQ);
-      setTouched(true);
-    }
-  }, []);
+    const urlQ = searchParams.get("q") || "";
+    setQ(urlQ);
+  }, [searchParams]);
 
+  // fetch when q changes
   useEffect(() => {
     const run = async () => {
-      if (!touched) return;
-      if (q.trim().length < 2) {
+      const term = q.trim();
+      if (term.length < 2) {
         setResults([]);
         return;
       }
       setLoading(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(q.trim())}`, {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(term)}`, {
           cache: "no-store",
           headers: { Accept: "application/json" },
         });
-        // If this throws, it means the route returned HTML or a non JSON response
         const data = await res.json();
         setResults(Array.isArray(data.results) ? data.results : []);
-      } catch (e) {
-        setResults([]);
       } finally {
         setLoading(false);
       }
     };
-    const t = setTimeout(run, 200);
+    const t = setTimeout(run, 150); // small debounce
     return () => clearTimeout(t);
-  }, [q, touched]);
+  }, [q]);
 
   const hint = useMemo(() => {
-    if (!touched) return "Type at least 2 characters";
     if (loading) return "Searching...";
     if (q.trim().length < 2) return "Type at least 2 characters";
     if (!results.length) return `No matches for "${q}"`;
     return `${results.length} match${results.length === 1 ? "" : "es"}`;
-  }, [q, results, loading, touched]);
+  }, [q, results, loading]);
 
   return (
     <div>
@@ -70,17 +69,16 @@ export default function SearchPageClient() {
         className="mb-4 flex gap-2"
         onSubmit={(e) => {
           e.preventDefault();
-          setTouched(true);
-          const params = new URLSearchParams(window.location.search);
-          params.set("q", q.trim());
-          const url = `${window.location.pathname}?${params.toString()}`;
-          window.history.replaceState({}, "", url);
+          const term = q.trim();
+          const params = new URLSearchParams(searchParams.toString());
+          if (term) params.set("q", term);
+          else params.delete("q");
+          router.replace(`${pathname}?${params.toString()}`, { scroll: false });
         }}
       >
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          onFocus={() => setTouched(true)}
           placeholder="Search products, tags, categories..."
           className="w-full rounded-lg border px-3 py-2"
           aria-label="Search"
