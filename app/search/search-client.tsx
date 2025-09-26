@@ -1,108 +1,114 @@
 // app/search/search-client.tsx
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import MiniSearch from "minisearch";
 
-type Doc = {
-  id: string;
-  type: "product" | "blog" | "collection" | "page";
+type Result = {
+  type: "product" | "post";
   title: string;
   subtitle?: string;
-  url: string;
-  thumb?: string;
+  description?: string;
+  tags?: string[];
+  category?: string | string[];
+  slug: string;
+  href: string;
+  score: number;
 };
 
 export default function SearchPageClient() {
-  const params = useSearchParams();
-  const initialQ = params.get("q") || "";
-  const [q, setQ] = useState(initialQ);
-  const [ready, setReady] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
-  const miniRef = useRef<MiniSearch | null>(null);
-  const docsRef = useRef<Record<string, Doc>>({});
+  const [q, setQ] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<Result[]>([]);
+  const [touched, setTouched] = useState(false);
 
   useEffect(() => {
-    let alive = true;
-    async function load() {
-      const [idxRes, docsRes] = await Promise.all([
-        fetch("/search/index.json"),
-        fetch("/search/docs.json"),
-      ]);
-      const idxJson = await idxRes.json();
-      const docsArr: Doc[] = await docsRes.json();
-
-      miniRef.current = MiniSearch.loadJSON(idxJson, {
-        fields: ["title", "subtitle", "description", "tags", "category", "sku"],
-        storeFields: ["id", "type", "title", "subtitle", "url", "thumb"],
-        searchOptions: { prefix: true, fuzzy: 0.2, boost: { title: 3, subtitle: 2, tags: 2 } },
-      });
-
-      docsRef.current = Object.fromEntries(docsArr.map((d) => [d.id, d]));
-      if (alive) setReady(true);
+    const initQ = new URLSearchParams(window.location.search).get("q") || "";
+    if (initQ) {
+      setQ(initQ);
+      setTouched(true);
     }
-    load();
-    return () => {
-      alive = false;
-    };
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      if (!ready || !miniRef.current) return setResults([]);
-      const query = q.trim();
-      if (!query) return setResults([]);
-      const r = miniRef.current.search(query, {
-        prefix: true,
-        fuzzy: 0.2,
-        boost: { title: 3 },
-        combineWith: "AND",
-      });
-      setResults(r);
-    }, 120);
+    const run = async () => {
+      if (!touched) return;
+      if (q.trim().length < 2) {
+        setResults([]);
+        return;
+      }
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q.trim())}`, {
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+        });
+        // If this throws, it means the route returned HTML or a non JSON response
+        const data = await res.json();
+        setResults(Array.isArray(data.results) ? data.results : []);
+      } catch (e) {
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    const t = setTimeout(run, 200);
     return () => clearTimeout(t);
-  }, [q, ready]);
+  }, [q, touched]);
 
-  const items = useMemo(
-    () => results.map((r) => docsRef.current[String((r as any).id)]).filter(Boolean) as Doc[],
-    [results]
-  );
+  const hint = useMemo(() => {
+    if (!touched) return "Type at least 2 characters";
+    if (loading) return "Searching...";
+    if (q.trim().length < 2) return "Type at least 2 characters";
+    if (!results.length) return `No matches for "${q}"`;
+    return `${results.length} match${results.length === 1 ? "" : "es"}`;
+  }, [q, results, loading, touched]);
 
   return (
-    <>
-      <form onSubmit={(e) => e.preventDefault()} className="mb-6" role="search" aria-label="Search site">
+    <div>
+      <form
+        className="mb-4 flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          setTouched(true);
+          const params = new URLSearchParams(window.location.search);
+          params.set("q", q.trim());
+          const url = `${window.location.pathname}?${params.toString()}`;
+          window.history.replaceState({}, "", url);
+        }}
+      >
         <input
-          type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search patterns, collections, posts..."
-          className="w-full rounded-2xl border px-4 py-2 text-base outline-none"
+          onFocus={() => setTouched(true)}
+          placeholder="Search products, tags, categories..."
+          className="w-full rounded-lg border px-3 py-2"
+          aria-label="Search"
         />
+        <button className="rounded-lg border px-3 py-2" type="submit">Search</button>
       </form>
 
-      {q && items.length === 0 && <p className="text-sm text-gray-600">No results for "{q}".</p>}
+      <p className="mb-3 text-sm text-gray-600">{hint}</p>
 
-      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((it) => (
-          <li key={it.id} className="rounded-xl border p-3 hover:shadow">
-            <Link href={it.url} className="flex gap-3">
-              {it.thumb ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={it.thumb} alt="" className="h-16 w-16 rounded-lg object-cover" />
-              ) : (
-                <div className="h-16 w-16 rounded-lg bg-gray-200" />
-              )}
-              <div className="min-w-0">
-                <div className="truncate font-semibold">{it.title}</div>
-                {it.subtitle ? <div className="truncate text-sm text-gray-600">{it.subtitle}</div> : null}
-                <div className="text-[10px] uppercase text-gray-500">{it.type}</div>
-              </div>
+      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {results.map((r) => (
+          <li key={`${r.type}-${r.slug}`} className="rounded-xl border p-4">
+            <div className="text-xs uppercase tracking-wide opacity-70">{r.type}</div>
+            <Link href={r.href} className="block text-lg font-semibold hover:underline">
+              {r.title}
             </Link>
+            {r.subtitle && <div className="text-sm opacity-80">{r.subtitle}</div>}
+            {Array.isArray(r.category) ? (
+              <div className="text-xs opacity-60">Categories: {r.category.join(", ")}</div>
+            ) : r.category ? (
+              <div className="text-xs opacity-60">Category: {r.category}</div>
+            ) : null}
+            {r.tags && r.tags.length > 0 && (
+              <div className="mt-1 text-xs opacity-60">Tags: {r.tags.slice(0, 8).join(", ")}</div>
+            )}
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
 }
