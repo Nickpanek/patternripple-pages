@@ -3,56 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>Seamless Pattern Checker - Free Tile Preview Tool - PatternRipple</title>
-  <meta name="description" content="Free seamless pattern checker. Upload an image or paste a URL and preview a 4x4 tile with optional gaps to spot seams. Perfect for fabric, wallpaper, and mockups." />
-
-  <link rel="canonical" href="https://www.patternripple.com/pattern-checker.html" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Seamless Pattern Checker - Free Tile Preview Tool" />
-  <meta property="og:description" content="Upload an image or paste a URL and preview a 4x4 seamless tile with gaps to check edges." />
-  <meta property="og:url" content="https://www.patternripple.com/pattern-checker.html" />
-  <meta property="og:site_name" content="PatternRipple" />
-  <meta property="og:image" content="https://files.patternripple.com/og/pattern-checker-1200x630.jpg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Seamless Pattern Checker - Free Tile Preview Tool" />
-  <meta name="twitter:description" content="Preview any image as a seamless repeat. 4x4 grid, optional gaps, fast, free." />
-  <meta name="twitter:image" content="https://files.patternripple.com/og/pattern-checker-1200x630.jpg" />
-
-  <meta name="robots" content="index,follow,max-image-preview:large" />
-  <meta name="theme-color" content="#0b0b0c" />
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Seamless Pattern Checker",
-    "url": "https://www.patternripple.com/pattern-checker.html",
-    "applicationCategory": "DesignApplication",
-    "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "featureList": [
-      "Preview any image as a seamless tile",
-      "4x4 grid by default with adjustable rows and columns",
-      "Optional gaps to reveal seams",
-      "Load from device or image URL"
-    ],
-    "creator": {
-      "@type": "Organization",
-      "name": "PatternRipple",
-      "url": "https://www.patternripple.com"
-    }
-  }
-  </script>
-
+  <title>Seamless Pattern Checker - PatternRipple</title>
+  <meta name="description" content="Free tool to preview any image as a seamless tile. Upload an image and see a 4x4 repeat with optional gaps to inspect seams." />
   <style>
     :root { --bg: #0b0b0c; --panel: #151518; --text: #eaeaf0; --muted: #9aa0a6; --border: #232327; --accent: #7ee787; }
     * { box-sizing: border-box; }
@@ -87,192 +39,286 @@
     .foot { margin-top: 6px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; font-size: 12px; color: var(--muted); }
     .info-box { background: rgba(126,231,135,0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 12px; margin-top: 12px; font-size: 12px; }
   </style>
-  <style>
-    .seo-note { margin: 16px 0 0; font-size: 13px; color: var(--muted); }
-    .seo-note a { color: #9ecbff; }
-  </style>
 </head>
 <body>
   <header>
     <div class="left">
-      <a class="brand" href="https://www.patternripple.com">PatternRipple</a>
-      <span class="pill">Seamless Pattern Checker</span>
+      <div class="brand">PatternRipple</div>
+      <span class="pill">Free Tool</span>
     </div>
-    <nav>
-      <a href="https://www.patternripple.com">Home</a>
+    <nav class="right" aria-label="navigation">
+      <a class="btn" href="https://www.patternripple.com">Browse Patterns</a>
     </nav>
   </header>
-
   <main>
     <section class="panel controls" aria-label="controls">
-      <h2>Load image</h2>
-      <div class="dropzone" id="dropzone">
-        <p>Drop an image here, or click to choose a file</p>
-        <div class="dz-actions">
-          <label class="btn">
-            <input id="file-input" type="file" accept="image/*" hidden />
-            Choose file
-          </label>
-          <button id="clear">Clear</button>
-        </div>
+      <h2>Seamless Pattern Checker</h2>
+      
+      <div class="info-box">
+        <strong>Free tool!</strong> Test any image for seamless tiling. Perfect for checking pattern edges before purchasing or using in your designs.
       </div>
 
-      <div class="row">
-        <label for="img-url">or paste image URL</label>
-      </div>
-      <input id="img-url" type="text" placeholder="https://example.com/your-image.png" />
+      <hr style="border: none; border-top: 1px solid var(--border); margin: 14px 0" />
 
-      <h2 style="margin-top:16px;">Grid</h2>
-      <div class="row">
-        <label for="rows">Rows</label>
-        <input id="rows" type="number" min="1" max="20" value="4" />
-      </div>
+      <h2>Tile Settings</h2>
       <div class="row">
         <label for="cols">Columns</label>
-        <input id="cols" type="number" min="1" max="20" value="4" />
+        <input id="cols" type="number" min="1" max="20" step="1" value="4" />
       </div>
 
-      <h2 style="margin-top:16px;">Gaps</h2>
-      <label class="toggle">
-        <input id="gap-toggle" type="checkbox" />
-        <span id="gap-label">Gaps: Off</span>
-      </label>
-      <div class="hint">When on, uses a 6px gap to help spot seams.</div>
+      <div class="row">
+        <label for="rows">Rows</label>
+        <input id="rows" type="number" min="1" max="20" step="1" value="4" />
+      </div>
 
-      <div class="info-box">
-        Tip: Use PNG or JPG around 1024 to 4096 px for quick previews. Large images may be downscaled in the browser.
+      <div class="row">
+        <label for="gapToggle">Show Gaps: <span id="gapLabel">Off</span></label>
+        <label class="toggle">
+          <input id="gapToggle" type="checkbox" />
+        </label>
+      </div>
+
+      <div class="row" id="gapSizeRow" style="opacity: 0.5;">
+        <label for="gapSize">Gap size (px)</label>
+        <input id="gapSize" type="number" min="0" max="64" step="1" value="6" disabled />
+      </div>
+      <div class="hint">Enable gaps to reveal seams between tiles - perfect for quality checking!</div>
+
+      <hr style="border: none; border-top: 1px solid var(--border); margin: 14px 0" />
+
+      <h2>Upload Image</h2>
+      <div class="dropzone" id="dropzone">
+        <div><strong>🖼️ Drop an image here</strong></div>
+        <div style="margin-top: 8px;">or click to browse</div>
+        <div class="dz-actions">
+          <input id="fileInput" type="file" accept="image/*" style="display: none;" />
+        </div>
+        <div class="dz-actions">
+          <input id="urlInput" type="text" placeholder="...or paste image URL (https://)" />
+          <button id="loadUrlBtn">Load from URL</button>
+        </div>
+      </div>
+      <div class="hint">Supports PNG, JPG, GIF, WebP. Max recommended: 4096x4096px</div>
+
+      <div class="foot">
+        <span>💡 Tip: Use 4×4 with gaps ON to check seams</span>
+        <a href="https://www.patternripple.com">Visit PatternRipple →</a>
       </div>
     </section>
 
-    <section class="panel" aria-label="preview">
-      <canvas id="canvas" width="1600" height="1200"></canvas>
-      <div class="foot">
-        <span>Preview is client side only. Your image never leaves your device.</span>
-        <a href="https://www.patternripple.com/collections/faux-embroidery">Browse patterns</a>
-      </div>
+    <section class="panel">
+      <canvas id="canvas" aria-label="preview"></canvas>
     </section>
   </main>
-
-  <section class="panel seo-note" aria-label="about this tool">
-    <p>
-      The PatternRipple seamless pattern checker is a free browser tool for previewing repeat tiles. Upload a PNG or JPG or paste an image URL and view a 4x4 grid with optional gaps to check edges. Designers use it to vet fabric and wallpaper repeats before buying or exporting finals. Explore related designs in the
-      <a href="https://www.patternripple.com/collections/faux-embroidery">Faux Embroidery</a>,
-      <a href="https://www.patternripple.com/collections/abstract">Abstract</a>, and
-      <a href="https://www.patternripple.com/collections/geometric">Geometric</a> collections.
-    </p>
-  </section>
-
   <script>
-    // State
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    const fileInput = document.getElementById("file-input");
-    const imgUrlInput = document.getElementById("img-url");
-    const dropzone = document.getElementById("dropzone");
-    const rowsInput = document.getElementById("rows");
-    const colsInput = document.getElementById("cols");
-    const gapToggle = document.getElementById("gap-toggle");
-    const gapLabel = document.getElementById("gap-label");
-    const clearBtn = document.getElementById("clear");
+    (function() {
+      'use strict';
+      
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d', { alpha: false });
+      const colsEl = document.getElementById('cols');
+      const rowsEl = document.getElementById('rows');
+      const gapToggleEl = document.getElementById('gapToggle');
+      const gapLabel = document.getElementById('gapLabel');
+      const gapSizeEl = document.getElementById('gapSize');
+      const gapSizeRow = document.getElementById('gapSizeRow');
+      const fileInput = document.getElementById('fileInput');
+      const urlInput = document.getElementById('urlInput');
+      const loadUrlBtn = document.getElementById('loadUrlBtn');
+      const dropzone = document.getElementById('dropzone');
 
-    let img = null;
-    let gap = 0;
+      let img = null;
+      let imgW = 0, imgH = 0;
+      let animFrame = null;
 
-    function setGapUI() {
-      if (gapToggle.checked) {
-        gap = 6;
-        gapLabel.textContent = "Gaps: On";
-      } else {
-        gap = 0;
-        gapLabel.textContent = "Gaps: Off";
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        scheduleDraw();
       }
-      draw();
-    }
+      
+      function scheduleDraw() {
+        if (animFrame) cancelAnimationFrame(animFrame);
+        animFrame = requestAnimationFrame(draw);
+      }
+      
+      window.addEventListener('resize', resizeCanvas, { passive: true });
 
-    gapToggle.addEventListener("change", setGapUI);
+      function setGapLabel() {
+        const enabled = gapToggleEl.checked;
+        gapLabel.textContent = enabled ? 'On' : 'Off';
+        gapSizeEl.disabled = !enabled;
+        gapSizeRow.style.opacity = enabled ? '1' : '0.5';
+      }
 
-    // Drag and drop
-    ["dragenter","dragover"].forEach(evt =>
-      dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add("drag"); })
-    );
-    ["dragleave","drop"].forEach(evt =>
-      dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.remove("drag"); })
-    );
-    dropzone.addEventListener("drop", e => {
-      const file = e.dataTransfer.files && e.dataTransfer.files[0];
-      if (file) loadFile(file);
-    });
-    dropzone.addEventListener("click", () => fileInput.click());
+      function draw() {
+        const w = canvas.width / (window.devicePixelRatio || 1);
+        const h = canvas.height / (window.devicePixelRatio || 1);
+        
+        ctx.fillStyle = '#0f0f12';
+        ctx.fillRect(0, 0, w, h);
 
-    // File input
-    fileInput.addEventListener("change", e => {
-      const file = e.target.files && e.target.files[0];
-      if (file) loadFile(file);
-    });
+        if (!img) {
+          // Empty state with grid
+          ctx.strokeStyle = 'rgba(36,36,42,0.5)';
+          ctx.lineWidth = 1;
+          const step = 32;
+          for (let x = 0; x <= w; x += step) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, h);
+            ctx.stroke();
+          }
+          for (let y = 0; y <= h; y += step) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(w, y);
+            ctx.stroke();
+          }
+          
+          ctx.fillStyle = '#9aa0a6';
+          ctx.font = '14px system-ui, -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Drop or select an image to preview seamless tiling', w/2, h/2);
+          return;
+        }
 
-    function loadFile(file) {
-      const reader = new FileReader();
-      reader.onload = () => loadImage(reader.result);
-      reader.readAsDataURL(file);
-    }
+        const cols = Math.max(1, Math.min(50, parseInt(colsEl.value || '4', 10)));
+        const rows = Math.max(1, Math.min(50, parseInt(rowsEl.value || '4', 10)));
+        const gapOn = gapToggleEl.checked;
+        const gap = gapOn ? Math.max(0, Math.min(64, parseInt(gapSizeEl.value || '6', 10))) : 0;
 
-    // URL input
-    imgUrlInput.addEventListener("change", () => {
-      const url = imgUrlInput.value.trim();
-      if (url) loadImage(url);
-    });
+        const totalGapX = gap * (cols - 1);
+        const totalGapY = gap * (rows - 1);
 
-    function loadImage(src) {
-      const image = new Image();
-      // Enable CORS anonymous to attempt drawing for same origin or permissive servers
-      image.crossOrigin = "anonymous";
-      image.onload = () => {
-        img = image;
-        draw();
-      };
-      image.onerror = () => {
-        alert("Could not load image. If this is a third party URL, CORS may block drawing to canvas. Try downloading and loading from your device.");
-      };
-      image.src = src;
-    }
+        const cellW = imgW;
+        const cellH = imgH;
+        let gridW = cols * cellW + totalGapX;
+        let gridH = rows * cellH + totalGapY;
 
-    // Grid inputs
-    rowsInput.addEventListener("input", draw);
-    colsInput.addEventListener("input", draw);
+        const pad = 24;
+        const maxW = w - pad * 2;
+        const maxH = h - pad * 2;
+        const scale = Math.min(1, Math.min(maxW / gridW, maxH / gridH));
+        const tileW = Math.floor(cellW * scale);
+        const tileH = Math.floor(cellH * scale);
+        const g = Math.floor(gap * scale);
 
-    // Clear
-    clearBtn.addEventListener("click", () => {
-      img = null;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    });
+        gridW = cols * tileW + g * (cols - 1);
+        gridH = rows * tileH + g * (rows - 1);
 
-    // Draw
-    function draw() {
-      const rows = Math.max(1, Math.min(20, parseInt(rowsInput.value || "4", 10)));
-      const cols = Math.max(1, Math.min(20, parseInt(colsInput.value || "4", 10)));
-      const w = canvas.width;
-      const h = canvas.height;
+        const startX = Math.floor((w - gridW) / 2);
+        const startY = Math.floor((h - gridH) / 2);
 
-      ctx.fillStyle = "#111114";
-      ctx.fillRect(0, 0, w, h);
+        // Draw background for gaps if enabled
+        if (gapOn && g > 0) {
+          ctx.fillStyle = '#0b0b0c';
+          ctx.fillRect(startX, startY, gridW, gridH);
+        }
 
-      if (!img) return;
-
-      const tileW = Math.floor((w - (cols - 1) * gap) / cols);
-      const tileH = Math.floor((h - (rows - 1) * gap) / rows);
-
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const x = c * (tileW + gap);
-          const y = r * (tileH + gap);
-          ctx.drawImage(img, 0, 0, img.width, img.height, x, y, tileW, tileH);
+        // Draw tiles
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const x = startX + c * (tileW + g);
+            const y = startY + r * (tileH + g);
+            ctx.drawImage(img, 0, 0, imgW, imgH, x, y, tileW, tileH);
+          }
         }
       }
-    }
 
-    // Initial UI state
-    gapToggle.checked = false; // default Off
-    setGapUI();
+      function loadFromFile(file) {
+        if (!file) return;
+        if (file.size > 50 * 1024 * 1024) { // 50MB limit
+          alert('File too large. Please use an image under 50MB.');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = e => loadFromSrc(e.target.result);
+        reader.onerror = () => alert('Failed to read file.');
+        reader.readAsDataURL(file);
+      }
+
+      function loadFromSrc(src) {
+        const i = new Image();
+        i.crossOrigin = 'anonymous';
+        i.onload = () => {
+          img = i;
+          imgW = i.naturalWidth || i.width;
+          imgH = i.naturalHeight || i.height;
+          scheduleDraw();
+        };
+        i.onerror = () => {
+          alert('Failed to load image. If loading from URL, the site may not allow cross-origin requests.');
+        };
+        i.src = src;
+      }
+
+      // File input
+      dropzone.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', e => {
+        const f = e.target.files && e.target.files[0];
+        if (f) loadFromFile(f);
+      });
+
+      // URL loading
+      loadUrlBtn.addEventListener('click', () => {
+        const u = (urlInput.value || '').trim();
+        if (!u) return;
+        if (!u.match(/^https?:\/\//)) {
+          alert('Please enter a valid URL starting with http:// or https://');
+          return;
+        }
+        loadFromSrc(u);
+      });
+      
+      urlInput.addEventListener('keypress', e => {
+        if (e.key === 'Enter') loadUrlBtn.click();
+      });
+
+      // Drag & drop
+      ['dragenter','dragover'].forEach(evt => {
+        dropzone.addEventListener(evt, e => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('drag');
+        });
+      });
+      
+      ['dragleave','drop'].forEach(evt => {
+        dropzone.addEventListener(evt, e => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('drag');
+        });
+      });
+      
+      dropzone.addEventListener('drop', e => {
+        const files = e.dataTransfer?.files;
+        if (files && files.length > 0) {
+          loadFromFile(files[0]);
+        }
+      });
+
+      // Control listeners
+      gapToggleEl.addEventListener('change', () => {
+        setGapLabel();
+        scheduleDraw();
+      });
+      
+      [colsEl, rowsEl, gapSizeEl].forEach(el => {
+        el.addEventListener('input', scheduleDraw);
+        el.addEventListener('change', scheduleDraw);
+      });
+
+      // Initialize
+      setGapLabel();
+      resizeCanvas();
+    })();
   </script>
 </body>
 </html>
