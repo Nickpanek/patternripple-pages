@@ -11,6 +11,17 @@
     "exclusive": true,
     "available": true
   },
+  {
+  "slug": "infernal-damnation-painterly-ochre-red",
+  "title": "Infernal Damnation in Ochre and Red",
+  "subtitle": "Horror Collection",
+  "price": 125,
+  "sku": "PR-hor-20250926-001",
+  "stripePriceId": "price_1SBmRTBB8R6OUfKVJ86i6HOI",
+  "thumbnail": "https://files.patternripple.com/infernal-damnation-painterly-ochre-red-thumb.jpg",
+  "exclusive": true,
+  "available": true
+}
    {
     "slug": "monochrome-architectural-arches-pattern",
     "sku": "PR-geo-20250925-017",
