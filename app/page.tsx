@@ -161,6 +161,18 @@ const products: Product[] = [
     available: true,
     category: "geometric"
   },
+   {
+    slug: "infernal-damnation-painterly-ochre-red",
+    title: "Infernal Damnation in Ochre and Red",
+    subtitle: "Horror Collection",
+    price: 125,
+    sku: "PR-hor-20250926-001",
+    stripePriceId: "price_1SBmRTBB8R6OUfKVJ86i6HOI",
+    thumbnail: "https://files.patternripple.com/infernal-damnation-painterly-ochre-red-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "horror"
+  },
   {
     slug: "impasto-poinsettia-christmas-floral-red",
     title: "Impasto Poinsettia Christmas Floral",
