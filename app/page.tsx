@@ -423,6 +423,14 @@ export default function HomePage() {
             >
               Blog
             </Link>
+            <Link 
+              href="/pattern-checker.html" 
+              prefetch={false}
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors"
+            >
+              Free Tile Checker
+            </Link>
+
           </div>
         </div>
       </nav>
