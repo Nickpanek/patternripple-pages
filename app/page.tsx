@@ -30,6 +30,18 @@ const products: Product[] = [
     category: "architecture"
   }, 
   {
+    slug: "rustic-stars-and-stripes-patriotic",
+    title: "Rustic Stars and Stripes",
+    subtitle: "USA Patriotic Collection",
+    price: 125,
+    sku: "PR-sea-20250927-007",
+    stripePriceId: "price_1SBtJiBB8R6OUfKVxSwa3VGS",
+    thumbnail: "https://files.patternripple.com/rustic-stars-and-stripes-patriotic-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "usa-patriotic"
+  }, 
+  {
     slug: "textured-gothic-skulls-charcoal",
     title: "Textured Gothic Skulls on Charcoal",
     subtitle: "Horror Collection",
