@@ -45,11 +45,9 @@
       <span class="pill">Seamless Checker</span>
     </div>
     <nav class="right" aria-label="shortcuts">
-      <a class="btn" href="/collections/faux-embroidery">Shop Faux-Embroidery</a>
       <a class="btn" href="https://www.buymeacoffee.com/prompternick" target="_blank" rel="noopener">Buy me a coffee</a>
     </nav>
   </header>
-
   <main>
     <section class="panel controls" aria-label="controls">
       <h2>Controls</h2>
@@ -102,7 +100,6 @@
       <canvas id="canvas" aria-label="preview"></canvas>
     </section>
   </main>
-
   <script>
     (function() {
       const canvas = document.getElementById('canvas');
@@ -219,7 +216,7 @@
 
       function loadFromSrc(src) {
         const i = new Image();
-        i.crossOrigin = "anonymous";
+        i.crossOrigin = 'anonymous';
         i.onload = () => {
           img = i;
           imgW = i.naturalWidth || i.width;
@@ -250,10 +247,10 @@
       });
 
       // Drag & drop
-      ;['dragenter','dragover'].forEach(evt => dropzone.addEventListener(evt, e => {
+      ['dragenter','dragover'].forEach(evt => dropzone.addEventListener(evt, e => {
         e.preventDefault(); e.stopPropagation(); dropzone.classList.add('drag');
       }));
-      ;['dragleave','drop'].forEach(evt => dropzone.addEventListener(evt, e => {
+      ['dragleave','drop'].forEach(evt => dropzone.addEventListener(evt, e => {
         e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('drag');
       }));
       dropzone.addEventListener('drop', e => {
