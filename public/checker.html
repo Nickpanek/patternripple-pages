@@ -144,8 +144,6 @@
     toggleGapsBtn.addEventListener('click', () => {
       gapsOn = !gapsOn;
       updateBadge();
-      // redraw with last image if present by using the canvas as src
-      // no stored image, so just ask the file input again if empty
       const f = fileInput.files && fileInput.files[0];
       if (f) {
         readFile(f);
