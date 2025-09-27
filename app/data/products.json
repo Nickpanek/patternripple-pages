@@ -12,6 +12,19 @@
     "available": true
   },
   {
+  slug: "vintage-floral-patchwork-quilt-multicolor",
+  title: "Vintage Floral Patchwork Quilt",
+  subtitle: "Patchwork Quilt Collection",
+  price: 125,
+  sku: "PR-tex-20250927-008",
+  stripePriceId: "price_1SC4o6BB8R6OUfKVsQSbjj9o", // replace after creating in Stripe
+  thumbnail: "https://files.patternripple.com/vintage-floral-patchwork-quilt-multicolor-thumb.jpg",
+  exclusive: true,
+  available: true,
+  category: "patchwork-quilt",
+  subcategory: "patchwork"
+}
+  {
   "slug": "rustic-stars-and-stripes-patriotic",
   "title": "Rustic Stars and Stripes",
   "subtitle": "Seasonal Collection",
