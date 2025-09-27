@@ -30,6 +30,18 @@ const products: Product[] = [
     category: "architecture"
   }, 
   {
+    slug: "artisanal-geometric-faux-embroidery-multicolor",
+    title: "Artisanal Geometric Faux Embroidery",
+    subtitle: "Faux Embroidery Collection",
+    price: 125,
+    sku: "PR-emb-20250927-015",
+    stripePriceId: "price_1SBu2EBB8R6OUfKVO1zziq0E",
+    thumbnail: "https://files.patternripple.com/artisanal-geometric-faux-embroidery-multicolor-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "faux-embroidery"
+  },
+  {
     slug: "rustic-stars-and-stripes-patriotic",
     title: "Rustic Stars and Stripes",
     subtitle: "USA Patriotic Collection",
