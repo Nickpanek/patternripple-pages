@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
    {
+    slug: "farmhouse-puppies-wildflowers-sage-green",
+    title: "Farmhouse Puppies and Wildflowers on Sage",
+    subtitle: "Cutew Animals Collection",
+    price: 125,
+    sku: "PR-ani-20250927-001",
+    stripePriceId: "price_1SC5IQBB8R6OUfKVz5rjOxJr",
+    thumbnail: "https://files.patternripple.com/farmhouse-puppies-wildflowers-sage-green-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "cute-animals"
+  },
+  {
     slug: "vintage-floral-patchwork-quilt-multicolor",
     title: "Vintage Floral Patchwork Quilt",
     subtitle: "Patchwork Quilt Collection",
