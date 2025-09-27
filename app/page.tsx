@@ -376,61 +376,37 @@ export default function HomePage() {
       </header>
 
       {/* Quick Navigation */}
-      <nav className="bg-white/50 backdrop-blur-sm border-b border-gray-100 sticky top-14 z-40">
+           <nav className="bg-white/50 backdrop-blur-sm border-b border-gray-100 sticky top-14 z-40">
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-wrap gap-2 justify-center items-center">
             <Link 
               href="/collections" 
-              className="text-gray-700 hover:text-purple-600 font-medium transition-colors"
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
             >
-              All Collections
+              Collections
             </Link>
-            <span className="text-gray-300">|</span>
-            <Link 
-              href="/collections/floral" 
-              className="text-gray-600 hover:text-purple-600 transition-colors"
-            >
-              Floral
-            </Link>
-            <Link 
-              href="/collections/geometric" 
-              className="text-gray-600 hover:text-purple-600 transition-colors"
-            >
-              Geometric
-            </Link>
-            <Link 
-              href="/collections/faux-embroidery" 
-              className="text-gray-600 hover:text-purple-600 transition-colors"
-            >
-              Faux Embroidery
-            </Link>
-            <Link 
-              href="/collections/seasonal" 
-              className="text-gray-600 hover:text-purple-600 transition-colors"
-            >
-              Seasonal
-            </Link>
-            <span className="text-gray-300">|</span>
+            <span className="text-gray-300">•</span>
             <Link 
               href="/about" 
-              className="text-gray-700 hover:text-purple-600 font-medium transition-colors"
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
             >
               About
             </Link>
+            <span className="text-gray-300">•</span>
             <Link 
               href="/blog" 
-              className="text-gray-700 hover:text-purple-600 font-medium transition-colors"
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
             >
               Blog
             </Link>
+            <span className="text-gray-300">•</span>
             <Link 
               href="/pattern-checker.html" 
               prefetch={false}
-              className="text-gray-700 hover:text-purple-600 font-medium transition-colors"
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
             >
               Free Tile Checker
             </Link>
-
           </div>
         </div>
       </nav>
