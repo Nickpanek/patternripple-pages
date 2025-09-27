@@ -1,270 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Seamless Pattern Checker - PatternRipple</title>
-  <meta name="description" content="Quickly preview any image as a seamless tile. Upload an image and see a 4x4 repeat with optional 6px gaps to inspect seams." />
-  <style>
-    :root { --bg: #0b0b0c; --panel: #151518; --text: #eaeaf0; --muted: #9aa0a6; --border: #232327; --accent: #7ee787; }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
-    a { color: #9ecbff; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: center; justify-content: space-between; background: rgba(21,21,24,0.8); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(6px); }
-    header .left { display: flex; align-items: center; gap: 12px; }
-    header .brand { font-weight: 700; letter-spacing: 0.2px; }
-    header .pill { padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; background: #111114; color: var(--muted); font-size: 12px; }
-    main { display: grid; grid-template-columns: 340px 1fr; gap: 16px; padding: 16px; height: calc(100% - 65px); }
-    @media (max-width: 980px) { main { grid-template-columns: 1fr; height: auto; } }
-    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
-    .panel h2 { margin: 0 0 12px; font-size: 16px; }
-    .row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .row label { font-size: 13px; color: var(--muted); }
-    .controls .row input[type="number"] { width: 80px; padding: 8px; border-radius: 10px; border: 1px solid var(--border); background: #0f0f12; color: var(--text); }
-    .toggle { display: inline-flex; align-items: center; gap: 8px; user-select: none; cursor: pointer; }
-    .toggle input { appearance: none; width: 42px; height: 24px; border-radius: 999px; background: #34343a; position: relative; outline: none; transition: background .2s ease; border: 1px solid var(--border); }
-    .toggle input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #bbb; transition: left .2s ease, background .2s ease; }
-    .toggle input:checked { background: #224a2f; }
-    .toggle input:checked::after { left: 22px; background: var(--accent); }
-    .hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
-    .dropzone { border: 1px dashed #3a3a3f; border-radius: 12px; padding: 14px; text-align: center; background: #101014; }
-    .dropzone.drag { border-color: #7ee787; background: #0c1610; }
-    .dz-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
-    button, .btn { appearance: none; border: 1px solid var(--border); background: #0f0f12; color: var(--text); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; }
-    button:hover, .btn:hover { background: #15151a; }
-    input[type="file"], input[type="text"] { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: #0f0f12; color: var(--text); }
-    canvas { width: 100%; height: calc(100vh - 32px - 65px); display: block; background: #111114; border: 1px solid var(--border); border-radius: 14px; }
-    .foot { margin-top: 6px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; font-size: 12px; color: var(--muted); }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="left">
-      <div class="brand">PatternRipple</div>
-      <span class="pill">Seamless Checker</span>
-    </div>
-    <nav class="right" aria-label="shortcuts">
-      <a class="btn" href="https://www.buymeacoffee.com/prompternick" target="_blank" rel="noopener">Buy me a coffee</a>
-    </nav>
-  </header>
-  <main>
-    <section class="panel controls" aria-label="controls">
-      <h2>Controls</h2>
+"use client";
 
-      <div class="row">
-        <label for="cols">Columns</label>
-        <input id="cols" type="number" min="1" max="20" step="1" value="4" />
+import { useEffect, useState } from "react";
+
+export default function CheckerPage() {
+  // Make the iframe fill the viewport minus a small header
+  const [vh, setVh] = useState(0);
+  useEffect(() => {
+    const set = () => setVh(window.innerHeight);
+    set();
+    window.addEventListener("resize", set);
+    return () => window.removeEventListener("resize", set);
+  }, []);
+
+  return (
+    <main
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        background: "#0b0b0c",
+        color: "#eaeaf0",
+      }}
+    >
+      <header
+        style={{
+          padding: "12px 16px",
+          borderBottom: "1px solid #232327",
+          background: "#151518",
+          fontSize: 14,
+          letterSpacing: 0.2,
+        }}
+      >
+        Seamless Pattern Checker
+      </header>
+
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <iframe
+          src="/checker.html"
+          title="Seamless Pattern Checker"
+          style={{
+            width: "100%",
+            height: Math.max(0, vh - 50), // header ~50px
+            border: "0",
+            display: "block",
+            background: "#0b0b0c",
+          }}
+        />
       </div>
-
-      <div class="row">
-        <label for="rows">Rows</label>
-        <input id="rows" type="number" min="1" max="20" step="1" value="4" />
-      </div>
-
-      <div class="row">
-        <label for="gapToggle">Gaps: <span id="gapLabel">Off</span></label>
-        <label class="toggle">
-          <input id="gapToggle" type="checkbox" />
-        </label>
-      </div>
-
-      <div class="row">
-        <label for="gapSize">Gap size (px)</label>
-        <input id="gapSize" type="number" min="0" max="64" step="1" value="6" />
-      </div>
-      <div class="hint">When gaps are ON, a 6px default gutter is drawn between tiles to reveal seams.</div>
-
-      <hr style="border: none; border-top: 1px solid var(--border); margin: 14px 0" />
-
-      <h2>Image</h2>
-      <div class="dropzone" id="dropzone">
-        <div><strong>Drop an image</strong> or upload below</div>
-        <div class="dz-actions">
-          <input id="fileInput" type="file" accept="image/*" />
-        </div>
-        <div class="dz-actions">
-          <input id="urlInput" type="text" placeholder="...or paste image URL (https://)" />
-          <button id="loadUrlBtn">Load URL</button>
-        </div>
-        <div class="hint">Supports PNG, JPG, GIF, and most web-friendly images. Large files may take a moment to render.</div>
-      </div>
-
-      <div class="foot">
-        <span>Tip: Use 4x4 with gaps ON to check seams fast.</span>
-        <a href="/checker.html" target="_blank" rel="noopener">Open full screen</a>
-      </div>
-    </section>
-
-    <section class="panel">
-      <canvas id="canvas" aria-label="preview"></canvas>
-    </section>
-  </main>
-  <script>
-    (function() {
-      const canvas = document.getElementById('canvas');
-      const ctx = canvas.getContext('2d');
-      const colsEl = document.getElementById('cols');
-      const rowsEl = document.getElementById('rows');
-      const gapToggleEl = document.getElementById('gapToggle');
-      const gapLabel = document.getElementById('gapLabel');
-      const gapSizeEl = document.getElementById('gapSize');
-      const fileInput = document.getElementById('fileInput');
-      const urlInput = document.getElementById('urlInput');
-      const loadUrlBtn = document.getElementById('loadUrlBtn');
-      const dropzone = document.getElementById('dropzone');
-
-      let img = null;
-      let imgW = 0, imgH = 0;
-
-      function resizeCanvas() {
-        const rect = canvas.getBoundingClientRect();
-        // Oversample for crispness on HiDPI
-        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-        canvas.width = Math.floor(rect.width * dpr);
-        canvas.height = Math.floor(rect.height * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        draw();
-      }
-      window.addEventListener('resize', resizeCanvas, { passive: true });
-
-      function setGapLabel() {
-        gapLabel.textContent = gapToggleEl.checked ? 'On' : 'Off';
-      }
-
-      function draw() {
-        ctx.fillStyle = '#0f0f12';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.setLineDash([]);
-
-        if (!img) {
-          // Empty state grid hint
-          ctx.strokeStyle = '#24242a';
-          const step = 32;
-          for (let x = 0; x < canvas.width; x += step) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-          }
-          for (let y = 0; y < canvas.height; y += step) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-          }
-          ctx.fillStyle = '#9aa0a6';
-          ctx.font = '14px system-ui, -apple-system, Segoe UI, Roboto';
-          ctx.fillText('Drop an image or upload to preview a seamless 4x4 tile.', 16, 28);
-          return;
-        }
-
-        const cols = Math.max(1, Math.min(50, parseInt(colsEl.value || '4', 10)));
-        const rows = Math.max(1, Math.min(50, parseInt(rowsEl.value || '4', 10)));
-        const gapOn = gapToggleEl.checked;
-        const gap = gapOn ? Math.max(0, Math.min(64, parseInt(gapSizeEl.value || '6', 10))) : 0;
-
-        const totalGapX = gap * (cols - 1);
-        const totalGapY = gap * (rows - 1);
-
-        // Fit the grid to canvas while preserving tile aspect ratio
-        const cellW = imgW;
-        const cellH = imgH;
-        let gridW = cols * cellW + totalGapX;
-        let gridH = rows * cellH + totalGapY;
-
-        // Scale down if too large for canvas area (minus some padding)
-        const pad = 24;
-        const maxW = canvas.width - pad * 2;
-        const maxH = canvas.height - pad * 2;
-        const scale = Math.min(1, Math.min(maxW / gridW, maxH / gridH));
-        const tileW = Math.floor(cellW * scale);
-        const tileH = Math.floor(cellH * scale);
-        const g = Math.floor(gap * scale);
-
-        gridW = cols * tileW + g * (cols - 1);
-        gridH = rows * tileH + g * (rows - 1);
-
-        const startX = Math.floor((canvas.width - gridW) / 2);
-        const startY = Math.floor((canvas.height - gridH) / 2);
-
-        // Draw tiles
-        for (let r = 0; r < rows; r++) {
-          for (let c = 0; c < cols; c++) {
-            const x = startX + c * (tileW + g);
-            const y = startY + r * (tileH + g);
-            ctx.drawImage(img, 0, 0, imgW, imgH, x, y, tileW, tileH);
-          }
-        }
-
-        if (gapOn && g > 0) {
-          // Visual gutter background
-          ctx.fillStyle = '#0b0b0c';
-          // vertical gaps
-          for (let c = 1; c < cols; c++) {
-            const x = startX + c * tileW + (c - 1) * g;
-            ctx.fillRect(x, startY, g, gridH);
-          }
-          // horizontal gaps
-          for (let r = 1; r < rows; r++) {
-            const y = startY + r * tileH + (r - 1) * g;
-            ctx.fillRect(startX, y, gridW, g);
-          }
-        }
-      }
-
-      function loadFromFile(file) {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = e => loadFromSrc(e.target.result);
-        reader.readAsDataURL(file);
-      }
-
-      function loadFromSrc(src) {
-        const i = new Image();
-        i.crossOrigin = 'anonymous';
-        i.onload = () => {
-          img = i;
-          imgW = i.naturalWidth || i.width;
-          imgH = i.naturalHeight || i.height;
-          draw();
-        };
-        i.onerror = () => {
-          alert('Failed to load image. Check the URL or try another file.');
-        };
-        i.src = src;
-      }
-
-      // Events
-      fileInput.addEventListener('change', e => {
-        const f = e.target.files && e.target.files[0];
-        loadFromFile(f);
-      });
-
-      loadUrlBtn.addEventListener('click', () => {
-        const u = (urlInput.value || '').trim();
-        if (!u) return;
-        try {
-          new URL(u);
-          loadFromSrc(u);
-        } catch {
-          alert('Please paste a valid https:// image URL.');
-        }
-      });
-
-      // Drag & drop
-      ['dragenter','dragover'].forEach(evt => dropzone.addEventListener(evt, e => {
-        e.preventDefault(); e.stopPropagation(); dropzone.classList.add('drag');
-      }));
-      ['dragleave','drop'].forEach(evt => dropzone.addEventListener(evt, e => {
-        e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('drag');
-      }));
-      dropzone.addEventListener('drop', e => {
-        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-        loadFromFile(f);
-      });
-
-      gapToggleEl.addEventListener('change', () => { setGapLabel(); draw(); });
-      [colsEl, rowsEl, gapSizeEl].forEach(el => el.addEventListener('input', draw));
-
-      // Init
-      setGapLabel();
-      resizeCanvas();
-    })();
-  </script>
-</body>
-</html>
+    </main>
+  );
+}
