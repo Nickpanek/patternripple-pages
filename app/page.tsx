@@ -17,7 +17,19 @@ type Product = {
 };
 
 const products: Product[] = [
-   {
+  {
+    slug: "realistic-desert-camouflage-brown-tan",
+    title: "Realistic Desert Camouflage",
+    subtitle: "Camo Collection",
+    price: 125,
+    sku: "PR-abs-20250927-007",
+    stripePriceId: "price_1SC7j2BB8R6OUfKVAL1pJA0O",
+    thumbnail: "https://files.patternripple.com/realistic-desert-camouflage-brown-tan-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "camo"
+  }, 
+  {
     slug: "farmhouse-puppies-wildflowers-sage-green",
     title: "Farmhouse Puppies and Wildflowers on Sage",
     subtitle: "Cutew Animals Collection",
