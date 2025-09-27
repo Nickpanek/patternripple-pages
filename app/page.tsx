@@ -17,6 +17,18 @@ type Product = {
 };
 
 const products: Product[] = [
+   {
+    slug: "vintage-floral-patchwork-quilt-multicolor",
+    title: "Vintage Floral Patchwork Quilt",
+    subtitle: "Patchwork Quilt Collection",
+    price: 125,
+    sku: "PR-tex-20250927-008",
+    stripePriceId: "price_1SC4o6BB8R6OUfKVsQSbjj9o",
+    thumbnail: "https://files.patternripple.com/vintage-floral-patchwork-quilt-multicolor-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "patchwork-quilt"
+  }, 
   {
     slug: "monochrome-architectural-arches-pattern",
     title: "Monochrome Architectural Arches",
