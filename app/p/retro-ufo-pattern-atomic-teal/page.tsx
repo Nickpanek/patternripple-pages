@@ -13,7 +13,7 @@ const BuyButton = NextDynamic(() => import("@/components/BuyButton"), { ssr: fal
 export default function ProductPage() {
   const product = {
     title: "Retro UFOs on Teal",
-    subtitle: "retro Collection",
+    subtitle: "Retro Collection",
     sku: "PR-ret-20250928-007",
     price: 125,
     url: "https://patternripple.com/p/retro-ufo-pattern-atomic-teal",
@@ -57,6 +57,7 @@ export default function ProductPage() {
     altText: "Seamless retro UFO pattern with red and orange spaceships on teal."
   };
 
+  // Use the provided Stripe Price ID
   const stripePriceId = "price_1SCRaJBB8R6OUfKVWO3bfd6l";
 
   const [selectedImage, setSelectedImage] = useState(0);
@@ -128,7 +129,8 @@ export default function ProductPage() {
               <p className="text-base text-gray-700">{product.description}</p>
             </div>
             <div className="mt-8">
-              <BuyButton productName={product.title} priceId={stripePriceId} />
+              {/* Fix: BuyButton expects { priceId, sku } */}
+              <BuyButton priceId={stripePriceId} sku={product.sku} />
             </div>
             <div className="mt-4 text-sm text-center text-gray-500">
               SKU: {product.sku}
