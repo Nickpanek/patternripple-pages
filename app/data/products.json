@@ -1,5 +1,17 @@
 [
   {
+    "slug": "psychedelic-neon-contours-abstract",
+    "sku": "PR-abs-20250927-007",
+    "title": "Psychedelic Neon Contours",
+    "subtitle": "Abstract Collection",
+    "price": 125,
+    "stripePriceId": "price_1SC8eNBB8R6OUfKV6BVng8cN",
+    "category": ["abstract", "groovy-psychedelic"],
+    "thumbnail": "https://files.patternripple.com/psychedelic-neon-contours-abstract-thumb.jpg",
+    "exclusive": true,
+    "available": true
+  },
+  {
     "slug": "abstract-brushstrokes-navy-blush",
     "sku": "PR-abs-20250927-420",
     "title": "Abstract Brushstrokes in Navy and Blush",
