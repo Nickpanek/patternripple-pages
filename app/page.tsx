@@ -24,7 +24,7 @@ const products: Product[] = [
     price: 125,
     sku: "PR-abs-20250927-007",
     stripePriceId: "price_1SC8eNBB8R6OUfKV6BVng8cN",
-    thumbnail: "https://files.patternripple.com/psychedelic-neon-contours-abstract.jpg",
+    thumbnail: "https://files.patternripple.com/psychedelic-neon-contours-abstract-thumb.jpg",
     exclusive: true,
     available: true,
     category: "groovy-psychedelic"
