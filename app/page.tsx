@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "abstract-brushstrokes-navy-blush",
+    title: "Abstract Brushstrokes in Navy and Blush",
+    subtitle: "Abstract Collection",
+    price: 125,
+    sku: "PR-abs-20250927-420",
+    stripePriceId: "price_1SC84cBB8R6OUfKVn1E7kDKs",
+    thumbnail: "https://files.patternripple.com/abstract-brushstrokes-navy-blush-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "abstract"
+  },
+  {
     slug: "realistic-desert-camouflage-brown-tan",
     title: "Realistic Desert Camouflage",
     subtitle: "Camo Collection",
