@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "sunset-gunslinger-faux-embroidery-purple",
+    title: "Sunset Gunslinger Faux Embroidery",
+    subtitle: "Old West Collection",
+    price: 125,
+    sku: "PR-emb-20250927-077",
+    stripePriceId: "price_1SC9vcBB8R6OUfKVZtY4nkQIN",
+    thumbnail: "https://files.patternripple.com/sunset-gunslinger-faux-embroidery-purple-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: ["faux-embroidery", "old-west"]
+  },
+  {
     slug: "psychedelic-neon-contours-abstract",
     title: "Psychedelic Neon Contours",
     subtitle: "Groovy & Psychedelic Collection",
