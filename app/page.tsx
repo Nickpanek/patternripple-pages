@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "psychedelic-neon-contours-abstract",
+    title: "Psychedelic Neon Contours",
+    subtitle: "Groovy & Psychedelic Collection",
+    price: 125,
+    sku: "PR-abs-20250927-007",
+    stripePriceId: "price_1SC8eNBB8R6OUfKV6BVng8cN",
+    thumbnail: "https://files.patternripple.com/psychedelic-neon-contours-abstract.jpg",
+    exclusive: true,
+    available: true,
+    category: "groovy-psychedelic"
+  },
+  {
     slug: "abstract-brushstrokes-navy-blush",
     title: "Abstract Brushstrokes in Navy and Blush",
     subtitle: "Abstract Collection",
