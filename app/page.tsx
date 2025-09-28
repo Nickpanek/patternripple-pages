@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "retro-ufo-pattern-atomic-teal",
+    title: "Retro UFOs on Teal",
+    subtitle: "UFO Collection",
+    price: 125,
+    sku: "PR-ret-20250928-007",
+    stripePriceId: "price_1SCRaJBB8R6OUfKVWO3bfd6l",
+    thumbnail: "https://files.patternripple.com/retro-ufo-pattern-atomic-teal-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "ufo-cryptids"
+  },
+  {
     slug: "sunset-gunslinger-faux-embroidery-purple",
     title: "Sunset Gunslinger Faux Embroidery",
     subtitle: "Old West Collection",
