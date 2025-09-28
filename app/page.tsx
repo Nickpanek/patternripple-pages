@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "preppy-argyle-plaid-pink-green",
+    title: "Preppy Argyle Plaid in Pink and Green",
+    subtitle: "Preppy Collection",
+    price: 125,
+    sku: "PR-geo-20250928-007",
+    stripePriceId: "price_1SCSCEBB8R6OUfKVhlzUH2Xh",
+    thumbnail: "https://files.patternripple.com/preppy-argyle-plaid-pink-green-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "preppy-posh"
+  },
+  {
     slug: "retro-ufo-pattern-atomic-teal",
     title: "Retro UFOs on Teal",
     subtitle: "UFO Collection",
