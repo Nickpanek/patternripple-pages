@@ -128,7 +128,8 @@ export default function ProductPage() {
             </div>
 
             <div className="mt-6">
-              <BuyButton priceId={stripePriceId} sku={product.sku} title={product.title} />
+              {/* Remove unsupported title prop to match BuyButton types */}
+              <BuyButton priceId={stripePriceId} sku={product.sku} />
             </div>
 
             <p className="mt-6 text-gray-800 leading-relaxed">{product.description}</p>
