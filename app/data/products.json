@@ -1,5 +1,17 @@
 [
   {
+    "slug": "retro-ufo-pattern-atomic-teal",
+    "sku": "PR-ret-20250928-007",
+    "title": "Retro UFOs on Teal",
+    "subtitle": "UFO Collection",
+    "price": 125,
+    "stripePriceId": "price_1SCRaJBB8R6OUfKVWO3bfd6l",
+    "category": "ufo-cryptids"
+    "thumbnail": "https://files.patternripple.com/retro-ufo-pattern-atomic-teal-thumb.jpg",
+    "exclusive": true,
+    "available": true
+  },
+  {
     "slug": "psychedelic-neon-contours-abstract",
     "sku": "PR-abs-20250927-007",
     "title": "Psychedelic Neon Contours",
