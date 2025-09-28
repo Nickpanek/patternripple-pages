@@ -27,7 +27,7 @@ const products: Product[] = [
     thumbnail: "https://files.patternripple.com/sunset-gunslinger-faux-embroidery-purple-thumb.jpg",
     exclusive: true,
     available: true,
-    category: ["faux-embroidery", "old-west"]
+    category: "old-west"
   },
   {
     slug: "psychedelic-neon-contours-abstract",
