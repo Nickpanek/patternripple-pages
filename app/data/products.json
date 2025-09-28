@@ -1,5 +1,17 @@
 [
   {
+  "slug": "preppy-argyle-plaid-pink-green",
+  "title": "Preppy Argyle Plaid in Pink and Green",
+  "subtitle": "Geometric Collection",
+  "price": 125,
+  "sku": "PR-geo-20250928-007",
+  "stripePriceId": "price_1SCSCEBB8R6OUfKVhlzUH2Xh",
+  "category": "preppy-posh",
+  "thumbnail": "https://files.patternripple.com/preppy-argyle-plaid-pink-green-thumb.jpg",
+  "exclusive": true,
+  "available": true
+},
+  {
     "slug": "retro-ufo-pattern-atomic-teal",
     "sku": "PR-ret-20250928-007",
     "title": "Retro UFOs on Teal",
