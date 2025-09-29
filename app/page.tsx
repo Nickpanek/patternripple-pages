@@ -24,7 +24,7 @@ const products: Product[] = [
     price: 20,
     sku: "PR-ufo-20250929-117",
     stripePriceId: "price_1SCcekBB8R6OUfKVPwSAhoC2",
-    thumbnail: "https://files.patternripple.com/bigfoot-forest-faux-embroidery-blue-green.jpg",
+    thumbnail: "https://files.patternripple.com/bigfoot-forest-faux-embroidery-blue-green-thumb.jpg",
     exclusive: true,
     available: true,
     category: "ufo-cryptids"
