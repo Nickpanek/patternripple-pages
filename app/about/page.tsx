@@ -13,7 +13,7 @@ Where exclusivity meets creativity
 </div>
 </header>
 
-```
+
   <main className="max-w-4xl mx-auto px-4 py-12">
     <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 space-y-8">
       {/* Mission */}
