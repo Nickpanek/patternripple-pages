@@ -1,5 +1,17 @@
 [
   {
+  "slug": "architectural-blueprint-deep-blue",
+  "title": "Architectural Blueprint on Deep Blue",
+  "subtitle": "Architecture Collection",
+  "price": 125,
+  "sku": "PR-tec-20250928-001",
+  "stripePriceId": "price_1SCWv6BB8R6OUfKVHL7kux8Y",
+  "category": "architecture",
+  "thumbnail": "https://files.patternripple.com/architectural-blueprint-deep-blue-thumb.jpg",
+  "exclusive": true,
+  "available": true
+},
+  {
   "slug": "artisan-patchwork-faux-embroidery-jewel-tones",
   "title": "Artisan Patchwork Faux Embroidery",
   "subtitle": "Patchwork Quilt Collection",
