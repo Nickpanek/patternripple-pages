@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "architectural-blueprint-deep-blue",
+    title: "Architectural Blueprint on Deep Blue",
+    subtitle: "Architecture Collection",
+    price: 125,
+    sku: "PR-tec-20250928-001",
+    stripePriceId: "price_1SCWv6BB8R6OUfKVHL7kux8Y",
+    thumbnail: "https://files.patternripple.com/architectural-blueprint-deep-blue-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "architecture"
+  },
+  {
     slug: "artisan-patchwork-faux-embroidery-jewel-tones",
     title: "Artisan Patchwork Faux Embroidery",
     subtitle: "Patchwork Quilt Collection",
