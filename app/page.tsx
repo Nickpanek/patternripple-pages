@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "bigfoot-forest-faux-embroidery-blue-green",
+    title: "Bigfoot Forest Faux Embroidery",
+    subtitle: "UFO & Cryptids Collection",
+    price: 20,
+    sku: "PR-ufo-20250929-117",
+    stripePriceId: "price_1SCcekBB8R6OUfKVPwSAhoC2",
+    thumbnail: "https://files.patternripple.com/bigfoot-forest-faux-embroidery-blue-green.jpg",
+    exclusive: true,
+    available: true,
+    category: "ufo-cryptids"
+  },
+   {
     slug: "atomic-age-ufo-primary-colors",
     title: "Atomic Age UFOs in Primary Colors",
     subtitle: "UFO & Cryptids Collection",
