@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "bigfoot-toile-sunglasses-mustard-pink",
+    title: "Bigfoot Toile with Sunglasses in Mustard & Pink",
+    subtitle: "Cryptid Collection",
+    price: 125,
+    sku: "PR-nov-20250928-042",
+    stripePriceId: "price_1SCXabBB8R6OUfKVtiEXHbN0",
+    thumbnail: "https://files.patternripple.com/bigfoot-toile-sunglasses-mustard-pink-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "ufo-cryptids"
+  },
+  {
     slug: "psychedelic-visionary-art-jewel-tones",
     title: "Psychedelic Visionary Art in Jewel Tones",
     subtitle: "Psychedelic Collection",
