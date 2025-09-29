@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "atomic-age-ufo-primary-colors",
+    title: "Atomic Age UFOs in Primary Colors",
+    subtitle: "UFO & Cryptids Collection",
+    price: 20,
+    sku: "PR-ufo-20250929-001",
+    stripePriceId: "price_1SCcIOBB8R6OUfKV7H0O7s3V",
+    thumbnail: "https://files.patternripple.com/atomic-age-ufo-primary-colors-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "ufo-cryptids"
+  },
+   {
     slug: "bigfoot-toile-sunglasses-mustard-pink",
     title: "Bigfoot Toile with Sunglasses in Mustard & Pink",
     subtitle: "Cryptid Collection",
