@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "psychedelic-visionary-art-jewel-tones",
+    title: "Psychedelic Visionary Art in Jewel Tones",
+    subtitle: "Psychedelic Collection",
+    price: 125,
+    sku: "PR-abs-20250928-034",
+    stripePriceId: "price_1SCXJDBB8R6OUfKVk6DSvRKP",
+    thumbnail: "https://files.patternripple.com/psychedelic-visionary-art-jewel-tones-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "groovy-psychedelic"
+  },
+  {
     slug: "architectural-blueprint-deep-blue",
     title: "Architectural Blueprint on Deep Blue",
     subtitle: "Architecture Collection",
