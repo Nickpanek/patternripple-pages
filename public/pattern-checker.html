@@ -111,214 +111,217 @@
     </section>
   </main>
   <script>
-    (function() {
-      'use strict';
+  (function() {
+    'use strict';
+    
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    const colsEl = document.getElementById('cols');
+    const rowsEl = document.getElementById('rows');
+    const gapToggleEl = document.getElementById('gapToggle');
+    const gapLabel = document.getElementById('gapLabel');
+    const gapSizeEl = document.getElementById('gapSize');
+    const gapSizeRow = document.getElementById('gapSizeRow');
+    const fileInput = document.getElementById('fileInput');
+    const urlInput = document.getElementById('urlInput');
+    const loadUrlBtn = document.getElementById('loadUrlBtn');
+    const dropzone = document.getElementById('dropzone');
+
+    let img = null;
+    let imgW = 0, imgH = 0;
+    let animFrame = null;
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // fix: disable smoothing to avoid blended seams between tiles
+      ctx.imageSmoothingEnabled = false;
+      ctx.imageSmoothingQuality = 'low';
+      scheduleDraw();
+    }
+    
+    function scheduleDraw() {
+      if (animFrame) cancelAnimationFrame(animFrame);
+      animFrame = requestAnimationFrame(draw);
+    }
+    
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+
+    function setGapLabel() {
+      const enabled = gapToggleEl.checked;
+      gapLabel.textContent = enabled ? 'On' : 'Off';
+      gapSizeEl.disabled = !enabled;
+      gapSizeRow.style.opacity = enabled ? '1' : '0.5';
+    }
+
+    function draw() {
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = canvas.height / (window.devicePixelRatio || 1);
       
-      const canvas = document.getElementById('canvas');
-      const ctx = canvas.getContext('2d', { alpha: false });
-      const colsEl = document.getElementById('cols');
-      const rowsEl = document.getElementById('rows');
-      const gapToggleEl = document.getElementById('gapToggle');
-      const gapLabel = document.getElementById('gapLabel');
-      const gapSizeEl = document.getElementById('gapSize');
-      const gapSizeRow = document.getElementById('gapSizeRow');
-      const fileInput = document.getElementById('fileInput');
-      const urlInput = document.getElementById('urlInput');
-      const loadUrlBtn = document.getElementById('loadUrlBtn');
-      const dropzone = document.getElementById('dropzone');
+      ctx.fillStyle = '#0f0f12';
+      ctx.fillRect(0, 0, w, h);
 
-      let img = null;
-      let imgW = 0, imgH = 0;
-      let animFrame = null;
-
-      function resizeCanvas() {
-        const rect = canvas.getBoundingClientRect();
-        const dpr = Math.min(2, window.devicePixelRatio || 1);
-        canvas.width = Math.floor(rect.width * dpr);
-        canvas.height = Math.floor(rect.height * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        scheduleDraw();
-      }
-      
-      function scheduleDraw() {
-        if (animFrame) cancelAnimationFrame(animFrame);
-        animFrame = requestAnimationFrame(draw);
-      }
-      
-      window.addEventListener('resize', resizeCanvas, { passive: true });
-
-      function setGapLabel() {
-        const enabled = gapToggleEl.checked;
-        gapLabel.textContent = enabled ? 'On' : 'Off';
-        gapSizeEl.disabled = !enabled;
-        gapSizeRow.style.opacity = enabled ? '1' : '0.5';
-      }
-
-      function draw() {
-        const w = canvas.width / (window.devicePixelRatio || 1);
-        const h = canvas.height / (window.devicePixelRatio || 1);
+      if (!img) {
+        // Empty state with grid
+        ctx.strokeStyle = 'rgba(36,36,42,0.5)';
+        ctx.lineWidth = 1;
+        const step = 32;
+        for (let x = 0; x <= w; x += step) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+          ctx.stroke();
+        }
+        for (let y = 0; y <= h; y += step) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
+        }
         
-        ctx.fillStyle = '#0f0f12';
-        ctx.fillRect(0, 0, w, h);
-
-        if (!img) {
-          // Empty state with grid
-          ctx.strokeStyle = 'rgba(36,36,42,0.5)';
-          ctx.lineWidth = 1;
-          const step = 32;
-          for (let x = 0; x <= w; x += step) {
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, h);
-            ctx.stroke();
-          }
-          for (let y = 0; y <= h; y += step) {
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(w, y);
-            ctx.stroke();
-          }
-          
-          ctx.fillStyle = '#9aa0a6';
-          ctx.font = '14px system-ui, -apple-system, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('Drop or select an image to preview seamless tiling', w/2, h/2);
-          return;
-        }
-
-        const cols = Math.max(1, Math.min(50, parseInt(colsEl.value || '4', 10)));
-        const rows = Math.max(1, Math.min(50, parseInt(rowsEl.value || '4', 10)));
-        const gapOn = gapToggleEl.checked;
-        const gap = gapOn ? Math.max(0, Math.min(64, parseInt(gapSizeEl.value || '6', 10))) : 0;
-
-        const totalGapX = gap * (cols - 1);
-        const totalGapY = gap * (rows - 1);
-
-        const cellW = imgW;
-        const cellH = imgH;
-        let gridW = cols * cellW + totalGapX;
-        let gridH = rows * cellH + totalGapY;
-
-        const pad = 24;
-        const maxW = w - pad * 2;
-        const maxH = h - pad * 2;
-        const scale = Math.min(1, Math.min(maxW / gridW, maxH / gridH));
-        const tileW = Math.floor(cellW * scale);
-        const tileH = Math.floor(cellH * scale);
-        const g = Math.floor(gap * scale);
-
-        gridW = cols * tileW + g * (cols - 1);
-        gridH = rows * tileH + g * (rows - 1);
-
-        const startX = Math.floor((w - gridW) / 2);
-        const startY = Math.floor((h - gridH) / 2);
-
-        // Draw background for gaps if enabled
-        if (gapOn && g > 0) {
-          ctx.fillStyle = '#0b0b0c';
-          ctx.fillRect(startX, startY, gridW, gridH);
-        }
-
-        // Draw tiles
-        for (let r = 0; r < rows; r++) {
-          for (let c = 0; c < cols; c++) {
-            const x = startX + c * (tileW + g);
-            const y = startY + r * (tileH + g);
-            ctx.drawImage(img, 0, 0, imgW, imgH, x, y, tileW, tileH);
-          }
-        }
+        ctx.fillStyle = '#9aa0a6';
+        ctx.font = '14px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Drop or select an image to preview seamless tiling', w/2, h/2);
+        return;
       }
 
-      function loadFromFile(file) {
-        if (!file) return;
-        if (file.size > 50 * 1024 * 1024) { // 50MB limit
-          alert('File too large. Please use an image under 50MB.');
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = e => loadFromSrc(e.target.result);
-        reader.onerror = () => alert('Failed to read file.');
-        reader.readAsDataURL(file);
+      const cols = Math.max(1, Math.min(50, parseInt(colsEl.value || '4', 10)));
+      const rows = Math.max(1, Math.min(50, parseInt(rowsEl.value || '4', 10)));
+      const gapOn = gapToggleEl.checked;
+      const gap = gapOn ? Math.max(0, Math.min(64, parseInt(gapSizeEl.value || '6', 10))) : 0;
+
+      const totalGapX = gap * (cols - 1);
+      const totalGapY = gap * (rows - 1);
+
+      const cellW = imgW;
+      const cellH = imgH;
+      let gridW = cols * cellW + totalGapX;
+      let gridH = rows * cellH + totalGapY;
+
+      const pad = 24;
+      const maxW = w - pad * 2;
+      const maxH = h - pad * 2;
+      const scale = Math.min(1, Math.min(maxW / gridW, maxH / gridH));
+      // fix: round sizes instead of floor to avoid 1px undershoot that causes hairlines
+      const tileW = Math.round(cellW * scale);
+      const tileH = Math.round(cellH * scale);
+      const g = Math.round(gap * scale);
+
+      gridW = cols * tileW + g * (cols - 1);
+      gridH = rows * tileH + g * (rows - 1);
+
+      // fix: round starting offsets to avoid subpixel remainder
+      const startX = Math.round((w - gridW) / 2);
+      const startY = Math.round((h - gridH) / 2);
+
+      // Draw background for gaps if enabled
+      if (gapOn && g > 0) {
+        ctx.fillStyle = '#0b0b0c';
+        ctx.fillRect(startX, startY, gridW, gridH);
       }
 
-      function loadFromSrc(src) {
-        const i = new Image();
-        i.crossOrigin = 'anonymous';
-        i.onload = () => {
-          img = i;
-          imgW = i.naturalWidth || i.width;
-          imgH = i.naturalHeight || i.height;
-          scheduleDraw();
-        };
-        i.onerror = () => {
-          alert('Failed to load image. If loading from URL, the site may not allow cross-origin requests.');
-        };
-        i.src = src;
+      // Draw tiles
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = startX + c * (tileW + g);
+          const y = startY + r * (tileH + g);
+          ctx.drawImage(img, 0, 0, imgW, imgH, x, y, tileW, tileH);
+        }
       }
+    }
 
-      // File input
-      dropzone.addEventListener('click', () => fileInput.click());
-      fileInput.addEventListener('change', e => {
-        const f = e.target.files && e.target.files[0];
-        if (f) loadFromFile(f);
-      });
+    function loadFromFile(file) {
+      if (!file) return;
+      if (file.size > 50 * 1024 * 1024) { // 50MB limit
+        alert('File too large. Please use an image under 50MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => loadFromSrc(e.target.result);
+      reader.onerror = () => alert('Failed to read file.');
+      reader.readAsDataURL(file);
+    }
 
-      // URL loading
-      loadUrlBtn.addEventListener('click', () => {
-        const u = (urlInput.value || '').trim();
-        if (!u) return;
-        if (!u.match(/^https?:\/\//)) {
-          alert('Please enter a valid URL starting with http:// or https://');
-          return;
-        }
-        loadFromSrc(u);
-      });
-      
-      urlInput.addEventListener('keypress', e => {
-        if (e.key === 'Enter') loadUrlBtn.click();
-      });
-
-      // Drag & drop
-      ['dragenter','dragover'].forEach(evt => {
-        dropzone.addEventListener(evt, e => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropzone.classList.add('drag');
-        });
-      });
-      
-      ['dragleave','drop'].forEach(evt => {
-        dropzone.addEventListener(evt, e => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropzone.classList.remove('drag');
-        });
-      });
-      
-      dropzone.addEventListener('drop', e => {
-        const files = e.dataTransfer?.files;
-        if (files && files.length > 0) {
-          loadFromFile(files[0]);
-        }
-      });
-
-      // Control listeners
-      gapToggleEl.addEventListener('change', () => {
-        setGapLabel();
+    function loadFromSrc(src) {
+      const i = new Image();
+      i.crossOrigin = 'anonymous';
+      i.onload = () => {
+        img = i;
+        imgW = i.naturalWidth || i.width;
+        imgH = i.naturalHeight || i.height;
         scheduleDraw();
-      });
-      
-      [colsEl, rowsEl, gapSizeEl].forEach(el => {
-        el.addEventListener('input', scheduleDraw);
-        el.addEventListener('change', scheduleDraw);
-      });
+      };
+      i.onerror = () => {
+        alert('Failed to load image. If loading from URL, the site may not allow cross-origin requests.');
+      };
+      i.src = src;
+    }
 
-      // Initialize
+    // File input
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => {
+      const f = e.target.files && e.target.files[0];
+      if (f) loadFromFile(f);
+    });
+
+    // URL loading
+    loadUrlBtn.addEventListener('click', () => {
+      const u = (urlInput.value || '').trim();
+      if (!u) return;
+      if (!u.match(/^https?:\/\//)) {
+        alert('Please enter a valid URL starting with http:// or https://');
+        return;
+      }
+      loadFromSrc(u);
+    });
+    
+    urlInput.addEventListener('keypress', e => {
+      if (e.key === 'Enter') loadUrlBtn.click();
+    });
+
+    // Drag & drop
+    ['dragenter','dragover'].forEach(evt => {
+      dropzone.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('drag');
+      });
+    });
+    
+    ['dragleave','drop'].forEach(evt => {
+      dropzone.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('drag');
+      });
+    });
+    
+    dropzone.addEventListener('drop', e => {
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        loadFromFile(files[0]);
+      }
+    });
+
+    // Control listeners
+    gapToggleEl.addEventListener('change', () => {
       setGapLabel();
-      resizeCanvas();
-    })();
-  </script>
+      scheduleDraw();
+    });
+    
+    [colsEl, rowsEl, gapSizeEl].forEach(el => {
+      el.addEventListener('input', scheduleDraw);
+      el.addEventListener('change', scheduleDraw);
+    });
+
+    // Initialize
+    setGapLabel();
+    resizeCanvas();
+  })();
+</script>
 </body>
 </html>
