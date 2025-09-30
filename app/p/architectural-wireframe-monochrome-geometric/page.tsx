@@ -56,6 +56,7 @@ export default function ProductPage() {
     altText: "Seamless architectural wireframe pattern with complex building sketches in monochrome."
   };
 
+  // Use the provided Stripe Price ID
   const stripePriceId = "price_1SCs4NBB8R6OUfKVkaceldyP";
 
   const [selectedImage, setSelectedImage] = useState(0);
@@ -136,15 +137,8 @@ export default function ProductPage() {
             </div>
 
             <div className="mt-6">
-              <BuyButton
-                priceId={stripePriceId}
-                productData={{
-                  name: product.title,
-                  images: [product.images[0]],
-                  description: `SKU: ${product.sku}`,
-                  price: product.price
-                }}
-              />
+              {/* Fix: BuyButton expects { priceId: string; sku: string } */}
+              <BuyButton priceId={stripePriceId} sku={product.sku} />
               <p className="mt-2 text-xs text-gray-500">Secure transaction via Stripe</p>
             </div>
 
@@ -175,7 +169,6 @@ export default function ProductPage() {
       <Script
         id="product-jsonld"
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org/",
