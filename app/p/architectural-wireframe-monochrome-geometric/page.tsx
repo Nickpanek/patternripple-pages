@@ -40,7 +40,7 @@ export default function ProductPage() {
       "contemporary textile"
     ],
     images: [
-      "https://files.patternripple.com/architectural-wireframe-monochrome-geometric_preview.jpg",
+      "https://files.patternripple.com/architectural-wireframe-monochrome-geometric-preview.jpg",
       "https://files.patternripple.com/architectural-wireframe-monochrome-geometric-mockup1.jpg",
       "https://files.patternripple.com/architectural-wireframe-monochrome-geometric-mockup2.jpg",
       "https://files.patternripple.com/architectural-wireframe-monochrome-geometric-mockup3.jpg",
