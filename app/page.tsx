@@ -556,7 +556,7 @@ export default function HomePage() {
       </header>
 
       {/* Quick Navigation */}
-           <nav className="bg-white/50 backdrop-blur-sm border-b border-gray-100 sticky top-14 z-40">
+      <nav className="bg-white/50 backdrop-blur-sm border-b border-gray-100 sticky top-14 z-40">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex flex-wrap gap-2 justify-center items-center">
             <Link 
@@ -578,6 +578,13 @@ export default function HomePage() {
               className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
             >
               Blog
+            </Link>
+            <span className="text-gray-300">•</span>
+            <Link 
+              href="/games" 
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
+            >
+              Games
             </Link>
             <span className="text-gray-300">•</span>
             <Link 
