@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Property Slideshow Maker - PatternRipple</title>
+  <meta name="description" content="Create listing slideshows for real estate - add photos, address, price, beds-baths-sqft, agent details, brand color, logo - export as WebM or GIF." />
+
+  <!-- Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+  <!-- Use a same-origin worker in production. Put gif.worker.js at /public/lib/gif.worker.js -->
+  <script>window.GIF_WORKER_URL = "/lib/gif.worker.js";</script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
+  <style>
+    :root{
+      --brand:#0f6cbd;
+      --bg-1:#0b1220;
+      --bg-2:#101a2c;
+      --ink:#e7ecf3;
+      --panel:#111a2b;
+      --border:rgba(15,108,189,.25);
+      --accent:#22c55e;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;padding:24px;
+      color:var(--ink);
+      background:linear-gradient(135deg,var(--bg-1),var(--bg-2));
+      font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;
+    }
+    .wrap{max-width:1200px;margin:0 auto}
+    h1{margin:0 0 6px;font-weight:800;color:var(--brand);letter-spacing:.2px}
+    .sub{opacity:.85;margin-bottom:16px;font-size:12px}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    label{display:block;margin:.4rem 0 .25rem;font-weight:700;color:#cfe1f3}
+    input,select,textarea{
+      width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);
+      background:#0b1526;color:var(--ink)
+    }
+    input[type=color]{padding:0;height:42px}
+    textarea{min-height:60px;resize:vertical}
+    .upload{
+      border:2px dashed var(--border);border-radius:12px;padding:22px;text-align:center;cursor:pointer
+    }
+    .upload:hover{border-color:var(--brand)}
+    .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:12px}
+    .thumb{position:relative;aspect-ratio:16/9;background:#0b1526;border-radius:8px;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .thumb .del{position:absolute;top:4px;right:4px;border:0;border-radius:50%;width:22px;height:22px;
+      background:#e11d48;color:#fff;font-weight:900;cursor:pointer}
+    .btn{
+      padding:12px 16px;border-radius:12px;border:1px solid var(--border);
+      background:linear-gradient(135deg,var(--brand),#1976d2);color:#fff;font-weight:800;cursor:pointer
+    }
+    .btn.secondary{background:linear-gradient(135deg,#475569,#64748b)}
+    .btn.success{background:linear-gradient(135deg,var(--accent),#16a34a);border-color:#1f9d53}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .stage{--aspect:16/9; aspect-ratio:var(--aspect); background:#000;border-radius:12px;overflow:hidden;position:relative}
+    .slide{position:absolute;inset:0;opacity:0;transition:opacity .35s ease}
+    .slide.active{opacity:1}
+    .overlay{position:absolute;left:0;right:0;background:rgba(0,0,0,.45);padding:10px 14px;text-align:center}
+    .overlay div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .top{top:0}.bottom{bottom:0}
+    .bar-wrap{height:4px;background:rgba(255,255,255,.22);border-radius:2px;margin-top:10px;overflow:hidden}
+    .bar{height:100%;width:0;background:var(--brand)}
+    .wm-badge{position:absolute;right:10px;top:10px;background:#fff;color:var(--brand);
+      padding:6px 10px;border-radius:8px;font-size:12px;font-weight:900;opacity:.95}
+    .tagline{font-size:12px;opacity:.9}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:640px){.split{grid-template-columns:1fr}}
+    .note{font-size:12px;opacity:.8;margin-top:6px}
+    .logo-prev{width:100%;max-width:160px;height:48px;object-fit:contain;background:#0b1526;border-radius:8px;border:1px solid var(--border)}
+    @media (prefers-reduced-motion: reduce){.bar{transition:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Property Slideshow Maker</h1>
+    <div class="sub">Fast listing videos for agents and stagers</div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="row">
+          <div style="flex:1;min-width:160px">
+            <label for="aspect">Aspect</label>
+            <select id="aspect">
+              <option value="16:9" selected>16:9 - YouTube</option>
+              <option value="9:16">9:16 - Shorts or Reels</option>
+              <option value="4:3">4:3</option>
+              <option value="1:1">1:1</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:160px">
+            <label for="sec">Seconds per image</label>
+            <input id="sec" type="number" min="1" max="12" step="0.5" value="2.5" />
+          </div>
+          <div style="flex:1;min-width:160px">
+            <label for="overlayPos">Overlay position</label>
+            <select id="overlayPos">
+              <option value="bottom" selected>Bottom</option>
+              <option value="top">Top</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="split" style="margin-top:8px">
+          <div>
+            <label for="addr">Address</label>
+            <input id="addr" placeholder="1234 Maple St, Wichita KS" />
+          </div>
+          <div>
+            <label for="price">Price</label>
+            <input id="price" placeholder="$349,900" />
+          </div>
+          <div>
+            <label for="bbs">Beds - Baths - Sqft</label>
+            <input id="bbs" placeholder="3 bed - 2 bath - 1,780 sqft" />
+          </div>
+          <div>
+            <label for="agent">Agent - Phone - Site</label>
+            <input id="agent" placeholder="Jane Agent - 316-555-1234 - yoursite.com" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px">
+          <div style="flex:1;min-width:160px">
+            <label for="brandColor">Brand color</label>
+            <input id="brandColor" type="color" value="#0f6cbd" />
+          </div>
+          <div style="flex:1;min-width:160px">
+            <label for="overlaySize">Headline font size px</label>
+            <input id="overlaySize" type="number" min="14" max="72" value="26" />
+          </div>
+          <div style="flex:1;min-width:160px">
+            <label for="kenburns">Ken Burns</label>
+            <select id="kenburns">
+              <option value="true" selected>Enabled</option>
+              <option value="false">Disabled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px">
+          <div style="flex:1;min-width:220px">
+            <label for="overlayFree">Custom overlay line - optional</label>
+            <input id="overlayFree" placeholder="Open house Sat 1-3 pm" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px;align-items:center">
+          <div>
+            <label for="logoFile" style="margin-bottom:6px">Logo - PNG or SVG</label>
+            <input id="logoFile" type="file" accept="image/*" />
+            <div class="note">Shown on a subtle white panel. Use high-contrast logos or bake an outline.</div>
+          </div>
+          <img id="logoPrev" class="logo-prev" alt="logo preview" />
+        </div>
+
+        <div class="row" style="margin-top:8px">
+          <div style="flex:1;min-width:160px">
+            <label for="logoPos">Logo position</label>
+            <select id="logoPos">
+              <option value="tl" selected>Top-left</option>
+              <option value="tr">Top-right</option>
+              <option value="bl">Bottom-left</option>
+              <option value="br">Bottom-right</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:160px">
+            <label for="logoOpacity">Logo opacity</label>
+            <input id="logoOpacity" type="range" min="20" max="100" value="95" />
+            <div class="note">Panel and logo alpha</div>
+          </div>
+        </div>
+
+        <div class="note">MLS tip - keep claims factual and avoid subjective superlatives.</div>
+      </div>
+
+      <div class="card">
+        <label for="files">Photos</label>
+        <div id="drop" class="upload" tabindex="0">Click to pick photos or drop files</div>
+        <input id="files" type="file" accept="image/*" multiple style="display:none" />
+        <div id="thumbs" class="thumbs"></div>
+        <div class="note">Order = slideshow order. Drag to reorder. Click x to remove.</div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:14px">
+      <button id="previewBtn" type="button" class="btn">Preview</button>
+      <button id="exportWebM" type="button" class="btn">Export WebM</button>
+      <button id="exportGIF" type="button" class="btn success">Export GIF</button>
+      <button id="exportZIP" type="button" class="btn secondary">Download Frames ZIP</button>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <div style="flex:1;min-width:220px">
+        <label for="fname">Export filename - no extension</label>
+        <input id="fname" placeholder="maple-st-listing" />
+      </div>
+      <button id="clearAll" type="button" class="btn secondary">Clear All Photos</button>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <div style="flex:1;min-width:160px">
+        <label for="gifPreset">GIF preset</label>
+        <select id="gifPreset">
+          <option value="balanced" selected>Balanced</option>
+          <option value="small">Small file</option>
+          <option value="sharp">Sharper</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div id="stage" class="stage"></div>
+      <div class="bar-wrap"><div id="bar" class="bar"></div></div>
+      <div class="row" style="margin-top:10px;align-items:center">
+        <button id="play" type="button" class="btn">Play</button>
+        <button id="pause" type="button" class="btn">Pause</button>
+        <button id="reset" type="button" class="btn">Reset</button>
+        <div class="tagline" style="margin-left:auto">Made with PatternRipple tools</div>
+      </div>
+      <div class="note" id="exportStatus" aria-live="polite" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+<script>
+  // State
+  let IMGS = [];
+  let current = 0, playing = false;
+  let slideMs = 2500, t0 = 0, tick = null, prog = null;
+  let logoImg = null;
+  let logoLoadPromise = null;
+
+  // DOM helpers
+  const $ = id => document.getElementById(id);
+  const stage = $("stage");
+  const playerBtns = [$("play"), $("pause"), $("reset")];
+  const exportBtns = [$("exportWebM"), $("exportGIF"), $("exportZIP")];
+  function setControlsDisabled(v){ [...playerBtns, ...exportBtns].forEach(b => b.disabled = v); }
+  function setStatus(msg){ $("exportStatus").textContent = msg || ""; }
+
+  function outName(ext){
+    const base = ($("fname").value || $("addr").value || "slideshow")
+      .toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+    return `${base || "slideshow"}.${ext}`;
+  }
+
+  // Aspect and theme
+  $("aspect").addEventListener("change", () => {
+    const [w,h] = $("aspect").value.split(":").map(Number);
+    stage.style.setProperty("--aspect", `${w}/${h}`);
+  });
+  $("brandColor").addEventListener("input", e=>{
+    document.documentElement.style.setProperty("--brand", e.target.value);
+  });
+
+  // Logo load with promise
+  $("logoFile").addEventListener("change", e=>{
+    const f = e.target.files?.[0]; if(!f) return;
+    logoLoadPromise = new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = ev => {
+        logoImg = new Image();
+        logoImg.onload = () => { $("logoPrev").src = logoImg.src; resolve(); };
+        logoImg.onerror = () => reject(new Error("Logo image failed to load"));
+        logoImg.src = ev.target.result;
+      };
+      r.onerror = () => reject(new Error("Failed to read logo file"));
+      r.readAsDataURL(f);
+    });
+  });
+
+  // Upload handlers
+  const drop = $("drop"), files = $("files");
+  drop.addEventListener("click", ()=>files.click());
+  ["dragover","drop","dragleave"].forEach(ev=>drop.addEventListener(ev, e=>e.preventDefault()));
+  drop.addEventListener("dragover", ()=>drop.style.borderColor="var(--brand)");
+  drop.addEventListener("dragleave", ()=>drop.style.borderColor="var(--border)");
+  drop.addEventListener("drop", e=>{ handleFiles(Array.from(e.dataTransfer.files)); drop.style.borderColor="var(--border)"; });
+  files.addEventListener("change", e=>handleFiles(Array.from(e.target.files)));
+
+  function handleFiles(list){
+    const imgs = list.filter(f=>f.type.startsWith("image/"));
+    if(!imgs.length){ alert("Pick image files"); return; }
+    const unsupported = list.filter(f=>!f.type && /.heic$/i.test(f.name));
+    if(unsupported.length){
+      alert("HEIC images may not load here. Convert to JPG or PNG first.");
+    }
+    Promise.all(imgs.map(loadFileAsURL))
+      .then(urls => { urls.forEach(url=>IMGS.push({url})); renderThumbs(); buildSlides(); })
+      .catch(() => alert("One or more images failed to load."));
+  }
+  function loadFileAsURL(f){
+    return new Promise((res,rej)=>{
+      const r = new FileReader();
+      r.onerror=()=>rej(new Error("read failed"));
+      r.onload = e=>res(e.target.result);
+      r.readAsDataURL(f);
+    });
+  }
+
+  // Thumbs and reorder
+  function renderThumbs(){
+    const c = $("thumbs"); c.innerHTML = "";
+    IMGS.forEach((m,i)=>{
+      const d = document.createElement("div"); d.className = "thumb"; d.draggable = true; d.dataset.idx = i;
+      d.addEventListener("dragstart", e=>{ e.dataTransfer.setData("text/plain", i); d.style.opacity = "0.5"; });
+      d.addEventListener("dragend", ()=>{ d.style.opacity = "1"; });
+      d.addEventListener("dragover", e=>e.preventDefault());
+      d.addEventListener("drop", e=>{
+        e.preventDefault();
+        const from = parseInt(e.dataTransfer.getData("text/plain"),10);
+        const to = parseInt(d.dataset.idx,10);
+        if(from===to) return;
+        const [moved] = IMGS.splice(from,1);
+        IMGS.splice(to,0,moved);
+        renderThumbs(); buildSlides();
+      });
+
+      const im = document.createElement("img"); im.src = m.url; d.appendChild(im);
+      const del = document.createElement("button"); del.className="del"; del.textContent="x"; del.type="button";
+      del.onclick = ()=>{ IMGS.splice(i,1); renderThumbs(); buildSlides(); };
+      d.appendChild(del);
+      c.appendChild(d);
+    });
+  }
+
+  // Overlay text
+  function overlayText(){
+    const parts = [];
+    const addr = $("addr").value.trim();
+    const price = $("price").value.trim();
+    const bbs = $("bbs").value.trim();
+    const agent = $("agent").value.trim();
+    const extra = $("overlayFree").value.trim();
+    if(addr) parts.push(addr);
+    if(price || bbs) parts.push([price,bbs].filter(Boolean).join(" · "));
+    if(agent) parts.push(agent);
+    if(extra) parts.push(extra);
+    return parts.join(" • ");
+  }
+
+  // Build slides
+  $("overlayPos").addEventListener("change", buildSlides);
+  ["addr","price","bbs","agent","overlayFree","overlaySize"].forEach(id=>$(id).addEventListener("input", buildSlides));
+  $("clearAll").addEventListener("click", ()=>{ IMGS = []; renderThumbs(); buildSlides(); reset(); });
+
+  function buildSlides(){
+    stage.innerHTML = "";
+    if(!IMGS.length){ updateBar(0); return; }
+    const pos = $("overlayPos").value;
+    const size = Math.max(14, Math.min(72, parseInt($("overlaySize").value)||26));
+    const txt = overlayText();
+
+    IMGS.forEach((m, i)=>{
+      const s = document.createElement("div"); s.className="slide";
+      if(i===0) s.classList.add("active");
+      const img = document.createElement("img");
+      img.src = m.url; img.alt = "slide"; img.style.width="100%"; img.style.height="100%"; img.style.objectFit="cover";
+      s.appendChild(img);
+
+      if(txt){
+        const ov = document.createElement("div"); ov.className = "overlay " + pos;
+        const t = document.createElement("div"); t.textContent = txt; t.style.fontSize = size+"px";
+        ov.appendChild(t); s.appendChild(ov);
+      }
+
+      if(logoImg){
+        const badge = document.createElement("div"); badge.className = "wm-badge";
+        badge.appendChild(document.createElement("span"));
+        s.appendChild(badge);
+      }
+      stage.appendChild(s);
+    });
+  }
+
+  // Player
+  $("previewBtn").addEventListener("click", ()=>{ buildSlides(); stage.scrollIntoView({behavior:"smooth"}); });
+  $("play").addEventListener("click", play);
+  $("pause").addEventListener("click", pause);
+  $("reset").addEventListener("click", reset);
+
+  function play(){
+    if(!IMGS.length){ alert("Add photos first"); return; }
+    if(playing) return; playing = true;
+    slideMs = Math.max(1000, (parseFloat($("sec").value)||2.5)*1000);
+    t0 = performance.now();
+    show(0);
+    tick = setInterval(()=>{
+      current++;
+      if(current>=IMGS.length){ stop(); current=IMGS.length-1; show(current); updateBar(1); return; }
+      show(current); t0 = performance.now();
+    }, slideMs);
+    prog = setInterval(()=>{
+      const total = IMGS.length*slideMs;
+      const sofar = Math.min(total, current*slideMs + (performance.now()-t0));
+      updateBar(sofar/total);
+    }, 50);
+  }
+  function pause(){ stop(); }
+  function reset(){ stop(); current=0; show(current); updateBar(0); }
+  function stop(){ if(tick) clearInterval(tick); if(prog) clearInterval(prog); tick=prog=null; playing=false; }
+  function show(i){ [...stage.querySelectorAll(".slide")].forEach((n,idx)=>n.classList.toggle("active", idx===i)); }
+  function updateBar(p){ $("bar").style.width = Math.max(0,Math.min(1,p))*100 + "%"; }
+
+  // Save helper
+  function saveBlob(blob,name){
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  }
+
+  // WebM support check
+  function canRecordWebM(){
+    if(!("MediaRecorder" in window)) return {supported:false,msg:"WebM recorder not available in this browser"};
+    const options = ["video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"];
+    const mime = options.find(m=>MediaRecorder.isTypeSupported(m));
+    return mime ? {supported:true,mime} : {supported:false,msg:"WebM not supported here. Use GIF export."};
+  }
+
+  // Render params
+  function renderParams(){
+    const [aw,ah] = $("aspect").value.split(":").map(Number);
+    const H = 720; const W = Math.round(H*(aw/ah));
+    const prefersReduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fps = prefersReduce ? 10 : 30;
+    const per = Math.max(1, Math.round((parseFloat($("sec").value)||2.5) * fps));
+    return {W,H,fps,per};
+  }
+
+  // Text wrap
+  function wrapText(ctx, text, maxWidth){
+    const words = text.split(/\s+/); const lines = [];
+    let line = "";
+    for(const w of words){
+      const test = line ? line + " " + w : w;
+      if(ctx.measureText(test).width <= maxWidth){ line = test; }
+      else { if(line) lines.push(line); line = w; }
+    }
+    if(line) lines.push(line);
+    return lines;
+  }
+
+  // Draw a frame
+  async function drawSlideTo(ctx, img, i, t){
+    const {W,H} = renderParams();
+    if (logoLoadPromise) await logoLoadPromise;
+
+    const kb = $("kenburns").value==="true";
+    const scaleStart = kb ? 1.05 : 1.0;
+    const scaleEnd   = kb ? 1.18 : 1.0;
+    const scale = scaleStart + (scaleEnd - scaleStart) * t;
+
+    const arI = img.width/img.height, arC = W/H;
+    let dw,dh;
+    if(arI > arC){ dh = H*scale; dw = dh*arI; } else { dw = W*scale; dh = dw/arI; }
+    const ox = (W-dw)/2 - (kb ? t*0.02*W : 0);
+    const oy = (H-dh)/2 - (kb ? t*0.02*H : 0);
+
+    ctx.clearRect(0,0,W,H);
+    ctx.drawImage(img, ox, oy, dw, dh);
+
+    const text = overlayText();
+    if(text){
+      const size = Math.max(14, Math.min(72, parseInt($("overlaySize").value)||26));
+      const pos = $("overlayPos").value;
+      ctx.save();
+      const padX = 16, padY = 10;
+      ctx.font = `700 ${size}px system-ui, sans-serif`;
+      const maxTextW = W - padX*4;
+      const lines = wrapText(ctx, text, maxTextW);
+      const lineGap = Math.round(size*0.25);
+      const barH = lines.length*size + padY*2 + (lines.length-1)*lineGap;
+      ctx.fillStyle = "rgba(0,0,0,.45)";
+      if(pos==="top") ctx.fillRect(0,0,W,barH); else ctx.fillRect(0,H-barH,W,barH);
+      ctx.fillStyle = "#fff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const y0 = pos==="top" ? padY + size/2 : H - barH + padY + size/2;
+      lines.forEach((ln, idx)=>{ ctx.fillText(ln, W/2, y0 + idx*(size + lineGap)); });
+      ctx.restore();
+    }
+
+    if(logoImg && logoImg.complete){
+      const lw = Math.min(W*0.22, 220);
+      const lh = lw*(logoImg.height/logoImg.width || 0.3);
+      const pad = 10;
+      const pos = $("logoPos")?.value || "tl";
+      const alpha = (parseInt($("logoOpacity")?.value,10) || 95)/100;
+
+      let x = 10, y = 10;
+      if(pos==="tr"){ x = W - (lw+pad*2) - 10; y = 10; }
+      if(pos==="bl"){ x = 10; y = H - (lh+pad*2) - 10; }
+      if(pos==="br"){ x = W - (lw+pad*2) - 10; y = H - (lh+pad*2) - 10; }
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(x, y, lw+pad*2, lh+pad*2);
+      ctx.drawImage(logoImg, x+pad, y+pad, lw, lh);
+      ctx.restore();
+    }
+  }
+
+  function loadImage(url){
+    return new Promise((res,rej)=>{
+      const i = new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error("image load failed")); i.src=url;
+    });
+  }
+
+  // GIF presets as options
+  function getGifOptions(){
+    const p = $("gifPreset")?.value || "balanced";
+    if(p==="small") return { quality: 20, fps: 8 };
+    if(p==="sharp") return { quality: 8, fps: 10 };
+    return { quality: 10, fps: 10 };
+  }
+
+  // Renderers
+  async function renderFrames(){
+    if (logoLoadPromise) await logoLoadPromise;
+    if(!IMGS.length) throw new Error("Add photos first");
+    const {W,H,per} = renderParams();
+    const c = document.createElement("canvas"); c.width=W; c.height=H;
+    const ctx = c.getContext("2d");
+    const frames = [];
+    const total = IMGS.length*per;
+    let done = 0;
+
+    for(let i=0;i<IMGS.length;i++){
+      const img = await loadImage(IMGS[i].url);
+      for(let f=0; f<per; f++){
+        const t = per<=1 ? 1 : f/(per-1);
+        await drawSlideTo(ctx,img,i,t);
+        frames.push(c.toDataURL("image/png"));
+        done++;
+        if(done % 10 === 0){ setStatus(`Rendering frames ${done}/${total}`); await new Promise(r=>setTimeout(r,0)); }
+      }
+    }
+    setStatus("Frames ready");
+    return frames;
+  }
+
+  async function renderGIF(options){
+    if (logoLoadPromise) await logoLoadPromise;
+    if(!IMGS.length) throw new Error("Add photos first");
+    const base = renderParams();
+    const W = base.W, H = base.H;
+    const gifFps = Math.min(options.fps, base.fps);
+    const delay = Math.round(1000/gifFps);
+
+    const c = document.createElement("canvas"); c.width=W; c.height=H;
+    const ctx = c.getContext("2d");
+
+    const total = IMGS.length*(base.per || 1);
+    let done = 0;
+
+    const gif = new GIF({
+      workers: 2,
+      quality: options.quality,
+      workerScript: window.GIF_WORKER_URL,
+      width: W,
+      height: H
+    });
+
+    // Fixed loop condition
+    for(let i=0; i<IMGS.length; i++){
+      const img = await loadImage(IMGS[i].url);
+      for(let f=0; f<base.per; f++){
+        const t = base.per<=1 ? 1 : f/(base.per-1);
+        await drawSlideTo(ctx, img, i, t);
+        gif.addFrame(ctx, {delay, copy:true});
+        done++;
+        if(done % 10 === 0){ setStatus(`Building GIF ${done}/${total}`); await new Promise(r=>setTimeout(r,0)); }
+      }
+    }
+
+    return new Promise((res, rej)=>{
+      setStatus("Encoding GIF...");
+      gif.on("finished", blob => { setStatus("GIF done"); res(blob); });
+      gif.on("abort", ()=> rej(new Error("gif aborted")));
+      gif.render();
+    });
+  }
+
+  async function renderVideo(mime){
+    if (logoLoadPromise) await logoLoadPromise;
+    if(!IMGS.length) throw new Error("Add photos first");
+    const {W,H,fps,per} = renderParams();
+    const c = document.createElement("canvas"); c.width=W; c.height=H;
+    const ctx = c.getContext("2d");
+    const stream = c.captureStream(fps);
+    const rec = new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:Math.min(5_000_000,W*H*2)});
+    const chunks=[];
+    rec.ondataavailable=e=>{ if(e.data?.size) chunks.push(e.data); };
+    rec.start();
+
+    const total = IMGS.length*per;
+    let done = 0;
+
+    for(let i=0;i<IMGS.length;i++){
+      const img = await loadImage(IMGS[i].url);
+      for(let f=0; f<per; f++){
+        const t = per<=1 ? 1 : f/(per-1);
+        await drawSlideTo(ctx,img,i,t);
+        done++;
+        if(done % 10 === 0){ setStatus(`Encoding WebM ${done}/${total}`); await new Promise(r=>setTimeout(r,0)); }
+        await new Promise(r=>setTimeout(r,1000/fps));
+      }
+    }
+
+    rec.stop();
+    await new Promise(r=>rec.addEventListener("stop",r,{once:true}));
+    if(!chunks.length) throw new Error("no data recorded");
+    setStatus("WebM done");
+    return new Blob(chunks,{type:mime||"video/webm"});
+  }
+
+  // Export buttons
+  $("exportWebM").addEventListener("click", async ()=>{
+    setControlsDisabled(true);
+    try{
+      setStatus("Starting WebM export...");
+      const can = canRecordWebM();
+      if(!can.supported){ setStatus(""); alert(can.msg); return; }
+      const blob = await renderVideo(can.mime);
+      saveBlob(blob, outName("webm"));
+    }catch(e){ setStatus(""); alert("Export failed: " + (e.message||e)); }
+    finally { setControlsDisabled(false); }
+  });
+
+  $("exportGIF").addEventListener("click", async ()=>{
+    setControlsDisabled(true);
+    try{
+      setStatus("Starting GIF export...");
+      const gifOptions = getGifOptions();
+      const blob = await renderGIF(gifOptions);
+      saveBlob(blob, outName("gif"));
+    }catch(e){ setStatus(""); alert("GIF export failed: " + (e.message||e)); }
+    finally { setControlsDisabled(false); }
+  });
+
+  $("exportZIP").addEventListener("click", async ()=>{
+    setControlsDisabled(true);
+    try{
+      setStatus("Zipping frames...");
+      const frames = await renderFrames();
+      const zip = new JSZip();
+      frames.forEach((png,i)=> zip.file(`frame_${String(i+1).padStart(4,"0")}.png`, png.split(",")[1], {base64:true}) );
+      const blob = await zip.generateAsync({type:"blob"});
+      saveAs(blob, outName("zip"));
+      setStatus("ZIP done");
+    }catch(e){ setStatus(""); alert("ZIP export failed: " + (e.message||e)); }
+    finally { setControlsDisabled(false); }
+  });
+
+  // Init
+  buildSlides();
+</script>
+</body>
+</html>
