@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0f6cbd" />
   <title>Property Slideshow Maker - PatternRipple</title>
-  <meta name="description" content="Create listing slideshows for real estate - add photos, address, price, beds-baths-sqft, agent details, brand color, logo - export as WebM or GIF." />
+  <meta name="description" content="Create real estate listing slideshows from photos. Add address, price, beds-baths-sqft, agent details, brand color, logo. Export as GIF, WebM, or ZIP of frames." />
 
-  <!-- Dependencies -->
+  <!-- deps -->
   <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
-  <!-- Use a same-origin worker in production. Put gif.worker.js at /public/lib/gif.worker.js -->
-  <script>window.GIF_WORKER_URL = "/lib/gif.worker.js";</script>
+  <script>window.GIF_WORKER_URL="/lib/gif.worker.js";</script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 
@@ -19,47 +19,62 @@
       --bg-1:#0b1220;
       --bg-2:#101a2c;
       --ink:#e7ecf3;
-      --panel:#111a2b;
+      --panel:#101a2c;
+      --panel-2:#0b1526;
       --border:rgba(15,108,189,.25);
       --accent:#22c55e;
+      --danger:#e11d48;
+      --muted:#94a3b8;
+      --focus:rgba(34,197,94,.6);
+      --radius:14px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0;padding:24px;
+      margin:0;padding:16px;
       color:var(--ink);
       background:linear-gradient(135deg,var(--bg-1),var(--bg-2));
       font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
     .wrap{max-width:1200px;margin:0 auto}
-    h1{margin:0 0 6px;font-weight:800;color:var(--brand);letter-spacing:.2px}
-    .sub{opacity:.85;margin-bottom:16px;font-size:12px}
+    h1{margin:0 0 4px;font-weight:800;color:var(--brand);letter-spacing:.2px;font-size:clamp(22px,3.4vw,28px)}
+    .sub{opacity:.9;margin:0 0 12px;font-size:12px;color:var(--muted)}
     .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
     @media (max-width:980px){.grid{grid-template-columns:1fr}}
-    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
     .row{display:flex;gap:10px;flex-wrap:wrap}
-    label{display:block;margin:.4rem 0 .25rem;font-weight:700;color:#cfe1f3}
-    input,select,textarea{
-      width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);
-      background:#0b1526;color:var(--ink)
+    label{display:block;margin:.5rem 0 .25rem;font-weight:700;color:#cfe1f3;font-size:13px}
+    input,select,textarea,button{
+      font:inherit;
     }
-    input[type=color]{padding:0;height:42px}
-    textarea{min-height:60px;resize:vertical}
+    input,select,textarea{
+      width:100%;padding:12px 11px;border-radius:10px;border:1px solid var(--border);
+      background:var(--panel-2);color:var(--ink);min-height:44px
+    }
+    input:focus,select:focus,textarea:focus,.upload:focus{outline:3px solid var(--focus);outline-offset:2px}
+    input[type=color]{padding:0;height:44px}
+    input[type=range]{height:auto;min-height:0}
+    textarea{min-height:66px;resize:vertical}
     .upload{
-      border:2px dashed var(--border);border-radius:12px;padding:22px;text-align:center;cursor:pointer
+      border:2px dashed var(--border);border-radius:12px;padding:22px;text-align:center;cursor:pointer;background:rgba(11,21,38,.5)
     }
     .upload:hover{border-color:var(--brand)}
     .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:12px}
     .thumb{position:relative;aspect-ratio:16/9;background:#0b1526;border-radius:8px;overflow:hidden}
     .thumb img{width:100%;height:100%;object-fit:cover}
-    .thumb .del{position:absolute;top:4px;right:4px;border:0;border-radius:50%;width:22px;height:22px;
-      background:#e11d48;color:#fff;font-weight:900;cursor:pointer}
+    .thumb .del{
+      position:absolute;top:4px;right:4px;border:0;border-radius:10px;min-width:28px;height:28px;
+      background:var(--danger);color:#fff;font-weight:900;cursor:pointer
+    }
     .btn{
       padding:12px 16px;border-radius:12px;border:1px solid var(--border);
-      background:linear-gradient(135deg,var(--brand),#1976d2);color:#fff;font-weight:800;cursor:pointer
+      background:linear-gradient(135deg,var(--brand),#1976d2);color:#fff;font-weight:800;cursor:pointer;min-height:44px
     }
     .btn.secondary{background:linear-gradient(135deg,#475569,#64748b)}
     .btn.success{background:linear-gradient(135deg,var(--accent),#16a34a);border-color:#1f9d53}
+    .btn.ghost{background:transparent;border-color:var(--border);color:#cfe1f3}
     .btn:disabled{opacity:.6;cursor:not-allowed}
     .stage{--aspect:16/9; aspect-ratio:var(--aspect); background:#000;border-radius:12px;overflow:hidden;position:relative}
     .slide{position:absolute;inset:0;opacity:0;transition:opacity .35s ease}
@@ -67,39 +82,51 @@
     .overlay{position:absolute;left:0;right:0;background:rgba(0,0,0,.45);padding:10px 14px;text-align:center}
     .overlay div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .top{top:0}.bottom{bottom:0}
-    .bar-wrap{height:4px;background:rgba(255,255,255,.22);border-radius:2px;margin-top:10px;overflow:hidden}
+    .bar-wrap{height:6px;background:rgba(255,255,255,.22);border-radius:3px;margin-top:10px;overflow:hidden}
     .bar{height:100%;width:0;background:var(--brand)}
     .wm-badge{position:absolute;right:10px;top:10px;background:#fff;color:var(--brand);
       padding:6px 10px;border-radius:8px;font-size:12px;font-weight:900;opacity:.95}
     .tagline{font-size:12px;opacity:.9}
     .split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     @media (max-width:640px){.split{grid-template-columns:1fr}}
-    .note{font-size:12px;opacity:.8;margin-top:6px}
+    .note{font-size:12px;opacity:.85;margin-top:6px;color:var(--muted)}
     .logo-prev{width:100%;max-width:160px;height:48px;object-fit:contain;background:#0b1526;border-radius:8px;border:1px solid var(--border)}
+    .actions{
+      position:sticky;bottom:8px;z-index:10;background:linear-gradient(180deg,rgba(16,26,44,.0),rgba(16,26,44,.9) 20%,rgba(16,26,44,.9));
+      backdrop-filter:saturate(120%) blur(4px);padding:10px;border-radius:12px;border:1px solid var(--border)
+    }
+    .tip{
+      font-size:12px;color:#dbeafe;background:#0b2644;border:1px solid rgba(59,130,246,.35);
+      padding:8px 10px;border-radius:10px
+    }
     @media (prefers-reduced-motion: reduce){.bar{transition:none}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Property Slideshow Maker</h1>
-    <div class="sub">Fast listing videos for agents and stagers</div>
+    <p class="sub">Fast listing videos for agents and stagers</p>
 
-    <div class="grid">
-      <div class="card">
+    <div class="grid" aria-describedby="helper">
+      <!-- left: settings -->
+      <div class="card" role="region" aria-label="Settings">
         <div class="row">
           <div style="flex:1;min-width:160px">
             <label for="aspect">Aspect</label>
-            <select id="aspect">
+            <select id="aspect" aria-describedby="aspectHelp">
               <option value="16:9" selected>16:9 - YouTube</option>
               <option value="9:16">9:16 - Shorts or Reels</option>
               <option value="4:3">4:3</option>
               <option value="1:1">1:1</option>
             </select>
+            <div id="aspectHelp" class="note">Canvas resizes automatically</div>
           </div>
+
           <div style="flex:1;min-width:160px">
             <label for="sec">Seconds per image</label>
-            <input id="sec" type="number" min="1" max="12" step="0.5" value="2.5" />
+            <input id="sec" type="number" inputmode="decimal" min="1" max="12" step="0.5" value="2.5" />
           </div>
+
           <div style="flex:1;min-width:160px">
             <label for="overlayPos">Overlay position</label>
             <select id="overlayPos">
@@ -135,7 +162,7 @@
           </div>
           <div style="flex:1;min-width:160px">
             <label for="overlaySize">Headline font size px</label>
-            <input id="overlaySize" type="number" min="14" max="72" value="26" />
+            <input id="overlaySize" type="number" inputmode="numeric" min="14" max="72" value="26" />
           </div>
           <div style="flex:1;min-width:160px">
             <label for="kenburns">Ken Burns</label>
@@ -157,7 +184,7 @@
           <div>
             <label for="logoFile" style="margin-bottom:6px">Logo - PNG or SVG</label>
             <input id="logoFile" type="file" accept="image/*" />
-            <div class="note">Shown on a subtle white panel. Use high-contrast logos or bake an outline.</div>
+            <div class="note">Shown on a white panel. Use high contrast logos or include your own outline.</div>
           </div>
           <img id="logoPrev" class="logo-prev" alt="logo preview" />
         </div>
@@ -179,47 +206,54 @@
           </div>
         </div>
 
-        <div class="note">MLS tip - keep claims factual and avoid subjective superlatives.</div>
+        <p id="helper" class="note">MLS tip - keep claims factual and avoid subjective terms.</p>
       </div>
 
-      <div class="card">
+      <!-- right: photos -->
+      <div class="card" role="region" aria-label="Photos">
         <label for="files">Photos</label>
-        <div id="drop" class="upload" tabindex="0">Click to pick photos or drop files</div>
+        <div id="drop" class="upload" tabindex="0" role="button" aria-controls="files" aria-label="Pick photos">Click to pick photos or drop files</div>
         <input id="files" type="file" accept="image/*" multiple style="display:none" />
-        <div id="thumbs" class="thumbs"></div>
-        <div class="note">Order = slideshow order. Drag to reorder. Click x to remove.</div>
+        <div id="thumbs" class="thumbs" aria-live="polite"></div>
+        <div class="note">Order equals slideshow order. Drag to reorder. Click x to remove.</div>
       </div>
     </div>
 
-    <div class="row" style="margin-top:14px">
-      <button id="previewBtn" type="button" class="btn">Preview</button>
-      <button id="exportWebM" type="button" class="btn">Export WebM</button>
-      <button id="exportGIF" type="button" class="btn success">Export GIF</button>
-      <button id="exportZIP" type="button" class="btn secondary">Download Frames ZIP</button>
-    </div>
-
-    <div class="row" style="margin-top:10px">
-      <div style="flex:1;min-width:220px">
-        <label for="fname">Export filename - no extension</label>
-        <input id="fname" placeholder="maple-st-listing" />
+    <!-- actions -->
+    <div class="actions" aria-live="polite">
+      <div class="row" style="align-items:center">
+        <button id="previewBtn" type="button" class="btn" aria-describedby="tipPreview">Preview</button>
+        <button id="exportWebM" type="button" class="btn" aria-describedby="tipWebM">Export WebM</button>
+        <button id="exportGIF" type="button" class="btn success">Export GIF</button>
+        <button id="exportZIP" type="button" class="btn secondary">Download Frames ZIP</button>
+        <span class="tip" id="tipWebM">WebM works best on desktop Chrome-Edge-Firefox. On iPhone-iPad use GIF.</span>
       </div>
-      <button id="clearAll" type="button" class="btn secondary">Clear All Photos</button>
-    </div>
 
-    <div class="row" style="margin-top:10px">
-      <div style="flex:1;min-width:160px">
-        <label for="gifPreset">GIF preset</label>
-        <select id="gifPreset">
-          <option value="balanced" selected>Balanced</option>
-          <option value="small">Small file</option>
-          <option value="sharp">Sharper</option>
-        </select>
+      <div class="row" style="margin-top:10px">
+        <div style="flex:1;min-width:220px">
+          <label for="fname">Export filename - no extension</label>
+          <input id="fname" placeholder="maple-st-listing" />
+        </div>
+        <button id="clearAll" type="button" class="btn ghost" title="Remove all photos">Clear All Photos</button>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div style="flex:1;min-width:160px">
+          <label for="gifPreset">GIF preset</label>
+          <select id="gifPreset">
+            <option value="balanced" selected>Balanced</option>
+            <option value="small">Small file</option>
+            <option value="sharp">Sharper</option>
+          </select>
+        </div>
+        <span class="tip" id="tipPreview">Keep photos under 3 MB each for faster export.</span>
       </div>
     </div>
 
-    <div class="card" style="margin-top:16px">
+    <!-- stage -->
+    <div class="card" style="margin-top:16px" role="region" aria-label="Preview player">
       <div id="stage" class="stage"></div>
-      <div class="bar-wrap"><div id="bar" class="bar"></div></div>
+      <div class="bar-wrap" aria-hidden="true"><div id="bar" class="bar"></div></div>
       <div class="row" style="margin-top:10px;align-items:center">
         <button id="play" type="button" class="btn">Play</button>
         <button id="pause" type="button" class="btn">Pause</button>
@@ -228,23 +262,42 @@
       </div>
       <div class="note" id="exportStatus" aria-live="polite" style="margin-top:8px"></div>
     </div>
+
+    <!-- faq -->
+    <div class="card" style="margin-top:16px">
+      <details>
+        <summary class="btn ghost" style="display:inline-block">Help and FAQ</summary>
+        <div class="row" style="margin-top:10px">
+          <div class="tip" style="flex:1;min-width:260px">
+            Photos - JPG or PNG. Logos - PNG or SVG.  
+            WebM is desktop focused. iPhone-iPad users should pick GIF.  
+            If a HEIC file does not load, convert to JPG-PNG in the Photos app first.
+          </div>
+        </div>
+      </details>
+    </div>
   </div>
 
 <script>
-  // State
+  // state
   let IMGS = [];
   let current = 0, playing = false;
   let slideMs = 2500, t0 = 0, tick = null, prog = null;
   let logoImg = null;
   let logoLoadPromise = null;
 
-  // DOM helpers
+  // dom
   const $ = id => document.getElementById(id);
   const stage = $("stage");
   const playerBtns = [$("play"), $("pause"), $("reset")];
   const exportBtns = [$("exportWebM"), $("exportGIF"), $("exportZIP")];
-  function setControlsDisabled(v){ [...playerBtns, ...exportBtns].forEach(b => b.disabled = v); }
-  function setStatus(msg){ $("exportStatus").textContent = msg || ""; }
+  const statusEl = $("exportStatus");
+
+  function setControlsDisabled(disabled){
+    [...playerBtns, ...exportBtns, $("previewBtn")].forEach(btn => btn.disabled = disabled);
+    statusEl.setAttribute("aria-busy", disabled ? "true" : "false");
+  }
+  function setStatus(msg){ statusEl.textContent = msg || ""; }
 
   function outName(ext){
     const base = ($("fname").value || $("addr").value || "slideshow")
@@ -252,7 +305,7 @@
     return `${base || "slideshow"}.${ext}`;
   }
 
-  // Aspect and theme
+  // aspect and brand color
   $("aspect").addEventListener("change", () => {
     const [w,h] = $("aspect").value.split(":").map(Number);
     stage.style.setProperty("--aspect", `${w}/${h}`);
@@ -261,7 +314,7 @@
     document.documentElement.style.setProperty("--brand", e.target.value);
   });
 
-  // Logo load with promise
+  // logo load promise
   $("logoFile").addEventListener("change", e=>{
     const f = e.target.files?.[0]; if(!f) return;
     logoLoadPromise = new Promise((resolve, reject) => {
@@ -277,9 +330,10 @@
     });
   });
 
-  // Upload handlers
+  // upload
   const drop = $("drop"), files = $("files");
   drop.addEventListener("click", ()=>files.click());
+  drop.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); files.click(); }});
   ["dragover","drop","dragleave"].forEach(ev=>drop.addEventListener(ev, e=>e.preventDefault()));
   drop.addEventListener("dragover", ()=>drop.style.borderColor="var(--brand)");
   drop.addEventListener("dragleave", ()=>drop.style.borderColor="var(--border)");
@@ -287,15 +341,13 @@
   files.addEventListener("change", e=>handleFiles(Array.from(e.target.files)));
 
   function handleFiles(list){
-    const imgs = list.filter(f=>f.type.startsWith("image/"));
+    const imgs = list.filter(f=>/^image\//.test(f.type) || /\.jpe?g$|\.png$|\.gif$|\.webp$|\.bmp$|\.svg$/i.test(f.name));
     if(!imgs.length){ alert("Pick image files"); return; }
-    const unsupported = list.filter(f=>!f.type && /.heic$/i.test(f.name));
-    if(unsupported.length){
-      alert("HEIC images may not load here. Convert to JPG or PNG first.");
-    }
+    const heic = list.filter(f=>!f.type && /\.heic$/i.test(f.name));
+    if(heic.length){ alert("HEIC may not load here. Convert to JPG or PNG first."); }
     Promise.all(imgs.map(loadFileAsURL))
-      .then(urls => { urls.forEach(url=>IMGS.push({url})); renderThumbs(); buildSlides(); })
-      .catch(() => alert("One or more images failed to load."));
+      .then(urls=>{ urls.forEach(url=>IMGS.push({url})); renderThumbs(); buildSlides(); })
+      .catch(()=> alert("One or more images failed to load."));
   }
   function loadFileAsURL(f){
     return new Promise((res,rej)=>{
@@ -306,7 +358,7 @@
     });
   }
 
-  // Thumbs and reorder
+  // thumbs and reorder
   function renderThumbs(){
     const c = $("thumbs"); c.innerHTML = "";
     IMGS.forEach((m,i)=>{
@@ -324,15 +376,16 @@
         renderThumbs(); buildSlides();
       });
 
-      const im = document.createElement("img"); im.src = m.url; d.appendChild(im);
+      const im = document.createElement("img"); im.src = m.url; im.alt = "photo"; d.appendChild(im);
       const del = document.createElement("button"); del.className="del"; del.textContent="x"; del.type="button";
+      del.setAttribute("aria-label","Remove photo");
       del.onclick = ()=>{ IMGS.splice(i,1); renderThumbs(); buildSlides(); };
       d.appendChild(del);
       c.appendChild(d);
     });
   }
 
-  // Overlay text
+  // overlay text merge
   function overlayText(){
     const parts = [];
     const addr = $("addr").value.trim();
@@ -347,7 +400,7 @@
     return parts.join(" • ");
   }
 
-  // Build slides
+  // build slides
   $("overlayPos").addEventListener("change", buildSlides);
   ["addr","price","bbs","agent","overlayFree","overlaySize"].forEach(id=>$(id).addEventListener("input", buildSlides));
   $("clearAll").addEventListener("click", ()=>{ IMGS = []; renderThumbs(); buildSlides(); reset(); });
@@ -381,7 +434,7 @@
     });
   }
 
-  // Player
+  // preview and transport
   $("previewBtn").addEventListener("click", ()=>{ buildSlides(); stage.scrollIntoView({behavior:"smooth"}); });
   $("play").addEventListener("click", play);
   $("pause").addEventListener("click", pause);
@@ -410,14 +463,14 @@
   function show(i){ [...stage.querySelectorAll(".slide")].forEach((n,idx)=>n.classList.toggle("active", idx===i)); }
   function updateBar(p){ $("bar").style.width = Math.max(0,Math.min(1,p))*100 + "%"; }
 
-  // Save helper
+  // save helper
   function saveBlob(blob,name){
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob); a.download = name; a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
   }
 
-  // WebM support check
+  // webm support
   function canRecordWebM(){
     if(!("MediaRecorder" in window)) return {supported:false,msg:"WebM recorder not available in this browser"};
     const options = ["video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"];
@@ -425,7 +478,7 @@
     return mime ? {supported:true,mime} : {supported:false,msg:"WebM not supported here. Use GIF export."};
   }
 
-  // Render params
+  // render params
   function renderParams(){
     const [aw,ah] = $("aspect").value.split(":").map(Number);
     const H = 720; const W = Math.round(H*(aw/ah));
@@ -435,7 +488,7 @@
     return {W,H,fps,per};
   }
 
-  // Text wrap
+  // text wrap
   function wrapText(ctx, text, maxWidth){
     const words = text.split(/\s+/); const lines = [];
     let line = "";
@@ -448,7 +501,7 @@
     return lines;
   }
 
-  // Draw a frame
+  // draw frame
   async function drawSlideTo(ctx, img, i, t){
     const {W,H} = renderParams();
     if (logoLoadPromise) await logoLoadPromise;
@@ -515,7 +568,7 @@
     });
   }
 
-  // GIF presets as options
+  // gif preset options
   function getGifOptions(){
     const p = $("gifPreset")?.value || "balanced";
     if(p==="small") return { quality: 20, fps: 8 };
@@ -523,7 +576,7 @@
     return { quality: 10, fps: 10 };
   }
 
-  // Renderers
+  // renderers
   async function renderFrames(){
     if (logoLoadPromise) await logoLoadPromise;
     if(!IMGS.length) throw new Error("Add photos first");
@@ -570,7 +623,6 @@
       height: H
     });
 
-    // Fixed loop condition
     for(let i=0; i<IMGS.length; i++){
       const img = await loadImage(IMGS[i].url);
       for(let f=0; f<base.per; f++){
@@ -623,7 +675,7 @@
     return new Blob(chunks,{type:mime||"video/webm"});
   }
 
-  // Export buttons
+  // export buttons
   $("exportWebM").addEventListener("click", async ()=>{
     setControlsDisabled(true);
     try{
@@ -661,7 +713,7 @@
     finally { setControlsDisabled(false); }
   });
 
-  // Init
+  // init
   buildSlides();
 </script>
 </body>
