@@ -31,10 +31,6 @@ export default function AboutPage() {
             </p>
             <div className="mt-4 grid md:grid-cols-2 gap-4">
               <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className="font-medium text-gray-900 mb-1">Mockup generator</h3>
-                <p className="text-sm text-gray-600">Preview scale and contrast on apparel and home goods.</p>
-              </div>
-              <div className="border border-gray-200 rounded-lg p-4">
                 <h3 className="font-medium text-gray-900 mb-1">Property slideshow maker</h3>
                 <p className="text-sm text-gray-600">Share rooms and finishes. Useful for agents and designers.</p>
               </div>
