@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dystopia Chess</title>
+<style>
+  :root{
+    --ink:#e6e6e6;
+    --bg:#0b0f14;
+    --bg2:#0f141b;
+    --grid:#1e2630;
+    --accent:#9ef01a;
+    --accent2:#00f5d4;
+    --warn:#ff3864;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;padding:18px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 800px at 20% -10%, #17202a 0%, rgba(23,32,42,0) 60%),
+      radial-gradient(900px 600px at 120% 120%, #101820 0%, rgba(16,24,32,0) 60%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+    position:relative;overflow-x:hidden;
+  }
+  /* static noise */
+  body::before{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/ filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+  }
+  h1{
+    margin:0;
+    letter-spacing:0.15em;
+    font-weight:800;
+    font-size:clamp(18px,4vw,28px);
+    text-align:center;
+    padding:10px 16px;
+    border:1px solid var(--grid);
+    background:linear-gradient(180deg,#0d131a,#0b0f14);
+    box-shadow:0 0 0 2px #000 inset, 0 0 24px rgba(0,0,0,0.6);
+    text-shadow:0 0 8px rgba(158,240,26,0.2);
+  }
+  .sub{
+    font-size:12px;opacity:0.8;margin-top:-4px;text-align:center
+  }
+  .panel{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 12px;border:1px solid var(--grid);
+    background:#0d141b;box-shadow:0 0 0 2px #000 inset;
+    width:min(95vw,560px);justify-content:space-between
+  }
+  .dot{
+    display:inline-block;width:10px;height:10px;border-radius:2px;
+    background:var(--accent);box-shadow:0 0 10px var(--accent)
+  }
+  #turn{font-weight:800}
+  #board{
+    width:min(95vw,560px);height:min(95vw,560px);
+    max-width:560px;max-height:560px;
+    display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);
+    border:1px solid var(--grid);box-shadow:0 0 0 2px #000 inset, 0 6px 24px rgba(0,0,0,0.6);
+    position:relative;background:#0a0f15
+  }
+  .coords{
+    position:absolute;inset:0;pointer-events:none;font-size:10px;opacity:0.45;color:#a8b3c2
+  }
+  .coords .file{position:absolute;bottom:2px;transform:translateX(-50%)}
+  .coords .rank{position:absolute;right:2px;transform:translateY(-50%)}
+  .square{
+    border:1px solid #0f1821;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    transition:filter .08s ease;
+  }
+  .square.light{background:#131b25}
+  .square.dark{background:#0e151d}
+  .square:hover{filter:brightness(1.08)}
+  .square.selected{outline:2px solid var(--accent2);z-index:2}
+  .square.valid-move{box-shadow:inset 0 0 0 2px var(--accent);position:relative}
+  .square.valid-move::after{
+    content:"";position:absolute;width:28%;height:28%;
+    border:2px solid var(--accent);outline:3px solid rgba(158,240,26,0.2);
+    box-shadow:0 0 10px var(--accent);inset 0 0 6px rgba(158,240,26,0.3);
+  }
+  .piece{
+    width:88%;height:88%;
+    display:grid;place-items:center;
+  }
+  .glyph{
+    width:80%;height:80%;
+    display:block;
+    color:#e8eef5;
+    filter:drop-shadow(0 0 6px rgba(0,0,0,0.8));
+  }
+  .piece.white{color:#e6eef9}
+  .piece.black{color:#d4d7dc;opacity:0.95}
+  .piece.white .glyph{color:#e9fdfc}
+  .piece.black .glyph{color:#f5c2d1}
+  .captured{
+    display:flex;flex-wrap:wrap;gap:6px;min-height:24px;align-items:center
+  }
+  .pip{width:16px;height:16px;border:1px solid var(--grid);background:#101821}
+  .legend{
+    width:min(95vw,560px);
+    display:grid;grid-template-columns:1fr;gap:10px;
+  }
+  .legend h3{
+    margin:8px 0 0 0;font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.9
+  }
+  .legend .row{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:8px
+  }
+  .legend-item{
+    display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--grid);background:#0d141b
+  }
+  .legend .mini{width:22px;height:22px}
+  .tag{font-size:10px;color:#9fb0c3;opacity:.9}
+  @media (max-width:520px){
+    .legend .row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+  <h1>DYSTOPIA CHESS</h1>
+  <div class="sub">Modern pieces. Same rules. Different story.</div>
+
+  <div class="panel">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="dot"></span>
+      <span id="turn">White's turn</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;font-size:12px">
+      <span class="tag">Captured</span>
+      <div id="cap-white" class="captured"></div>
+      <div id="cap-black" class="captured"></div>
+    </div>
+  </div>
+
+  <div id="board" aria-label="Chess board"></div>
+
+  <section class="legend">
+    <h3>Piece guide</h3>
+    <div class="row" id="legend-list"></div>
+  </section>
+
+<script>
+  /* ---------- piece set and svg ---------- */
+  const PIECE_LABELS = {
+    king: "Tech Oligarch",
+    queen: "Politician",
+    bishop: "Propagandist",
+    knight: "SWAT Unit",
+    rook: "Surveillance Tower",
+    pawn: "Citizen"
+  };
+
+  // minimal, high-contrast SVGs sized to viewBox 100x100, use currentColor for fills
+  function svgFor(type){
+    switch(type){
+      case "king": // Tech Oligarch: crown + suit
+        return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <path d="M20 70 h60 v18 H20z"/> <!-- base -->
+            <path d="M32 70 L50 35 L68 70 Z"/> <!-- torso -->
+            <rect x="47" y="26" width="6" height="14" rx="2"/> <!-- tie knot -->
+            <path d="M40 26 h20 v6 H40z"/> <!-- collar -->
+            <path d="M30 18 l5 8 5-8 5 8 5-8 5 8 5-8 5 8 5-8 v8 H30z"/> <!-- crown -->
+          </g>
+        </svg>`;
+      case "queen": // Politician at podium
+        return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <rect x="30" y="58" width="40" height="26" rx="2"/>
+            <rect x="38" y="40" width="24" height="20" rx="2"/>
+            <circle cx="50" cy="30" r="8"/>
+            <rect x="26" y="52" width="48" height="4"/>
+            <rect x="20" y="46" width="10" height="4"/>
+            <rect x="70" y="46" width="10" height="4"/>
+          </g>
+        </svg>`;
+      case "rook": // Surveillance Tower with dish
+        return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <rect x="34" y="28" width="32" height="10"/>
+            <rect x="30" y="38" width="40" height="10"/>
+            <rect x="34" y="48" width="32" height="28"/>
+            <rect x="28" y="76" width="44" height="12"/>
+            <circle cx="75" cy="30" r="9"/>
+            <rect x="72" y="22" width="3" height="16"/>
+          </g>
+        </svg>`;
+      case "knight": // SWAT shield + baton
+        return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <rect x="28" y="30" width="34" height="46" rx="6"/>
+            <rect x="36" y="40" width="18" height="6" rx="2"/>
+            <rect x="36" y="52" width="18" height="6" rx="2"/>
+            <rect x="68" y="28" width="6" height="44" rx="2" transform="rotate(12 71 50)"/>
+          </g>
+        </svg>`;
+      case "bishop": // Propagandist loudspeaker
+        return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <path d="M24 58 h22 l18 12 v-36 l-18 12 H24z"/>
+            <rect x="24" y="56" width="8" height="16"/>
+            <circle cx="70" cy="44" r="4"/>
+            <circle cx="76" cy="40" r="3"/>
+            <circle cx="78" cy="48" r="2"/>
+          </g>
+        </svg>`;
+      case "pawn": // Citizen silhouette
+        return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="currentColor">
+            <circle cx="50" cy="30" r="10"/>
+            <path d="M30 70 a20 18 0 1 1 40 0 v12 H30z"/>
+          </g>
+        </svg>`;
+      default:
+        return "";
+    }
+  }
+
+  /* ---------- game state ---------- */
+  const boardEl = document.getElementById("board");
+  const turnEl = document.getElementById("turn");
+  const capWhite = document.getElementById("cap-white");
+  const capBlack = document.getElementById("cap-black");
+
+  let gameState = {
+    board: [],
+    currentTurn: "white",
+    selected: null,
+    validMoves: [],
+    captured: { white: [], black: [] }
+  };
+
+  // starting position
+  function initBoard(){
+    const empty = Array(8).fill(null).map(()=>Array(8).fill(null));
+    const back = ["rook","knight","bishop","queen","king","bishop","knight","rook"];
+    // black at top
+    empty[0] = back.map(t => ({type:t,color:"black"}));
+    empty[1] = Array(8).fill(0).map(()=>({type:"pawn",color:"black"}));
+    // white at bottom
+    empty[6] = Array(8).fill(0).map(()=>({type:"pawn",color:"white"}));
+    empty[7] = back.map(t => ({type:t,color:"white"}));
+    gameState.board = empty;
+    gameState.currentTurn = "white";
+    gameState.selected = null;
+    gameState.validMoves = [];
+    gameState.captured = {white:[], black:[]};
+  }
+
+  /* ---------- rendering ---------- */
+  function renderBoard(){
+    boardEl.innerHTML = "";
+    for(let r=0;r<8;r++){
+      for(let c=0;c<8;c++){
+        const sq = document.createElement("button");
+        sq.type = "button";
+        sq.className = `square ${(r+c)%2===0?"light":"dark"}`;
+        sq.dataset.row = r; sq.dataset.col = c;
+        const piece = gameState.board[r][c];
+        if(piece){
+          const host = document.createElement("div");
+          host.className = `piece ${piece.color}`;
+          host.title = `${PIECE_LABELS[piece.type]} (${piece.color})`;
+          host.innerHTML = svgFor(piece.type);
+          sq.appendChild(host);
+        }
+        if(gameState.selected && gameState.selected.row===r && gameState.selected.col===c){
+          sq.classList.add("selected");
+        }
+        if(gameState.validMoves.some(m => m.row===r && m.col===c)){
+          sq.classList.add("valid-move");
+        }
+        sq.addEventListener("click", () => onSquare(r,c));
+        boardEl.appendChild(sq);
+      }
+    }
+    turnEl.textContent = `${gameState.currentTurn==="white"?"White":"Black"}'s turn`;
+    renderCaptured();
+  }
+
+  function renderCaptured(){
+    capWhite.innerHTML = "";
+    capBlack.innerHTML = "";
+    // captured by black are white pieces, and vice versa
+    gameState.captured.white.forEach(t => { // pieces captured by white
+      const s = document.createElement("span"); s.className="pip"; s.title = t; capWhite.appendChild(s);
+    });
+    gameState.captured.black.forEach(t => { // pieces captured by black
+      const s = document.createElement("span"); s.className="pip"; s.title = t; capBlack.appendChild(s);
+    });
+  }
+
+  /* ---------- movement rules ---------- */
+  function onSquare(row,col){
+    const target = gameState.board[row][col];
+    if(gameState.selected){
+      const isValid = gameState.validMoves.find(m => m.row===row && m.col===col);
+      if(isValid){
+        const from = gameState.selected;
+        const moving = gameState.board[from.row][from.col];
+        if(target){
+          // record capture
+          const label = PIECE_LABELS[target.type];
+          if(moving.color==="white"){ gameState.captured.white.push(label); }
+          else { gameState.captured.black.push(label); }
+        }
+        gameState.board[row][col] = moving;
+        gameState.board[from.row][from.col] = null;
+        gameState.selected = null;
+        gameState.validMoves = [];
+        gameState.currentTurn = gameState.currentTurn==="white" ? "black" : "white";
+        renderBoard();
+        return;
+      }
+      // reselect if clicking own piece
+      if(target && target.color===gameState.currentTurn){
+        gameState.selected = {row,col};
+        gameState.validMoves = getValidMoves(row,col);
+      }else{
+        gameState.selected = null; gameState.validMoves = [];
+      }
+    }else{
+      if(target && target.color===gameState.currentTurn){
+        gameState.selected = {row,col};
+        gameState.validMoves = getValidMoves(row,col);
+      }
+    }
+    renderBoard();
+  }
+
+  function getValidMoves(row,col){
+    const piece = gameState.board[row][col];
+    if(!piece) return [];
+    const push = (arr,r,c,color)=>{
+      if(r<0||r>7||c<0||c>7) return false;
+      const t = gameState.board[r][c];
+      if(!t){ arr.push({row:r,col:c}); return true; }
+      if(t.color!==color){ arr.push({row:r,col:c}); return false; }
+      return false;
+    };
+    const moves=[];
+    switch(piece.type){
+      case "pawn":{
+        const dir = piece.color==="white" ? -1 : 1;
+        const start = piece.color==="white" ? 6 : 1;
+        if(!gameState.board[row+dir]?.[col]) moves.push({row:row+dir,col});
+        if(row===start && !gameState.board[row+dir]?.[col] && !gameState.board[row+2*dir]?.[col]) moves.push({row:row+2*dir,col});
+        for(const dc of [-1,1]){
+          const tr = row+dir, tc = col+dc;
+          if(tr>=0 && tr<8 && tc>=0 && tc<8){
+            const t = gameState.board[tr][tc];
+            if(t && t.color!==piece.color) moves.push({row:tr,col:tc});
+          }
+        }
+        break;
+      }
+      case "rook":{
+        line([ [1,0],[-1,0],[0,1],[0,-1] ]); break;
+      }
+      case "bishop":{
+        line([ [1,1],[1,-1],[-1,1],[-1,-1] ]); break;
+      }
+      case "queen":{
+        line([ [1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1] ]); break;
+      }
+      case "king":{
+        const deltas = [ [1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1] ];
+        for(const [dr,dc] of deltas){ push(moves,row+dr,col+dc,piece.color); }
+        break;
+      }
+      case "knight":{
+        const ks = [ [2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2] ];
+        for(const [dr,dc] of ks){ push(moves,row+dr,col+dc,piece.color); }
+        break;
+      }
+    }
+    return moves;
+
+    function line(dirs){
+      for(const [dr,dc] of dirs){
+        let r=row+dr, c=col+dc;
+        while(r>=0 && r<8 && c>=0 && c<8){
+          const cont = push(moves,r,c,piece.color);
+          if(!cont) break;
+          r+=dr; c+=dc;
+        }
+      }
+    }
+  }
+
+  /* ---------- legend ---------- */
+  function renderLegend(){
+    const list = document.getElementById("legend-list");
+    const order = ["king","queen","rook","knight","bishop","pawn"];
+    list.innerHTML = "";
+    for(const t of order){
+      const card = document.createElement("div");
+      card.className = "legend-item";
+      card.innerHTML = `
+        <div class="mini" aria-hidden="true">${svgFor(t)}</div>
+        <div>
+          <div><strong>${PIECE_LABELS[t]}</strong> <span class="tag">(${capName(t)})</span></div>
+        </div>
+      `;
+      list.appendChild(card);
+    }
+  }
+  function capName(t){ return t.charAt(0).toUpperCase()+t.slice(1); }
+
+  /* ---------- boot ---------- */
+  initBoard();
+  renderBoard();
+  renderLegend();
+</script>
+</body>
+</html>
