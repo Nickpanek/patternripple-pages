@@ -27,7 +27,6 @@
     display:flex;flex-direction:column;align-items:center;gap:14px;
     position:relative;overflow-x:hidden;
   }
-  /* static noise */
   body::before{
     content:"";
     position:fixed;inset:0;pointer-events:none;
@@ -53,7 +52,7 @@
     display:flex;align-items:center;gap:12px;
     padding:10px 12px;border:1px solid var(--grid);
     background:#0d141b;box-shadow:0 0 0 2px #000 inset;
-    width:min(95vw,560px);justify-content:space-between
+    width:min(95vw,640px);justify-content:space-between
   }
   .dot{
     display:inline-block;width:10px;height:10px;border-radius:2px;
@@ -61,51 +60,66 @@
   }
   #turn{font-weight:800}
   #board{
-    width:min(95vw,560px);height:min(95vw,560px);
-    max-width:560px;max-height:560px;
+    width:min(95vw,640px);height:min(95vw,640px);
+    max-width:640px;max-height:640px;
     display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);
     border:1px solid var(--grid);box-shadow:0 0 0 2px #000 inset, 0 6px 24px rgba(0,0,0,0.6);
     position:relative;background:#0a0f15
   }
-  .coords{
-    position:absolute;inset:0;pointer-events:none;font-size:10px;opacity:0.45;color:#a8b3c2
-  }
-  .coords .file{position:absolute;bottom:2px;transform:translateX(-50%)}
-  .coords .rank{position:absolute;right:2px;transform:translateY(-50%)}
   .square{
     border:1px solid #0f1821;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;
     transition:filter .08s ease;
+    background:
+      radial-gradient(120% 80% at 30% 20%, rgba(255,255,255,0.05), rgba(255,255,255,0) 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));
   }
-  .square.light{background:#131b25}
-  .square.dark{background:#0e151d}
+  .square.light{background-color:#131b25}
+  .square.dark{background-color:#0e151d}
   .square:hover{filter:brightness(1.08)}
   .square.selected{outline:2px solid var(--accent2);z-index:2}
   .square.valid-move{box-shadow:inset 0 0 0 2px var(--accent);position:relative}
   .square.valid-move::after{
-    content:"";position:absolute;width:28%;height:28%;
+    content:"";position:absolute;width:30%;height:30%;
     border:2px solid var(--accent);outline:3px solid rgba(158,240,26,0.2);
     box-shadow:0 0 10px var(--accent);inset 0 0 6px rgba(158,240,26,0.3);
   }
+
+  /* bigger pieces + pseudo 3d */
   .piece{
-    width:88%;height:88%;
-    display:grid;place-items:center;
+    width:96%;height:96%;
+    position:relative;display:grid;place-items:center;
+    transform-style:preserve-3d;perspective:700px;
+    filter:drop-shadow(0 12px 10px rgba(0,0,0,0.45));
+  }
+  .piece::before{
+    content:"";
+    position:absolute;inset:6%;
+    border-radius:8px;
+    background:
+      radial-gradient(140% 100% at 50% 0%, rgba(255,255,255,0.10), rgba(255,255,255,0) 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.25));
+    transform:translateZ(2px);
+    pointer-events:none;
   }
   .glyph{
-    width:80%;height:80%;
-    display:block;
-    color:#e8eef5;
-    filter:drop-shadow(0 0 6px rgba(0,0,0,0.8));
+    width:92%;height:92%;
+    display:block;color:#e8eef5;
+    transform:translateZ(18px);
+    filter:
+      drop-shadow(0 2px 0 rgba(255,255,255,0.06))
+      drop-shadow(0 14px 12px rgba(0,0,0,0.55));
+    transition:transform .12s ease;
   }
+  .square:hover .glyph{transform:translateZ(18px) rotateX(5deg) rotateY(-5deg)}
   .piece.white{color:#e6eef9}
   .piece.black{color:#d4d7dc;opacity:0.95}
   .piece.white .glyph{color:#e9fdfc}
   .piece.black .glyph{color:#f5c2d1}
-  .captured{
-    display:flex;flex-wrap:wrap;gap:6px;min-height:24px;align-items:center
-  }
+
+  .captured{display:flex;flex-wrap:wrap;gap:6px;min-height:24px;align-items:center}
   .pip{width:16px;height:16px;border:1px solid var(--grid);background:#101821}
   .legend{
-    width:min(95vw,560px);
+    width:min(95vw,640px);
     display:grid;grid-template-columns:1fr;gap:10px;
   }
   .legend h3{
@@ -117,9 +131,9 @@
   .legend-item{
     display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--grid);background:#0d141b
   }
-  .legend .mini{width:22px;height:22px}
+  .legend .mini{width:28px;height:28px}
   .tag{font-size:10px;color:#9fb0c3;opacity:.9}
-  @media (max-width:520px){
+  @media (max-width:560px){
     .legend .row{grid-template-columns:1fr}
   }
 </style>
@@ -148,30 +162,30 @@
   </section>
 
 <script>
-  /* ---------- piece set and svg ---------- */
+  /* piece labels */
   const PIECE_LABELS = {
     king: "Tech Oligarch",
     queen: "Politician",
-    bishop: "Propagandist",
+    bishop: "Self Help Guru",
     knight: "SWAT Unit",
     rook: "Surveillance Tower",
     pawn: "Citizen"
   };
 
-  // minimal, high-contrast SVGs sized to viewBox 100x100, use currentColor for fills
+  /* SVG glyphs - sized to 100x100 viewBox - use currentColor */
   function svgFor(type){
     switch(type){
-      case "king": // Tech Oligarch: crown + suit
+      case "king": // tech oligarch
         return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
           <g fill="currentColor">
-            <path d="M20 70 h60 v18 H20z"/> <!-- base -->
-            <path d="M32 70 L50 35 L68 70 Z"/> <!-- torso -->
-            <rect x="47" y="26" width="6" height="14" rx="2"/> <!-- tie knot -->
-            <path d="M40 26 h20 v6 H40z"/> <!-- collar -->
-            <path d="M30 18 l5 8 5-8 5 8 5-8 5 8 5-8 5 8 5-8 v8 H30z"/> <!-- crown -->
+            <path d="M20 72 h60 v16 H20z"/>
+            <path d="M32 72 L50 36 L68 72 Z"/>
+            <rect x="47" y="28" width="6" height="14" rx="2"/>
+            <path d="M40 28 h20 v6 H40z"/>
+            <path d="M30 18 l5 8 5-8 5 8 5-8 5 8 5-8 5 8 5-8 v8 H30z"/>
           </g>
         </svg>`;
-      case "queen": // Politician at podium
+      case "queen": // politician at podium
         return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
           <g fill="currentColor">
             <rect x="30" y="58" width="40" height="26" rx="2"/>
@@ -182,41 +196,56 @@
             <rect x="70" y="46" width="10" height="4"/>
           </g>
         </svg>`;
-      case "rook": // Surveillance Tower with dish
+      case "rook": // surveillance tower
         return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
           <g fill="currentColor">
-            <rect x="34" y="28" width="32" height="10"/>
-            <rect x="30" y="38" width="40" height="10"/>
-            <rect x="34" y="48" width="32" height="28"/>
+            <rect x="34" y="26" width="32" height="10"/>
+            <rect x="30" y="36" width="40" height="10"/>
+            <rect x="34" y="46" width="32" height="30"/>
             <rect x="28" y="76" width="44" height="12"/>
-            <circle cx="75" cy="30" r="9"/>
-            <rect x="72" y="22" width="3" height="16"/>
+            <circle cx="75" cy="28" r="9"/>
+            <rect x="72" y="20" width="3" height="16"/>
           </g>
         </svg>`;
-      case "knight": // SWAT shield + baton
+      case "knight": // swat shield
         return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
           <g fill="currentColor">
-            <rect x="28" y="30" width="34" height="46" rx="6"/>
-            <rect x="36" y="40" width="18" height="6" rx="2"/>
+            <rect x="28" y="28" width="36" height="48" rx="7"/>
+            <rect x="36" y="38" width="18" height="6" rx="2"/>
             <rect x="36" y="52" width="18" height="6" rx="2"/>
-            <rect x="68" y="28" width="6" height="44" rx="2" transform="rotate(12 71 50)"/>
+            <rect x="70" y="28" width="6" height="44" rx="2" transform="rotate(12 73 50)"/>
           </g>
         </svg>`;
-      case "bishop": // Propagandist loudspeaker
+      case "bishop": // self help guru - person in lotus on an open book with headset mic
         return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
-          <g fill="currentColor">
-            <path d="M24 58 h22 l18 12 v-36 l-18 12 H24z"/>
-            <rect x="24" y="56" width="8" height="16"/>
-            <circle cx="70" cy="44" r="4"/>
-            <circle cx="76" cy="40" r="3"/>
-            <circle cx="78" cy="48" r="2"/>
+          <defs>
+            <linearGradient id="glo" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="currentColor" stop-opacity="0.95"/>
+              <stop offset="1" stop-color="currentColor" stop-opacity="0.75"/>
+            </linearGradient>
+          </defs>
+          <g fill="url(#glo)">
+            <!-- open book base -->
+            <path d="M18 72 q14 -8 32 -8 q18 0 32 8 v10 q-14 -8 -32 -8 q-18 0 -32 8 z"/>
+            <!-- seated person -->
+            <circle cx="50" cy="34" r="9" fill="currentColor"/>
+            <path d="M34 62 q16 -10 32 0 l-4 6 q-12 -6 -24 0 z" fill="currentColor"/>
+            <!-- legs cross -->
+            <path d="M38 70 q12 -8 24 0 l-4 6 q-8 -6 -16 0 z" fill="currentColor"/>
+            <!-- headset mic -->
+            <path d="M56 34 q6 0 6 6 h-3 q0 -3 -3 -3 z" fill="currentColor"/>
+            <circle cx="59" cy="41" r="2" fill="currentColor"/>
+            <!-- sparkle aura -->
+            <circle cx="28" cy="40" r="1.6" fill="currentColor" opacity="0.7"/>
+            <circle cx="72" cy="40" r="1.6" fill="currentColor" opacity="0.7"/>
+            <circle cx="50" cy="22" r="1.6" fill="currentColor" opacity="0.7"/>
           </g>
         </svg>`;
-      case "pawn": // Citizen silhouette
+      case "pawn": // citizen
         return `<svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
           <g fill="currentColor">
-            <circle cx="50" cy="30" r="10"/>
-            <path d="M30 70 a20 18 0 1 1 40 0 v12 H30z"/>
+            <circle cx="50" cy="28" r="10"/>
+            <path d="M30 68 a20 18 0 1 1 40 0 v12 H30z"/>
           </g>
         </svg>`;
       default:
@@ -224,7 +253,7 @@
     }
   }
 
-  /* ---------- game state ---------- */
+  /* board state */
   const boardEl = document.getElementById("board");
   const turnEl = document.getElementById("turn");
   const capWhite = document.getElementById("cap-white");
@@ -238,14 +267,11 @@
     captured: { white: [], black: [] }
   };
 
-  // starting position
   function initBoard(){
     const empty = Array(8).fill(null).map(()=>Array(8).fill(null));
     const back = ["rook","knight","bishop","queen","king","bishop","knight","rook"];
-    // black at top
     empty[0] = back.map(t => ({type:t,color:"black"}));
     empty[1] = Array(8).fill(0).map(()=>({type:"pawn",color:"black"}));
-    // white at bottom
     empty[6] = Array(8).fill(0).map(()=>({type:"pawn",color:"white"}));
     empty[7] = back.map(t => ({type:t,color:"white"}));
     gameState.board = empty;
@@ -255,7 +281,7 @@
     gameState.captured = {white:[], black:[]};
   }
 
-  /* ---------- rendering ---------- */
+  /* render */
   function renderBoard(){
     boardEl.innerHTML = "";
     for(let r=0;r<8;r++){
@@ -289,16 +315,15 @@
   function renderCaptured(){
     capWhite.innerHTML = "";
     capBlack.innerHTML = "";
-    // captured by black are white pieces, and vice versa
-    gameState.captured.white.forEach(t => { // pieces captured by white
+    gameState.captured.white.forEach(t => {
       const s = document.createElement("span"); s.className="pip"; s.title = t; capWhite.appendChild(s);
     });
-    gameState.captured.black.forEach(t => { // pieces captured by black
+    gameState.captured.black.forEach(t => {
       const s = document.createElement("span"); s.className="pip"; s.title = t; capBlack.appendChild(s);
     });
   }
 
-  /* ---------- movement rules ---------- */
+  /* movement */
   function onSquare(row,col){
     const target = gameState.board[row][col];
     if(gameState.selected){
@@ -307,7 +332,6 @@
         const from = gameState.selected;
         const moving = gameState.board[from.row][from.col];
         if(target){
-          // record capture
           const label = PIECE_LABELS[target.type];
           if(moving.color==="white"){ gameState.captured.white.push(label); }
           else { gameState.captured.black.push(label); }
@@ -320,7 +344,6 @@
         renderBoard();
         return;
       }
-      // reselect if clicking own piece
       if(target && target.color===gameState.currentTurn){
         gameState.selected = {row,col};
         gameState.validMoves = getValidMoves(row,col);
@@ -396,7 +419,7 @@
     }
   }
 
-  /* ---------- legend ---------- */
+  /* legend */
   function renderLegend(){
     const list = document.getElementById("legend-list");
     const order = ["king","queen","rook","knight","bishop","pawn"];
@@ -415,7 +438,7 @@
   }
   function capName(t){ return t.charAt(0).toUpperCase()+t.slice(1); }
 
-  /* ---------- boot ---------- */
+  /* boot */
   initBoard();
   renderBoard();
   renderLegend();
