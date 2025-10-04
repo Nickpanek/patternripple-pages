@@ -18,6 +18,18 @@ type Product = {
 
 const products: Product[] = [
   {
+    slug: "butterfly-floral-faux-embroidery-navy",
+    title: "Butterfly & Wildflower Faux Embroidery on Navy",
+    subtitle: "Faux Embroidery Collection",
+    price: 20,
+    sku: "PR-fem-20251003-001",
+    stripePriceId: "price_1SEJ7zBB8R6OUfKVekZpNmCe",
+    thumbnail: "https://files.patternripple.com/butterfly-floral-faux-embroidery-navy-thumb.jpg",
+    exclusive: true,
+    available: true,
+    category: "faux-embroidery"
+  },
+  {
     slug: "architectural-wireframe-monochrome-geometric",
     title: "Architectural Wireframe in Monochrome",
     subtitle: "Architecture Collection",
