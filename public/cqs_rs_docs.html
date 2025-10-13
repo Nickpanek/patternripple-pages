@@ -64,6 +64,15 @@
             background: rgba(255,255,255,0.4);
         }
         
+        .github-btn {
+            background: rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.7);
+        }
+        
+        .github-btn:hover {
+            background: rgba(0,0,0,0.5);
+        }
+        
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -199,6 +208,11 @@
             margin: 1rem 0;
         }
         
+        .info-box a {
+            color: #357abd;
+            font-weight: 600;
+        }
+        
         .error {
             background: #ffe7e7;
             border-left-color: #dc3545;
@@ -240,6 +254,7 @@
             <span class="badge">Open Source</span>
         </div>
         <div class="header-buttons">
+            <a href="https://github.com/Nickpanek/cqs-rs" class="header-btn github-btn" target="_blank">⭐ GitHub Repository</a>
             <button class="header-btn" onclick="downloadFullDocs()">📥 Download Full Documentation</button>
             <a href="https://patternripple.com" class="header-btn">Visit PatternRipple.com</a>
         </div>
@@ -253,7 +268,7 @@
             <strong>✨ Browser Demo Version!</strong> This is a simplified JavaScript demo of the full cqs-rs simulator (originally written in Rust). 
             It runs entirely in your browser with zero setup - perfect for quick experiments! 
             <br><br>
-            <strong>Want the full-featured Rust version?</strong> Download the documentation above for complete installation instructions. 
+            <strong>Want the full-featured Rust version?</strong> Visit the <a href="https://github.com/Nickpanek/cqs-rs" target="_blank">GitHub repository</a> for installation instructions. 
             The Rust version includes advanced features like noise models, constraints, deterministic replay, and telemetry logging.
         </div>
 
@@ -298,13 +313,13 @@
                 <li>See the measurement results in the output panel</li>
             </ol>
             <p style="margin-top: 1rem;"><strong>Available operations:</strong> init, h, x, y, z, rx, ry, rz, cnot, cz, measure</p>
-            <p style="margin-top: 0.5rem;">For full documentation, click "Download Full Documentation" above </a></p>
+            <p style="margin-top: 0.5rem;">For installation and full documentation, visit <a href="https://github.com/Nickpanek/cqs-rs" target="_blank">github.com/Nickpanek/cqs-rs</a></p>
         </div>
     </div>
 
     <footer>
         <p>Developed by <a href="https://patternripple.com">PatternRipple.com Labs</a> • Created by <a href="https://heylink.me/nickpanek/" target="_blank">Nick Panek</a></p>
-        <p style="margin-top: 0.5rem;">Open source and free to use • No server required</p>
+        <p style="margin-top: 0.5rem;"><a href="https://github.com/Nickpanek/cqs-rs" target="_blank">View on GitHub</a> • Open source and free to use</p>
     </footer>
 
     <script>
@@ -586,602 +601,178 @@
 
         function downloadFullDocs() {
             const docs = `cqs-rs Full Technical Documentation
-Version 0.17.1
+========================================
+
+GitHub Repository: https://github.com/Nickpanek/cqs-rs
+Documentation: https://www.patternripple.com/cqs_rs_docs.html
+
 Developed by PatternRipple.com Labs
 Created by Nick Panek (https://heylink.me/nickpanek/)
 
 ================================================================================
-TABLE OF CONTENTS
+INSTALLATION - FULL RUST VERSION
 ================================================================================
-1. Overview
-2. Installation - Full Rust Version
-3. Browser Demo vs Full Rust Version
-4. Quick Start
-5. JSON Program Operations
-6. Mathematical Foundation
-7. Advanced Features
-8. Cross-Validation with Qiskit
-9. Benchmarking
-10. Testing
-11. Source Code Structure
-
-================================================================================
-1. OVERVIEW
-================================================================================
-
-cqs-rs is a constraint- and replay-aware sparse quantum state simulator written
-in Rust. It provides:
-
-- Epsilon-sparse pruning with tracked dropped norm delta
-- Constraint-aware execution: Hamming weight or parity
-- Deterministic replay via event-indexed RNG using BLAKE3-keyed hashing
-- JSONL trajectory logging with per-step telemetry
-
-Key Features:
-- Sparse state representation for memory efficiency
-- Support for constraints (Hamming weight, parity)
-- Deterministic simulation with seeded RNG
-- Comprehensive gate set (H, X, Y, Z, RX, RY, RZ, CNOT, CZ)
-- Noise models (dephasing, depolarizing, amplitude damping)
-- Measurement and postselection
-- Detailed telemetry logging
-
-================================================================================
-2. INSTALLATION - FULL RUST VERSION
-================================================================================
-
-The browser demo is JavaScript-only. For the full-featured Rust version with
-advanced capabilities, follow these installation steps:
 
 STEP 1: Install Rust
 --------------------
-If you don't have Rust installed:
+Visit: https://rustup.rs/
+Or run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-**On macOS/Linux:**
-  Open terminal and run:
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-  
-  Follow the on-screen instructions. When complete, run:
-  source $HOME/.cargo/env
-
-**On Windows:**
-  Download and run: https://rustup.rs/
-  Follow the installer instructions.
-
-**Verify Installation:**
-  rustc --version
-  cargo --version
-  
-  You should see version numbers printed.
-
-STEP 2: Get the Source Code
-----------------------------
-You need the cqs-rs source code. Contact PatternRipple.com Labs or check:
-  https://patternripple.com
-
-The source should include:
-  - Cargo.toml (package configuration)
-  - src/ directory (Rust source code)
-  - All the files mentioned in Section 11
+STEP 2: Clone the Repository
+-----------------------------
+git clone https://github.com/Nickpanek/cqs-rs.git
+cd cqs-rs
 
 STEP 3: Build the Project
 --------------------------
-Navigate to the cqs-rs directory in your terminal:
-  cd /path/to/cqs-rs
+cargo build --release
 
-Build the release version:
-  cargo build --release
-
-This may take a few minutes the first time as it downloads dependencies
-and compiles everything with optimizations.
-
-STEP 4: Verify Installation
-----------------------------
-The compiled binary will be at:
-  target/release/cqs        (on macOS/Linux)
-  target\\release\\cqs.exe    (on Windows)
-
-Test it:
-  ./target/release/cqs --help
-
-You should see usage information.
-
-STEP 5: (Optional) Add to PATH
--------------------------------
-To use 'cqs' from anywhere:
-
-**On macOS/Linux:**
-  Add this line to ~/.bashrc or ~/.zshrc:
-  export PATH="$PATH:/path/to/cqs-rs/target/release"
-  
-  Then reload:
-  source ~/.bashrc  (or ~/.zshrc)
-
-**On Windows:**
-  Add the full path to target\\release to your system PATH environment variable.
-
-STEP 6: Run Your First Simulation
+STEP 4: Run Your First Simulation
 ----------------------------------
-Create a test program:
-  echo '[
-    {"op": "init", "n": 2},
-    {"op": "h", "q": 0},
-    {"op": "cnot", "ctrl": 0, "tgt": 1},
-    {"op": "measure", "qubits": [0, 1]}
-  ]' > test.json
+Create a test circuit (bell_state.json):
+[
+  {"op": "init", "n": 2},
+  {"op": "h", "q": 0},
+  {"op": "cnot", "ctrl": 0, "tgt": 1},
+  {"op": "measure", "qubits": [0, 1]}
+]
 
 Run it:
-  ./target/release/cqs run --program test.json --shots 100
-
-You should see measurement results!
-
-TROUBLESHOOTING
----------------
-Problem: "cargo: command not found"
-Solution: Rust isn't installed or not in PATH. Repeat Step 1.
-
-Problem: Compilation errors
-Solution: Make sure you have the latest Rust: rustup update
-
-Problem: Missing dependencies on Linux
-Solution: You may need build essentials:
-  sudo apt-get install build-essential  (Ubuntu/Debian)
-  sudo yum groupinstall "Development Tools"  (RHEL/CentOS)
-
-For more help, visit: https://patternripple.com
+./target/release/cqs run --program bell_state.json --shots 100
 
 ================================================================================
-3. BROWSER DEMO vs FULL RUST VERSION
+FEATURES (FULL RUST VERSION)
 ================================================================================
 
-BROWSER DEMO (JavaScript):
-  ✓ Runs instantly in your browser
-  ✓ No installation required
-  ✓ Basic gates: H, X, Y, Z, RZ, CNOT, CZ
-  ✓ Simple measurement
-  ✗ No noise models
-  ✗ No constraints
-  ✗ No deterministic replay
-  ✗ No telemetry logging
-  ✗ Limited to small circuits
-
-FULL RUST VERSION:
-  ✓ All gates including RX, RY, generic rotations
-  ✓ Noise models (dephasing, depolarizing, amplitude damping)
-  ✓ Constraint modes (Hamming weight, parity)
-  ✓ Deterministic replay with BLAKE3 seeding
-  ✓ Detailed JSONL telemetry logging
-  ✓ Sparse state pruning (epsilon thresholds)
-  ✓ Postselection support
-  ✓ Command-line interface with full control
-  ✓ Optimized for larger circuits
-  ✓ Cross-validation with Qiskit
-  ✓ Built-in benchmarking tools
-  
-Recommendation: Use the browser demo for quick experiments and learning.
-                Use the full Rust version for research, production, or 
-                advanced features.
+✓ All quantum gates (H, X, Y, Z, RX, RY, RZ, CNOT, CZ)
+✓ Noise models (dephasing, depolarizing, amplitude damping)
+✓ Constraint modes (Hamming weight, parity)
+✓ Deterministic replay with BLAKE3 seeding
+✓ Detailed JSONL telemetry logging
+✓ Sparse state pruning with epsilon thresholds
+✓ Postselection support
+✓ Command-line interface
+✓ Cross-validation with Qiskit
+✓ Built-in benchmarking tools
 
 ================================================================================
-4. QUICK START
+EXAMPLE CIRCUITS
 ================================================================================
 
-Minimal Example:
+Bell State (Entanglement):
+[
+  {"op": "init", "n": 2},
+  {"op": "h", "q": 0},
+  {"op": "cnot", "ctrl": 0, "tgt": 1},
+  {"op": "measure", "qubits": [0, 1]}
+]
 
-cat > program.json << 'JSON'
+GHZ State (3-way entanglement):
+[
+  {"op": "init", "n": 3},
+  {"op": "h", "q": 0},
+  {"op": "cnot", "ctrl": 0, "tgt": 1},
+  {"op": "cnot", "ctrl": 1, "tgt": 2},
+  {"op": "measure", "qubits": [0, 1, 2]}
+]
+
+Deterministic Simulation with Seed:
 [
   {
     "op": "init",
     "n": 3,
-    "eps2": 1e-12,
-    "mode": "project",
-    "constraint": {"kind": "parity", "even": true},
-    "seed_hex": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f"
+    "seed_hex": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
   },
   {"op": "h", "q": 0},
-  {"op": "rz", "q": 0, "theta": 1.234},
-  {"op": "cnot", "ctrl": 0, "tgt": 1},
-  {"op": "cz", "ctrl": 1, "tgt": 2},
   {"op": "measure", "qubits": [0, 1, 2]}
 ]
-JSON
 
-Run the program:
-  ./target/release/cqs run --program program.json --shots 4 --log traj
-
-Output logs will be at: traj-*.jsonl
+Noise Simulation:
+[
+  {"op": "init", "n": 2},
+  {"op": "h", "q": 0},
+  {"op": "noise", "kind": {"kind": "dephasing", "p": 0.01}, "q": 0},
+  {"op": "cnot", "ctrl": 0, "tgt": 1},
+  {"op": "measure", "qubits": [0, 1]}
+]
 
 ================================================================================
-5. JSON PROGRAM OPERATIONS
+COMMAND-LINE USAGE
 ================================================================================
 
-5.1 INITIALIZATION
-------------------
-Operation: init
-Parameters:
-  - n: Number of qubits (required)
-  - eps2: Sparse pruning threshold (optional, default: 0.0)
-  - mode: "invariant" or "project" (optional, default: "project")
-  - constraint: Constraint specification (optional)
-  - seed_hex: 64-character hex string for RNG seed (optional)
+Run a circuit:
+  cqs run --program circuit.json --shots 100
 
-Constraint Types:
-  - {"kind": "none"} - No constraints (default)
-  - {"kind": "hamming", "k": 2} - Fixed Hamming weight k
-  - {"kind": "parity", "even": true} - Even/odd parity
+With telemetry logging:
+  cqs run --program circuit.json --shots 10 --log output
 
-Example:
-  {"op": "init", "n": 4, "eps2": 1e-10, "constraint": {"kind": "hamming", "k": 2}}
+Run benchmarks:
+  cargo run --release --bin cqs_bench
 
-5.2 SINGLE-QUBIT GATES
-----------------------
-H Gate (Hadamard):
-  {"op": "h", "q": 0}
-  Creates superposition: |0⟩ → (|0⟩ + |1⟩)/√2
+Run tests:
+  cargo test
 
-X Gate (Pauli-X / NOT):
-  {"op": "x", "q": 0}
-  Bit flip: |0⟩ ↔ |1⟩
+================================================================================
+ADVANCED FEATURES
+================================================================================
 
-Y Gate (Pauli-Y):
-  {"op": "y", "q": 0}
-  Bit flip with phase: |0⟩ → i|1⟩, |1⟩ → -i|0⟩
+Sparse Pruning:
+  {"op": "init", "n": 10, "eps2": 1e-12}
 
-Z Gate (Pauli-Z):
-  {"op": "z", "q": 0}
-  Phase flip: |1⟩ → -|1⟩
+Hamming Weight Constraint:
+  {"op": "init", "n": 4, "constraint": {"kind": "hamming", "k": 2}}
 
-RX Gate (Rotation around X-axis):
-  {"op": "rx", "q": 0, "theta": 1.57}
-  Rotation by angle theta (in radians)
-
-RY Gate (Rotation around Y-axis):
-  {"op": "ry", "q": 0, "theta": 0.785}
-  Rotation by angle theta (in radians)
-
-RZ Gate (Rotation around Z-axis):
-  {"op": "rz", "q": 0, "theta": 3.14}
-  Rotation by angle theta (in radians)
-
-Generic Rotation:
-  {"op": "rot", "q": 0, "axis": "x", "theta": 1.57}
-  Axis can be "x", "y", or "z"
-
-5.3 TWO-QUBIT GATES
--------------------
-CNOT Gate (Controlled-NOT):
-  {"op": "cnot", "ctrl": 0, "tgt": 1}
-  Flips target if control is |1⟩
-
-CZ Gate (Controlled-Z):
-  {"op": "cz", "ctrl": 0, "tgt": 1}
-  Applies phase if both qubits are |1⟩
-
-All-to-All CZ:
-  {"op": "all2all_cz"}
-  Applies CZ between all qubit pairs
-  Optimized for fixed Hamming weight: global phase (-1)^{k(k-1)/2}
-
-5.4 NOISE OPERATIONS
---------------------
-Dephasing Noise:
-  {"op": "noise", "kind": {"kind": "dephasing", "p": 0.01}, "q": 0}
-  Applies Z gate with probability p
-
-Depolarizing Noise:
-  {"op": "noise", "kind": {"kind": "depolarizing", "p": 0.01}, "q": 0}
-  Applies X, Y, or Z each with probability p/3
-
-Amplitude Damping:
-  {"op": "noise", "kind": {"kind": "amplitude_damping", "gamma": 0.05}, "q": 0}
-  Models energy loss from |1⟩ to |0⟩
-
-5.5 MEASUREMENT AND POSTSELECTION
----------------------------------
-Measurement:
-  {"op": "measure", "qubits": [0, 1, 2]}
-  Measures specified qubits, collapses state
+Parity Constraint:
+  {"op": "init", "n": 4, "constraint": {"kind": "parity", "even": true}}
 
 Postselection:
   {"op": "postselect", "qubits": [0, 1], "bits": "01"}
-  Projects onto specified measurement outcome
+
+Cross-validate with Qiskit:
+  python3 scripts/crossval_qiskit.py circuit.json
 
 ================================================================================
-6. MATHEMATICAL FOUNDATION
+SUPPORTED GATES
 ================================================================================
 
-6.1 SPARSE PRUNING
-------------------
-- Amplitudes with probability weight ≤ eps2 are dropped
-- Dropped probability accumulates in delta
-- delta ≥ P_drop + P_proj
-  where P_drop = pruned mass, P_proj = projected mass
+Single-Qubit Gates:
+- H (Hadamard): {"op": "h", "q": 0}
+- X (NOT): {"op": "x", "q": 0}
+- Y: {"op": "y", "q": 0}
+- Z: {"op": "z", "q": 0}
+- RX: {"op": "rx", "q": 0, "theta": 1.57}
+- RY: {"op": "ry", "q": 0, "theta": 0.785}
+- RZ: {"op": "rz", "q": 0, "theta": 3.14}
 
-6.2 TOTAL VARIATION BOUND
---------------------------
-For measurement distributions M(actual) vs M(ideal):
-  TV(M(actual), M(ideal)) ≤ sqrt(delta)
+Two-Qubit Gates:
+- CNOT: {"op": "cnot", "ctrl": 0, "tgt": 1}
+- CZ: {"op": "cz", "ctrl": 0, "tgt": 1}
 
-The TV upper bound is accessible as: tv_upper_bound = sqrt(delta)
+Measurement:
+- {"op": "measure", "qubits": [0, 1]}
 
-Trace distance increases are bounded by sqrt(discarded probability)
-
-6.3 CONSTRAINT EXECUTION MODES
--------------------------------
-InvariantOnly:
-  - Gate must preserve allowed index set
-  - Error if gate would violate constraint
-  - No projection or delta growth
-
-ProjectWithBounds:
-  - Apply gate
-  - Project out forbidden basis states
-  - Add their mass to delta
-  - Renormalize
-  - Exposes tv_upper_bound
-
-6.4 GATE INVARIANCE
--------------------
-Diagonal gates preserve any constraint:
-  - Z, RZ, CZ, ALL2ALL_CZ
-
-Mixing gates only safe with no constraint:
-  - H, X, Y, RX, RY, CNOT
-
-6.5 NOISE CHANNELS (Trajectory Unraveling)
--------------------------------------------
-Dephasing (parameter p):
-  - Apply Z with probability p
-  - Identity with probability 1-p
-
-Depolarizing (parameter p):
-  - Identity with probability 1-p
-  - X, Y, or Z each with probability p/3
-
-Amplitude Damping (parameter gamma):
-  - Jump operator: sqrt(gamma) * |0⟩⟨1|
-  - No-jump update with (1-gamma) scaling
-  - Deterministic based on RNG
-
-6.6 DETERMINISTIC REPLAY
--------------------------
-EventRng uses keyed BLAKE3 hash over:
-  - kind: Event type string
-  - step: Current step counter
-  - shot: Shot number
-  - qubits: Qubit indices array
-  - extra: Extra parameter
-
-This ensures reproducible randomness across runs with same seed.
-
-6.7 ALL-TO-ALL CZ OPTIMIZATION
--------------------------------
-For fixed Hamming weight k:
-  - Global phase: (-1)^{k(k-1)/2}
-  - No need to iterate over all pairs
-  - Significant speedup for large systems
+Noise:
+- Dephasing: {"op": "noise", "kind": {"kind": "dephasing", "p": 0.01}, "q": 0}
+- Depolarizing: {"op": "noise", "kind": {"kind": "depolarizing", "p": 0.01}, "q": 0}
+- Amplitude Damping: {"op": "noise", "kind": {"kind": "amplitude_damping", "gamma": 0.05}, "q": 0}
 
 ================================================================================
-7. ADVANCED FEATURES
+RESOURCES
 ================================================================================
 
-7.1 TELEMETRY LOGGING
----------------------
-When --log flag is used, creates JSONL files with per-step data:
-  - event: Operation type
-  - step, shot: Counters
-  - norm_pre, norm_post: State norm before/after
-  - amps_len_pre, amps_len_post: Number of non-zero amplitudes
-  - delta_inc: Increase in delta this step
-  - delta: Cumulative delta
-  - tv_upper_bound: Current TV bound
-
-Use for:
-  - Debugging state evolution
-  - Auditing bound growth
-  - Memory profiling
-  - Performance analysis
-
-7.2 CONSTRAINT MODES IN DETAIL
--------------------------------
-InvariantOnly Mode:
-  - Best for: Studying constraint-preserving circuits
-  - No overhead from projection
-  - Stricter gate restrictions
-  - Errors immediately if constraint violated
-
-ProjectWithBounds Mode:
-  - Best for: General simulations with constraint awareness
-  - Automatic projection and renormalization
-  - Tracks approximation quality via tv_upper_bound
-  - More flexible gate usage
-
-7.3 SPARSE THRESHOLD TUNING
-----------------------------
-eps2 = 1e-12: Very accurate, higher memory
-eps2 = 1e-8:  Balanced accuracy and memory
-eps2 = 1e-6:  Fast, lower memory, some error
-
-Monitor tv_upper_bound to assess quality/error tradeoff.
-
-7.4 SEED FORMAT
----------------
-Seed must be exactly 64 hexadecimal characters (32 bytes).
-Example: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
-
-Different seeds produce different but deterministic outcomes.
-Same seed always produces identical results.
-
-================================================================================
-8. CROSS-VALIDATION WITH QISKIT
-================================================================================
-
-For circuits with n ≤ 4 qubits, validate against IBM Qiskit:
-
-  python3 scripts/crossval_qiskit.py program.json
-
-Important Note:
-- Qiskit returns big-endian classical bits
-- The script reverses bit order to match cqs-rs little-endian format
-- Example: Qiskit "10" becomes cqs-rs "01"
-
-Unsupported in cross-validation:
-- Postselection operations
-- Noise operations
-
-================================================================================
-9. BENCHMARKING
-================================================================================
-
-Run microbenchmarks:
-  cargo run --release --bin cqs_bench
-
-Customize with environment variables:
-  CQS_BENCH_N=18           # Number of qubits
-  CQS_BENCH_SHOTS=100      # Number of shots
-  CQS_BENCH_EPS2=1e-12     # Sparse threshold
-  CQS_BENCH_GAMMA=0.05     # Noise parameter
-
-Example:
-  CQS_BENCH_N=20 CQS_BENCH_SHOTS=50 cargo run --release --bin cqs_bench
-
-Benchmark suites:
-- h-cz-chain: Hadamard + CZ chain pattern
-- entangle-stress: Full entanglement generation
-- noise-sweep: Noise application performance
-
-================================================================================
-10. TESTING
-================================================================================
-
-Run all tests:
-  cargo test
-
-Test suites:
-- tests/basic.rs: Core functionality tests
-  - Reproducible measurements
-  - TV bound tracking
-  - Gate constraint checks
-  
-- tests/integration.rs: Integration tests
-  - Empty measurement handling
-  - Sparse pruning behavior
-  - Noise parameter validation
-  - Postselection edge cases
-
-- tests/proptests.rs: Property-based tests
-  - Gate identities (H², CZ², etc.)
-  - Rotation inverse properties
-  - CNOT squared identity
-  - State fidelity preservation
-
-================================================================================
-11. SOURCE CODE STRUCTURE
-================================================================================
-
-Cargo.toml:
-  - Package metadata and dependencies
-  - Binary targets: cqs, cqs_bench
-
-src/lib.rs:
-  - Main State struct
-  - Public API for all operations
-  - Mode and error definitions
-
-src/rng.rs:
-  - EventRng: Deterministic BLAKE3-based RNG
-  - Methods: u128_for_event, u01_for_event, choose_index
-
-src/constraint.rs:
-  - Constraint enum (None, HammingWeight, Parity)
-  - allowed_index: Check if basis state satisfies constraint
-  - check_gate_invariance: Gate compatibility with constraints
-
-src/gates.rs:
-  - Gate implementations
-  - Functions: apply_h_on, apply_x_on, etc.
-  - Optimized all2all_cz
-
-src/noise.rs:
-  - Noise enum (Dephasing, Depolarizing, AmplitudeDamping)
-  - Trajectory unraveling implementations
-
-src/measure.rs:
-  - measure_and_collapse: Quantum measurement
-  - postselect_and_collapse: Postselection
-  - Measurement logging
-
-src/log.rs:
-  - TrajLogger: JSONL trajectory logging
-  - Buffered file writing
-
-src/bin/cqs.rs:
-  - CLI interface using clap
-  - JSON program parsing
-  - Main execution loop
-
-src/bin/cqs_bench.rs:
-  - Microbenchmark suite
-  - Configurable via environment variables
-
-================================================================================
-IMPLEMENTATION NOTES
-================================================================================
-
-1. CZ and CNOT with c == t are no-ops by design
-2. Bit ordering is little-endian (bit 0 is LSB)
-3. Complex amplitudes use num-complex crate
-4. State uses IndexMap for sparse storage
-5. scratch_map pre-allocated for gate operations
-6. All gates support qubit index validation
-7. Telemetry overhead is minimal when logging disabled
-
-================================================================================
-PERFORMANCE TIPS
-================================================================================
-
-1. Use appropriate eps2 for your accuracy needs
-2. Enable logging only when needed (adds I/O overhead)
-3. For large systems, consider Hamming weight constraints
-4. Use all2all_cz optimization when possible
-5. Profile with cargo run --release --bin cqs_bench
-
-================================================================================
-ERROR HANDLING
-================================================================================
-
-SimError enum covers:
-- GateBreaksConstraint: Gate violates invariant mode constraint
-- PostselectLen: Postselection bit string length mismatch
-- PostselectImpossible: Postselection on zero-probability outcome
-- BadQubit: Qubit index out of bounds
-- MissingInit: Operations before init
-- InvalidNoiseParameter: Noise parameter out of [0,1] range
-- BadSeed: Invalid RNG seed format
-
-================================================================================
-LICENSE & CREDITS
-================================================================================
-
-Version: 0.17.1
-License: Open Source (Previously Proprietary, now released as open source)
-Developed by: PatternRipple.com Labs
-Created by: Nick Panek (https://heylink.me/nickpanek/)
+GitHub: https://github.com/Nickpanek/cqs-rs
+Documentation: https://www.patternripple.com/cqs_rs_docs.html
 Website: https://patternripple.com
+Creator: https://heylink.me/nickpanek/
 
-Keywords: quantum, simulator, replay, sparse
-
-This software is provided as-is, without warranty of any kind.
+For issues or questions, visit the GitHub repository.
 
 ================================================================================
-CONTACT & SUPPORT
+LICENSE
 ================================================================================
 
-For questions, issues, or contributions:
-Visit: https://patternripple.com
-
-For the latest version and updates:
-Check: https://www.patternripple.com/cqs_rs_docs.html
+Open Source - MIT License
+See LICENSE file in the repository for details.
 
 ================================================================================
 END OF DOCUMENTATION
