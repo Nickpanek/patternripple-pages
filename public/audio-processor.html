@@ -1,6 +1,8 @@
-<html lang="en"><head>
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>Audio Fade &amp; Normalize</title>
+<title>Audio Fade & Normalize</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   * { box-sizing: border-box; }
@@ -395,6 +397,24 @@
     background: #1a202c;
     transform: translateY(-2px);
   }
+  
+  .credits {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 13px;
+    color: #718096;
+  }
+  
+  .credits a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .credits a:hover {
+    text-decoration: underline;
+  }
 </style>
 </head>
 <body>
@@ -435,7 +455,7 @@
   <div class="section">
     <div class="section-title">🔊 Normalization</div>
     <div class="checkbox-wrapper">
-      <input id="normalize" type="checkbox" checked="">
+      <input id="normalize" type="checkbox" checked>
       <label for="normalize" style="cursor: pointer;">Enable volume normalization</label>
     </div>
     <div class="normalize-controls" id="normalizeControls">
@@ -455,7 +475,7 @@
     </select>
   </div>
 
-  <button id="processBtn" disabled="">Select a file to begin</button>
+  <button id="processBtn" disabled>Select a file to begin</button>
   
   <div class="progress-container" id="progressContainer">
     <div class="progress-bar">
@@ -468,7 +488,7 @@
   
   <div class="output-area" id="outputArea">
     <div class="output-title">✅ Processing Complete!</div>
-    <audio id="audioPlayer" controls=""></audio>
+    <audio id="audioPlayer" controls></audio>
     <a class="download-btn" id="downloadLink">⬇️ Download Processed File</a>
   </div>
   
@@ -478,6 +498,9 @@
       <span>📄</span>
       <span>Download This Tool (HTML)</span>
     </button>
+    <div class="credits">
+      Developed by <a href="https://patternripple.com" target="_blank" rel="noopener">PatternRipple.com Labs</a>
+    </div>
   </div>
 </div>
 
@@ -833,5 +856,5 @@
     URL.revokeObjectURL(url);
   });
 </script>
-
-</body></html>
+</body>
+</html>
