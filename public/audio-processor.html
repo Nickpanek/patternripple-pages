@@ -1,0 +1,837 @@
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Audio Fade &amp; Normalize</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  * { box-sizing: border-box; }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    padding: 40px;
+    max-width: 700px;
+    width: 100%;
+  }
+  
+  h1 {
+    margin: 0 0 30px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d3748;
+    text-align: center;
+  }
+  
+  .upload-area {
+    border: 3px dashed #cbd5e0;
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    margin-bottom: 30px;
+    transition: all 0.3s;
+    cursor: pointer;
+    background: #f7fafc;
+  }
+  
+  .upload-area:hover {
+    border-color: #667eea;
+    background: #edf2f7;
+  }
+  
+  .upload-area.dragover {
+    border-color: #667eea;
+    background: #e6f2ff;
+  }
+  
+  .upload-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  
+  .upload-text {
+    color: #4a5568;
+    font-size: 16px;
+    margin: 5px 0;
+  }
+  
+  .file-name {
+    color: #667eea;
+    font-weight: 600;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  
+  input[type="file"] {
+    display: none;
+  }
+  
+  .section {
+    margin-bottom: 25px;
+  }
+  
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .control label {
+    min-width: 100px;
+    color: #4a5568;
+    font-size: 14px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  
+  .fade-input {
+    width: 70px;
+    padding: 6px 8px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+  
+  .fade-input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  
+  input[type="range"] {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  
+  .value-display {
+    min-width: 50px;
+    text-align: right;
+    font-weight: 600;
+    color: #667eea;
+    font-size: 14px;
+  }
+  
+  input[type="number"] {
+    width: 80px;
+    padding: 8px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+  
+  input[type="number"]:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  
+  select {
+    padding: 8px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    background: white;
+    transition: border-color 0.3s;
+  }
+  
+  select:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  
+  .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #667eea;
+  }
+  
+  .normalize-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 15px;
+    padding: 15px;
+    background: #f7fafc;
+    border-radius: 8px;
+  }
+  
+  .normalize-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .normalize-control label {
+    font-size: 14px;
+    color: #4a5568;
+    font-weight: 600;
+    min-width: 120px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+  
+  button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  }
+  
+  button:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  .processing {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  .progress-container {
+    margin-top: 15px;
+    display: none;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    width: 0%;
+    transition: width 0.3s;
+  }
+  
+  .progress-text {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #4a5568;
+  }
+  
+  .output-area {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f7fafc;
+    border-radius: 12px;
+    display: none;
+  }
+  
+  .output-area.active {
+    display: block;
+  }
+  
+  .output-title {
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 15px;
+    font-size: 16px;
+  }
+  
+  audio {
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 8px;
+  }
+  
+  .download-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #48bb78;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  
+  .download-btn:hover {
+    background: #38a169;
+    transform: translateY(-2px);
+  }
+  
+  .status-message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 14px;
+    text-align: center;
+    display: none;
+  }
+  
+  .status-message.success {
+    background: #c6f6d5;
+    color: #22543d;
+    display: block;
+  }
+  
+  .status-message.error {
+    background: #fed7d7;
+    color: #742a2a;
+    display: block;
+  }
+  
+  .info-box {
+    background: #ebf4ff;
+    border-left: 4px solid #4299e1;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: #2c5282;
+  }
+  
+  .footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #e2e8f0;
+    text-align: center;
+  }
+  
+  .footer-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 10px;
+  }
+  
+  .code-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #2d3748;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+  }
+  
+  .code-download-btn:hover {
+    background: #1a202c;
+    transform: translateY(-2px);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎵 Audio Processor</h1>
+  
+  <div class="info-box">
+    ℹ️ This tool uses Web Audio API for fast, client-side processing. Your files never leave your computer!
+  </div>
+  
+  <input id="fileInput" type="file" accept=".mp3,.wav,.m4a,.aac,.ogg,audio/*">
+  
+  <div class="upload-area" id="uploadArea">
+    <div class="upload-icon">📁</div>
+    <div class="upload-text">Click or drag audio file here</div>
+    <div class="upload-text" style="font-size: 12px; color: #a0aec0;">Supports MP3, WAV, M4A, AAC, OGG and more</div>
+    <div class="file-name" id="fileName"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🎚️ Fade Settings</div>
+    <div class="control-group">
+      <div class="control">
+        <label>Fade In</label>
+        <input id="fadeIn" type="range" min="0" max="30" step="0.5" value="2">
+        <input id="fadeInInput" class="fade-input" type="number" min="0" max="30" step="0.5" value="2">
+        <span class="value-display">s</span>
+      </div>
+      <div class="control">
+        <label>Fade Out</label>
+        <input id="fadeOut" type="range" min="0" max="30" step="0.5" value="2">
+        <input id="fadeOutInput" class="fade-input" type="number" min="0" max="30" step="0.5" value="2">
+        <span class="value-display">s</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔊 Normalization</div>
+    <div class="checkbox-wrapper">
+      <input id="normalize" type="checkbox" checked="">
+      <label for="normalize" style="cursor: pointer;">Enable volume normalization</label>
+    </div>
+    <div class="normalize-controls" id="normalizeControls">
+      <div class="normalize-control">
+        <label>Target Volume:</label>
+        <input id="targetVolume" type="range" min="50" max="100" value="95">
+        <span class="value-display"><span id="volumeVal">95</span>%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">💾 Output Format</div>
+    <select id="outputFormat">
+      <option value="wav">WAV (Uncompressed, High Quality)</option>
+      <option value="mp3">MP3 (Compressed, Smaller File)</option>
+    </select>
+  </div>
+
+  <button id="processBtn" disabled="">Select a file to begin</button>
+  
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-text" id="progressText">Processing...</div>
+  </div>
+  
+  <div class="status-message" id="statusMessage"></div>
+  
+  <div class="output-area" id="outputArea">
+    <div class="output-title">✅ Processing Complete!</div>
+    <audio id="audioPlayer" controls=""></audio>
+    <a class="download-btn" id="downloadLink">⬇️ Download Processed File</a>
+  </div>
+  
+  <div class="footer">
+    <div class="footer-title">💾 Save for Offline Use</div>
+    <button class="code-download-btn" id="downloadHtmlBtn">
+      <span>📄</span>
+      <span>Download This Tool (HTML)</span>
+    </button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const uploadArea = $('uploadArea');
+  const fileInput = $('fileInput');
+  const fileName = $('fileName');
+  const fadeIn = $('fadeIn');
+  const fadeOut = $('fadeOut');
+  const fadeInInput = $('fadeInInput');
+  const fadeOutInput = $('fadeOutInput');
+  const normalize = $('normalize');
+  const normalizeControls = $('normalizeControls');
+  const targetVolume = $('targetVolume');
+  const volumeVal = $('volumeVal');
+  const outputFormat = $('outputFormat');
+  const processBtn = $('processBtn');
+  const statusMessage = $('statusMessage');
+  const progressContainer = $('progressContainer');
+  const progressFill = $('progressFill');
+  const progressText = $('progressText');
+  const outputArea = $('outputArea');
+  const audioPlayer = $('audioPlayer');
+  const downloadLink = $('downloadLink');
+
+  let audioContext;
+  let currentFile = null;
+
+  // Upload area interactions
+  uploadArea.addEventListener('click', () => {
+    fileInput.click();
+  });
+  
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+  
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+  });
+  
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      fileInput.files = files;
+      handleFileSelect();
+    }
+  });
+
+  fileInput.addEventListener('change', handleFileSelect);
+
+  function handleFileSelect() {
+    const file = fileInput.files[0];
+    if (file) {
+      currentFile = file;
+      fileName.textContent = `📄 ${file.name}`;
+      processBtn.disabled = false;
+      processBtn.textContent = 'Process Audio';
+      hideStatus();
+      outputArea.classList.remove('active');
+    }
+  }
+
+  // Range slider and input syncing
+  fadeIn.addEventListener('input', () => {
+    fadeInInput.value = parseFloat(fadeIn.value).toFixed(1);
+  });
+
+  fadeOut.addEventListener('input', () => {
+    fadeOutInput.value = parseFloat(fadeOut.value).toFixed(1);
+  });
+
+  fadeInInput.addEventListener('input', () => {
+    let val = parseFloat(fadeInInput.value);
+    if (isNaN(val)) val = 0;
+    if (val < 0) val = 0;
+    if (val > 30) val = 30;
+    fadeIn.value = val;
+    fadeInInput.value = val;
+  });
+
+  fadeOutInput.addEventListener('input', () => {
+    let val = parseFloat(fadeOutInput.value);
+    if (isNaN(val)) val = 0;
+    if (val < 0) val = 0;
+    if (val > 30) val = 30;
+    fadeOut.value = val;
+    fadeOutInput.value = val;
+  });
+
+  targetVolume.addEventListener('input', () => {
+    volumeVal.textContent = targetVolume.value;
+  });
+
+  // Toggle normalize controls
+  normalize.addEventListener('change', () => {
+    normalizeControls.style.display = normalize.checked ? 'grid' : 'none';
+  });
+
+  function showStatus(message, type) {
+    statusMessage.textContent = message;
+    statusMessage.className = `status-message ${type}`;
+  }
+
+  function hideStatus() {
+    statusMessage.className = 'status-message';
+  }
+
+  function updateProgress(percent, text) {
+    progressFill.style.width = percent + '%';
+    progressText.textContent = text;
+  }
+
+  async function processAudio() {
+    try {
+      processBtn.disabled = true;
+      processBtn.classList.add('processing');
+      processBtn.textContent = 'Processing...';
+      
+      outputArea.classList.remove('active');
+      progressContainer.style.display = 'block';
+      hideStatus();
+      updateProgress(0, 'Loading audio...');
+
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      // Read file
+      const arrayBuffer = await currentFile.arrayBuffer();
+      updateProgress(20, 'Decoding audio...');
+
+      // Decode audio
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+      updateProgress(40, 'Applying effects...');
+
+      // Get parameters
+      const fadeInDur = parseFloat(fadeInInput.value);
+      const fadeOutDur = parseFloat(fadeOutInput.value);
+      const shouldNormalize = normalize.checked;
+      const targetVol = parseFloat(targetVolume.value) / 100;
+
+      // Create new buffer for processed audio
+      const sampleRate = audioBuffer.sampleRate;
+      const numberOfChannels = audioBuffer.numberOfChannels;
+      const length = audioBuffer.length;
+      
+      const processedBuffer = audioContext.createBuffer(numberOfChannels, length, sampleRate);
+
+      // Process each channel
+      for (let channel = 0; channel < numberOfChannels; channel++) {
+        const inputData = audioBuffer.getChannelData(channel);
+        const outputData = processedBuffer.getChannelData(channel);
+        
+        // Copy data
+        outputData.set(inputData);
+        
+        // Apply normalization first if enabled
+        if (shouldNormalize) {
+          let maxVal = 0;
+          for (let i = 0; i < length; i++) {
+            maxVal = Math.max(maxVal, Math.abs(outputData[i]));
+          }
+          if (maxVal > 0) {
+            const gain = (targetVol * 0.95) / maxVal; // 0.95 to prevent clipping
+            for (let i = 0; i < length; i++) {
+              outputData[i] *= gain;
+            }
+          }
+        }
+        
+        // Apply fade in
+        if (fadeInDur > 0) {
+          const fadeInSamples = Math.floor(fadeInDur * sampleRate);
+          for (let i = 0; i < fadeInSamples && i < length; i++) {
+            const gain = i / fadeInSamples;
+            outputData[i] *= gain;
+          }
+        }
+        
+        // Apply fade out
+        if (fadeOutDur > 0) {
+          const fadeOutSamples = Math.floor(fadeOutDur * sampleRate);
+          const fadeOutStart = length - fadeOutSamples;
+          for (let i = 0; i < fadeOutSamples && fadeOutStart + i < length; i++) {
+            const gain = 1 - (i / fadeOutSamples);
+            outputData[fadeOutStart + i] *= gain;
+          }
+        }
+      }
+
+      updateProgress(70, 'Encoding audio...');
+
+      // Get output format
+      const format = outputFormat.value;
+      let blob, fileExtension;
+
+      if (format === 'mp3') {
+        blob = audioBufferToMp3(processedBuffer);
+        fileExtension = 'mp3';
+      } else {
+        blob = audioBufferToWav(processedBuffer);
+        fileExtension = 'wav';
+      }
+      
+      updateProgress(100, 'Complete!');
+
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const baseName = currentFile.name.replace(/\.[^/.]+$/, '');
+      const downloadName = `${baseName}_processed.${fileExtension}`;
+
+      audioPlayer.src = url;
+      downloadLink.href = url;
+      downloadLink.download = downloadName;
+
+      outputArea.classList.add('active');
+      showStatus('✅ Processing complete!', 'success');
+      
+      setTimeout(() => {
+        progressContainer.style.display = 'none';
+      }, 1000);
+
+    } catch (err) {
+      console.error(err);
+      showStatus(`Error: ${err.message}`, 'error');
+      progressContainer.style.display = 'none';
+    } finally {
+      processBtn.disabled = false;
+      processBtn.classList.remove('processing');
+      processBtn.textContent = 'Process Audio';
+    }
+  }
+
+  // Convert AudioBuffer to MP3 blob
+  function audioBufferToMp3(audioBuffer) {
+    const sampleRate = audioBuffer.sampleRate;
+    const numberOfChannels = audioBuffer.numberOfChannels;
+    const mp3encoder = new lamejs.Mp3Encoder(numberOfChannels, sampleRate, 128); // 128 kbps
+    
+    const samples = [];
+    
+    if (numberOfChannels === 1) {
+      // Mono
+      const data = audioBuffer.getChannelData(0);
+      const int16Data = floatTo16BitPCM(data);
+      const mp3buf = mp3encoder.encodeBuffer(int16Data);
+      if (mp3buf.length > 0) {
+        samples.push(mp3buf);
+      }
+    } else {
+      // Stereo
+      const left = audioBuffer.getChannelData(0);
+      const right = audioBuffer.getChannelData(1);
+      const leftInt16 = floatTo16BitPCM(left);
+      const rightInt16 = floatTo16BitPCM(right);
+      
+      // Process in chunks
+      const sampleBlockSize = 1152;
+      for (let i = 0; i < leftInt16.length; i += sampleBlockSize) {
+        const leftChunk = leftInt16.subarray(i, i + sampleBlockSize);
+        const rightChunk = rightInt16.subarray(i, i + sampleBlockSize);
+        const mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+        if (mp3buf.length > 0) {
+          samples.push(mp3buf);
+        }
+      }
+    }
+    
+    const mp3buf = mp3encoder.flush();
+    if (mp3buf.length > 0) {
+      samples.push(mp3buf);
+    }
+    
+    return new Blob(samples, { type: 'audio/mp3' });
+  }
+
+  function floatTo16BitPCM(float32Array) {
+    const int16Array = new Int16Array(float32Array.length);
+    for (let i = 0; i < float32Array.length; i++) {
+      const s = Math.max(-1, Math.min(1, float32Array[i]));
+      int16Array[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+    }
+    return int16Array;
+  }
+
+  // Convert AudioBuffer to WAV blob
+  function audioBufferToWav(audioBuffer) {
+    const numberOfChannels = audioBuffer.numberOfChannels;
+    const sampleRate = audioBuffer.sampleRate;
+    const length = audioBuffer.length * numberOfChannels * 2;
+    
+    const buffer = new ArrayBuffer(44 + length);
+    const view = new DataView(buffer);
+    
+    // WAV header
+    writeString(view, 0, 'RIFF');
+    view.setUint32(4, 36 + length, true);
+    writeString(view, 8, 'WAVE');
+    writeString(view, 12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numberOfChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * numberOfChannels * 2, true);
+    view.setUint16(32, numberOfChannels * 2, true);
+    view.setUint16(34, 16, true);
+    writeString(view, 36, 'data');
+    view.setUint32(40, length, true);
+    
+    // Interleave channels
+    const channels = [];
+    for (let i = 0; i < numberOfChannels; i++) {
+      channels.push(audioBuffer.getChannelData(i));
+    }
+    
+    let offset = 44;
+    for (let i = 0; i < audioBuffer.length; i++) {
+      for (let channel = 0; channel < numberOfChannels; channel++) {
+        const sample = Math.max(-1, Math.min(1, channels[channel][i]));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+        offset += 2;
+      }
+    }
+    
+    return new Blob([buffer], { type: 'audio/wav' });
+  }
+
+  function writeString(view, offset, string) {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  }
+
+  processBtn.addEventListener('click', processAudio);
+  
+  // Download HTML functionality
+  $('downloadHtmlBtn').addEventListener('click', () => {
+    const htmlContent = document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'audio-processor.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+</script>
+
+</body></html>
