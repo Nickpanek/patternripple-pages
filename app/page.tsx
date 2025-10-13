@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import Head from "next/head";
+import { useMemo, useState } from "react";
 
 type Product = {
   slug: string;
@@ -53,7 +54,7 @@ const products: Product[] = [
     available: true,
     category: "ufo-cryptids"
   },
-   {
+  {
     slug: "atomic-age-ufo-primary-colors",
     title: "Atomic Age UFOs in Primary Colors",
     subtitle: "UFO & Cryptids Collection",
@@ -65,7 +66,7 @@ const products: Product[] = [
     available: true,
     category: "ufo-cryptids"
   },
-   {
+  {
     slug: "bigfoot-toile-sunglasses-mustard-pink",
     title: "Bigfoot Toile with Sunglasses in Mustard & Pink",
     subtitle: "Cryptid Collection",
@@ -184,7 +185,7 @@ const products: Product[] = [
     exclusive: true,
     available: true,
     category: "camo"
-  }, 
+  },
   {
     slug: "farmhouse-puppies-wildflowers-sage-green",
     title: "Farmhouse Puppies and Wildflowers on Sage",
@@ -208,7 +209,7 @@ const products: Product[] = [
     exclusive: true,
     available: true,
     category: "patchwork-quilt"
-  }, 
+  },
   {
     slug: "monochrome-architectural-arches-pattern",
     title: "Monochrome Architectural Arches",
@@ -220,7 +221,7 @@ const products: Product[] = [
     exclusive: true,
     available: true,
     category: "architecture"
-  }, 
+  },
   {
     slug: "artisanal-geometric-faux-embroidery-multicolor",
     title: "Artisanal Geometric Faux Embroidery",
@@ -244,7 +245,7 @@ const products: Product[] = [
     exclusive: true,
     available: true,
     category: "usa-patriotic"
-  }, 
+  },
   {
     slug: "textured-gothic-skulls-charcoal",
     title: "Textured Gothic Skulls on Charcoal",
@@ -257,7 +258,7 @@ const products: Product[] = [
     available: true,
     category: "horror"
   },
-   {
+  {
     slug: "preppy-garden-trellis-pink-green",
     title: "Preppy Garden Trellis in Pink and Green",
     subtitle: "Preppy Collection",
@@ -377,7 +378,7 @@ const products: Product[] = [
     available: true,
     category: "geometric"
   },
-   {
+  {
     slug: "infernal-damnation-painterly-ochre-red",
     title: "Infernal Damnation in Ochre and Red",
     subtitle: "Horror Collection",
@@ -544,83 +545,167 @@ const products: Product[] = [
     exclusive: true,
     available: true,
     category: "geometric"
-  },
+  }
 ];
 
 export default function HomePage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const availableCount = useMemo(
+    () => products.filter((p) => p.available).length,
+    []
+  );
+
+  const siteTitle = "PatternRipple - Indie Games, Creative Tools, and Exclusive Patterns";
+  const siteDescription =
+    "PatternRipple is shifting focus to indie games and creative tools. Explore the Lab for free utilities and prototypes, play our games, and shop remaining exclusive patterns until they sell out.";
+
+  const jsonLdWebsite = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://www.patternripple.com/",
+    "name": "PatternRipple",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.patternripple.com/search?q={query}",
+      "query-input": "required name=query"
+    }
+  };
+
+  const jsonLdOrg = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "PatternRipple",
+    "url": "https://www.patternripple.com/",
+    "logo": "https://www.patternripple.com/icon-512.png",
+    "sameAs": [
+      "https://heylink.me/nickpanek/"
+    ]
+  };
+
+  const jsonLdItemList = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": products.map((p, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 1,
+      "url": `https://www.patternripple.com/p/${p.slug}`
+    }))
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-      {/* Hero Section */}
+      <Head>
+        <title>{siteTitle}</title>
+        <meta name="description" content={siteDescription} />
+        <link rel="canonical" href="https://www.patternripple.com/" />
+        <meta property="og:title" content={siteTitle} />
+        <meta property="og:description" content={siteDescription} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.patternripple.com/" />
+        <meta property="og:image" content="https://www.patternripple.com/og-cover.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={siteTitle} />
+        <meta name="twitter:description" content={siteDescription} />
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdItemList) }}
+        />
+      </Head>
+
+      {/* Hero */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h1 className="text-5xl font-thin tracking-wide text-gray-900 mb-4">
-            PatternRipple
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Exclusive digital patterns that no one else will have.
-            <span className="block mt-2 text-purple-600 font-medium">
-              Once sold, it&apos;s yours forever.
+          <Link href="/" className="inline-block" aria-label="PatternRipple home">
+            <h1 className="text-5xl font-thin tracking-wide text-gray-900 mb-4">PatternRipple</h1>
+          </Link>
+          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+            We are moving into indie games and creative tools. The remaining exclusive patterns stay listed until sold.
+            <span className="block mt-2 text-purple-700 font-medium">
+              Own it once. It is removed from the catalog.
             </span>
           </p>
         </div>
       </header>
 
-      {/* Quick Navigation */}
-      <nav className="bg-white/50 backdrop-blur-sm border-b border-gray-100 sticky top-14 z-40">
+      {/* Top Nav */}
+      <nav
+        className="bg-white/50 backdrop-blur-sm border-b border-gray-100 sticky top-14 z-40"
+        aria-label="Primary"
+      >
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex flex-wrap gap-2 justify-center items-center">
-            <Link 
-              href="/collections" 
-              className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
-            >
-              Collections
+            <Link href="/lab" className="text-gray-700 hover:text-purple-600 font-medium px-3">
+              Lab
             </Link>
             <span className="text-gray-300">•</span>
-            <Link 
-              href="/about" 
-              className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
-            >
-              About
-            </Link>
-            <span className="text-gray-300">•</span>
-            <Link 
-              href="/blog" 
-              className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
-            >
-              Blog
-            </Link>
-            <span className="text-gray-300">•</span>
-            <Link 
-              href="/games" 
-              className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
-            >
+            <Link href="/games" className="text-gray-700 hover:text-purple-600 font-medium px-3">
               Games
             </Link>
             <span className="text-gray-300">•</span>
-            <Link 
-              href="/pattern-checker.html" 
-              prefetch={false}
-              className="text-gray-700 hover:text-purple-600 font-medium transition-colors px-3"
-            >
-              Free Tile Checker
+            <Link href="/about" className="text-gray-700 hover:text-purple-600 font-medium px-3">
+              About
+            </Link>
+            <span className="text-gray-300">•</span>
+            <Link href="/blog" className="text-gray-700 hover:text-purple-600 font-medium px-3">
+              Blog
+            </Link>
+            <span className="text-gray-300">•</span>
+            <Link href="/collections" className="text-gray-700 hover:text-purple-600 font-medium px-3">
+              Collections
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* Stats Bar */}
+      {/* Stats */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3">
         <div className="max-w-6xl mx-auto px-4 flex justify-center items-center gap-8 text-sm">
-          <span>✨ {products.filter(p => p.available).length} Exclusive Patterns Available</span>
-          <span>🔐 Commercial Rights Included</span>
-          <span>💎 One-Time Purchase</span>
+          <span>✨ {availableCount} Exclusive Patterns Available</span>
+          <span>🧪 Visit the Lab for free tools and prototypes</span>
+          <span>🎮 New games in development</span>
         </div>
       </div>
 
-      {/* Products Grid */}
+      {/* Intro before products */}
+      <section className="max-w-6xl mx-auto px-4 mt-10">
+        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+          <h2 className="text-2xl md:text-3xl font-light text-gray-900">
+            From Patterns to Play and Tools
+          </h2>
+          <p className="mt-3 text-gray-700 leading-relaxed">
+            PatternRipple is pivoting to ship indie games and practical creation tools. The Lab hosts our free utilities,
+            experiments, and previews, including the tile checker and more. If you came for patterns, the catalog below
+            shows what is left. Once a pattern sells, it is gone.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link
+              href="/lab"
+              className="inline-block bg-gray-900 text-white px-5 py-3 rounded-lg hover:bg-purple-600 transition-colors"
+            >
+              Explore the Lab
+            </Link>
+            <Link
+              href="/games"
+              className="inline-block bg-white border border-gray-300 text-gray-900 px-5 py-3 rounded-lg hover:border-purple-500 hover:text-purple-700 transition-colors"
+            >
+              See Games
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Products */}
       <main className="max-w-6xl mx-auto px-4 py-12">
+        <h2 className="sr-only">Exclusive Pattern Catalog</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
             <article
@@ -632,33 +717,43 @@ export default function HomePage() {
               }`}
               onMouseEnter={() => setHoveredCard(product.sku)}
               onMouseLeave={() => setHoveredCard(null)}
+              itemScope
+              itemType="https://schema.org/Product"
             >
-              {/* Exclusive Badge */}
               {product.exclusive && (
                 <div className="bg-gradient-to-r from-amber-500 to-yellow-400 text-white text-xs font-bold py-2 text-center tracking-wider">
                   EXCLUSIVE PATTERN
                 </div>
               )}
 
-              {/* Pattern Preview Area */}
               <div className="h-64 bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden">
                 <img
                   src={product.thumbnail}
-                  alt={product.title}
+                  alt={`${product.title} - ${product.subtitle}`}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  width={800}
+                  height={600}
                 />
               </div>
 
-              {/* Product Info */}
               <div className="p-6">
-                <h2 className="text-xl font-light text-gray-900 mb-2">
+                <h3 className="text-xl font-light text-gray-900 mb-2" itemProp="name">
                   {product.title}
-                </h2>
-                <p className="text-gray-600 text-sm mb-4">{product.subtitle}</p>
+                </h3>
+                <p className="text-gray-600 text-sm mb-4" itemProp="category">
+                  {product.subtitle}
+                </p>
 
                 <div className="flex justify-between items-center pb-4 mb-4 border-b border-gray-100">
-                  <span className="text-2xl font-light">${product.price}</span>
-                  <span className="text-green-600 text-sm">
+                  <span className="text-2xl font-light" itemProp="offers" itemScope itemType="https://schema.org/Offer">
+                    <meta itemProp="priceCurrency" content="USD" />
+                    <span itemProp="price">${product.price}</span>
+                  </span>
+                  <span
+                    className={`text-sm ${product.available ? "text-green-700" : "text-gray-500"}`}
+                    aria-label={product.available ? "Available" : "Sold"}
+                  >
                     {product.available ? "Available" : "Sold"}
                   </span>
                 </div>
@@ -666,6 +761,7 @@ export default function HomePage() {
                 <Link
                   href={`/p/${product.slug}`}
                   className="block w-full bg-gray-900 text-white text-center py-3 rounded-lg hover:bg-purple-600 transition-colors duration-300"
+                  title={`${product.title} details`}
                 >
                   View Pattern
                 </Link>
@@ -682,15 +778,17 @@ export default function HomePage() {
             <div>
               <h3 className="text-white font-medium mb-4">PatternRipple</h3>
               <p className="text-sm">
-                Exclusive digital patterns for designers who value uniqueness.
+                Indie games and creative tools, plus a sell-down of exclusive patterns.
               </p>
             </div>
             <div>
               <h3 className="text-white font-medium mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/collections" className="hover:text-white">All Collections</Link></li>
-                <li><Link href="/about" className="hover:text-white">About</Link></li>
+                <li><Link href="/lab" className="hover:text-white">Lab</Link></li>
+                <li><Link href="/games" className="hover:text-white">Games</Link></li>
                 <li><Link href="/blog" className="hover:text-white">Blog</Link></li>
+                <li><Link href="/collections" className="hover:text-white">Collections</Link></li>
+                <li><Link href="/about" className="hover:text-white">About</Link></li>
                 <li><a href="mailto:nick@patternripple.com" className="hover:text-white">Contact</a></li>
               </ul>
             </div>
