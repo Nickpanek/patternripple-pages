@@ -3,10 +3,10 @@
 import Link from "next/link";
 
 type Game = {
-  slug: string;          // route or public file path
+  slug: string;
   title: string;
   description: string;
-  href: string;          // absolute route to play
+  href: string;
   badge?: string;
 };
 
@@ -14,12 +14,19 @@ const games: Game[] = [
   {
     slug: "bubble",
     title: "Bubble Pop",
-    description: "Pop as many bubbles as you can in 30 seconds. Smaller bubbles pay more.",
+    description:
+      "Pop as many bubbles as you can in 30 seconds. Smaller bubbles pay more.",
     href: "/bubble.html",
     badge: "New",
   },
-  // Add future games here:
-  // { slug: "my-next-game", title: "My Next Game", description: "Short pitch.", href: "/my-next-game.html" },
+  {
+    slug: "dystopian-chess",
+    title: "Dystopian Chess",
+    description:
+      "A bleak experiment in self-conflict. Designed to be played against yourself — the next stage of dystopia. Even if you win, bureaucracy never dies.",
+    href: "/dystopian-chess.html",
+    badge: "Experimental",
+  },
 ];
 
 export default function GamesPage() {
@@ -51,22 +58,17 @@ export default function GamesPage() {
               key={g.slug}
               className="bg-white rounded-xl shadow-lg ring-4 ring-amber-400 overflow-hidden transition-all hover:shadow-2xl hover:-translate-y-1"
             >
-              {/* Badge */}
               {g.badge && (
                 <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold py-2 text-center tracking-wider">
                   {g.badge}
                 </div>
               )}
-
-              {/* Placeholder visual */}
               <div className="h-48 bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
                 <span className="text-3xl">🎮</span>
               </div>
-
               <div className="p-6">
                 <h2 className="text-xl font-light text-gray-900 mb-2">{g.title}</h2>
                 <p className="text-gray-600 text-sm mb-4">{g.description}</p>
-
                 <Link
                   href={g.href}
                   prefetch={false}
@@ -79,15 +81,7 @@ export default function GamesPage() {
           ))}
         </div>
 
-        {/* How to add more games */}
-        <section className="mt-16 text-sm text-gray-600">
-          <h3 className="text-gray-900 font-medium mb-2">Add more games</h3>
-          <ol className="list-decimal ml-5 space-y-1">
-            <li>Drop your standalone HTML file into <code>/public</code> (example: <code>/public/my-next-game.html</code>).</li>
-            <li>Append a new object to the <code>games</code> array above with <code>title</code>, <code>description</code>, and <code>href: "/my-next-game.html"</code>.</li>
-            <li>Commit and deploy.</li>
-          </ol>
-        </section>
+      
       </main>
 
       <footer className="bg-gray-900 text-gray-400 mt-20">
