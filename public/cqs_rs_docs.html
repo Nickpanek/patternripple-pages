@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cqs-rs - Quantum Simulator by PatternRipple Labs</title>
+    <title>cqs-rs Browser Simulator - PatternRipple Labs</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.7;
+            line-height: 1.6;
             color: #333;
             background: #f8f9fa;
         }
@@ -21,31 +21,14 @@
         header {
             background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
             color: white;
-            padding: 3rem 2rem 2rem 2rem;
+            padding: 2rem;
             text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         header h1 {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        header .tagline {
-            font-size: 1.3rem;
-            opacity: 0.95;
-            margin-bottom: 1rem;
-        }
-        
-        header .credits {
-            font-size: 0.95rem;
-            opacity: 0.85;
-            margin-top: 1rem;
-        }
-        
-        header .credits a {
-            color: white;
-            text-decoration: underline;
         }
         
         .badge {
@@ -55,557 +38,1038 @@
             padding: 0.4rem 0.8rem;
             border-radius: 20px;
             font-size: 0.85rem;
-            font-weight: 500;
             margin: 0.3rem;
         }
         
-        .hero {
-            background: white;
-            padding: 2.5rem 2rem;
-            text-align: center;
-            border-bottom: 3px solid #4a90e2;
+        .header-buttons {
+            margin-top: 1rem;
         }
         
-        .hero h2 {
-            color: #4a90e2;
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
-        
-        .hero p {
-            font-size: 1.1rem;
-            max-width: 800px;
-            margin: 0 auto 1.5rem auto;
-            color: #555;
-        }
-        
-        .cta-button {
+        .header-btn {
             display: inline-block;
-            background: #4a90e2;
+            background: rgba(255,255,255,0.3);
             color: white;
-            padding: 0.8rem 2rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 5px;
             text-decoration: none;
             font-weight: 500;
-            margin: 0.5rem;
+            margin: 0.3rem;
             transition: background 0.3s;
+            border: 2px solid rgba(255,255,255,0.5);
+            cursor: pointer;
+            font-size: 0.9rem;
         }
         
-        .cta-button:hover {
-            background: #357abd;
-        }
-        
-        nav {
-            background: white;
-            padding: 1rem;
-            position: sticky;
-            top: 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-        
-        nav ul {
-            list-style: none;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        nav a {
-            color: #4a90e2;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        
-        nav a:hover {
-            color: #357abd;
+        .header-btn:hover {
+            background: rgba(255,255,255,0.4);
         }
         
         .container {
-            max-width: 1100px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
         }
         
-        section {
-            background: white;
+        .simulator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
             margin: 2rem 0;
-            padding: 2.5rem;
+        }
+        
+        .panel {
+            background: white;
+            padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         
         h2 {
             color: #4a90e2;
-            margin-bottom: 1.2rem;
-            font-size: 1.8rem;
-            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
         }
         
-        h3 {
-            color: #357abd;
-            margin-top: 2rem;
-            margin-bottom: 0.8rem;
-            font-size: 1.3rem;
-        }
-        
-        h4 {
-            color: #555;
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        code {
-            background: #f4f4f4;
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
+        textarea {
+            width: 100%;
+            min-height: 400px;
             font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            color: #c7254e;
+            font-size: 0.9rem;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            resize: vertical;
         }
         
-        pre {
+        textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background: #357abd;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .secondary-btn {
+            background: #6c757d;
+        }
+        
+        .secondary-btn:hover {
+            background: #5a6268;
+        }
+        
+        label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        input[type="number"] {
+            width: 80px;
+            padding: 0.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .output {
             background: #2d2d2d;
             color: #f8f8f2;
             padding: 1.5rem;
             border-radius: 5px;
-            overflow-x: auto;
-            margin: 1.2rem 0;
-            border-left: 4px solid #4a90e2;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            min-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
         
-        pre code {
-            background: none;
-            padding: 0;
-            color: inherit;
-        }
-        
-        .simple-steps {
+        .examples {
             background: #f8f9fa;
-            padding: 1.5rem;
+            padding: 1rem;
             border-radius: 5px;
-            margin: 1.5rem 0;
-            border-left: 4px solid #4a90e2;
+            margin-top: 1rem;
         }
         
-        .simple-steps ol {
-            margin-left: 1.5rem;
+        .example-btn {
+            background: #e9ecef;
+            color: #333;
+            padding: 0.5rem 1rem;
+            margin: 0.3rem;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 0.9rem;
         }
         
-        .simple-steps li {
-            margin: 1rem 0;
-            font-size: 1.05rem;
-        }
-        
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-        }
-        
-        .feature-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border-left: 4px solid #4a90e2;
-        }
-        
-        .feature-card h4 {
-            color: #4a90e2;
-            margin-bottom: 0.7rem;
-            font-size: 1.1rem;
+        .example-btn:hover {
+            background: #dee2e6;
         }
         
         .info-box {
             background: #e7f3ff;
-            padding: 1.2rem;
+            padding: 1rem;
             border-radius: 5px;
-            margin: 1.5rem 0;
             border-left: 4px solid #4a90e2;
+            margin: 1rem 0;
         }
         
-        .info-box strong {
-            color: #357abd;
+        .error {
+            background: #ffe7e7;
+            border-left-color: #dc3545;
+            color: #721c24;
         }
         
-        ul {
-            margin-left: 2rem;
-            margin-top: 0.8rem;
-        }
-        
-        li {
-            margin: 0.5rem 0;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            font-size: 0.95rem;
-        }
-        
-        th, td {
-            padding: 0.9rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background: #4a90e2;
-            color: white;
-            font-weight: 500;
-        }
-        
-        tr:hover {
-            background: #f8f9fa;
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
         }
         
         footer {
-            background: #2d3436;
-            color: white;
             text-align: center;
-            padding: 2.5rem 2rem;
+            padding: 2rem;
+            color: #6c757d;
             margin-top: 3rem;
         }
         
         footer a {
-            color: #74b9ff;
+            color: #4a90e2;
             text-decoration: none;
         }
         
-        footer a:hover {
-            text-decoration: underline;
-        }
-        
-        .highlight {
-            background: #fff3cd;
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-        }
-        
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2rem;
-            }
-            
-            .hero h2 {
-                font-size: 1.4rem;
-            }
-            
-            nav ul {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .container {
-                padding: 1rem;
-            }
-            
-            section {
-                padding: 1.5rem;
+        @media (max-width: 968px) {
+            .simulator-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>cqs-rs</h1>
-        <p class="tagline">A Friendly Quantum Simulator for Everyone</p>
+        <h1>🌊 cqs-rs Browser Simulator</h1>
+        <p>Run quantum circuits right in your browser - no installation needed!</p>
         <div>
-            <span class="badge">v0.17.1</span>
+            <span class="badge">Browser-Based</span>
+            <span class="badge">JavaScript</span>
             <span class="badge">Open Source</span>
-            <span class="badge">Rust</span>
         </div>
-        <p class="credits">
-            Developed by <a href="https://patternripple.com" target="_blank">PatternRipple.com Labs</a> • Created by Nick Panek
+        <div class="header-buttons">
+            <button class="header-btn" onclick="downloadFullDocs()">📥 Download Full Documentation</button>
+            <a href="https://patternripple.com" class="header-btn">Visit PatternRipple.com</a>
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
+            By <a href="https://patternripple.com" style="color: white; text-decoration: underline;">PatternRipple.com Labs</a> • Created by <a href="https://heylink.me/nickpanek/" style="color: white; text-decoration: underline;" target="_blank">Nick Panek</a>
         </p>
     </header>
 
-    <div class="hero">
-        <h2>Simulate Quantum Circuits Without the Complexity</h2>
-        <p>cqs-rs makes quantum simulation accessible. Whether you're learning quantum computing, testing algorithms, or running experiments, we've got you covered with an easy-to-use tool that just works.</p>
-        <a href="#quickstart" class="cta-button">Get Started in 5 Minutes</a>
-        <a href="https://patternripple.com" class="cta-button" style="background: #6c757d;">Visit PatternRipple.com</a>
-    </div>
-
-    <nav>
-        <ul>
-            <li><a href="#quickstart">Quick Start</a></li>
-            <li><a href="#what">What It Does</a></li>
-            <li><a href="#gates">Available Gates</a></li>
-            <li><a href="#examples">Examples</a></li>
-            <li><a href="#advanced">Advanced</a></li>
-        </ul>
-    </nav>
-
     <div class="container">
-        <section id="quickstart">
-            <h2>🚀 Quick Start Guide</h2>
-            <p>Get up and running in just a few steps:</p>
-            
-            <div class="simple-steps">
-                <ol>
-                    <li><strong>Build the simulator:</strong>
-                        <pre><code>cargo build --release</code></pre>
-                    </li>
-                    <li><strong>Create a simple program</strong> (save as <code>my_circuit.json</code>):
-                        <pre><code>[
+        <div class="info-box">
+            <strong>✨ Zero Setup Required!</strong> This simulator runs entirely in your browser using JavaScript. 
+            No server needed, no installation required. Edit the JSON program below and click Run.
+        </div>
+
+        <div class="simulator-grid">
+            <div class="panel">
+                <h2>📝 Quantum Circuit Program</h2>
+                <div class="examples">
+                    <strong>Quick Examples:</strong><br>
+                    <button class="example-btn" onclick="loadExample('bell')">Bell State</button>
+                    <button class="example-btn" onclick="loadExample('superposition')">Superposition</button>
+                    <button class="example-btn" onclick="loadExample('ghz')">GHZ State</button>
+                    <button class="example-btn" onclick="loadExample('phase')">Phase Flip</button>
+                </div>
+                <textarea id="program" spellcheck="false">[
   {"op": "init", "n": 2},
   {"op": "h", "q": 0},
   {"op": "cnot", "ctrl": 0, "tgt": 1},
   {"op": "measure", "qubits": [0, 1]}
-]</code></pre>
-                    </li>
-                    <li><strong>Run it:</strong>
-                        <pre><code>./target/release/cqs run --program my_circuit.json --shots 100</code></pre>
-                    </li>
-                </ol>
-            </div>
-            
-            <div class="info-box">
-                <strong>That's it!</strong> You just simulated a Bell state (quantum entanglement). The output shows you the measurement results.
-            </div>
-        </section>
-
-        <section id="what">
-            <h2>✨ What Makes cqs-rs Special?</h2>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h4>🎯 Smart & Efficient</h4>
-                    <p>Only keeps track of important quantum states, making simulations faster and using less memory</p>
-                </div>
-                <div class="feature-card">
-                    <h4>🎲 Perfectly Reproducible</h4>
-                    <p>Use seeds to get the exact same results every time - great for debugging and testing</p>
-                </div>
-                <div class="feature-card">
-                    <h4>🔍 Built-in Constraints</h4>
-                    <p>Easily simulate specific quantum scenarios with Hamming weight or parity constraints</p>
-                </div>
-                <div class="feature-card">
-                    <h4>📊 Detailed Logging</h4>
-                    <p>Track everything that happens in your simulation with automatic telemetry</p>
-                </div>
-                <div class="feature-card">
-                    <h4>🧪 Noise Support</h4>
-                    <p>Model real quantum computers with dephasing, depolarizing, and amplitude damping noise</p>
-                </div>
-                <div class="feature-card">
-                    <h4>🌐 Open Source</h4>
-                    <p>Free to use, modify, and share. Built by the community, for the community</p>
+]</textarea>
+                
+                <div class="controls">
+                    <button onclick="runSimulation()">▶️ Run Simulation</button>
+                    <button class="secondary-btn" onclick="clearProgram()">Clear</button>
+                    <label>
+                        Shots: <input type="number" id="shots" value="100" min="1" max="10000">
+                    </label>
                 </div>
             </div>
-        </section>
 
-        <section id="gates">
-            <h2>🎮 Available Operations</h2>
-            <p>cqs-rs supports all the quantum gates you need:</p>
-            
-            <h3>Basic Single-Qubit Gates</h3>
-            <table>
-                <tr>
-                    <th>Gate</th>
-                    <th>What It Does</th>
-                    <th>Example</th>
-                </tr>
-                <tr>
-                    <td><code>h</code></td>
-                    <td>Hadamard - Creates superposition</td>
-                    <td><code>{"op": "h", "q": 0}</code></td>
-                </tr>
-                <tr>
-                    <td><code>x</code></td>
-                    <td>NOT gate - Flips qubit</td>
-                    <td><code>{"op": "x", "q": 0}</code></td>
-                </tr>
-                <tr>
-                    <td><code>y</code></td>
-                    <td>Pauli-Y gate</td>
-                    <td><code>{"op": "y", "q": 0}</code></td>
-                </tr>
-                <tr>
-                    <td><code>z</code></td>
-                    <td>Phase flip gate</td>
-                    <td><code>{"op": "z", "q": 0}</code></td>
-                </tr>
-            </table>
-
-            <h3>Rotation Gates (for precise control)</h3>
-            <table>
-                <tr>
-                    <th>Gate</th>
-                    <th>Parameters</th>
-                    <th>Example</th>
-                </tr>
-                <tr>
-                    <td><code>rx</code></td>
-                    <td>q, theta (angle in radians)</td>
-                    <td><code>{"op": "rx", "q": 0, "theta": 1.57}</code></td>
-                </tr>
-                <tr>
-                    <td><code>ry</code></td>
-                    <td>q, theta</td>
-                    <td><code>{"op": "ry", "q": 0, "theta": 0.785}</code></td>
-                </tr>
-                <tr>
-                    <td><code>rz</code></td>
-                    <td>q, theta</td>
-                    <td><code>{"op": "rz", "q": 0, "theta": 3.14}</code></td>
-                </tr>
-            </table>
-
-            <h3>Two-Qubit Gates (for entanglement)</h3>
-            <table>
-                <tr>
-                    <th>Gate</th>
-                    <th>What It Does</th>
-                    <th>Example</th>
-                </tr>
-                <tr>
-                    <td><code>cnot</code></td>
-                    <td>Controlled-NOT - Creates entanglement</td>
-                    <td><code>{"op": "cnot", "ctrl": 0, "tgt": 1}</code></td>
-                </tr>
-                <tr>
-                    <td><code>cz</code></td>
-                    <td>Controlled-Z gate</td>
-                    <td><code>{"op": "cz", "ctrl": 0, "tgt": 1}</code></td>
-                </tr>
-            </table>
-
-            <h3>Measurement & Special Operations</h3>
-            <table>
-                <tr>
-                    <th>Operation</th>
-                    <th>What It Does</th>
-                    <th>Example</th>
-                </tr>
-                <tr>
-                    <td><code>measure</code></td>
-                    <td>Measures qubits (gets 0 or 1)</td>
-                    <td><code>{"op": "measure", "qubits": [0, 1]}</code></td>
-                </tr>
-                <tr>
-                    <td><code>postselect</code></td>
-                    <td>Force specific measurement outcome</td>
-                    <td><code>{"op": "postselect", "qubits": [0], "bits": "1"}</code></td>
-                </tr>
-            </table>
-        </section>
-
-        <section id="examples">
-            <h2>📚 Examples</h2>
-            
-            <h3>Example 1: Bell State (Entanglement)</h3>
-            <p>Create two entangled qubits:</p>
-            <pre><code>[
-  {"op": "init", "n": 2},
-  {"op": "h", "q": 0},
-  {"op": "cnot", "ctrl": 0, "tgt": 1},
-  {"op": "measure", "qubits": [0, 1]}
-]</code></pre>
-            <p>Result: You'll always get 00 or 11, never 01 or 10!</p>
-
-            <h3>Example 2: Superposition with Rotation</h3>
-            <pre><code>[
-  {"op": "init", "n": 1},
-  {"op": "h", "q": 0},
-  {"op": "rz", "q": 0, "theta": 1.57},
-  {"op": "measure", "qubits": [0]}
-]</code></pre>
-
-            <h3>Example 3: Using a Seed for Reproducibility</h3>
-            <pre><code>[
-  {
-    "op": "init",
-    "n": 3,
-    "seed_hex": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
-  },
-  {"op": "h", "q": 0},
-  {"op": "h", "q": 1},
-  {"op": "measure", "qubits": [0, 1, 2]}
-]</code></pre>
-            <p>Run this multiple times - you'll get the same results every time!</p>
-
-            <h3>Run with Logging</h3>
-            <p>Want to see what's happening under the hood?</p>
-            <pre><code>./target/release/cqs run --program my_circuit.json --shots 10 --log output</code></pre>
-            <p>This creates detailed logs at <code>output-*.jsonl</code></p>
-        </section>
-
-        <section id="advanced">
-            <h2>🔧 Advanced Features</h2>
-            
-            <h3>Constraints</h3>
-            <p>Run simulations with specific quantum state restrictions:</p>
-            <pre><code>{
-  "op": "init",
-  "n": 4,
-  "constraint": {"kind": "parity", "even": true}
-}</code></pre>
-            <p>Available constraints:</p>
-            <ul>
-                <li><code>{"kind": "none"}</code> - No restrictions (default)</li>
-                <li><code>{"kind": "hamming", "k": 2}</code> - Exactly k qubits must be |1⟩</li>
-                <li><code>{"kind": "parity", "even": true}</code> - Even/odd number of |1⟩ states</li>
-            </ul>
-
-            <h3>Noise Models</h3>
-            <p>Simulate real quantum computers with noise:</p>
-            <pre><code>{"op": "noise", "kind": {"kind": "dephasing", "p": 0.01}, "q": 0}</code></pre>
-            <p>Types of noise:</p>
-            <ul>
-                <li><strong>Dephasing:</strong> Random Z gates</li>
-                <li><strong>Depolarizing:</strong> Random X, Y, or Z gates</li>
-                <li><strong>Amplitude Damping:</strong> Models energy loss</li>
-            </ul>
-
-            <h3>Efficiency Settings</h3>
-            <p>Control memory usage with sparse pruning:</p>
-            <pre><code>{"op": "init", "n": 10, "eps2": 1e-12}</code></pre>
-            <p>Smaller <code>eps2</code> = more accurate but uses more memory</p>
-
-            <h3>Validation Against Qiskit</h3>
-            <p>Double-check your results against IBM's Qiskit:</p>
-            <pre><code>python3 scripts/crossval_qiskit.py my_circuit.json</code></pre>
-
-            <h3>Run Benchmarks</h3>
-            <pre><code>cargo run --release --bin cqs_bench</code></pre>
-        </section>
-
-        <section id="help">
-            <h2>❓ Need Help?</h2>
-            <p>Here are some tips if things aren't working:</p>
-            <ul>
-                <li><strong>JSON errors?</strong> Make sure all your brackets and commas are correct</li>
-                <li><strong>Qubit out of range?</strong> Remember, if you initialize with n=3, qubits are numbered 0, 1, 2</li>
-                <li><strong>Want to learn more?</strong> Check out the full source code and tests in the repository</li>
-            </ul>
-            
-            <div class="info-box">
-                Visit <a href="https://patternripple.com" target="_blank" style="color: #357abd; font-weight: bold;">PatternRipple.com</a> for more tools and resources!
+            <div class="panel">
+                <h2>📊 Output</h2>
+                <div id="output" class="output">Ready to run! Click "Run Simulation" to see results...</div>
             </div>
-        </section>
+        </div>
+
+        <div class="panel">
+            <h2>📖 How to Use</h2>
+            <ol style="margin-left: 2rem; line-height: 2;">
+                <li>Choose an example or write your own JSON circuit program</li>
+                <li>Set the number of shots (how many times to run the circuit)</li>
+                <li>Click "Run Simulation"</li>
+                <li>See the measurement results in the output panel</li>
+            </ol>
+            <p style="margin-top: 1rem;"><strong>Available operations:</strong> init, h, x, y, z, rx, ry, rz, cnot, cz, measure</p>
+            <p style="margin-top: 0.5rem;">For full documentation, click "Download Full Documentation" above or visit <a href="https://www.patternripple.com/cqs_rs_docs.html">the docs page</a></p>
+        </div>
     </div>
 
     <footer>
-        <p><strong>cqs-rs</strong> - Open Source Quantum Simulator</p>
-        <p style="margin-top: 0.5rem;">Version 0.17.1</p>
-        <p style="margin-top: 1rem;">
-            Developed by <a href="https://patternripple.com" target="_blank">PatternRipple.com Labs</a>
-        </p>
-        <p style="margin-top: 0.5rem;">
-            Created by Nick Panek
-        </p>
-        <p style="margin-top: 1.5rem; opacity: 0.8; font-size: 0.9rem;">
-            Open source and free to use • Built with ❤️ for the quantum computing community
-        </p>
+        <p>Developed by <a href="https://patternripple.com">PatternRipple.com Labs</a> • Created by <a href="https://heylink.me/nickpanek/" target="_blank">Nick Panek</a></p>
+        <p style="margin-top: 0.5rem;">Open source and free to use • No server required</p>
     </footer>
+
+    <script>
+        // Simple quantum simulator in JavaScript
+        class QuantumState {
+            constructor(n) {
+                this.n = n;
+                this.amplitudes = new Map();
+                this.amplitudes.set(0, {re: 1, im: 0});
+            }
+
+            getAmplitude(state) {
+                return this.amplitudes.get(state) || {re: 0, im: 0};
+            }
+
+            setAmplitude(state, amp) {
+                if (Math.abs(amp.re) < 1e-10 && Math.abs(amp.im) < 1e-10) {
+                    this.amplitudes.delete(state);
+                } else {
+                    this.amplitudes.set(state, amp);
+                }
+            }
+
+            getProbability(state) {
+                const amp = this.getAmplitude(state);
+                return amp.re * amp.re + amp.im * amp.im;
+            }
+
+            normalize() {
+                let sum = 0;
+                for (const amp of this.amplitudes.values()) {
+                    sum += amp.re * amp.re + amp.im * amp.im;
+                }
+                const norm = Math.sqrt(sum);
+                if (norm > 0) {
+                    for (const [state, amp] of this.amplitudes.entries()) {
+                        this.amplitudes.set(state, {re: amp.re / norm, im: amp.im / norm});
+                    }
+                }
+            }
+        }
+
+        function complexMul(a, b) {
+            return {
+                re: a.re * b.re - a.im * b.im,
+                im: a.re * b.im + a.im * b.re
+            };
+        }
+
+        function complexAdd(a, b) {
+            return {re: a.re + b.re, im: a.im + b.im};
+        }
+
+        function applyH(state, q) {
+            const newAmplitudes = new Map();
+            const norm = 1 / Math.sqrt(2);
+            
+            for (const [idx, amp] of state.amplitudes.entries()) {
+                const bit = (idx >> q) & 1;
+                const flipped = idx ^ (1 << q);
+                
+                const contrib1 = {re: amp.re * norm, im: amp.im * norm};
+                const contrib2 = bit === 0 
+                    ? {re: amp.re * norm, im: amp.im * norm}
+                    : {re: -amp.re * norm, im: -amp.im * norm};
+                
+                const curr1 = newAmplitudes.get(idx) || {re: 0, im: 0};
+                const curr2 = newAmplitudes.get(flipped) || {re: 0, im: 0};
+                
+                newAmplitudes.set(idx, complexAdd(curr1, contrib1));
+                newAmplitudes.set(flipped, complexAdd(curr2, contrib2));
+            }
+            
+            state.amplitudes = newAmplitudes;
+        }
+
+        function applyX(state, q) {
+            const newAmplitudes = new Map();
+            for (const [idx, amp] of state.amplitudes.entries()) {
+                const flipped = idx ^ (1 << q);
+                newAmplitudes.set(flipped, amp);
+            }
+            state.amplitudes = newAmplitudes;
+        }
+
+        function applyY(state, q) {
+            const newAmplitudes = new Map();
+            for (const [idx, amp] of state.amplitudes.entries()) {
+                const bit = (idx >> q) & 1;
+                const flipped = idx ^ (1 << q);
+                const newAmp = bit === 0 
+                    ? {re: -amp.im, im: amp.re}
+                    : {re: amp.im, im: -amp.re};
+                newAmplitudes.set(flipped, newAmp);
+            }
+            state.amplitudes = newAmplitudes;
+        }
+
+        function applyZ(state, q) {
+            for (const [idx, amp] of state.amplitudes.entries()) {
+                const bit = (idx >> q) & 1;
+                if (bit === 1) {
+                    state.amplitudes.set(idx, {re: -amp.re, im: -amp.im});
+                }
+            }
+        }
+
+        function applyRZ(state, q, theta) {
+            const phase0 = {re: Math.cos(-theta/2), im: Math.sin(-theta/2)};
+            const phase1 = {re: Math.cos(theta/2), im: Math.sin(theta/2)};
+            
+            for (const [idx, amp] of state.amplitudes.entries()) {
+                const bit = (idx >> q) & 1;
+                const phase = bit === 0 ? phase0 : phase1;
+                state.amplitudes.set(idx, complexMul(amp, phase));
+            }
+        }
+
+        function applyCNOT(state, ctrl, tgt) {
+            const newAmplitudes = new Map();
+            for (const [idx, amp] of state.amplitudes.entries()) {
+                const ctrlBit = (idx >> ctrl) & 1;
+                const newIdx = ctrlBit === 1 ? idx ^ (1 << tgt) : idx;
+                newAmplitudes.set(newIdx, amp);
+            }
+            state.amplitudes = newAmplitudes;
+        }
+
+        function applyCZ(state, ctrl, tgt) {
+            for (const [idx, amp] of state.amplitudes.entries()) {
+                const ctrlBit = (idx >> ctrl) & 1;
+                const tgtBit = (idx >> tgt) & 1;
+                if (ctrlBit === 1 && tgtBit === 1) {
+                    state.amplitudes.set(idx, {re: -amp.re, im: -amp.im});
+                }
+            }
+        }
+
+        function measure(state, qubits) {
+            const outcomes = 1 << qubits.length;
+            const probs = new Array(outcomes).fill(0);
+            
+            for (const [idx, amp] of state.amplitudes.entries()) {
+                let outcome = 0;
+                for (let i = 0; i < qubits.length; i++) {
+                    const bit = (idx >> qubits[i]) & 1;
+                    outcome |= bit << i;
+                }
+                probs[outcome] += amp.re * amp.re + amp.im * amp.im;
+            }
+            
+            const rand = Math.random();
+            let cumProb = 0;
+            for (let i = 0; i < outcomes; i++) {
+                cumProb += probs[i];
+                if (rand <= cumProb) {
+                    return i;
+                }
+            }
+            return outcomes - 1;
+        }
+
+        function runCircuit(program, shots) {
+            const results = [];
+            
+            for (let shot = 0; shot < shots; shot++) {
+                let state = null;
+                
+                for (const op of program) {
+                    if (op.op === 'init') {
+                        state = new QuantumState(op.n);
+                    } else if (op.op === 'h') {
+                        applyH(state, op.q);
+                    } else if (op.op === 'x') {
+                        applyX(state, op.q);
+                    } else if (op.op === 'y') {
+                        applyY(state, op.q);
+                    } else if (op.op === 'z') {
+                        applyZ(state, op.q);
+                    } else if (op.op === 'rz') {
+                        applyRZ(state, op.q, op.theta);
+                    } else if (op.op === 'cnot') {
+                        applyCNOT(state, op.ctrl, op.tgt);
+                    } else if (op.op === 'cz') {
+                        applyCZ(state, op.ctrl, op.tgt);
+                    } else if (op.op === 'measure') {
+                        const outcome = measure(state, op.qubits);
+                        results.push(outcome);
+                    }
+                }
+            }
+            
+            return results;
+        }
+
+        function runSimulation() {
+            const programText = document.getElementById('program').value;
+            const shots = parseInt(document.getElementById('shots').value);
+            const output = document.getElementById('output');
+            
+            try {
+                const program = JSON.parse(programText);
+                output.textContent = 'Running simulation...\n\n';
+                
+                setTimeout(() => {
+                    try {
+                        const results = runCircuit(program, shots);
+                        
+                        // Count outcomes
+                        const counts = {};
+                        for (const result of results) {
+                            const bitstring = result.toString(2).padStart(2, '0');
+                            counts[bitstring] = (counts[bitstring] || 0) + 1;
+                        }
+                        
+                        let outputText = `✅ Simulation Complete!\n\n`;
+                        outputText += `Shots: ${shots}\n`;
+                        outputText += `Unique outcomes: ${Object.keys(counts).length}\n\n`;
+                        outputText += `Results:\n`;
+                        outputText += `${'='.repeat(40)}\n`;
+                        
+                        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+                        for (const [bitstring, count] of sorted) {
+                            const percent = (count / shots * 100).toFixed(1);
+                            const bar = '█'.repeat(Math.floor(count / shots * 50));
+                            outputText += `|${bitstring}⟩: ${count.toString().padStart(5)} (${percent}%) ${bar}\n`;
+                        }
+                        
+                        output.textContent = outputText;
+                    } catch (err) {
+                        output.textContent = `❌ Error running simulation:\n${err.message}`;
+                    }
+                }, 10);
+                
+            } catch (err) {
+                output.textContent = `❌ JSON Parse Error:\n${err.message}\n\nPlease check your JSON syntax.`;
+            }
+        }
+
+        function clearProgram() {
+            document.getElementById('program').value = '';
+            document.getElementById('output').textContent = 'Ready to run!';
+        }
+
+        function loadExample(name) {
+            const examples = {
+                bell: `[
+  {"op": "init", "n": 2},
+  {"op": "h", "q": 0},
+  {"op": "cnot", "ctrl": 0, "tgt": 1},
+  {"op": "measure", "qubits": [0, 1]}
+]`,
+                superposition: `[
+  {"op": "init", "n": 3},
+  {"op": "h", "q": 0},
+  {"op": "h", "q": 1},
+  {"op": "h", "q": 2},
+  {"op": "measure", "qubits": [0, 1, 2]}
+]`,
+                ghz: `[
+  {"op": "init", "n": 3},
+  {"op": "h", "q": 0},
+  {"op": "cnot", "ctrl": 0, "tgt": 1},
+  {"op": "cnot", "ctrl": 1, "tgt": 2},
+  {"op": "measure", "qubits": [0, 1, 2]}
+]`,
+                phase: `[
+  {"op": "init", "n": 1},
+  {"op": "h", "q": 0},
+  {"op": "z", "q": 0},
+  {"op": "h", "q": 0},
+  {"op": "measure", "qubits": [0]}
+]`
+            };
+            
+            document.getElementById('program').value = examples[name];
+            document.getElementById('output').textContent = 'Program loaded! Click Run to simulate.';
+        }
+
+        function downloadFullDocs() {
+            const docs = `cqs-rs Full Technical Documentation
+Version 0.17.1
+Developed by PatternRipple.com Labs
+Created by Nick Panek (https://heylink.me/nickpanek/)
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+1. Overview
+2. Installation
+3. Quick Start
+4. JSON Program Operations
+5. Mathematical Foundation
+6. Advanced Features
+7. Cross-Validation with Qiskit
+8. Benchmarking
+9. Testing
+10. Source Code Structure
+
+================================================================================
+1. OVERVIEW
+================================================================================
+
+cqs-rs is a constraint- and replay-aware sparse quantum state simulator written
+in Rust. It provides:
+
+- Epsilon-sparse pruning with tracked dropped norm delta
+- Constraint-aware execution: Hamming weight or parity
+- Deterministic replay via event-indexed RNG using BLAKE3-keyed hashing
+- JSONL trajectory logging with per-step telemetry
+
+Key Features:
+- Sparse state representation for memory efficiency
+- Support for constraints (Hamming weight, parity)
+- Deterministic simulation with seeded RNG
+- Comprehensive gate set (H, X, Y, Z, RX, RY, RZ, CNOT, CZ)
+- Noise models (dephasing, depolarizing, amplitude damping)
+- Measurement and postselection
+- Detailed telemetry logging
+
+================================================================================
+2. INSTALLATION
+================================================================================
+
+Requirements:
+- Rust toolchain (2021 edition)
+- Cargo build system
+
+Build Instructions:
+  cargo build --release
+
+The binary will be located at: target/release/cqs
+
+================================================================================
+3. QUICK START
+================================================================================
+
+Minimal Example:
+
+cat > program.json << 'JSON'
+[
+  {
+    "op": "init",
+    "n": 3,
+    "eps2": 1e-12,
+    "mode": "project",
+    "constraint": {"kind": "parity", "even": true},
+    "seed_hex": "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f"
+  },
+  {"op": "h", "q": 0},
+  {"op": "rz", "q": 0, "theta": 1.234},
+  {"op": "cnot", "ctrl": 0, "tgt": 1},
+  {"op": "cz", "ctrl": 1, "tgt": 2},
+  {"op": "measure", "qubits": [0, 1, 2]}
+]
+JSON
+
+Run the program:
+  ./target/release/cqs run --program program.json --shots 4 --log traj
+
+Output logs will be at: traj-*.jsonl
+
+================================================================================
+4. JSON PROGRAM OPERATIONS
+================================================================================
+
+4.1 INITIALIZATION
+------------------
+Operation: init
+Parameters:
+  - n: Number of qubits (required)
+  - eps2: Sparse pruning threshold (optional, default: 0.0)
+  - mode: "invariant" or "project" (optional, default: "project")
+  - constraint: Constraint specification (optional)
+  - seed_hex: 64-character hex string for RNG seed (optional)
+
+Constraint Types:
+  - {"kind": "none"} - No constraints (default)
+  - {"kind": "hamming", "k": 2} - Fixed Hamming weight k
+  - {"kind": "parity", "even": true} - Even/odd parity
+
+Example:
+  {"op": "init", "n": 4, "eps2": 1e-10, "constraint": {"kind": "hamming", "k": 2}}
+
+4.2 SINGLE-QUBIT GATES
+----------------------
+H Gate (Hadamard):
+  {"op": "h", "q": 0}
+  Creates superposition: |0⟩ → (|0⟩ + |1⟩)/√2
+
+X Gate (Pauli-X / NOT):
+  {"op": "x", "q": 0}
+  Bit flip: |0⟩ ↔ |1⟩
+
+Y Gate (Pauli-Y):
+  {"op": "y", "q": 0}
+  Bit flip with phase: |0⟩ → i|1⟩, |1⟩ → -i|0⟩
+
+Z Gate (Pauli-Z):
+  {"op": "z", "q": 0}
+  Phase flip: |1⟩ → -|1⟩
+
+RX Gate (Rotation around X-axis):
+  {"op": "rx", "q": 0, "theta": 1.57}
+  Rotation by angle theta (in radians)
+
+RY Gate (Rotation around Y-axis):
+  {"op": "ry", "q": 0, "theta": 0.785}
+  Rotation by angle theta (in radians)
+
+RZ Gate (Rotation around Z-axis):
+  {"op": "rz", "q": 0, "theta": 3.14}
+  Rotation by angle theta (in radians)
+
+Generic Rotation:
+  {"op": "rot", "q": 0, "axis": "x", "theta": 1.57}
+  Axis can be "x", "y", or "z"
+
+4.3 TWO-QUBIT GATES
+-------------------
+CNOT Gate (Controlled-NOT):
+  {"op": "cnot", "ctrl": 0, "tgt": 1}
+  Flips target if control is |1⟩
+
+CZ Gate (Controlled-Z):
+  {"op": "cz", "ctrl": 0, "tgt": 1}
+  Applies phase if both qubits are |1⟩
+
+All-to-All CZ:
+  {"op": "all2all_cz"}
+  Applies CZ between all qubit pairs
+  Optimized for fixed Hamming weight: global phase (-1)^{k(k-1)/2}
+
+4.4 NOISE OPERATIONS
+--------------------
+Dephasing Noise:
+  {"op": "noise", "kind": {"kind": "dephasing", "p": 0.01}, "q": 0}
+  Applies Z gate with probability p
+
+Depolarizing Noise:
+  {"op": "noise", "kind": {"kind": "depolarizing", "p": 0.01}, "q": 0}
+  Applies X, Y, or Z each with probability p/3
+
+Amplitude Damping:
+  {"op": "noise", "kind": {"kind": "amplitude_damping", "gamma": 0.05}, "q": 0}
+  Models energy loss from |1⟩ to |0⟩
+
+4.5 MEASUREMENT AND POSTSELECTION
+---------------------------------
+Measurement:
+  {"op": "measure", "qubits": [0, 1, 2]}
+  Measures specified qubits, collapses state
+
+Postselection:
+  {"op": "postselect", "qubits": [0, 1], "bits": "01"}
+  Projects onto specified measurement outcome
+
+================================================================================
+5. MATHEMATICAL FOUNDATION
+================================================================================
+
+5.1 SPARSE PRUNING
+------------------
+- Amplitudes with probability weight ≤ eps2 are dropped
+- Dropped probability accumulates in delta
+- delta ≥ P_drop + P_proj
+  where P_drop = pruned mass, P_proj = projected mass
+
+5.2 TOTAL VARIATION BOUND
+--------------------------
+For measurement distributions M(actual) vs M(ideal):
+  TV(M(actual), M(ideal)) ≤ sqrt(delta)
+
+The TV upper bound is accessible as: tv_upper_bound = sqrt(delta)
+
+Trace distance increases are bounded by sqrt(discarded probability)
+
+5.3 CONSTRAINT EXECUTION MODES
+-------------------------------
+InvariantOnly:
+  - Gate must preserve allowed index set
+  - Error if gate would violate constraint
+  - No projection or delta growth
+
+ProjectWithBounds:
+  - Apply gate
+  - Project out forbidden basis states
+  - Add their mass to delta
+  - Renormalize
+  - Exposes tv_upper_bound
+
+5.4 GATE INVARIANCE
+-------------------
+Diagonal gates preserve any constraint:
+  - Z, RZ, CZ, ALL2ALL_CZ
+
+Mixing gates only safe with no constraint:
+  - H, X, Y, RX, RY, CNOT
+
+5.5 NOISE CHANNELS (Trajectory Unraveling)
+-------------------------------------------
+Dephasing (parameter p):
+  - Apply Z with probability p
+  - Identity with probability 1-p
+
+Depolarizing (parameter p):
+  - Identity with probability 1-p
+  - X, Y, or Z each with probability p/3
+
+Amplitude Damping (parameter gamma):
+  - Jump operator: sqrt(gamma) * |0⟩⟨1|
+  - No-jump update with (1-gamma) scaling
+  - Deterministic based on RNG
+
+5.6 DETERMINISTIC REPLAY
+-------------------------
+EventRng uses keyed BLAKE3 hash over:
+  - kind: Event type string
+  - step: Current step counter
+  - shot: Shot number
+  - qubits: Qubit indices array
+  - extra: Extra parameter
+
+This ensures reproducible randomness across runs with same seed.
+
+5.7 ALL-TO-ALL CZ OPTIMIZATION
+-------------------------------
+For fixed Hamming weight k:
+  - Global phase: (-1)^{k(k-1)/2}
+  - No need to iterate over all pairs
+  - Significant speedup for large systems
+
+================================================================================
+6. ADVANCED FEATURES
+================================================================================
+
+6.1 TELEMETRY LOGGING
+---------------------
+When --log flag is used, creates JSONL files with per-step data:
+  - event: Operation type
+  - step, shot: Counters
+  - norm_pre, norm_post: State norm before/after
+  - amps_len_pre, amps_len_post: Number of non-zero amplitudes
+  - delta_inc: Increase in delta this step
+  - delta: Cumulative delta
+  - tv_upper_bound: Current TV bound
+
+Use for:
+  - Debugging state evolution
+  - Auditing bound growth
+  - Memory profiling
+  - Performance analysis
+
+6.2 CONSTRAINT MODES IN DETAIL
+-------------------------------
+InvariantOnly Mode:
+  - Best for: Studying constraint-preserving circuits
+  - No overhead from projection
+  - Stricter gate restrictions
+  - Errors immediately if constraint violated
+
+ProjectWithBounds Mode:
+  - Best for: General simulations with constraint awareness
+  - Automatic projection and renormalization
+  - Tracks approximation quality via tv_upper_bound
+  - More flexible gate usage
+
+6.3 SPARSE THRESHOLD TUNING
+----------------------------
+eps2 = 1e-12: Very accurate, higher memory
+eps2 = 1e-8:  Balanced accuracy and memory
+eps2 = 1e-6:  Fast, lower memory, some error
+
+Monitor tv_upper_bound to assess quality/error tradeoff.
+
+6.4 SEED FORMAT
+---------------
+Seed must be exactly 64 hexadecimal characters (32 bytes).
+Example: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+Different seeds produce different but deterministic outcomes.
+Same seed always produces identical results.
+
+================================================================================
+7. CROSS-VALIDATION WITH QISKIT
+================================================================================
+
+For circuits with n ≤ 4 qubits, validate against IBM Qiskit:
+
+  python3 scripts/crossval_qiskit.py program.json
+
+Important Note:
+- Qiskit returns big-endian classical bits
+- The script reverses bit order to match cqs-rs little-endian format
+- Example: Qiskit "10" becomes cqs-rs "01"
+
+Unsupported in cross-validation:
+- Postselection operations
+- Noise operations
+
+================================================================================
+8. BENCHMARKING
+================================================================================
+
+Run microbenchmarks:
+  cargo run --release --bin cqs_bench
+
+Customize with environment variables:
+  CQS_BENCH_N=18           # Number of qubits
+  CQS_BENCH_SHOTS=100      # Number of shots
+  CQS_BENCH_EPS2=1e-12     # Sparse threshold
+  CQS_BENCH_GAMMA=0.05     # Noise parameter
+
+Example:
+  CQS_BENCH_N=20 CQS_BENCH_SHOTS=50 cargo run --release --bin cqs_bench
+
+Benchmark suites:
+- h-cz-chain: Hadamard + CZ chain pattern
+- entangle-stress: Full entanglement generation
+- noise-sweep: Noise application performance
+
+================================================================================
+9. TESTING
+================================================================================
+
+Run all tests:
+  cargo test
+
+Test suites:
+- tests/basic.rs: Core functionality tests
+  - Reproducible measurements
+  - TV bound tracking
+  - Gate constraint checks
+  
+- tests/integration.rs: Integration tests
+  - Empty measurement handling
+  - Sparse pruning behavior
+  - Noise parameter validation
+  - Postselection edge cases
+
+- tests/proptests.rs: Property-based tests
+  - Gate identities (H², CZ², etc.)
+  - Rotation inverse properties
+  - CNOT squared identity
+  - State fidelity preservation
+
+================================================================================
+10. SOURCE CODE STRUCTURE
+================================================================================
+
+Cargo.toml:
+  - Package metadata and dependencies
+  - Binary targets: cqs, cqs_bench
+
+src/lib.rs:
+  - Main State struct
+  - Public API for all operations
+  - Mode and error definitions
+
+src/rng.rs:
+  - EventRng: Deterministic BLAKE3-based RNG
+  - Methods: u128_for_event, u01_for_event, choose_index
+
+src/constraint.rs:
+  - Constraint enum (None, HammingWeight, Parity)
+  - allowed_index: Check if basis state satisfies constraint
+  - check_gate_invariance: Gate compatibility with constraints
+
+src/gates.rs:
+  - Gate implementations
+  - Functions: apply_h_on, apply_x_on, etc.
+  - Optimized all2all_cz
+
+src/noise.rs:
+  - Noise enum (Dephasing, Depolarizing, AmplitudeDamping)
+  - Trajectory unraveling implementations
+
+src/measure.rs:
+  - measure_and_collapse: Quantum measurement
+  - postselect_and_collapse: Postselection
+  - Measurement logging
+
+src/log.rs:
+  - TrajLogger: JSONL trajectory logging
+  - Buffered file writing
+
+src/bin/cqs.rs:
+  - CLI interface using clap
+  - JSON program parsing
+  - Main execution loop
+
+src/bin/cqs_bench.rs:
+  - Microbenchmark suite
+  - Configurable via environment variables
+
+================================================================================
+IMPLEMENTATION NOTES
+================================================================================
+
+1. CZ and CNOT with c == t are no-ops by design
+2. Bit ordering is little-endian (bit 0 is LSB)
+3. Complex amplitudes use num-complex crate
+4. State uses IndexMap for sparse storage
+5. scratch_map pre-allocated for gate operations
+6. All gates support qubit index validation
+7. Telemetry overhead is minimal when logging disabled
+
+================================================================================
+PERFORMANCE TIPS
+================================================================================
+
+1. Use appropriate eps2 for your accuracy needs
+2. Enable logging only when needed (adds I/O overhead)
+3. For large systems, consider Hamming weight constraints
+4. Use all2all_cz optimization when possible
+5. Profile with cargo run --release --bin cqs_bench
+
+================================================================================
+ERROR HANDLING
+================================================================================
+
+SimError enum covers:
+- GateBreaksConstraint: Gate violates invariant mode constraint
+- PostselectLen: Postselection bit string length mismatch
+- PostselectImpossible: Postselection on zero-probability outcome
+- BadQubit: Qubit index out of bounds
+- MissingInit: Operations before init
+- InvalidNoiseParameter: Noise parameter out of [0,1] range
+- BadSeed: Invalid RNG seed format
+
+================================================================================
+LICENSE & CREDITS
+================================================================================
+
+Version: 0.17.1
+License: Open Source (Previously Proprietary, now released as open source)
+Developed by: PatternRipple.com Labs
+Created by: Nick Panek (https://heylink.me/nickpanek/)
+Website: https://patternripple.com
+
+Keywords: quantum, simulator, replay, sparse
+
+This software is provided as-is, without warranty of any kind.
+
+================================================================================
+CONTACT & SUPPORT
+================================================================================
+
+For questions, issues, or contributions:
+Visit: https://patternripple.com
+
+For the latest version and updates:
+Check: https://www.patternripple.com/cqs_rs_docs.html
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================`;
+
+            const blob = new Blob([docs], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'cqs-rs-documentation.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
 </body>
 </html>
