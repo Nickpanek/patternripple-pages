@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cqs-rs - Quantum Simulator by PatternRipple Labs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 3rem 2rem 2rem 2rem;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        header .tagline {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 1rem;
+        }
+        
+        header .credits {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-top: 1rem;
+        }
+        
+        header .credits a {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 0.3rem;
+        }
+        
+        .hero {
+            background: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            border-bottom: 3px solid #4a90e2;
+        }
+        
+        .hero h2 {
+            color: #4a90e2;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 1.5rem auto;
+            color: #555;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: #4a90e2;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0.5rem;
+            transition: background 0.3s;
+        }
+        
+        .cta-button:hover {
+            background: #357abd;
+        }
+        
+        nav {
+            background: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        nav a {
+            color: #4a90e2;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #357abd;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        h2 {
+            color: #4a90e2;
+            margin-bottom: 1.2rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        h3 {
+            color: #357abd;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+        
+        h4 {
+            color: #555;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #c7254e;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1.2rem 0;
+            border-left: 4px solid #4a90e2;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        
+        .simple-steps {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #4a90e2;
+        }
+        
+        .simple-steps ol {
+            margin-left: 1.5rem;
+        }
+        
+        .simple-steps li {
+            margin: 1rem 0;
+            font-size: 1.05rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #4a90e2;
+        }
+        
+        .feature-card h4 {
+            color: #4a90e2;
+            margin-bottom: 0.7rem;
+            font-size: 1.1rem;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            padding: 1.2rem;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #4a90e2;
+        }
+        
+        .info-box strong {
+            color: #357abd;
+        }
+        
+        ul {
+            margin-left: 2rem;
+            margin-top: 0.8rem;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+        
+        th, td {
+            padding: 0.9rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #4a90e2;
+            color: white;
+            font-weight: 500;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 2.5rem 2rem;
+            margin-top: 3rem;
+        }
+        
+        footer a {
+            color: #74b9ff;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .hero h2 {
+                font-size: 1.4rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>cqs-rs</h1>
+        <p class="tagline">A Friendly Quantum Simulator for Everyone</p>
+        <div>
+            <span class="badge">v0.17.1</span>
+            <span class="badge">Open Source</span>
+            <span class="badge">Rust</span>
+        </div>
+        <p class="credits">
+            Developed by <a href="https://patternripple.com" target="_blank">PatternRipple.com Labs</a> • Created by Nick Panek
+        </p>
+    </header>
+
+    <div class="hero">
+        <h2>Simulate Quantum Circuits Without the Complexity</h2>
+        <p>cqs-rs makes quantum simulation accessible. Whether you're learning quantum computing, testing algorithms, or running experiments, we've got you covered with an easy-to-use tool that just works.</p>
+        <a href="#quickstart" class="cta-button">Get Started in 5 Minutes</a>
+        <a href="https://patternripple.com" class="cta-button" style="background: #6c757d;">Visit PatternRipple.com</a>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="#quickstart">Quick Start</a></li>
+            <li><a href="#what">What It Does</a></li>
+            <li><a href="#gates">Available Gates</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#advanced">Advanced</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <section id="quickstart">
+            <h2>🚀 Quick Start Guide</h2>
+            <p>Get up and running in just a few steps:</p>
+            
+            <div class="simple-steps">
+                <ol>
+                    <li><strong>Build the simulator:</strong>
+                        <pre><code>cargo build --release</code></pre>
+                    </li>
+                    <li><strong>Create a simple program</strong> (save as <code>my_circuit.json</code>):
+                        <pre><code>[
+  {"op": "init", "n": 2},
+  {"op": "h", "q": 0},
+  {"op": "cnot", "ctrl": 0, "tgt": 1},
+  {"op": "measure", "qubits": [0, 1]}
+]</code></pre>
+                    </li>
+                    <li><strong>Run it:</strong>
+                        <pre><code>./target/release/cqs run --program my_circuit.json --shots 100</code></pre>
+                    </li>
+                </ol>
+            </div>
+            
+            <div class="info-box">
+                <strong>That's it!</strong> You just simulated a Bell state (quantum entanglement). The output shows you the measurement results.
+            </div>
+        </section>
+
+        <section id="what">
+            <h2>✨ What Makes cqs-rs Special?</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🎯 Smart & Efficient</h4>
+                    <p>Only keeps track of important quantum states, making simulations faster and using less memory</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🎲 Perfectly Reproducible</h4>
+                    <p>Use seeds to get the exact same results every time - great for debugging and testing</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔍 Built-in Constraints</h4>
+                    <p>Easily simulate specific quantum scenarios with Hamming weight or parity constraints</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📊 Detailed Logging</h4>
+                    <p>Track everything that happens in your simulation with automatic telemetry</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🧪 Noise Support</h4>
+                    <p>Model real quantum computers with dephasing, depolarizing, and amplitude damping noise</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🌐 Open Source</h4>
+                    <p>Free to use, modify, and share. Built by the community, for the community</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="gates">
+            <h2>🎮 Available Operations</h2>
+            <p>cqs-rs supports all the quantum gates you need:</p>
+            
+            <h3>Basic Single-Qubit Gates</h3>
+            <table>
+                <tr>
+                    <th>Gate</th>
+                    <th>What It Does</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><code>h</code></td>
+                    <td>Hadamard - Creates superposition</td>
+                    <td><code>{"op": "h", "q": 0}</code></td>
+                </tr>
+                <tr>
+                    <td><code>x</code></td>
+                    <td>NOT gate - Flips qubit</td>
+                    <td><code>{"op": "x", "q": 0}</code></td>
+                </tr>
+                <tr>
+                    <td><code>y</code></td>
+                    <td>Pauli-Y gate</td>
+                    <td><code>{"op": "y", "q": 0}</code></td>
+                </tr>
+                <tr>
+                    <td><code>z</code></td>
+                    <td>Phase flip gate</td>
+                    <td><code>{"op": "z", "q": 0}</code></td>
+                </tr>
+            </table>
+
+            <h3>Rotation Gates (for precise control)</h3>
+            <table>
+                <tr>
+                    <th>Gate</th>
+                    <th>Parameters</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><code>rx</code></td>
+                    <td>q, theta (angle in radians)</td>
+                    <td><code>{"op": "rx", "q": 0, "theta": 1.57}</code></td>
+                </tr>
+                <tr>
+                    <td><code>ry</code></td>
+                    <td>q, theta</td>
+                    <td><code>{"op": "ry", "q": 0, "theta": 0.785}</code></td>
+                </tr>
+                <tr>
+                    <td><code>rz</code></td>
+                    <td>q, theta</td>
+                    <td><code>{"op": "rz", "q": 0, "theta": 3.14}</code></td>
+                </tr>
+            </table>
+
+            <h3>Two-Qubit Gates (for entanglement)</h3>
+            <table>
+                <tr>
+                    <th>Gate</th>
+                    <th>What It Does</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><code>cnot</code></td>
+                    <td>Controlled-NOT - Creates entanglement</td>
+                    <td><code>{"op": "cnot", "ctrl": 0, "tgt": 1}</code></td>
+                </tr>
+                <tr>
+                    <td><code>cz</code></td>
+                    <td>Controlled-Z gate</td>
+                    <td><code>{"op": "cz", "ctrl": 0, "tgt": 1}</code></td>
+                </tr>
+            </table>
+
+            <h3>Measurement & Special Operations</h3>
+            <table>
+                <tr>
+                    <th>Operation</th>
+                    <th>What It Does</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><code>measure</code></td>
+                    <td>Measures qubits (gets 0 or 1)</td>
+                    <td><code>{"op": "measure", "qubits": [0, 1]}</code></td>
+                </tr>
+                <tr>
+                    <td><code>postselect</code></td>
+                    <td>Force specific measurement outcome</td>
+                    <td><code>{"op": "postselect", "qubits": [0], "bits": "1"}</code></td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="examples">
+            <h2>📚 Examples</h2>
+            
+            <h3>Example 1: Bell State (Entanglement)</h3>
+            <p>Create two entangled qubits:</p>
+            <pre><code>[
+  {"op": "init", "n": 2},
+  {"op": "h", "q": 0},
+  {"op": "cnot", "ctrl": 0, "tgt": 1},
+  {"op": "measure", "qubits": [0, 1]}
+]</code></pre>
+            <p>Result: You'll always get 00 or 11, never 01 or 10!</p>
+
+            <h3>Example 2: Superposition with Rotation</h3>
+            <pre><code>[
+  {"op": "init", "n": 1},
+  {"op": "h", "q": 0},
+  {"op": "rz", "q": 0, "theta": 1.57},
+  {"op": "measure", "qubits": [0]}
+]</code></pre>
+
+            <h3>Example 3: Using a Seed for Reproducibility</h3>
+            <pre><code>[
+  {
+    "op": "init",
+    "n": 3,
+    "seed_hex": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  },
+  {"op": "h", "q": 0},
+  {"op": "h", "q": 1},
+  {"op": "measure", "qubits": [0, 1, 2]}
+]</code></pre>
+            <p>Run this multiple times - you'll get the same results every time!</p>
+
+            <h3>Run with Logging</h3>
+            <p>Want to see what's happening under the hood?</p>
+            <pre><code>./target/release/cqs run --program my_circuit.json --shots 10 --log output</code></pre>
+            <p>This creates detailed logs at <code>output-*.jsonl</code></p>
+        </section>
+
+        <section id="advanced">
+            <h2>🔧 Advanced Features</h2>
+            
+            <h3>Constraints</h3>
+            <p>Run simulations with specific quantum state restrictions:</p>
+            <pre><code>{
+  "op": "init",
+  "n": 4,
+  "constraint": {"kind": "parity", "even": true}
+}</code></pre>
+            <p>Available constraints:</p>
+            <ul>
+                <li><code>{"kind": "none"}</code> - No restrictions (default)</li>
+                <li><code>{"kind": "hamming", "k": 2}</code> - Exactly k qubits must be |1⟩</li>
+                <li><code>{"kind": "parity", "even": true}</code> - Even/odd number of |1⟩ states</li>
+            </ul>
+
+            <h3>Noise Models</h3>
+            <p>Simulate real quantum computers with noise:</p>
+            <pre><code>{"op": "noise", "kind": {"kind": "dephasing", "p": 0.01}, "q": 0}</code></pre>
+            <p>Types of noise:</p>
+            <ul>
+                <li><strong>Dephasing:</strong> Random Z gates</li>
+                <li><strong>Depolarizing:</strong> Random X, Y, or Z gates</li>
+                <li><strong>Amplitude Damping:</strong> Models energy loss</li>
+            </ul>
+
+            <h3>Efficiency Settings</h3>
+            <p>Control memory usage with sparse pruning:</p>
+            <pre><code>{"op": "init", "n": 10, "eps2": 1e-12}</code></pre>
+            <p>Smaller <code>eps2</code> = more accurate but uses more memory</p>
+
+            <h3>Validation Against Qiskit</h3>
+            <p>Double-check your results against IBM's Qiskit:</p>
+            <pre><code>python3 scripts/crossval_qiskit.py my_circuit.json</code></pre>
+
+            <h3>Run Benchmarks</h3>
+            <pre><code>cargo run --release --bin cqs_bench</code></pre>
+        </section>
+
+        <section id="help">
+            <h2>❓ Need Help?</h2>
+            <p>Here are some tips if things aren't working:</p>
+            <ul>
+                <li><strong>JSON errors?</strong> Make sure all your brackets and commas are correct</li>
+                <li><strong>Qubit out of range?</strong> Remember, if you initialize with n=3, qubits are numbered 0, 1, 2</li>
+                <li><strong>Want to learn more?</strong> Check out the full source code and tests in the repository</li>
+            </ul>
+            
+            <div class="info-box">
+                Visit <a href="https://patternripple.com" target="_blank" style="color: #357abd; font-weight: bold;">PatternRipple.com</a> for more tools and resources!
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p><strong>cqs-rs</strong> - Open Source Quantum Simulator</p>
+        <p style="margin-top: 0.5rem;">Version 0.17.1</p>
+        <p style="margin-top: 1rem;">
+            Developed by <a href="https://patternripple.com" target="_blank">PatternRipple.com Labs</a>
+        </p>
+        <p style="margin-top: 0.5rem;">
+            Created by Nick Panek
+        </p>
+        <p style="margin-top: 1.5rem; opacity: 0.8; font-size: 0.9rem;">
+            Open source and free to use • Built with ❤️ for the quantum computing community
+        </p>
+    </footer>
+</body>
+</html>
