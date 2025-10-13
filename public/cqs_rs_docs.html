@@ -250,8 +250,11 @@
 
     <div class="container">
         <div class="info-box">
-            <strong>✨ Zero Setup Required!</strong> This simulator runs entirely in your browser using JavaScript. 
-            No server needed, no installation required. Edit the JSON program below and click Run.
+            <strong>✨ Browser Demo Version!</strong> This is a simplified JavaScript demo of the full cqs-rs simulator (originally written in Rust). 
+            It runs entirely in your browser with zero setup - perfect for quick experiments! 
+            <br><br>
+            <strong>Want the full-featured Rust version?</strong> Download the documentation above for complete installation instructions. 
+            The Rust version includes advanced features like noise models, constraints, deterministic replay, and telemetry logging.
         </div>
 
         <div class="simulator-grid">
@@ -591,15 +594,16 @@ Created by Nick Panek (https://heylink.me/nickpanek/)
 TABLE OF CONTENTS
 ================================================================================
 1. Overview
-2. Installation
-3. Quick Start
-4. JSON Program Operations
-5. Mathematical Foundation
-6. Advanced Features
-7. Cross-Validation with Qiskit
-8. Benchmarking
-9. Testing
-10. Source Code Structure
+2. Installation - Full Rust Version
+3. Browser Demo vs Full Rust Version
+4. Quick Start
+5. JSON Program Operations
+6. Mathematical Foundation
+7. Advanced Features
+8. Cross-Validation with Qiskit
+9. Benchmarking
+10. Testing
+11. Source Code Structure
 
 ================================================================================
 1. OVERVIEW
@@ -623,20 +627,143 @@ Key Features:
 - Detailed telemetry logging
 
 ================================================================================
-2. INSTALLATION
+2. INSTALLATION - FULL RUST VERSION
 ================================================================================
 
-Requirements:
-- Rust toolchain (2021 edition)
-- Cargo build system
+The browser demo is JavaScript-only. For the full-featured Rust version with
+advanced capabilities, follow these installation steps:
 
-Build Instructions:
+STEP 1: Install Rust
+--------------------
+If you don't have Rust installed:
+
+**On macOS/Linux:**
+  Open terminal and run:
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  
+  Follow the on-screen instructions. When complete, run:
+  source $HOME/.cargo/env
+
+**On Windows:**
+  Download and run: https://rustup.rs/
+  Follow the installer instructions.
+
+**Verify Installation:**
+  rustc --version
+  cargo --version
+  
+  You should see version numbers printed.
+
+STEP 2: Get the Source Code
+----------------------------
+You need the cqs-rs source code. Contact PatternRipple.com Labs or check:
+  https://patternripple.com
+
+The source should include:
+  - Cargo.toml (package configuration)
+  - src/ directory (Rust source code)
+  - All the files mentioned in Section 11
+
+STEP 3: Build the Project
+--------------------------
+Navigate to the cqs-rs directory in your terminal:
+  cd /path/to/cqs-rs
+
+Build the release version:
   cargo build --release
 
-The binary will be located at: target/release/cqs
+This may take a few minutes the first time as it downloads dependencies
+and compiles everything with optimizations.
+
+STEP 4: Verify Installation
+----------------------------
+The compiled binary will be at:
+  target/release/cqs        (on macOS/Linux)
+  target\\release\\cqs.exe    (on Windows)
+
+Test it:
+  ./target/release/cqs --help
+
+You should see usage information.
+
+STEP 5: (Optional) Add to PATH
+-------------------------------
+To use 'cqs' from anywhere:
+
+**On macOS/Linux:**
+  Add this line to ~/.bashrc or ~/.zshrc:
+  export PATH="$PATH:/path/to/cqs-rs/target/release"
+  
+  Then reload:
+  source ~/.bashrc  (or ~/.zshrc)
+
+**On Windows:**
+  Add the full path to target\\release to your system PATH environment variable.
+
+STEP 6: Run Your First Simulation
+----------------------------------
+Create a test program:
+  echo '[
+    {"op": "init", "n": 2},
+    {"op": "h", "q": 0},
+    {"op": "cnot", "ctrl": 0, "tgt": 1},
+    {"op": "measure", "qubits": [0, 1]}
+  ]' > test.json
+
+Run it:
+  ./target/release/cqs run --program test.json --shots 100
+
+You should see measurement results!
+
+TROUBLESHOOTING
+---------------
+Problem: "cargo: command not found"
+Solution: Rust isn't installed or not in PATH. Repeat Step 1.
+
+Problem: Compilation errors
+Solution: Make sure you have the latest Rust: rustup update
+
+Problem: Missing dependencies on Linux
+Solution: You may need build essentials:
+  sudo apt-get install build-essential  (Ubuntu/Debian)
+  sudo yum groupinstall "Development Tools"  (RHEL/CentOS)
+
+For more help, visit: https://patternripple.com
 
 ================================================================================
-3. QUICK START
+3. BROWSER DEMO vs FULL RUST VERSION
+================================================================================
+
+BROWSER DEMO (JavaScript):
+  ✓ Runs instantly in your browser
+  ✓ No installation required
+  ✓ Basic gates: H, X, Y, Z, RZ, CNOT, CZ
+  ✓ Simple measurement
+  ✗ No noise models
+  ✗ No constraints
+  ✗ No deterministic replay
+  ✗ No telemetry logging
+  ✗ Limited to small circuits
+
+FULL RUST VERSION:
+  ✓ All gates including RX, RY, generic rotations
+  ✓ Noise models (dephasing, depolarizing, amplitude damping)
+  ✓ Constraint modes (Hamming weight, parity)
+  ✓ Deterministic replay with BLAKE3 seeding
+  ✓ Detailed JSONL telemetry logging
+  ✓ Sparse state pruning (epsilon thresholds)
+  ✓ Postselection support
+  ✓ Command-line interface with full control
+  ✓ Optimized for larger circuits
+  ✓ Cross-validation with Qiskit
+  ✓ Built-in benchmarking tools
+  
+Recommendation: Use the browser demo for quick experiments and learning.
+                Use the full Rust version for research, production, or 
+                advanced features.
+
+================================================================================
+4. QUICK START
 ================================================================================
 
 Minimal Example:
@@ -665,10 +792,10 @@ Run the program:
 Output logs will be at: traj-*.jsonl
 
 ================================================================================
-4. JSON PROGRAM OPERATIONS
+5. JSON PROGRAM OPERATIONS
 ================================================================================
 
-4.1 INITIALIZATION
+5.1 INITIALIZATION
 ------------------
 Operation: init
 Parameters:
@@ -686,7 +813,7 @@ Constraint Types:
 Example:
   {"op": "init", "n": 4, "eps2": 1e-10, "constraint": {"kind": "hamming", "k": 2}}
 
-4.2 SINGLE-QUBIT GATES
+5.2 SINGLE-QUBIT GATES
 ----------------------
 H Gate (Hadamard):
   {"op": "h", "q": 0}
@@ -720,7 +847,7 @@ Generic Rotation:
   {"op": "rot", "q": 0, "axis": "x", "theta": 1.57}
   Axis can be "x", "y", or "z"
 
-4.3 TWO-QUBIT GATES
+5.3 TWO-QUBIT GATES
 -------------------
 CNOT Gate (Controlled-NOT):
   {"op": "cnot", "ctrl": 0, "tgt": 1}
@@ -735,7 +862,7 @@ All-to-All CZ:
   Applies CZ between all qubit pairs
   Optimized for fixed Hamming weight: global phase (-1)^{k(k-1)/2}
 
-4.4 NOISE OPERATIONS
+5.4 NOISE OPERATIONS
 --------------------
 Dephasing Noise:
   {"op": "noise", "kind": {"kind": "dephasing", "p": 0.01}, "q": 0}
@@ -749,7 +876,7 @@ Amplitude Damping:
   {"op": "noise", "kind": {"kind": "amplitude_damping", "gamma": 0.05}, "q": 0}
   Models energy loss from |1⟩ to |0⟩
 
-4.5 MEASUREMENT AND POSTSELECTION
+5.5 MEASUREMENT AND POSTSELECTION
 ---------------------------------
 Measurement:
   {"op": "measure", "qubits": [0, 1, 2]}
@@ -760,17 +887,17 @@ Postselection:
   Projects onto specified measurement outcome
 
 ================================================================================
-5. MATHEMATICAL FOUNDATION
+6. MATHEMATICAL FOUNDATION
 ================================================================================
 
-5.1 SPARSE PRUNING
+6.1 SPARSE PRUNING
 ------------------
 - Amplitudes with probability weight ≤ eps2 are dropped
 - Dropped probability accumulates in delta
 - delta ≥ P_drop + P_proj
   where P_drop = pruned mass, P_proj = projected mass
 
-5.2 TOTAL VARIATION BOUND
+6.2 TOTAL VARIATION BOUND
 --------------------------
 For measurement distributions M(actual) vs M(ideal):
   TV(M(actual), M(ideal)) ≤ sqrt(delta)
@@ -779,7 +906,7 @@ The TV upper bound is accessible as: tv_upper_bound = sqrt(delta)
 
 Trace distance increases are bounded by sqrt(discarded probability)
 
-5.3 CONSTRAINT EXECUTION MODES
+6.3 CONSTRAINT EXECUTION MODES
 -------------------------------
 InvariantOnly:
   - Gate must preserve allowed index set
@@ -793,7 +920,7 @@ ProjectWithBounds:
   - Renormalize
   - Exposes tv_upper_bound
 
-5.4 GATE INVARIANCE
+6.4 GATE INVARIANCE
 -------------------
 Diagonal gates preserve any constraint:
   - Z, RZ, CZ, ALL2ALL_CZ
@@ -801,7 +928,7 @@ Diagonal gates preserve any constraint:
 Mixing gates only safe with no constraint:
   - H, X, Y, RX, RY, CNOT
 
-5.5 NOISE CHANNELS (Trajectory Unraveling)
+6.5 NOISE CHANNELS (Trajectory Unraveling)
 -------------------------------------------
 Dephasing (parameter p):
   - Apply Z with probability p
@@ -816,7 +943,7 @@ Amplitude Damping (parameter gamma):
   - No-jump update with (1-gamma) scaling
   - Deterministic based on RNG
 
-5.6 DETERMINISTIC REPLAY
+6.6 DETERMINISTIC REPLAY
 -------------------------
 EventRng uses keyed BLAKE3 hash over:
   - kind: Event type string
@@ -827,7 +954,7 @@ EventRng uses keyed BLAKE3 hash over:
 
 This ensures reproducible randomness across runs with same seed.
 
-5.7 ALL-TO-ALL CZ OPTIMIZATION
+6.7 ALL-TO-ALL CZ OPTIMIZATION
 -------------------------------
 For fixed Hamming weight k:
   - Global phase: (-1)^{k(k-1)/2}
@@ -835,10 +962,10 @@ For fixed Hamming weight k:
   - Significant speedup for large systems
 
 ================================================================================
-6. ADVANCED FEATURES
+7. ADVANCED FEATURES
 ================================================================================
 
-6.1 TELEMETRY LOGGING
+7.1 TELEMETRY LOGGING
 ---------------------
 When --log flag is used, creates JSONL files with per-step data:
   - event: Operation type
@@ -855,7 +982,7 @@ Use for:
   - Memory profiling
   - Performance analysis
 
-6.2 CONSTRAINT MODES IN DETAIL
+7.2 CONSTRAINT MODES IN DETAIL
 -------------------------------
 InvariantOnly Mode:
   - Best for: Studying constraint-preserving circuits
@@ -869,7 +996,7 @@ ProjectWithBounds Mode:
   - Tracks approximation quality via tv_upper_bound
   - More flexible gate usage
 
-6.3 SPARSE THRESHOLD TUNING
+7.3 SPARSE THRESHOLD TUNING
 ----------------------------
 eps2 = 1e-12: Very accurate, higher memory
 eps2 = 1e-8:  Balanced accuracy and memory
@@ -877,7 +1004,7 @@ eps2 = 1e-6:  Fast, lower memory, some error
 
 Monitor tv_upper_bound to assess quality/error tradeoff.
 
-6.4 SEED FORMAT
+7.4 SEED FORMAT
 ---------------
 Seed must be exactly 64 hexadecimal characters (32 bytes).
 Example: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
@@ -886,7 +1013,7 @@ Different seeds produce different but deterministic outcomes.
 Same seed always produces identical results.
 
 ================================================================================
-7. CROSS-VALIDATION WITH QISKIT
+8. CROSS-VALIDATION WITH QISKIT
 ================================================================================
 
 For circuits with n ≤ 4 qubits, validate against IBM Qiskit:
@@ -903,7 +1030,7 @@ Unsupported in cross-validation:
 - Noise operations
 
 ================================================================================
-8. BENCHMARKING
+9. BENCHMARKING
 ================================================================================
 
 Run microbenchmarks:
@@ -924,7 +1051,7 @@ Benchmark suites:
 - noise-sweep: Noise application performance
 
 ================================================================================
-9. TESTING
+10. TESTING
 ================================================================================
 
 Run all tests:
@@ -949,7 +1076,7 @@ Test suites:
   - State fidelity preservation
 
 ================================================================================
-10. SOURCE CODE STRUCTURE
+11. SOURCE CODE STRUCTURE
 ================================================================================
 
 Cargo.toml:
