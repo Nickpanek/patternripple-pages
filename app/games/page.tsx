@@ -23,7 +23,7 @@ const games: Game[] = [
     slug: "dystopian-chess",
     title: "Dystopian Chess",
     description:
-      "A bleak experiment in self-conflict. Designed to be played against yourself — the next stage of dystopia. Even if you win, bureaucracy never dies.",
+      "A bleak experiment in self-conflict. Designed to be played against yourself — the next stage of dystopia. Even if you win, the game does not end, because bureaucracy never dies.",
     href: "/dystopian-chess.html",
     badge: "Experimental",
   },
