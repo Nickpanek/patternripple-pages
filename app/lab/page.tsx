@@ -5,20 +5,19 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "PatternRipple Lab - Free tools and prototypes",
   description:
-    "Free in-browser tools and prototypes. Tile checker, audio processor, slideshow maker, and the cqs-rs browser demo.",
+    "Free in-browser tools and prototypes. Seamless pattern creator, tile checker, audio processor, slideshow maker, and the cqs-rs browser demo.",
   alternates: { canonical: "https://www.patternripple.com/lab" },
   openGraph: {
     title: "PatternRipple Lab - Free tools and prototypes",
     description:
-      "Try the seamless tile checker, audio processor, slideshow maker, and the cqs-rs browser demo.",
+      "Try the seamless pattern creator, tile checker, audio processor, slideshow maker, and the cqs-rs browser demo.",
     url: "https://www.patternripple.com/lab",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "PatternRipple Lab - Free tools and prototypes",
-    description:
-      "Hands-on browser tools. No install.",
+    description: "Hands-on browser tools. No install.",
   },
 };
 
@@ -47,6 +46,17 @@ const tools: Tool[] = [
       "Loop audio directly in your browser with adjustable start and end points, tempo control, and panning. Ideal for musicians and producers testing loops or stems.",
     badge: "New",
   },
+
+  // ADDED: Seamless Pattern Creator (placed just above the checker)
+  {
+    slug: "seamless-pattern-creator",
+    title: "Seamless Pattern Creator",
+    href: "/seamless-pattern-creator.html",
+    summary:
+      "Build seamless tiles directly in your browser. Offset and wrap artwork, preview as repeating tiles, and export your final pattern image.",
+    badge: "New",
+  },
+
   {
     slug: "seamless-pattern-checker",
     title: "Seamless Pattern Checker",
