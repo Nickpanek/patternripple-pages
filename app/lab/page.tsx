@@ -41,7 +41,7 @@ const tools: Tool[] = [
   },
   {
     slug: "audio-looper-panek",
-    title: "Audio Looper - Panek",
+    title: "Audio Looper",
     href: "/audio-looper-panek.html",
     summary:
       "Loop audio directly in your browser with adjustable start and end points, tempo control, and panning. Ideal for musicians and producers testing loops or stems.",
