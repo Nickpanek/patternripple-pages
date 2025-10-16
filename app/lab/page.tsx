@@ -46,8 +46,6 @@ const tools: Tool[] = [
       "Loop audio directly in your browser with adjustable start and end points, tempo control, and panning. Ideal for musicians and producers testing loops or stems.",
     badge: "New",
   },
-
-  // ADDED: Seamless Pattern Creator (placed just above the checker)
   {
     slug: "seamless-pattern-creator",
     title: "Seamless Pattern Creator",
