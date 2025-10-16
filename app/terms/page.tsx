@@ -137,6 +137,22 @@ export default function TermsPage() {
             </div>
           </section>
 
+          {/* New Section for Free Lab Software and Games */}
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">14. Software and Games from PatternRipple Lab</h2>
+            <div className="space-y-3 text-gray-700">
+              <p><strong>14.1</strong> Software tools and prototypes provided through <a href="https://www.patternripple.com/lab" className="text-purple-600 hover:underline">PatternRipple Lab</a> and games published through <a href="https://www.patternripple.com/games" className="text-purple-600 hover:underline">PatternRipple Games</a> are offered free of charge.</p>
+              <p><strong>14.2</strong> These projects are experimental and provided “as is,” with no guarantees of performance, availability, or fitness for any purpose.</p>
+              <p><strong>14.3</strong> Users may download, modify, and redistribute these free tools or games, provided that:</p>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>Credit is given to PatternRipple Labs in a visible location (e.g., “Based on a project by PatternRipple Labs”).</li>
+                <li>No false endorsement or affiliation is implied.</li>
+                <li>Derivative works must not include or reference paid PatternRipple patterns unless separately licensed.</li>
+              </ul>
+              <p><strong>14.4</strong> We may update, remove, or discontinue any free software or game at any time without notice.</p>
+            </div>
+          </section>
+
         </div>
       </main>
 
