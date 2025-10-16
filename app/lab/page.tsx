@@ -40,6 +40,14 @@ const tools: Tool[] = [
     badge: "Updated",
   },
   {
+    slug: "audio-looper-panek",
+    title: "Audio Looper - Panek",
+    href: "/audio-looper-panek.html",
+    summary:
+      "Loop audio directly in your browser with adjustable start and end points, tempo control, and panning. Ideal for musicians and producers testing loops or stems.",
+    badge: "New",
+  },
+  {
     slug: "seamless-pattern-checker",
     title: "Seamless Pattern Checker",
     href: "/pattern-checker.html",
