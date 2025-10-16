@@ -630,7 +630,7 @@ export default function HomePage() {
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">
             We are moving into indie games and creative tools. The remaining exclusive patterns stay listed until sold.
             <span className="block mt-2 text-purple-700 font-medium">
-              Own it once. It is removed from the catalog.
+              Tools and Assets. Free and Paid.
             </span>
           </p>
         </div>
