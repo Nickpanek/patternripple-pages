@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Loop Creator</title>
+  <!--
+    ================================================================
+    AUDIO LOOP CREATOR
+    Created by: Nick Panek
+    Published at: Patternripple.com
+
+    This tool automatically creates seamless audio loops for
+    video games, music production, and creative projects.
+
+    Features intelligent beat detection, energy analysis, and
+    zero-crossing alignment for professional-quality loops.
+
+    Free to use and distribute. No warranty provided.
+    ================================================================
+  -->
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Courier New", monospace;
+      background-color: #0a0a0a;
+      color: #00ff00;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #00ff00;
+      padding-bottom: 10px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #333;
+      background-color: #1a1a1a;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    input[type="file"],
+    input[type="number"] {
+      font-family: "Courier New", monospace;
+      background-color: #0a0a0a;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      padding: 8px;
+      width: 100%;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    button {
+      font-family: "Courier New", monospace;
+      background-color: #00ff00;
+      color: #0a0a0a;
+      border: none;
+      padding: 12px 24px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      flex: 1;
+    }
+
+    button:disabled {
+      background-color: #333;
+      cursor: not-allowed;
+    }
+
+    button.small {
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      border: 1px solid #00ff00;
+    }
+
+    canvas.clickable {
+      cursor: crosshair;
+    }
+
+    .info {
+      font-size: 11px;
+      margin-top: 5px;
+      color: #888;
+    }
+
+    a {
+      color: #00ff00;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .status {
+      color: #0f0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .toggle-section {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AUDIO LOOP CREATOR</h1>
+
+    <div class="section">
+      <label>UPLOAD AUDIO FILE:</label>
+      <input type="file" id="fileInput" accept="audio/*">
+    </div>
+
+    <div id="waveformSection" class="section hidden">
+      <div style="margin-bottom: 10px;">
+        WAVEFORM: <span id="waveformHint"></span>
+      </div>
+      <canvas id="waveform" width="760" height="150"></canvas>
+      <div class="info">
+        <span id="audioInfo"></span>
+      </div>
+    </div>
+
+    <div id="crossfadeSection" class="section hidden">
+      <label>
+        CROSSFADE DURATION (seconds): <span id="crossfadeValue">0.020</span>
+      </label>
+      <input type="range" id="crossfade" min="0.005" max="0.1" step="0.005" value="0.02">
+    </div>
+
+    <div id="advancedSection" class="section hidden">
+      <button id="advancedToggle" class="small toggle-section">▶ ADVANCED CONTROLS</button>
+
+      <div id="advancedContent" class="hidden">
+        <div style="margin-bottom: 15px;">
+          <label>
+            <input type="checkbox" id="manualMode">
+            MANUAL MODE (click waveform to set points)
+          </label>
+        </div>
+
+        <div id="autoControls">
+          <div style="margin-bottom: 15px;">
+            <label>
+              TARGET LOOP DURATION (seconds): <span id="targetValue">30</span>
+            </label>
+            <input type="range" id="targetDuration" min="5" max="180" step="5" value="30">
+          </div>
+
+          <div style="margin-bottom: 15px;">
+            <label>
+              FLEXIBILITY (±<span id="flexPercent">20</span>% = <span id="flexSeconds">6</span>s range)
+            </label>
+            <input type="range" id="flexibility" min="0" max="50" step="5" value="20">
+            <div class="info">
+              Allows <span id="flexMin">24</span>s - <span id="flexMax">36</span>s for better musical alignment
+            </div>
+          </div>
+        </div>
+
+        <div id="manualControls" class="hidden">
+          <div style="margin-bottom: 15px;">
+            <label>START TIME (seconds):</label>
+            <input type="number" id="manualStart" min="0" step="0.1" value="0">
+          </div>
+
+          <div style="margin-bottom: 15px;">
+            <label>END TIME (seconds):</label>
+            <input type="number" id="manualEnd" min="0" step="0.1" value="0">
+          </div>
+
+          <div style="margin-bottom: 15px;">
+            <label>
+              <input type="checkbox" id="useZeroCrossing" checked>
+              SNAP TO ZERO-CROSSING (prevents clicks)
+            </label>
+          </div>
+
+          <div class="button-row" style="margin-bottom: 10px;">
+            <button id="previewStart">PREVIEW START</button>
+            <button id="previewEnd">PREVIEW END</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="buttonSection" class="section hidden">
+      <div class="button-row">
+        <button id="createLoop">CREATE LOOP</button>
+        <button id="playLoop" disabled>PLAY LOOP</button>
+        <button id="exportLoop" disabled>EXPORT WAV</button>
+      </div>
+    </div>
+
+    <div id="statusSection" class="section hidden">
+      <div style="margin-bottom: 5px;">STATUS:</div>
+      <div class="status">> <span id="status"></span></div>
+    </div>
+
+    <div class="section" style="font-size: 12px;">
+      <div style="margin-bottom: 10px; font-weight: bold;">INSTRUCTIONS:</div>
+      <div>1. Upload your audio file (MP3, WAV, etc.)</div>
+      <div>2. Use AUTO mode for quick processing or MANUAL for precise control</div>
+      <div>3. In AUTO: Set target duration and flexibility (higher = better musical alignment)</div>
+      <div>4. Adjust crossfade duration if needed</div>
+      <div>5. Click CREATE LOOP to process</div>
+      <div>6. Click PLAY LOOP to preview (loops continuously)</div>
+      <div>7. Click EXPORT WAV to download loop-ready file</div>
+      <div style="margin-top: 10px; color: #888;">
+        Manual Mode: Click waveform twice to set start/end, or type exact times. Yellow lines show loop boundaries.
+      </div>
+      <div style="margin-top: 5px; color: #888;">
+        Flexibility: Allows the algorithm to choose a slightly different duration for better bar/beat alignment.
+      </div>
+    </div>
+
+    <div class="section" style="font-size: 11px; text-align: center; border-top: 2px solid #00ff00; margin-top: 30px;">
+      <div style="margin-bottom: 10px;">
+        Created by Nick Panek | <a href="https://patternripple.com" style="color: #00ff00;">Patternripple.com</a>
+      </div>
+      <div style="margin-bottom: 15px;">
+        <button onclick="downloadHTML()" style="padding: 8px 16px; font-size: 11px;">
+          DOWNLOAD HTML FOR OFFLINE USE
+        </button>
+      </div>
+      <div style="margin-top: 8px; color: #666;">
+        Free to use • Works entirely in your browser • No data uploaded
+      </div>
+    </div>
+
+    <div class="section" style="font-size: 11px; text-align: left; white-space: pre-wrap; font-family: 'Courier New', monospace; max-height: 600px; overflow-y: auto; border-top: 2px solid #00ff00; margin-top: 20px;">
+      <div style="text-align: center; font-weight: bold; margin-bottom: 15px; font-size: 12px;">USER MANUAL</div>================================================================
+AUDIO LOOP CREATOR - USER MANUAL
+================================================================
+
+Created by: Nick Panek
+Published at: Patternripple.com
+Version: 1.0
+
+================================================================
+TABLE OF CONTENTS
+================================================================
+
+1. Introduction
+2. What This Tool Does
+3. Getting Started
+4. Understanding the Interface
+5. Auto Mode (Recommended)
+6. Manual Mode (Advanced)
+7. Crossfade Duration Explained
+8. Tips for Best Results
+9. Troubleshooting
+10. Technical Details
+11. Frequently Asked Questions
+
+================================================================
+1. INTRODUCTION
+================================================================
+
+The Audio Loop Creator is a browser-based tool designed to
+automatically create seamless audio loops from any audio file.
+Perfect for video game music, background tracks, music
+production, and creative projects.
+
+No installation required. No data leaves your computer.
+Everything runs locally in your web browser.
+
+================================================================
+2. WHAT THIS TOOL DOES
+================================================================
+
+This tool analyzes your audio file and:
+
+• Intelligently finds the best section for looping
+• Detects beats and musical structure
+• Aligns loop points to bar boundaries
+• Applies zero-crossing detection to prevent clicks
+• Creates seamless crossfades at loop points
+• Exports professional-quality WAV files
+
+The result: Audio that loops infinitely without glitches,
+clicks, pops, or audible discontinuities.
+
+================================================================
+3. GETTING STARTED
+================================================================
+
+BASIC WORKFLOW:
+
+1. Upload your audio file (MP3, WAV, OGG, M4A, etc.)
+2. Wait for the waveform to appear
+3. Click "CREATE LOOP" (uses automatic detection)
+4. Click "PLAY LOOP" to preview
+5. Click "EXPORT WAV" to download your loop
+
+That's it! The tool handles everything automatically.
+
+================================================================
+4. UNDERSTANDING THE INTERFACE
+================================================================
+
+UPLOAD AUDIO FILE
+• Click to select any audio file from your computer
+• Supports most audio formats
+
+WAVEFORM DISPLAY
+• Visual representation of your audio
+• Green = audio signal
+• Yellow lines = loop boundaries (after processing)
+• Green highlight = selected loop region
+
+CROSSFADE DURATION
+• Slider: 0.005s to 0.100s (5ms to 100ms)
+• Default: 0.020s (20ms) - works for most music
+• See Section 7 for details
+
+ADVANCED CONTROLS (Expandable)
+• Click to reveal Auto and Manual mode options
+• See Sections 5 and 6 for details
+
+BUTTONS:
+• CREATE LOOP - Process audio and find loop points
+• PLAY LOOP - Preview the loop (plays continuously)
+• STOP - Stop playback
+• EXPORT WAV - Download your loop-ready file
+
+STATUS BOX
+• Shows current operation status
+• Displays loop times and duration
+• Shows any errors or warnings
+
+================================================================
+5. AUTO MODE (RECOMMENDED)
+================================================================
+
+Auto mode uses intelligent algorithms to find the best loop
+section automatically. This is the default mode.
+
+HOW IT WORKS:
+
+The algorithm analyzes your entire track and scores different
+sections based on:
+
+• Energy consistency (steady sections loop better)
+• Loop seamlessness (how well end matches beginning)
+• Track position (hooks/choruses are usually mid-track)
+• Beat alignment (aligns to musical bars)
+
+CONTROLS IN AUTO MODE:
+
+TARGET LOOP DURATION
+• Slider: 5 to 180 seconds
+• Default: 30 seconds
+• This is your IDEAL duration, not exact
+
+FLEXIBILITY
+• Slider: 0% to 50%
+• Default: 20%
+• How much the duration can vary for better quality
+
+EXAMPLE:
+Target: 60 seconds, Flexibility: 20%
+Result: Algorithm can choose 48-72 seconds for best quality
+
+WHY FLEXIBILITY MATTERS:
+
+Music has natural structure (bars, phrases, choruses).
+Forcing an exact duration might cut mid-phrase or off-beat.
+Flexibility lets the algorithm choose a musically appropriate
+duration that sounds better and loops more seamlessly.
+
+RECOMMENDATIONS:
+• Electronic/EDM music: 20-30% flexibility
+• Ambient/atmospheric: 30-50% flexibility
+• Pop/rock with vocals: 10-20% flexibility
+• Need exact duration?: Use Manual Mode instead
+
+================================================================
+6. MANUAL MODE (ADVANCED)
+================================================================
+
+Manual mode gives you complete control over loop points.
+Use this when you know exactly what section you want to loop.
+
+ACTIVATING MANUAL MODE:
+
+1. Click "▶ ADVANCED CONTROLS" to expand
+2. Check "MANUAL MODE (click waveform to set points)"
+3. Interface switches to manual controls
+
+THREE WAYS TO SET LOOP POINTS:
+
+METHOD 1 - Click Waveform:
+• Click once for start point
+• Click again for end point
+• Yellow lines show your selection
+
+METHOD 2 - Type Exact Times:
+• Enter start time in "START TIME (seconds)"
+• Enter end time in "END TIME (seconds)"
+• Times update as you type
+
+METHOD 3 - Combination:
+• Click waveform for approximate positions
+• Fine-tune with number inputs
+
+SNAP TO ZERO-CROSSING (Checkbox):
+
+✓ CHECKED (Recommended):
+• Finds nearest zero-crossing to your point
+• Zero-crossing = where waveform crosses center line
+• Prevents clicks and pops at loop point
+• Might shift your point slightly (usually <10ms)
+
+☐ UNCHECKED (Not Recommended):
+• Uses your EXACT time points
+• May cause audible clicks if cutting mid-wave
+• Only use if you need pixel-perfect timing
+
+PREVIEW BUTTONS:
+
+PREVIEW START - Plays 3 seconds from start point
+PREVIEW END - Plays 3 seconds before end point
+
+Use these to verify your loop points sound good before
+creating the full loop.
+
+================================================================
+7. CROSSFADE DURATION EXPLAINED
+================================================================
+
+WHAT IS CROSSFADE?
+
+At the loop point, the end of your audio gradually fades out
+while the beginning simultaneously fades in. This creates a
+seamless transition instead of an abrupt cut.
+
+During crossfade: End audio × (1 - fade%) + Start audio × fade%
+
+DEFAULT: 0.020 seconds (20 milliseconds)
+• Short enough to be imperceptible
+• Long enough to smooth transitions
+• Works for 90% of music
+
+WHEN TO INCREASE (0.050s - 0.100s):
+
+PROS:
+✓ More forgiving of imperfect loop points
+✓ Smoother for ambient/pad sounds
+✓ Masks energy differences between start/end
+
+CONS:
+✗ Can sound "mushy" on drums
+✗ Blurs attack transients
+✗ May create audible "swell" or "dip"
+✗ Loses rhythmic precision
+
+BEST FOR:
+• Ambient music
+• Atmospheric pads
+• Drones and textures
+• Background soundscapes
+
+WHEN TO DECREASE (0.005s - 0.010s):
+
+PROS:
+✓ Sharp, precise loop point
+✓ Maintains drum hits and attacks
+✓ Rhythmically accurate
+✓ More natural sounding
+
+CONS:
+✗ Less forgiving of misaligned loop points
+✗ May reveal clicks if zero-crossing fails
+✗ Requires near-perfect alignment
+
+BEST FOR:
+• Electronic/chiptune music
+• Music with prominent drums
+• Rhythmically precise tracks
+• Well-aligned loop points
+
+RULE OF THUMB:
+Start at 0.020s. Only adjust if you hear problems or have
+specific needs. Listen to your loop - your ears will tell you
+what sounds best.
+
+================================================================
+8. TIPS FOR BEST RESULTS
+================================================================
+
+CHOOSING SOURCE MATERIAL:
+
+GOOD CANDIDATES:
+✓ Instrumental tracks
+✓ Consistent energy throughout
+✓ Repetitive sections (choruses, grooves)
+✓ Electronic music with clear beats
+✓ Ambient/atmospheric tracks
+
+CHALLENGING CANDIDATES:
+✗ Songs with dramatic builds/drops
+✗ Live recordings with crowd noise
+✗ Heavily compressed audio
+✗ Tracks with hard endings
+✗ Speech/vocals without music
+
+OPTIMIZING YOUR LOOPS:
+
+1. USE AUTO MODE FIRST
+   Let the algorithm find the best section before going manual
+
+2. INCREASE FLEXIBILITY FOR BETTER QUALITY
+   Don't force exact durations unless required
+
+3. LISTEN MULTIPLE TIMES
+   Play your loop 5-10 times to catch subtle issues
+
+4. CHECK THE WAVEFORM
+   Green highlighted section should look consistent
+
+5. ADJUST CROSSFADE IF NEEDED
+   Hear clicks? Increase crossfade
+   Sounds mushy? Decrease crossfade
+
+6. EXPORT AS WAV
+   WAV is lossless - convert to MP3/OGG later if needed
+
+7. TEST IN CONTEXT
+   Import your loop into your game/project to verify
+
+TROUBLESHOOTING COMMON ISSUES:
+
+LOOP SOUNDS GOOD BUT HAS ONE CLICK:
+• Increase crossfade duration to 0.030-0.050s
+• Try creating the loop again (may find better points)
+
+LOOP SOUNDS "WASHED OUT" OR "MUSHY":
+• Decrease crossfade to 0.010-0.015s
+• In Manual mode, ensure end matches beginning energy
+
+LOOP CUTS OFF MID-PHRASE:
+• Increase flexibility percentage
+• Use Manual mode to select exact phrase
+
+LOOP STARTS TOO LATE (MISSES INTRO):
+• Algorithm skips quiet intros - use Manual mode
+• Set start point to 0 seconds manually
+
+EXPORTED FILE IS TOO LARGE:
+• WAV files are uncompressed (this is normal)
+• Convert to MP3/OGG after export if size matters
+• WAV quality is best for editing/game engines
+
+LOOP WON'T PLAY:
+• Check browser console for errors (F12)
+• Try different audio file
+• Ensure browser supports Web Audio API
+
+================================================================
+9. TECHNICAL DETAILS
+================================================================
+
+AUDIO PROCESSING:
+
+Sample Rate: Preserved from source file (typically 44100Hz)
+Bit Depth: 16-bit WAV export
+Channels: Stereo or mono (preserved from source)
+
+ALGORITHMS USED:
+
+Beat Detection:
+• Energy-based onset detection
+• 100ms analysis windows
+• Adaptive threshold (1.3× average energy)
+
+Zero-Crossing Detection:
+• Scans ±1000 samples from target point
+• Finds nearest waveform zero-crossing
+• Prevents clicks at loop boundaries
+
+Energy Analysis:
+• 500ms analysis windows
+• Variance scoring for consistency
+• Prefers stable sections
+
+Loop Scoring:
+• Energy consistency: 50 points
+• Loop seamlessness: 30 points
+• Track position: 10 points
+• Energy level: 10 points
+
+BROWSER REQUIREMENTS:
+
+• Modern browser (Chrome, Firefox, Safari, Edge)
+• Web Audio API support
+• JavaScript enabled
+• Minimum 2GB RAM recommended
+
+SUPPORTED FORMATS:
+
+Input: MP3, WAV, OGG, M4A, FLAC, and most audio formats
+Output: WAV (16-bit PCM, uncompressed)
+
+LIMITATIONS:
+
+• Maximum file size: Browser dependent (~500MB typical)
+• Processing time: ~1-5 seconds for most files
+• No real-time preview during processing
+• Single loop point (not multi-segment loops)
+
+PRIVACY & SECURITY:
+
+• All processing happens locally in your browser
+• No files uploaded to any server
+• No tracking or analytics
+• No internet connection required after page loads
+• Your audio never leaves your computer
+
+================================================================
+10. FREQUENTLY ASKED QUESTIONS
+================================================================
+
+Q: Does this work offline?
+A: Yes! Click "DOWNLOAD HTML" and save the file. Open it
+   in your browser anytime - no internet required.
+
+Q: What's the best flexibility setting?
+A: 20% is great for most music. Increase to 30-50% for
+   ambient/atmospheric tracks. Use 0% only if you need an
+   exact duration.
+
+Q: My loop has a click. How do I fix it?
+A: Increase crossfade duration to 0.030-0.050s. Make sure
+   "SNAP TO ZERO-CROSSING" is checked in Manual mode.
+
+Q: Can I loop specific sections like just the chorus?
+A: Yes! Use Manual mode and click the waveform or type exact
+   times for your desired section.
+
+Q: Why does the loop start at 2 seconds?
+A: It doesn't anymore! The algorithm scans the entire track
+   and intelligently finds the best section, which could be
+   anywhere from 0 seconds to late in the track.
+
+Q: Does this work with copyrighted music?
+A: The tool works with any audio file. Copyright laws still
+   apply to your use of the resulting loops.
+
+Q: Can I use loops created with this tool commercially?
+A: The tool is free, but copyright of the source audio still
+   matters. Only use loops from audio you have rights to use.
+
+Q: Why is my exported file so big?
+A: WAV files are uncompressed for maximum quality. This is
+   intentional. Convert to MP3/OGG after if size matters.
+
+Q: Can I loop vocals/speech?
+A: Yes, but it's challenging. Vocals rarely repeat exactly,
+   so loops may sound unnatural. Works best with instrumental
+   backgrounds under vocals.
+
+Q: What's better - Auto or Manual mode?
+A: Try Auto first. Use Manual only if Auto doesn't find the
+   section you want, or if you need precise control.
+
+Q: Can I create multiple loops from one file?
+A: One loop per session. To create multiple loops, process
+   the file multiple times with different settings.
+
+Q: Does this work on mobile?
+A: Technically yes, but not recommended. Large files may crash
+   mobile browsers. Desktop/laptop strongly recommended.
+
+Q: How do I import loops into Unity/Unreal/Game Maker?
+A: Export as WAV, then import like any audio file. Enable
+   "loop" in your game engine's audio settings. The seamless
+   loop point is already built into the WAV file.
+
+Q: Can I adjust volume/EQ/effects?
+A: No - this tool only handles looping. Use audio editing
+   software (Audacity, etc.) for additional processing.
+
+Q: The algorithm picked a weird section. Why?
+A: It scores based on loop quality, not musical preference.
+   Use Manual mode to select your preferred section.
+
+Q: How accurate is the BPM detection?
+A: Fairly accurate for electronic music with clear beats.
+   Less accurate for ambient/orchestral. BPM is only used
+   for bar alignment, not displayed to user.
+
+================================================================
+THANK YOU FOR USING AUDIO LOOP CREATOR!
+================================================================
+
+If you found this tool helpful, share it with others!
+
+Visit Patternripple.com for more tools and resources.
+
+Created by Nick Panek
+
+This software is provided free of charge with no warranty.
+Use at your own risk. Not responsible for any data loss or
+audio quality issues.
+
+================================================================</div>
+  </div>
+
+  <script>
+    // Global state
+    let audioContext;
+    let audioBuffer = null;
+    let loopBuffer = null;
+    let sourceNode = null;
+    let isPlaying = false;
+    let manualStart = 0;
+    let manualEnd = 0;
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      setupEventListeners();
+    });
+
+    function setupEventListeners() {
+      document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+      document.getElementById('crossfade').addEventListener('input', updateCrossfadeValue);
+      document.getElementById('targetDuration').addEventListener('input', updateTargetValue);
+      document.getElementById('flexibility').addEventListener('input', updateFlexibilityValue);
+      document.getElementById('advancedToggle').addEventListener('click', toggleAdvanced);
+      document.getElementById('manualMode').addEventListener('change', toggleManualMode);
+      document.getElementById('manualStart').addEventListener('input', updateManualStart);
+      document.getElementById('manualEnd').addEventListener('input', updateManualEnd);
+      document.getElementById('createLoop').addEventListener('click', createLoop);
+      document.getElementById('playLoop').addEventListener('click', togglePlayback);
+      document.getElementById('exportLoop').addEventListener('click', exportLoop);
+      document.getElementById('previewStart').addEventListener('click', () => previewSection('start'));
+      document.getElementById('previewEnd').addEventListener('click', () => previewSection('end'));
+      document.getElementById('waveform').addEventListener('click', handleCanvasClick);
+      document.getElementById('downloadHTML').addEventListener('click', downloadHTML);
+    }
+
+    function downloadHTML() {
+      const htmlContent = document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'audio_loop_creator.html';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function updateCrossfadeValue(e) {
+      document.getElementById('crossfadeValue').textContent = parseFloat(e.target.value).toFixed(3);
+    }
+
+    function updateTargetValue(e) {
+      const value = parseInt(e.target.value);
+      document.getElementById('targetValue').textContent = value;
+      updateFlexibilityDisplay(value, parseInt(document.getElementById('flexibility').value));
+    }
+
+    function updateFlexibilityValue(e) {
+      const flex = parseInt(e.target.value);
+      const target = parseInt(document.getElementById('targetDuration').value);
+      document.getElementById('flexPercent').textContent = flex;
+      updateFlexibilityDisplay(target, flex);
+    }
+
+    function updateFlexibilityDisplay(target, flex) {
+      const range = Math.round(target * flex / 100);
+      document.getElementById('flexSeconds').textContent = range;
+      document.getElementById('flexMin').textContent = target - range;
+      document.getElementById('flexMax').textContent = target + range;
+    }
+
+    function toggleAdvanced() {
+      const content = document.getElementById('advancedContent');
+      const button = document.getElementById('advancedToggle');
+      const isHidden = content.classList.contains('hidden');
+
+      content.classList.toggle('hidden');
+      button.textContent = isHidden ? '▼ ADVANCED CONTROLS' : '▶ ADVANCED CONTROLS';
+    }
+
+    function toggleManualMode() {
+      const isManual = document.getElementById('manualMode').checked;
+      document.getElementById('autoControls').classList.toggle('hidden', isManual);
+      document.getElementById('manualControls').classList.toggle('hidden', !isManual);
+      document.getElementById('waveformHint').textContent = isManual ? '(CLICK TO SET LOOP POINTS)' : '';
+      document.getElementById('waveform').classList.toggle('clickable', isManual);
+
+      if (audioBuffer && isManual) {
+        manualStart = 0;
+        manualEnd = Math.min(audioBuffer.duration, 30);
+        document.getElementById('manualStart').value = 0;
+        document.getElementById('manualStart').max = audioBuffer.duration;
+        document.getElementById('manualEnd').value = manualEnd;
+        document.getElementById('manualEnd').max = audioBuffer.duration;
+        drawWaveform(audioBuffer, 0, 0);
+      }
+    }
+
+    function updateManualStart(e) {
+      manualStart = parseFloat(e.target.value);
+      if (manualEnd > 0 && audioBuffer) {
+        drawWaveform(audioBuffer, manualStart, manualEnd);
+      }
+    }
+
+    function updateManualEnd(e) {
+      manualEnd = parseFloat(e.target.value);
+      if (audioBuffer) {
+        drawWaveform(audioBuffer, manualStart, manualEnd);
+      }
+    }
+
+    async function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      setStatus('Loading audio...');
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+        document.getElementById('waveformSection').classList.remove('hidden');
+        document.getElementById('crossfadeSection').classList.remove('hidden');
+        document.getElementById('advancedSection').classList.remove('hidden');
+        document.getElementById('buttonSection').classList.remove('hidden');
+        document.getElementById('statusSection').classList.remove('hidden');
+
+        document.getElementById('audioInfo').textContent =
+          `Duration: ${audioBuffer.duration.toFixed(2)}s | Sample Rate: ${audioBuffer.sampleRate}Hz`;
+
+        drawWaveform(audioBuffer, 0, 0);
+        setStatus('Audio loaded successfully');
+
+        document.getElementById('manualStart').max = audioBuffer.duration;
+        document.getElementById('manualEnd').max = audioBuffer.duration;
+        manualEnd = Math.min(audioBuffer.duration, 30);
+        document.getElementById('manualEnd').value = manualEnd;
+      } catch (error) {
+        setStatus(`Error loading audio: ${error.message}`);
+      }
+    }
+
+    function drawWaveform(buffer, highlightStart = 0, highlightEnd = 0) {
+      const canvas = document.getElementById('waveform');
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+      const data = buffer.getChannelData(0);
+      const step = Math.ceil(data.length / width);
+      const amp = height / 2;
+
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, 0, width, height);
+
+      if (highlightEnd > highlightStart) {
+        const startX = (highlightStart / buffer.duration) * width;
+        const endX = (highlightEnd / buffer.duration) * width;
+        ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+        ctx.fillRect(startX, 0, endX - startX, height);
+      }
+
+      ctx.strokeStyle = '#00ff00';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+
+      for (let i = 0; i < width; i++) {
+        let min = 1.0;
+        let max = -1.0;
+        for (let j = 0; j < step; j++) {
+          const datum = data[(i * step) + j];
+          if (datum < min) min = datum;
+          if (datum > max) max = datum;
+        }
+        ctx.moveTo(i, (1 + min) * amp);
+        ctx.lineTo(i, (1 + max) * amp);
+      }
+      ctx.stroke();
+
+      if (highlightEnd > highlightStart) {
+        const startX = (highlightStart / buffer.duration) * width;
+        const endX = (highlightEnd / buffer.duration) * width;
+        ctx.strokeStyle = '#ffff00';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(startX, 0);
+        ctx.lineTo(startX, height);
+        ctx.moveTo(endX, 0);
+        ctx.lineTo(endX, height);
+        ctx.stroke();
+      }
+    }
+
+    function handleCanvasClick(e) {
+      if (!audioBuffer || !document.getElementById('manualMode').checked) return;
+
+      const canvas = document.getElementById('waveform');
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const clickTime = (x / rect.width) * audioBuffer.duration;
+
+      if (manualStart === 0 || (manualEnd > 0 && clickTime < manualStart)) {
+        manualStart = clickTime;
+        manualEnd = 0;
+        document.getElementById('manualStart').value = manualStart.toFixed(2);
+        drawWaveform(audioBuffer, clickTime, 0);
+      } else {
+        manualEnd = clickTime;
+        document.getElementById('manualEnd').value = manualEnd.toFixed(2);
+        drawWaveform(audioBuffer, manualStart, clickTime);
+      }
+    }
+
+    function findZeroCrossing(data, startIndex, direction = 1) {
+      let index = startIndex;
+      const maxSearch = 1000;
+      let searched = 0;
+
+      while (searched < maxSearch && index >= 0 && index < data.length - 1) {
+        if ((data[index] >= 0 && data[index + 1] < 0) ||
+            (data[index] < 0 && data[index + 1] >= 0)) {
+          return index;
+        }
+        index += direction;
+        searched++;
+      }
+      return startIndex;
+    }
+
+    function detectBeats(buffer) {
+      const data = buffer.getChannelData(0);
+      const sampleRate = buffer.sampleRate;
+      const windowSize = Math.floor(sampleRate * 0.1);
+      const energies = [];
+
+      for (let i = 0; i < data.length; i += windowSize) {
+        let energy = 0;
+        for (let j = 0; j < windowSize && i + j < data.length; j++) {
+          energy += data[i + j] * data[i + j];
+        }
+        energies.push(energy / windowSize);
+      }
+
+      const avgEnergy = energies.reduce((a, b) => a + b, 0) / energies.length;
+      const beats = [];
+
+      for (let i = 1; i < energies.length - 1; i++) {
+        if (energies[i] > avgEnergy * 1.3 &&
+            energies[i] > energies[i - 1] &&
+            energies[i] > energies[i + 1]) {
+          beats.push(i * windowSize);
+        }
+      }
+
+      return beats;
+    }
+
+    function analyzeTrackSections(buffer) {
+      const data = buffer.getChannelData(0);
+      const sampleRate = buffer.sampleRate;
+      const windowSize = Math.floor(sampleRate * 0.5); // 0.5 second windows
+      const sections = [];
+
+      for (let i = 0; i < data.length; i += windowSize) {
+        let energy = 0;
+        let zeroCrossings = 0;
+
+        for (let j = 0; j < windowSize && i + j < data.length; j++) {
+          energy += data[i + j] * data[i + j];
+          if (j > 0 && ((data[i + j] >= 0 && data[i + j - 1] < 0) ||
+                        (data[i + j] < 0 && data[i + j - 1] >= 0))) {
+            zeroCrossings++;
+          }
+        }
+
+        sections.push({
+          startSample: i,
+          energy: energy / windowSize,
+          zeroCrossingRate: zeroCrossings / windowSize,
+          time: i / sampleRate
+        });
+      }
+
+      return sections;
+    }
+
+    function findBestStartingPoint(buffer, targetDur) {
+      const sections = analyzeTrackSections(buffer);
+      const data = buffer.getChannelData(0);
+      const sampleRate = buffer.sampleRate;
+      const duration = buffer.duration;
+
+      // Find where the track actually starts (skip silence/quiet intro)
+      const avgEnergy = sections.reduce((sum, s) => sum + s.energy, 0) / sections.length;
+      const energyThreshold = avgEnergy * 0.3;
+      let actualStart = 0;
+
+      for (let i = 0; i < sections.length; i++) {
+        if (sections[i].energy > energyThreshold) {
+          actualStart = sections[i].time;
+          break;
+        }
+      }
+
+      // Analyze the entire track to find the best loop section
+      const targetSamples = targetDur * sampleRate;
+      const candidates = [];
+
+      // Try different starting points throughout the track
+      const stepSize = Math.floor(sampleRate * 2); // Check every 2 seconds
+
+      for (let startSample = Math.floor(actualStart * sampleRate);
+           startSample < data.length - targetSamples;
+           startSample += stepSize) {
+
+        const endSample = Math.min(startSample + targetSamples, data.length - sampleRate);
+
+        if (endSample - startSample < targetSamples * 0.5) continue;
+
+        // Calculate quality metrics for this section
+        const windowSize = Math.floor(sampleRate * 0.5);
+        const energies = [];
+        const numWindows = Math.floor((endSample - startSample) / windowSize);
+
+        if (numWindows < 2) continue;
+
+        for (let i = 0; i < numWindows; i++) {
+          let energy = 0;
+          const windowStart = startSample + (i * windowSize);
+          for (let j = 0; j < windowSize && windowStart + j < endSample; j++) {
+            energy += data[windowStart + j] * data[windowStart + j];
+          }
+          energies.push(energy / windowSize);
+        }
+
+        // Energy consistency (lower variance = better)
+        const avgSectionEnergy = energies.reduce((a, b) => a + b, 0) / energies.length;
+        const energyVariance = energies.reduce((sum, e) =>
+          sum + Math.pow(e - avgSectionEnergy, 2), 0) / energies.length;
+
+        // Check how well the end matches the beginning (for seamless looping)
+        const compareWindow = Math.floor(sampleRate * 0.1); // Compare last 0.1s with first 0.1s
+        let matchScore = 0;
+        for (let i = 0; i < compareWindow; i++) {
+          const startVal = data[startSample + i];
+          const endVal = data[endSample - compareWindow + i];
+          matchScore += Math.abs(startVal - endVal);
+        }
+        matchScore = 1 / (matchScore / compareWindow + 0.001);
+
+        // Prefer sections in the middle of the track (hooks/choruses usually there)
+        const trackPosition = startSample / data.length;
+        const positionScore = 1 - Math.abs(trackPosition - 0.5) * 2; // Peak at 50% through track
+
+        // Higher energy is generally better (but not too high)
+        const energyScore = Math.min(avgSectionEnergy / avgEnergy, 2);
+
+        // Combine scores
+        const score =
+          (1 / (Math.sqrt(energyVariance) + 0.001)) * 50 + // Energy consistency
+          matchScore * 30 +                                  // Loop seamlessness
+          positionScore * 10 +                               // Track position
+          energyScore * 10;                                  // Energy level
+
+        candidates.push({
+          startSample: startSample,
+          endSample: endSample,
+          score: score,
+          energyVariance: energyVariance,
+          matchScore: matchScore
+        });
+      }
+
+      if (candidates.length > 0) {
+        candidates.sort((a, b) => b.score - a.score);
+        const best = candidates[0];
+        console.log(`Found best section: ${(best.startSample / sampleRate).toFixed(1)}s-${(best.endSample / sampleRate).toFixed(1)}s (score: ${best.score.toFixed(1)})`);
+        return best;
+      }
+
+      // Fallback: start after quiet intro
+      return {
+        startSample: Math.floor(actualStart * sampleRate),
+        endSample: Math.min(Math.floor((actualStart + targetDur) * sampleRate), data.length - sampleRate)
+      };
+    }
+
+    function findOptimalLoopPoints(buffer, targetDur, flexibility) {
+      const data = buffer.getChannelData(0);
+      const sampleRate = buffer.sampleRate;
+      const beats = detectBeats(buffer);
+
+      const estimatedBPM = beats.length > 1 ?
+        (60 / ((beats[1] - beats[0]) / sampleRate)) : 120;
+
+      const samplesPerBeat = (60 / estimatedBPM) * sampleRate;
+      const minDuration = targetDur - (targetDur * flexibility / 100);
+      const maxDuration = targetDur + (targetDur * flexibility / 100);
+
+      // Find the best starting section in the track
+      const bestSection = findBestStartingPoint(buffer, targetDur);
+
+      const candidates = [];
+      const beatsPerBar = 4;
+
+      // Try different bar lengths around the best section we found
+      for (let bars = 2; bars <= 64; bars += 2) {
+        const beatsNeeded = bars * beatsPerBar;
+        const candidateDuration = (beatsNeeded / estimatedBPM) * 60;
+
+        if (candidateDuration >= minDuration && candidateDuration <= maxDuration) {
+          const targetLoopSamples = samplesPerBeat * beatsNeeded;
+
+          // Start from the best section we found
+          const startSample = bestSection.startSample;
+          const endSample = Math.min(
+            startSample + targetLoopSamples,
+            data.length - sampleRate
+          );
+
+          if (endSample > startSample && (endSample - startSample) > targetLoopSamples * 0.5) {
+            const startZC = findZeroCrossing(data, startSample, 1);
+            const endZC = findZeroCrossing(data, endSample, -1);
+
+            const windowSize = Math.floor(sampleRate * 0.5);
+            let energyVariance = 0;
+            const numWindows = Math.floor((endZC - startZC) / windowSize);
+
+            if (numWindows > 1) {
+              const energies = [];
+              for (let i = 0; i < numWindows; i++) {
+                let energy = 0;
+                const windowStart = startZC + (i * windowSize);
+                for (let j = 0; j < windowSize && windowStart + j < endZC; j++) {
+                  energy += data[windowStart + j] * data[windowStart + j];
+                }
+                energies.push(energy / windowSize);
+              }
+
+              const avgEnergy = energies.reduce((a, b) => a + b, 0) / energies.length;
+              energyVariance = energies.reduce((sum, e) => sum + Math.abs(e - avgEnergy), 0) / energies.length;
+            }
+
+            const durationDiff = Math.abs(candidateDuration - targetDur);
+            const score = (1 / (energyVariance + 0.01)) - (durationDiff * 0.1);
+
+            candidates.push({
+              start: startZC / sampleRate,
+              end: endZC / sampleRate,
+              duration: candidateDuration,
+              bars: bars,
+              score: score
+            });
+          }
+        }
+      }
+
+      if (candidates.length > 0) {
+        candidates.sort((a, b) => b.score - a.score);
+        const best = candidates[0];
+        console.log(`Chose ${best.bars} bars (${best.duration.toFixed(1)}s) from range ${minDuration.toFixed(1)}s-${maxDuration.toFixed(1)}s`);
+        return best;
+      }
+
+      // Fallback to the best section we found
+      const startZC = findZeroCrossing(data, bestSection.startSample, 1);
+      const endZC = findZeroCrossing(data, bestSection.endSample, -1);
+
+      const beatsNeeded = Math.round(((endZC - startZC) / sampleRate / 60) * estimatedBPM);
+
+      return {
+        start: startZC / sampleRate,
+        end: endZC / sampleRate,
+        duration: (endZC - startZC) / sampleRate,
+        bars: Math.round(beatsNeeded / 4)
+      };
+    }
+
+    async function createLoop() {
+      if (!audioBuffer) return;
+
+      const btn = document.getElementById('createLoop');
+      btn.disabled = true;
+      btn.textContent = 'PROCESSING...';
+      setStatus('Finding optimal loop points...');
+
+      try {
+        let start, end;
+        const isManual = document.getElementById('manualMode').checked;
+
+        if (isManual) {
+          const data = audioBuffer.getChannelData(0);
+          const sampleRate = audioBuffer.sampleRate;
+          const useZC = document.getElementById('useZeroCrossing').checked;
+
+          if (useZC) {
+            const startSample = Math.floor(manualStart * sampleRate);
+            const endSample = Math.floor(manualEnd * sampleRate);
+            const startZC = findZeroCrossing(data, startSample, 1);
+            const endZC = findZeroCrossing(data, endSample, -1);
+            start = startZC / sampleRate;
+            end = endZC / sampleRate;
+            setStatus('Applied zero-crossing adjustment to manual points');
+          } else {
+            start = manualStart;
+            end = manualEnd;
+            setStatus('Using exact manual loop points');
+          }
+        } else {
+          const targetDur = parseInt(document.getElementById('targetDuration').value);
+          const flex = parseInt(document.getElementById('flexibility').value);
+          const result = findOptimalLoopPoints(audioBuffer, targetDur, flex);
+          start = result.start;
+          end = result.end;
+          const actualDuration = end - start;
+          const diff = Math.abs(actualDuration - targetDur);
+          setStatus(`Auto-detected ${result.bars} bars (${actualDuration.toFixed(1)}s, ${diff > 1 ? diff.toFixed(1) + 's from target' : 'near target'})`);
+        }
+
+        setStatus('Applying crossfade...');
+        const crossfade = parseFloat(document.getElementById('crossfade').value);
+        loopBuffer = await applyLoopCrossfade(audioBuffer, start, end, crossfade);
+
+        drawWaveform(audioBuffer, start, end);
+        setStatus(`Loop created: ${start.toFixed(2)}s to ${end.toFixed(2)}s (duration: ${(end-start).toFixed(2)}s)`);
+
+        document.getElementById('playLoop').disabled = false;
+        document.getElementById('exportLoop').disabled = false;
+      } catch (error) {
+        setStatus(`Error creating loop: ${error.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'CREATE LOOP';
+      }
+    }
+
+    async function applyLoopCrossfade(buffer, startTime, endTime, fadeDuration) {
+      const sampleRate = buffer.sampleRate;
+      const startSample = Math.floor(startTime * sampleRate);
+      const endSample = Math.floor(endTime * sampleRate);
+      const loopLength = endSample - startSample;
+      const fadeSamples = Math.floor(fadeDuration * sampleRate);
+
+      const numberOfChannels = buffer.numberOfChannels;
+      const newBuffer = audioContext.createBuffer(
+        numberOfChannels,
+        loopLength,
+        sampleRate
+      );
+
+      for (let channel = 0; channel < numberOfChannels; channel++) {
+        const inputData = buffer.getChannelData(channel);
+        const outputData = newBuffer.getChannelData(channel);
+
+        for (let i = 0; i < loopLength; i++) {
+          outputData[i] = inputData[startSample + i];
+        }
+
+        for (let i = 0; i < fadeSamples; i++) {
+          const fadeOutPos = loopLength - fadeSamples + i;
+          const fadeInPos = i;
+          const fadeAmount = i / fadeSamples;
+
+          outputData[fadeInPos] =
+            outputData[fadeInPos] * (1 - fadeAmount) +
+            outputData[fadeOutPos] * fadeAmount;
+        }
+      }
+
+      return newBuffer;
+    }
+
+    function togglePlayback() {
+      if (isPlaying) {
+        stopPlayback();
+      } else {
+        playLoop();
+      }
+    }
+
+    function playLoop() {
+      if (!loopBuffer) return;
+
+      sourceNode = audioContext.createBufferSource();
+      sourceNode.buffer = loopBuffer;
+      sourceNode.loop = true;
+      sourceNode.connect(audioContext.destination);
+      sourceNode.start();
+
+      isPlaying = true;
+      document.getElementById('playLoop').textContent = 'STOP';
+    }
+
+    function stopPlayback() {
+      if (sourceNode) {
+        try {
+          sourceNode.stop();
+        } catch (e) {
+          // Already stopped
+        }
+        sourceNode = null;
+      }
+      isPlaying = false;
+      document.getElementById('playLoop').textContent = 'PLAY LOOP';
+    }
+
+    function previewSection(type) {
+      if (!audioBuffer) return;
+
+      stopPlayback();
+
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioContext.destination);
+
+      if (type === 'start') {
+        source.start(0, manualStart, 3);
+      } else {
+        source.start(0, Math.max(0, manualEnd - 3), 3);
+      }
+
+      sourceNode = source;
+    }
+
+    function exportLoop() {
+      if (!loopBuffer) return;
+
+      const numberOfChannels = loopBuffer.numberOfChannels;
+      const length = loopBuffer.length * numberOfChannels * 2;
+      const buffer = new ArrayBuffer(44 + length);
+      const view = new DataView(buffer);
+
+      const writeString = (offset, string) => {
+        for (let i = 0; i < string.length; i++) {
+          view.setUint8(offset + i, string.charCodeAt(i));
+        }
+      };
+
+      writeString(0, 'RIFF');
+      view.setUint32(4, 36 + length, true);
+      writeString(8, 'WAVE');
+      writeString(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, numberOfChannels, true);
+      view.setUint32(24, loopBuffer.sampleRate, true);
+      view.setUint32(28, loopBuffer.sampleRate * numberOfChannels * 2, true);
+      view.setUint16(32, numberOfChannels * 2, true);
+      view.setUint16(34, 16, true);
+      writeString(36, 'data');
+      view.setUint32(40, length, true);
+
+      const channelData = [];
+      for (let i = 0; i < numberOfChannels; i++) {
+        channelData.push(loopBuffer.getChannelData(i));
+      }
+
+      let offset = 44;
+      for (let i = 0; i < loopBuffer.length; i++) {
+        for (let channel = 0; channel < numberOfChannels; channel++) {
+          const sample = Math.max(-1, Math.min(1, channelData[channel][i]));
+          view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+          offset += 2;
+        }
+      }
+
+      const blob = new Blob([buffer], { type: 'audio/wav' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'audio_loop.wav';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      setStatus('Loop exported successfully');
+    }
+
+    function setStatus(message) {
+      document.getElementById('status').textContent = message;
+      document.getElementById('statusSection').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
