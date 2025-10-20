@@ -36,7 +36,7 @@ const tools: Tool[] = [
     href: "/seamless-pattern-creator.html",
     summary:
       "Build seamless tiles in your browser. Offset and wrap artwork, preview as repeating tiles, and export the final image.",
-    badge: "New",
+    badge: "Design",
   },
   {
     slug: "seamless-pattern-checker",
@@ -44,7 +44,7 @@ const tools: Tool[] = [
     href: "/pattern-checker.html",
     summary:
       "Load an image and preview it as tiles. Set rows and columns, toggle gaps to spot seams, or load from a URL.",
-    badge: "Free",
+    badge: "Design",
   },
   {
     slug: "audio-looper-panek",
@@ -52,7 +52,7 @@ const tools: Tool[] = [
     href: "/audio-looper-panek.html",
     summary:
       "Loop audio in your browser with adjustable start and end points, tempo control, and panning. Good for testing loops or stems.",
-    badge: "New",
+    badge: "Audio",
   },
   {
     slug: "audio-processor",
@@ -60,7 +60,7 @@ const tools: Tool[] = [
     href: "/audio-processor.html",
     summary:
       "Browser based fades and normalize using Web Audio. Works offline in the tab. Export WAV or MP3.",
-    badge: "No upload",
+    badge: "Audio",
   },
   {
     slug: "property-slideshow-maker",
@@ -68,7 +68,7 @@ const tools: Tool[] = [
     href: "/property-slideshow-maker.html",
     summary:
       "Build quick listing videos. Choose aspect ratio, add address, price, details, color, and logo. Export WebM, GIF, or frames ZIP.",
-    badge: "For agents",
+    badge: "Video",
   },
   {
     slug: "cqs-rs-browser-simulator",
@@ -76,7 +76,7 @@ const tools: Tool[] = [
     href: "/cqs_rs_docs.html",
     summary:
       "Run small quantum circuit programs in the browser. JSON editor, shots control, and inline results for a demo subset of the Rust simulator.",
-    badge: "Updated",
+    badge: "Experimental",
   },
 ];
 
