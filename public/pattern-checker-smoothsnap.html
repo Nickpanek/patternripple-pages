@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Seamless Pattern Checker - PatternRipple</title>
+  <meta name="description" content="Free tool to preview any image as a seamless tile. Upload an image and see instant tiling with optional gaps." />
+  <style>
+    :root {
+      --bg: #0b0b0c;
+      --panel: #151518;
+      --card: #1a1a1e;
+      --text: #eaeaf0;
+      --text-dim: #b0b0b8;
+      --muted: #9aa0a6;
+      --border: #232327;
+      --border-subtle: #1a1a1d;
+      --accent: #7ee787;
+      --accent-dim: #224a2f;
+      --hover: #1f1f24;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    /* Header */
+    header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(21,21,24,0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      min-height: 56px;
+    }
+    
+    .brand {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .brand-badge {
+      padding: 3px 8px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    .header-link {
+      display: none;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    
+    .header-link:hover {
+      background: var(--hover);
+      border-color: var(--accent);
+    }
+
+    /* Main Layout */
+    main {
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 56px);
+      overflow: hidden;
+    }
+
+    /* Canvas Section */
+    .canvas-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow: hidden;
+      min-height: 300px;
+    }
+    
+    canvas {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      background: #0d0d0f;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      image-rendering: crisp-edges;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    /* Controls Section */
+    .controls {
+      background: var(--panel);
+      border-top: 1px solid var(--border);
+      padding: 16px;
+      overflow-y: auto;
+      max-height: 60vh;
+    }
+    
+    .controls-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .control-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    /* Section Cards with Dynamic Ordering */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    /* Default order: Upload first (when no image) */
+    .section-upload {
+      order: 1;
+    }
+    
+    .section-grid {
+      order: 2;
+    }
+    
+    .section-gap {
+      order: 3;
+    }
+    
+    /* When image is loaded: reorder to put upload last */
+    .controls.has-image .section-upload {
+      order: 3;
+    }
+    
+    .controls.has-image .section-grid {
+      order: 1;
+    }
+    
+    .controls.has-image .section-gap {
+      order: 2;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Preset Buttons */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .preset-btn {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      min-height: 44px;
+    }
+    
+    .preset-btn:hover {
+      background: var(--hover);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    
+    .preset-btn.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Grid Slider */
+    .grid-slider {
+      margin-bottom: 12px;
+    }
+    
+    .grid-slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .grid-slider-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    
+    .grid-slider-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .grid-slider input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(to right, var(--accent-dim) 0%, var(--border) 0%);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    
+    .grid-slider input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 2px 8px rgba(126,231,135,0.4);
+    }
+    
+    .grid-slider input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(126,231,135,0.6);
+    }
+    
+    .grid-slider input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      box-shadow: 0 2px 8px rgba(126,231,135,0.4);
+    }
+    
+    .grid-slider input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(126,231,135,0.6);
+    }
+
+    /* Custom Inputs */
+    .input-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .input-field label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    
+    .input-field input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      min-height: 44px;
+      transition: all 0.15s;
+    }
+    
+    .input-field input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--panel);
+    }
+
+    /* Gap Controls */
+    .gap-control {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .gap-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 28px;
+      background: #2a2a2f;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #6a6a70;
+      transition: all 0.2s;
+    }
+    
+    .toggle.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+    }
+    
+    .toggle.active::after {
+      left: 23px;
+      background: var(--accent);
+    }
+    
+    .gap-slider {
+      margin-top: 12px;
+    }
+    
+    .gap-slider input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    .gap-slider input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .gap-slider input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+    
+    .gap-slider input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    
+    .gap-value {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Upload Section */
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+      background: var(--bg);
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .dropzone.drag {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    
+    .dropzone-icon {
+      font-size: 32px;
+      opacity: 0.5;
+    }
+    
+    .dropzone-text {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+    
+    .dropzone-hint {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    
+    .url-loader {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .url-loader input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      min-height: 44px;
+    }
+    
+    .url-loader input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .url-loader button {
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      min-height: 44px;
+    }
+    
+    .url-loader button:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .btn {
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      min-height: 44px;
+    }
+    
+    .btn:hover {
+      background: var(--hover);
+      border-color: var(--accent);
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+    
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .btn:disabled:hover {
+      background: var(--card);
+      border-color: var(--border);
+      transform: none;
+    }
+
+    /* Info Tip */
+    .tip {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: rgba(126,231,135,0.08);
+      border: 1px solid rgba(126,231,135,0.2);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    /* Desktop Layout */
+    @media (min-width: 1024px) {
+      .header-link { display: block; }
+      
+      main {
+        flex-direction: row;
+      }
+      
+      .canvas-container {
+        flex: 1;
+        padding: 24px;
+      }
+      
+      .controls {
+        width: 420px;
+        max-height: none;
+        border-top: none;
+        border-left: 1px solid var(--border);
+        overflow-y: auto;
+      }
+      
+      .controls-inner {
+        max-width: none;
+      }
+      
+      .control-grid {
+        gap: 16px;
+      }
+      
+      .section {
+        padding: 20px;
+      }
+    }
+
+    /* Tablet Layout */
+    @media (min-width: 640px) and (max-width: 1023px) {
+      .canvas-container {
+        min-height: 400px;
+      }
+      
+      .controls {
+        max-height: 50vh;
+      }
+      
+      .control-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      /* Upload always full width */
+      .section-upload {
+        grid-column: 1 / -1;
+      }
+    }
+
+    /* Accessibility */
+    input[type="file"] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+    
+    button:focus-visible,
+    input:focus-visible,
+    .toggle:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      PatternRipple
+      <span class="brand-badge">Free</span>
+    </div>
+    <a class="header-link" href="https://www.patternripple.com">Browse Patterns</a>
+  </header>
+
+  <main>
+    <div class="canvas-container">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="controls" id="controls">
+      <div class="controls-inner">
+        <div class="control-grid">
+          
+          <!-- Upload Image (starts at top, moves to bottom when image loads) -->
+          <div class="section section-upload">
+            <div class="section-header">
+              <h2 class="section-title">Upload Image</h2>
+            </div>
+            
+            <div class="dropzone" id="dropzone">
+              <div class="dropzone-icon">🖼️</div>
+              <div class="dropzone-text"><strong>Drop image here</strong> or click to browse</div>
+              <div class="dropzone-hint">PNG, JPG, GIF, WebP • Max 50MB</div>
+              <input id="fileInput" type="file" accept="image/*" />
+            </div>
+            
+            <div class="url-loader">
+              <input id="urlInput" type="text" placeholder="Or paste image URL (https://)" />
+              <button id="loadUrlBtn">Load</button>
+            </div>
+            
+            <div class="action-buttons">
+              <button class="btn" id="resetBtn" disabled>Reset View</button>
+              <button class="btn" id="downloadBtn" disabled>Download</button>
+            </div>
+          </div>
+
+          <!-- Tile Grid (starts second, moves to top when image loads) -->
+          <div class="section section-grid">
+            <div class="section-header">
+              <h2 class="section-title">Tile Grid</h2>
+            </div>
+            
+            <div class="preset-grid">
+              <button class="preset-btn" data-preset="2">2×2</button>
+              <button class="preset-btn active" data-preset="4">4×4</button>
+              <button class="preset-btn" data-preset="6">6×6</button>
+              <button class="preset-btn" data-preset="custom">Custom</button>
+            </div>
+            
+            <div class="grid-slider">
+              <div class="grid-slider-header">
+                <span class="grid-slider-label">Grid Size</span>
+                <span class="grid-slider-value" id="gridValue">4×4</span>
+              </div>
+              <input id="gridSlider" type="range" min="2" max="10" value="4" step="1" />
+            </div>
+            
+            <div class="input-group" id="customInputs" style="display: none;">
+              <div class="input-field">
+                <label for="cols">Columns</label>
+                <input id="cols" type="number" min="1" max="20" value="4" />
+              </div>
+              <div class="input-field">
+                <label for="rows">Rows</label>
+                <input id="rows" type="number" min="1" max="20" value="4" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Gap Settings -->
+          <div class="section section-gap">
+            <div class="section-header">
+              <h2 class="section-title">Gap Settings</h2>
+            </div>
+            
+            <div class="gap-control">
+              <span class="gap-label">Show Gaps</span>
+              <div class="toggle" id="gapToggle" tabindex="0" role="switch" aria-checked="false"></div>
+            </div>
+            
+            <div class="gap-slider" id="gapSlider" style="display: none;">
+              <input id="gapSize" type="range" min="0" max="64" value="16" />
+              <div class="gap-value">
+                <span>Gap Size</span>
+                <span id="gapValue">16px</span>
+              </div>
+            </div>
+            
+            <div class="tip">💡 Enable gaps to inspect seams between tiles</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+  (function() {
+    'use strict';
+    
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    const controls = document.getElementById('controls');
+    const colsEl = document.getElementById('cols');
+    const rowsEl = document.getElementById('rows');
+    const gridSlider = document.getElementById('gridSlider');
+    const gridValue = document.getElementById('gridValue');
+    const gapToggle = document.getElementById('gapToggle');
+    const gapSlider = document.getElementById('gapSlider');
+    const gapSizeEl = document.getElementById('gapSize');
+    const gapValue = document.getElementById('gapValue');
+    const fileInput = document.getElementById('fileInput');
+    const urlInput = document.getElementById('urlInput');
+    const loadUrlBtn = document.getElementById('loadUrlBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const dropzone = document.getElementById('dropzone');
+    const customInputs = document.getElementById('customInputs');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+
+    let img = null;
+    let imgW = 0, imgH = 0;
+    let animFrame = null;
+    let currentMode = 'preset'; // 'preset' or 'custom'
+
+    function resizeCanvas() {
+      const container = canvas.parentElement;
+      const rect = container.getBoundingClientRect();
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.imageSmoothingEnabled = false;
+      scheduleDraw();
+    }
+    
+    function scheduleDraw() {
+      if (animFrame) cancelAnimationFrame(animFrame);
+      animFrame = requestAnimationFrame(draw);
+    }
+    
+    window.addEventListener('resize', resizeCanvas);
+
+    function updateSliderBackground() {
+      const value = gridSlider.value;
+      const min = gridSlider.min;
+      const max = gridSlider.max;
+      const percentage = ((value - min) / (max - min)) * 100;
+      gridSlider.style.background = `linear-gradient(to right, var(--accent-dim) ${percentage}%, var(--border) ${percentage}%)`;
+    }
+
+    function updateUIState() {
+      if (img) {
+        controls.classList.add('has-image');
+        resetBtn.disabled = false;
+        downloadBtn.disabled = false;
+      } else {
+        controls.classList.remove('has-image');
+        resetBtn.disabled = true;
+        downloadBtn.disabled = true;
+      }
+    }
+
+    function draw() {
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = canvas.height / (window.devicePixelRatio || 1);
+      
+      ctx.fillStyle = '#0d0d0f';
+      ctx.fillRect(0, 0, w, h);
+
+      if (!img) {
+        ctx.strokeStyle = 'rgba(35,35,39,0.5)';
+        ctx.lineWidth = 1;
+        const step = 40;
+        for (let x = 0; x <= w; x += step) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+          ctx.stroke();
+        }
+        for (let y = 0; y <= h; y += step) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
+        }
+        
+        ctx.fillStyle = '#6a6a70';
+        ctx.font = '15px -apple-system, system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Upload an image to preview seamless tiling', w/2, h/2);
+        return;
+      }
+
+      const cols = Math.max(1, Math.min(20, parseInt(colsEl.value || '4', 10)));
+      const rows = Math.max(1, Math.min(20, parseInt(rowsEl.value || '4', 10)));
+      const gapOn = gapToggle.classList.contains('active');
+      const gap = gapOn ? Math.max(0, Math.min(64, parseInt(gapSizeEl.value || '16', 10))) : 0;
+
+      const totalGapX = gap * (cols - 1);
+      const totalGapY = gap * (rows - 1);
+      const cellW = imgW;
+      const cellH = imgH;
+      let gridW = cols * cellW + totalGapX;
+      let gridH = rows * cellH + totalGapY;
+
+      const pad = 32;
+      const maxW = w - pad * 2;
+      const maxH = h - pad * 2;
+      const scale = Math.min(1, Math.min(maxW / gridW, maxH / gridH));
+      
+      const tileW = Math.round(cellW * scale);
+      const tileH = Math.round(cellH * scale);
+      const g = Math.round(gap * scale);
+
+      gridW = cols * tileW + g * (cols - 1);
+      gridH = rows * tileH + g * (rows - 1);
+
+      const startX = Math.round((w - gridW) / 2);
+      const startY = Math.round((h - gridH) / 2);
+
+      if (gapOn && g > 0) {
+        ctx.fillStyle = '#0b0b0c';
+        ctx.fillRect(startX, startY, gridW, gridH);
+      }
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = startX + c * (tileW + g);
+          const y = startY + r * (tileH + g);
+          ctx.drawImage(img, 0, 0, imgW, imgH, x, y, tileW, tileH);
+        }
+      }
+    }
+
+    function loadFromFile(file) {
+      if (!file) return;
+      if (file.size > 50 * 1024 * 1024) {
+        alert('File too large. Please use an image under 50MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => loadFromSrc(e.target.result);
+      reader.onerror = () => alert('Failed to read file.');
+      reader.readAsDataURL(file);
+    }
+
+    function loadFromSrc(src) {
+      const i = new Image();
+      i.crossOrigin = 'anonymous';
+      i.onload = () => {
+        img = i;
+        imgW = i.naturalWidth || i.width;
+        imgH = i.naturalHeight || i.height;
+        updateUIState();
+        scheduleDraw();
+      };
+      i.onerror = () => {
+        alert('Failed to load image. If loading from URL, the site may not allow cross-origin requests.');
+      };
+      i.src = src;
+    }
+
+    function updatePresetButtons(value) {
+      presetBtns.forEach(btn => {
+        if (btn.dataset.preset === value.toString()) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    // Preset buttons
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const preset = btn.dataset.preset;
+        
+        if (preset === 'custom') {
+          currentMode = 'custom';
+          presetBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          customInputs.style.display = 'grid';
+        } else {
+          currentMode = 'preset';
+          const size = parseInt(preset);
+          gridSlider.value = size;
+          colsEl.value = size;
+          rowsEl.value = size;
+          gridValue.textContent = `${size}×${size}`;
+          updateSliderBackground();
+          customInputs.style.display = 'none';
+          presetBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          scheduleDraw();
+        }
+      });
+    });
+
+    // Grid slider
+    gridSlider.addEventListener('input', () => {
+      if (currentMode === 'custom') {
+        currentMode = 'preset';
+        customInputs.style.display = 'none';
+      }
+      
+      const value = parseInt(gridSlider.value);
+      colsEl.value = value;
+      rowsEl.value = value;
+      gridValue.textContent = `${value}×${value}`;
+      updateSliderBackground();
+      updatePresetButtons(value);
+      scheduleDraw();
+    });
+
+    // Gap toggle
+    gapToggle.addEventListener('click', () => {
+      const isActive = gapToggle.classList.toggle('active');
+      gapToggle.setAttribute('aria-checked', isActive);
+      gapSlider.style.display = isActive ? 'block' : 'none';
+      scheduleDraw();
+    });
+    
+    gapToggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        gapToggle.click();
+      }
+    });
+
+    // Gap slider
+    gapSizeEl.addEventListener('input', () => {
+      gapValue.textContent = gapSizeEl.value + 'px';
+      scheduleDraw();
+    });
+
+    // File upload
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => {
+      const f = e.target.files && e.target.files[0];
+      if (f) loadFromFile(f);
+    });
+
+    // URL loading
+    loadUrlBtn.addEventListener('click', () => {
+      const u = (urlInput.value || '').trim();
+      if (!u) return;
+      if (!u.match(/^https?:\/\//)) {
+        alert('Please enter a valid URL starting with http:// or https://');
+        return;
+      }
+      loadFromSrc(u);
+    });
+    
+    urlInput.addEventListener('keypress', e => {
+      if (e.key === 'Enter') loadUrlBtn.click();
+    });
+
+    // Drag & drop
+    ['dragenter','dragover'].forEach(evt => {
+      dropzone.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('drag');
+      });
+    });
+    
+    ['dragleave','drop'].forEach(evt => {
+      dropzone.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('drag');
+      });
+    });
+    
+    dropzone.addEventListener('drop', e => {
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        loadFromFile(files[0]);
+      }
+    });
+
+    // Reset
+    resetBtn.addEventListener('click', () => {
+      img = null;
+      updateUIState();
+      scheduleDraw();
+    });
+
+    // Download
+    downloadBtn.addEventListener('click', () => {
+      if (!img) {
+        alert('Please load an image first');
+        return;
+      }
+      const link = document.createElement('a');
+      link.download = 'pattern-preview.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+
+    // Custom inputs - switch to custom mode when manually edited
+    [colsEl, rowsEl].forEach(el => {
+      el.addEventListener('input', () => {
+        if (currentMode === 'custom') {
+          scheduleDraw();
+        }
+      });
+      el.addEventListener('focus', () => {
+        if (currentMode !== 'custom') {
+          currentMode = 'custom';
+          presetBtns.forEach(b => b.classList.remove('active'));
+          presetBtns[presetBtns.length - 1].classList.add('active');
+          customInputs.style.display = 'grid';
+        }
+      });
+    });
+
+    // Initialize
+    updateSliderBackground();
+    updateUIState();
+    resizeCanvas();
+  })();
+  </script>
+</body>
+</html>
