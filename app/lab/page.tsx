@@ -1,6 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+import Link from "next/link";
+import type { Metadata } from "next";
+
 // SEO
 export const metadata: Metadata = {
   title: "PatternRipple Lab - Free tools and prototypes",
