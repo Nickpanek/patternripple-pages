@@ -211,7 +211,7 @@ export default function NotFound() {
 
             <form
               action="/contact"
-              onSubmit={(e) => { e.preventDefault(); location.href = "/contact"; }}
+              method="get"
               style={{ marginTop: 14, display: "flex", gap: 8 }}
             >
               <input
