@@ -1,3 +1,5 @@
+Paste this over your blog page. It removes the “Daily Drops” post from the listing and strips all “daily drops/patterns” mentions from titles/descriptions.
+
 import NextHead from "next/head";
 import Link from "next/link";
 import path from "path";
@@ -13,7 +15,14 @@ type PostMeta = {
 };
 
 function toAbsolute(url: string) {
-  return `https://patternripple.com${url}`;
+  return `https://www.patternripple.com${url}`;
+}
+
+function isDailyDrops(p: PostMeta) {
+  const inTitle = /daily\s*drops?/i.test(p.title ?? "");
+  const inSlug = /daily-?drops?/i.test(p.slug ?? "");
+  const inTags = Array.isArray(p.tags) && p.tags.some((t) => /daily|drops?/i.test(t));
+  return inTitle || inSlug || inTags;
 }
 
 async function loadPosts(): Promise<PostMeta[]> {
@@ -29,7 +38,6 @@ async function loadPosts(): Promise<PostMeta[]> {
     try {
       const raw = await fs.readFile(file, "utf8");
       const data = JSON.parse(raw);
-      // Minimal shape validation
       if (data?.title && data?.slug && data?.published) {
         posts.push({
           title: data.title,
@@ -45,12 +53,16 @@ async function loadPosts(): Promise<PostMeta[]> {
     }
   }
 
+  // Remove any "Daily Drops" posts
+  const filtered = posts.filter((p) => !isDailyDrops(p));
+
   // Sort by published desc
-  posts.sort(
+  filtered.sort(
     (a, b) =>
       new Date(b.published).getTime() - new Date(a.published).getTime()
   );
-  return posts;
+
+  return filtered;
 }
 
 export const dynamic = "force-static";
@@ -58,9 +70,9 @@ export const dynamic = "force-static";
 export default async function BlogPage() {
   const posts = await loadPosts();
 
-  const pageTitle = "PatternRipple Blog | Daily patterns and design notes";
+  const pageTitle = "PatternRipple Blog | Software notes and updates";
   const pageDesc =
-    "Short reads about pattern design, licensing clarity, daily drops, and free creative assets from PatternRipple.";
+    "Short posts on tool updates, release notes, and build tips for browser based software. No subscriptions.";
   const pageUrl = toAbsolute("/blog");
 
   const itemListJsonLd = {
@@ -111,7 +123,7 @@ export default async function BlogPage() {
               PatternRipple Blog
             </h1>
             <p className="text-lg text-gray-600">
-              Design insights, pattern trends, and creative inspiration
+              Software notes, tool updates, and simple release logs.
             </p>
           </div>
         </header>
@@ -155,7 +167,7 @@ export default async function BlogPage() {
 
                     <p className="text-gray-700" itemProp="description">
                       {(post.description || "").slice(0, 180)}
-                      {post.description && post.description.length > 180 ? "…" : ""}
+                      {post.description && post.description.length > 180 ? "..." : ""}
                       {" "}
                       <Link
                         href={`/blog/${post.slug}`}
@@ -165,7 +177,6 @@ export default async function BlogPage() {
                       </Link>
                     </p>
 
-                    {/* Microdata extras */}
                     <meta itemProp="url" content={toAbsolute(`/blog/${post.slug}`)} />
                     {post.modified && (
                       <meta itemProp="dateModified" content={post.modified} />
