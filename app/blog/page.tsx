@@ -1,191 +1,174 @@
-Paste this over your blog page. It removes the “Daily Drops” post from the listing and strips all “daily drops/patterns” mentions from titles/descriptions.
+"use client";
 
 import NextHead from "next/head";
 import Link from "next/link";
-import path from "path";
-import { promises as fs } from "fs";
-
-type PostMeta = {
-  title: string;
-  slug: string;
-  description?: string;
-  published: string; // ISO 8601
-  modified?: string; // ISO 8601
-  tags?: string[];
-};
-
-function toAbsolute(url: string) {
-  return `https://www.patternripple.com${url}`;
-}
-
-function isDailyDrops(p: PostMeta) {
-  const inTitle = /daily\s*drops?/i.test(p.title ?? "");
-  const inSlug = /daily-?drops?/i.test(p.slug ?? "");
-  const inTags = Array.isArray(p.tags) && p.tags.some((t) => /daily|drops?/i.test(t));
-  return inTitle || inSlug || inTags;
-}
-
-async function loadPosts(): Promise<PostMeta[]> {
-  const blogDir = path.join(process.cwd(), "app", "blog");
-  const entries = await fs.readdir(blogDir, { withFileTypes: true });
-
-  const jsonFiles = entries
-    .filter((e) => e.isFile() && e.name.endsWith(".json"))
-    .map((e) => path.join(blogDir, e.name));
-
-  const posts: PostMeta[] = [];
-  for (const file of jsonFiles) {
-    try {
-      const raw = await fs.readFile(file, "utf8");
-      const data = JSON.parse(raw);
-      if (data?.title && data?.slug && data?.published) {
-        posts.push({
-          title: data.title,
-          slug: data.slug,
-          description: data.description ?? "",
-          published: data.published,
-          modified: data.modified ?? data.published,
-          tags: Array.isArray(data.tags) ? data.tags : [],
-        });
-      }
-    } catch {
-      // ignore malformed json
-    }
-  }
-
-  // Remove any "Daily Drops" posts
-  const filtered = posts.filter((p) => !isDailyDrops(p));
-
-  // Sort by published desc
-  filtered.sort(
-    (a, b) =>
-      new Date(b.published).getTime() - new Date(a.published).getTime()
-  );
-
-  return filtered;
-}
 
 export const dynamic = "force-static";
 
-export default async function BlogPage() {
-  const posts = await loadPosts();
+// keep the same slug so old links still work
+const title = "About the old Daily Pattern Drops";
+const description =
+  "This post is archived. I used to do daily pattern drops here. I am now focused on browser software with no subscriptions. Bugs will be fixed fast. If you want fabric or wallpaper, visit my Spoonflower shop.";
+const slug = "daily-pattern-drops";
+const canonical = `https://patternripple.com/blog/${slug}`;
+const publishedTime = "2025-09-25T09:00:00-05:00";
+const modifiedTime = new Date().toISOString();
+const readingTime = "1 min read";
 
-  const pageTitle = "PatternRipple Blog | Software notes and updates";
-  const pageDesc =
-    "Short posts on tool updates, release notes, and build tips for browser based software. No subscriptions.";
-  const pageUrl = toAbsolute("/blog");
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  datePublished: publishedTime,
+  dateModified: modifiedTime,
+  author: [{ "@type": "Person", name: "Nick Panek" }],
+  publisher: {
+    "@type": "Organization",
+    name: "PatternRipple",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://patternripple.com/android-chrome-512x512.png",
+    },
+  },
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": canonical,
+  },
+  url: canonical,
+};
 
-  const itemListJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    itemListElement: posts.map((p, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      url: toAbsolute(`/blog/${p.slug}`),
-      name: p.title,
-    })),
-  };
-
-  const webPageJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: "PatternRipple Blog",
-    description: pageDesc,
-    url: pageUrl,
-  };
-
+export default function DailyPatternDropsPost() {
   return (
     <>
       <NextHead>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDesc} />
-        <link rel="canonical" href={pageUrl} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDesc} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={pageUrl} />
+        <title>{title} | PatternRipple</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={`${title} | PatternRipple`} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={canonical} />
+        <meta property="article:published_time" content={publishedTime} />
+        <meta property="article:modified_time" content={modifiedTime} />
         <meta name="twitter:card" content="summary_large_image" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </NextHead>
 
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-        {/* Hero */}
-        <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-16">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h1 className="text-4xl font-thin tracking-wide text-gray-900 mb-4">
-              PatternRipple Blog
+        {/* Header */}
+        <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200">
+          <div className="max-w-3xl mx-auto px-4 py-10">
+            <nav className="text-sm text-gray-500 mb-4">
+              <Link href="/" className="hover:underline">
+                Home
+              </Link>
+              <span className="mx-1">/</span>
+              <Link href="/blog" className="hover:underline">
+                Blog
+              </Link>
+              <span className="mx-1">/</span>
+              <span className="text-gray-700">{title}</span>
+            </nav>
+
+            <h1 className="text-4xl font-light tracking-wide text-gray-900">
+              {title}
             </h1>
-            <p className="text-lg text-gray-600">
-              Software notes, tool updates, and simple release logs.
-            </p>
+
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-600">
+              <time dateTime={publishedTime} suppressHydrationWarning>
+                {new Date(publishedTime).toLocaleDateString(undefined, {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </time>
+              <span aria-hidden="true">•</span>
+              <span>{readingTime}</span>
+            </div>
           </div>
         </header>
 
-        {/* List */}
-        <main className="max-w-4xl mx-auto px-4 py-16">
-          {posts.length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-10 text-center text-gray-600">
-              No posts yet. Check back soon.
-            </div>
-          ) : (
-            <ul className="space-y-8">
-              {posts.map((post) => (
-                <li
-                  key={post.slug}
-                  className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow"
+        {/* Body */}
+        <main className="max-w-3xl mx-auto px-4 py-12">
+          <article className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 md:p-10">
+            <div className="prose prose-lg max-w-none text-gray-800">
+              <p className="text-sm uppercase tracking-wide text-gray-600 mb-6">
+                Archived notice
+              </p>
+
+              <p>
+                I used to run daily pattern drops here. I am transitioning the site to
+                software that runs in your browser. No subscriptions ever. I am a one person
+                team and I will try to squash bugs fast.
+              </p>
+
+              <h2>Where to find the patterns now</h2>
+              <p>
+                If you are looking for fabric or wallpaper prints, please use my Spoonflower shop:
+              </p>
+              <p>
+                <a
+                  href="https://www.spoonflower.com/profiles/nickpanek?sub_action=shop&utm_medium=social&utm_source=heylink.me"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
                 >
-                  <article itemScope itemType="https://schema.org/BlogPosting">
-                    <header className="mb-3">
-                      <h2 className="text-2xl font-light text-gray-900" itemProp="headline">
-                        <Link
-                          href={`/blog/${post.slug}`}
-                          className="hover:underline"
-                        >
-                          {post.title}
-                        </Link>
-                      </h2>
-                      <time
-                        className="text-sm text-gray-500"
-                        dateTime={post.published}
-                        suppressHydrationWarning
-                        itemProp="datePublished"
-                      >
-                        {new Date(post.published).toLocaleDateString(undefined, {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </time>
-                    </header>
+                  Visit Spoonflower
+                </a>
+              </p>
 
-                    <p className="text-gray-700" itemProp="description">
-                      {(post.description || "").slice(0, 180)}
-                      {post.description && post.description.length > 180 ? "..." : ""}
-                      {" "}
-                      <Link
-                        href={`/blog/${post.slug}`}
-                        className="text-purple-700 hover:text-purple-800 underline underline-offset-4"
-                      >
-                        Read more
-                      </Link>
-                    </p>
+              <h2>What I am building now</h2>
+              <p>
+                Free and paid tools that run locally in the browser where possible. Start here:
+                <Link href="/lab" className="underline underline-offset-4 ml-1">
+                  PatternRipple Lab
+                </Link>
+                .
+              </p>
 
-                    <meta itemProp="url" content={toAbsolute(`/blog/${post.slug}`)} />
-                    {post.modified && (
-                      <meta itemProp="dateModified" content={post.modified} />
-                    )}
-                  </article>
+              <h2>Policies</h2>
+              <ul>
+                <li>
+                  <Link href="/terms" className="underline underline-offset-4">
+                    Terms of Service
+                  </Link>
                 </li>
-              ))}
-            </ul>
-          )}
+                <li>
+                  <Link href="/privacy" className="underline underline-offset-4">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/licenses" className="underline underline-offset-4">
+                    License
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* CTA row - updated for the pivot */}
+            <div className="mt-10 flex flex-wrap gap-4">
+              <Link
+                href="/lab"
+                className="inline-flex items-center gap-2 bg-gray-900 text-white px-5 py-3 rounded-lg hover:bg-purple-600 transition-colors"
+              >
+                Open the Lab
+              </Link>
+              <a
+                href="https://www.spoonflower.com/profiles/nickpanek?sub_action=shop&utm_medium=social&utm_source=heylink.me"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white text-gray-700 px-5 py-3 rounded-lg border shadow hover:shadow-md transition-shadow"
+              >
+                Spoonflower shop
+              </a>
+            </div>
+          </article>
         </main>
       </div>
     </>
