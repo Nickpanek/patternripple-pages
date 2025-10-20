@@ -40,7 +40,7 @@ export default function CollectionsPage() {
 
           <div className="mt-8">
             <a
-              href="https://www.spoonflower.com/profiles/nickpanek?sub_action=shop&utm_medium=social&utm_source=heylink.me"
+              href="https://www.spoonflower.com/profiles/nickpanek"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-purple-600 text-white text-lg font-medium px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
