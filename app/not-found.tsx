@@ -86,8 +86,7 @@ export default function NotFound() {
             <div
               aria-live="polite"
               style={{
-                background:
-                  "linear-gradient(90deg,#6ee7ff,#88ffb4)",
+                background: "linear-gradient(90deg,#6ee7ff,#88ffb4)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",
@@ -249,7 +248,6 @@ export default function NotFound() {
 }
 
 const btn = {
-  appearance: "none",
   border: "1px solid #243060",
   background: "#0f1a3a",
   color: "#e6eefc",
@@ -258,13 +256,13 @@ const btn = {
   textDecoration: "none",
   fontWeight: 700 as const,
   boxShadow: "inset 0 0 0 1px rgba(255,255,255,.05)",
-};
+} as const;
 
 const btnPrimary = {
   ...btn,
   background: "linear-gradient(90deg,#102452,#123a5e)",
   borderColor: "#275a86",
-};
+} as const;
 
 const field = {
   flex: 1,
@@ -285,4 +283,4 @@ const navLink = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-};
+} as const;
