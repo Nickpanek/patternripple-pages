@@ -1,172 +1,98 @@
-"use client";
-
-import NextHead from "next/head";
+// app/blog/page.tsx
+import type { Metadata } from "next";
 import Link from "next/link";
 
-export const dynamic = "force-static";
-
-const title = "Free Assets From Nick (PatternRipple) on Pixabay";
-const description =
-  "Nick from PatternRipple shares thousands of free creative assets on Pixabay — including royalty-free music, illustrations, vectors, 3D models, and themed collections like Halloween and Embroidery Designs.";
-const slug = "free-assets-on-pixabay";
-const canonical = `https://patternripple.com/blog/${slug}`;
-const publishedTime = "2025-09-25T12:00:00-05:00";
-const modifiedTime = "2025-09-25T12:00:00-05:00";
-const readingTime = "3 min read";
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  headline: title,
-  description,
-  datePublished: publishedTime,
-  dateModified: modifiedTime,
-  author: [{ "@type": "Person", name: "Nick Panek" }],
-  publisher: {
-    "@type": "Organization",
-    name: "PatternRipple",
-    logo: {
-      "@type": "ImageObject",
-      url: "https://patternripple.com/android-chrome-512x512.png",
-    },
+export const metadata: Metadata = {
+  title: "Blog - PatternRipple",
+  description:
+    "News and updates from PatternRipple Labs. Visit the Lab for free tools or Spoonflower for current fabric and wallpaper designs.",
+  alternates: { canonical: "https://www.patternripple.com/blog" },
+  openGraph: {
+    title: "Blog - PatternRipple",
+    description:
+      "Latest updates from PatternRipple Labs. Visit the Lab for free tools or Spoonflower for designs.",
+    url: "https://www.patternripple.com/blog",
+    type: "website",
   },
-  mainEntityOfPage: {
-    "@type": "WebPage",
-    "@id": canonical,
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog - PatternRipple",
+    description:
+      "News and updates from PatternRipple Labs. Visit the Lab for tools or Spoonflower for fabric and wallpaper.",
   },
-  url: canonical,
 };
 
-export default function FreeAssetsPost() {
+export default function BlogIndex() {
   return (
-    <>
-      <NextHead>
-        <title>{title} | PatternRipple</title>
-        <meta name="description" content={description} />
-        <link rel="canonical" href={canonical} />
-        <meta property="og:title" content={`${title} | PatternRipple`} />
-        <meta property="og:description" content={description} />
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={canonical} />
-        <meta property="article:published_time" content={publishedTime} />
-        <meta property="article:modified_time" content={modifiedTime} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </NextHead>
-
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-        {/* Header */}
-        <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200">
-          <div className="max-w-3xl mx-auto px-4 py-10">
-            <nav className="text-sm text-gray-500 mb-4">
-              <Link href="/" className="hover:underline">
-                Home
-              </Link>
-              <span className="mx-1">/</span>
-              <Link href="/blog" className="hover:underline">
-                Blog
-              </Link>
-              <span className="mx-1">/</span>
-              <span className="text-gray-700">{title}</span>
-            </nav>
-
-            <h1 className="text-4xl font-light tracking-wide text-gray-900">
-              {title}
-            </h1>
-
-            <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-600">
-              <time dateTime={publishedTime} suppressHydrationWarning>
-                {new Date(publishedTime).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </time>
-              <span aria-hidden="true">•</span>
-              <span>{readingTime}</span>
-            </div>
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-16">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h1 className="text-4xl font-semibold tracking-tight text-gray-900">
+            Blog
+          </h1>
+          <p className="mt-3 text-gray-700">
+            Updates and notes from PatternRipple Labs. For design tools, visit the Lab.  
+            For fabric and wallpaper, visit Spoonflower.
+          </p>
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <Link
+              href="/lab"
+              className="rounded-md bg-gray-900 px-4 py-2 text-white hover:bg-gray-800"
+            >
+              Go to Lab
+            </Link>
+            <a
+              href="https://www.spoonflower.com/profiles/patternripple"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-900 hover:bg-gray-50"
+            >
+              Spoonflower Shop
+            </a>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Body */}
-        <main className="max-w-3xl mx-auto px-4 py-12">
-          <article className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 md:p-10">
-            <div className="prose prose-lg max-w-none text-gray-800">
-              <p>
-                Hey friends — quick heads-up: I (Nick from PatternRipple) make a
-                lot of free creative assets available on{" "}
-                <a
-                  href="https://pixabay.com/users/nickpanek-38266323/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline underline-offset-4"
-                >
-                  Pixabay
-                </a>{" "}
-                under my profile <strong>nickpanek</strong>.
-              </p>
-
-              <h2>What You’ll Find</h2>
-              <ul>
-                <li>
-                  <strong>Music tracks:</strong> royalty-free instrumentals in
-                  metal, rock, funk, jazz, and more.
-                </li>
-                <li>
-                  <strong>Images:</strong> illustrations, vectors, and a few
-                  videos and GIFs for seasonal or themed use.
-                </li>
-                <li>
-                  <strong>3D models:</strong> downloadable assets to drop into
-                  renders or motion work.
-                </li>
-              </ul>
-
-              <h2>Featured Collections</h2>
-              <ul>
-                <li>Halloween Assets – spooky audio loops and visuals.</li>
-                <li>
-                  Embroidery Designs – digital stitch-style graphics, a natural
-                  fit with PatternRipple’s faux embroidery vibes.
-                </li>
-                <li>Romantic Book Covers – soft, atmospheric stock imagery.</li>
-                <li>
-                  Catholic – themed visuals for liturgical seasons and projects.
-                </li>
-              </ul>
-
-              <h2>Fast Ways To Use These</h2>
-              <p>
-                Filter by <em>Music</em> to find background tracks, or dive into
-                <em>Collections</em> for matched sets. Everything is free under
-                the Pixabay License — always check the specific asset page for
-                details before commercial use.
-              </p>
-            </div>
-
-            {/* CTA row */}
-            <div className="mt-10 flex flex-wrap gap-4">
-              <a
-                href="https://pixabay.com/users/nickpanek-38266323/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-purple-600 text-white px-5 py-3 rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Visit My Pixabay Profile
-              </a>
+      <section className="max-w-4xl mx-auto px-4 py-12">
+        <ul className="space-y-6">
+          {/* New blog entry */}
+          <li className="rounded-lg border border-gray-200 bg-white p-5">
+            <h2 className="text-xl font-medium text-gray-900">
+              Cloudflare Build Fix and Deployment Notes
+            </h2>
+            <p className="mt-1 text-gray-700">
+              A detailed breakdown of recent build issues on Cloudflare Pages and how they were resolved.
+              Includes steps for maintaining compatibility with Next.js 14 and switching to OpenNext.
+            </p>
+            <div className="mt-3">
               <Link
-                href="/collections"
-                className="inline-flex items-center gap-2 bg-white text-gray-700 px-5 py-3 rounded-lg border shadow hover:shadow-md transition-shadow"
+                href="/blog/cloudflare-build-fix"
+                className="text-blue-700 hover:underline"
               >
-                Explore PatternRipple Collections
+                Read post
               </Link>
             </div>
-          </article>
-        </main>
-      </div>
-    </>
+          </li>
+
+          {/* Archived older post */}
+          <li className="rounded-lg border border-gray-200 bg-white p-5">
+            <h2 className="text-xl font-medium text-gray-900">
+              Daily Pattern Drops - Archived
+            </h2>
+            <p className="mt-1 text-gray-700">
+              This entry is archived and now points to the Lab and Spoonflower.
+            </p>
+            <div className="mt-3">
+              <Link
+                href="/blog/daily-pattern-drops"
+                className="text-blue-700 hover:underline"
+              >
+                View entry
+              </Link>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
   );
 }
