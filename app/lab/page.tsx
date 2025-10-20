@@ -5,12 +5,12 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "PatternRipple Lab - Free tools and prototypes",
   description:
-    "Free in-browser tools and prototypes. Seamless pattern creator, tile checker, audio processor, slideshow maker, and the cqs-rs browser demo.",
+    "Free in-browser tools and prototypes. Seamless pattern creator, tile checker, audio tools, slideshow maker, and the cqs-rs browser demo.",
   alternates: { canonical: "https://www.patternripple.com/lab" },
   openGraph: {
     title: "PatternRipple Lab - Free tools and prototypes",
     description:
-      "Try the seamless pattern creator, tile checker, audio processor, slideshow maker, and the cqs-rs browser demo.",
+      "Try the seamless pattern creator, tile checker, audio tools, slideshow maker, and the cqs-rs browser demo.",
     url: "https://www.patternripple.com/lab",
     type: "website",
   },
@@ -31,30 +31,13 @@ type Tool = {
 
 const tools: Tool[] = [
   {
-    slug: "cqs-rs-browser-simulator",
-    title: "cqs-rs Browser Demo",
-    href: "/cqs_rs_docs.html",
-    summary:
-      "Run small quantum-circuit programs in the browser. JSON editor, shots control, and inline results for a demo subset of the Rust simulator.",
-    badge: "Updated",
-  },
-  {
-    slug: "audio-looper-panek",
-    title: "Audio Looper",
-    href: "/audio-looper-panek.html",
-    summary:
-      "Loop audio directly in your browser with adjustable start and end points, tempo control, and panning. Ideal for musicians and producers testing loops or stems.",
-    badge: "New",
-  },
-  {
     slug: "seamless-pattern-creator",
     title: "Seamless Pattern Creator",
     href: "/seamless-pattern-creator.html",
     summary:
-      "Build seamless tiles directly in your browser. Offset and wrap artwork, preview as repeating tiles, and export your final pattern image.",
+      "Build seamless tiles in your browser. Offset and wrap artwork, preview as repeating tiles, and export the final image.",
     badge: "New",
   },
-
   {
     slug: "seamless-pattern-checker",
     title: "Seamless Pattern Checker",
@@ -62,6 +45,14 @@ const tools: Tool[] = [
     summary:
       "Load an image and preview it as tiles. Set rows and columns, toggle gaps to spot seams, or load from a URL.",
     badge: "Free",
+  },
+  {
+    slug: "audio-looper-panek",
+    title: "Audio Looper",
+    href: "/audio-looper-panek.html",
+    summary:
+      "Loop audio in your browser with adjustable start and end points, tempo control, and panning. Good for testing loops or stems.",
+    badge: "New",
   },
   {
     slug: "audio-processor",
@@ -79,13 +70,35 @@ const tools: Tool[] = [
       "Build quick listing videos. Choose aspect ratio, add address, price, details, color, and logo. Export WebM, GIF, or frames ZIP.",
     badge: "For agents",
   },
+  {
+    slug: "cqs-rs-browser-simulator",
+    title: "cqs-rs Browser Demo",
+    href: "/cqs_rs_docs.html",
+    summary:
+      "Run small quantum circuit programs in the browser. JSON editor, shots control, and inline results for a demo subset of the Rust simulator.",
+    badge: "Updated",
+  },
 ];
+
+// custom sort to present tools in a logical order
+const order: Record<string, number> = {
+  "seamless-pattern-creator": 10,
+  "seamless-pattern-checker": 20,
+  "audio-looper-panek": 30,
+  "audio-processor": 40,
+  "property-slideshow-maker": 50,
+  "cqs-rs-browser-simulator": 90,
+};
+
+const sortedTools = [...tools].sort(
+  (a, b) => (order[a.slug] ?? 999) - (order[b.slug] ?? 999)
+);
 
 // JSON-LD
 const itemListJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  itemListElement: tools.map((t, i) => ({
+  itemListElement: sortedTools.map((t, i) => ({
     "@type": "ListItem",
     position: i + 1,
     url: `https://www.patternripple.com${t.href}`,
@@ -128,17 +141,12 @@ export default function LabPage() {
           </p>
           <div className="mt-5 flex justify-center gap-3">
             <Link
-              href="/games"
-              className="inline-block bg-gray-900 text-white px-5 py-3 rounded-lg hover:bg-purple-600 transition-colors"
-            >
-              See Games
-            </Link>
-            <Link
               href="/"
               className="inline-block bg-white border border-gray-300 text-gray-900 px-5 py-3 rounded-lg hover:border-purple-500 hover:text-purple-700 transition-colors"
             >
               Back to Home
             </Link>
+            {/* removed games link */}
           </div>
         </div>
       </header>
@@ -146,7 +154,7 @@ export default function LabPage() {
       {/* Tools grid */}
       <main className="max-w-6xl mx-auto px-4 py-10">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tools.map((tool) => (
+          {sortedTools.map((tool) => (
             <article
               key={tool.slug}
               className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all ring-1 ring-gray-200"
@@ -185,8 +193,9 @@ export default function LabPage() {
         {/* Notes */}
         <section className="mt-12 text-sm text-gray-600">
           <p>
-            Want a feature added - open a GitHub issue or email nick@patternripple.com.
+            Feature requests and bugs - email <a href="mailto:nick@patternripple.com" className="underline">nick@patternripple.com</a>.
           </p>
+          {/* removed any invitation to GitHub */}
         </section>
       </main>
     </div>
