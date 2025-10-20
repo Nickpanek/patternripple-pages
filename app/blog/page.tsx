@@ -41,7 +41,7 @@ export default function BlogIndex() {
               Go to Lab
             </Link>
             <a
-              href="https://www.spoonflower.com/profiles/patternripple"
+              href="https://www.spoonflower.com/profiles/nickpanek"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-900 hover:bg-gray-50"
