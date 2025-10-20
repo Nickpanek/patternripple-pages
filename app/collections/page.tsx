@@ -1,86 +1,77 @@
-"use client";
-
-import Image from "next/image";
+// app/collections/page.tsx
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { products } from "../data/products";
-import {
-  collections as COLLECTIONS,
-  pickCollectionCover,
-  filterByCollection,
-  collectionHref,
-} from "../lib/collections";
+import type { Metadata } from "next";
 
-// safety net only - each collection now has its own R2 cover
-const DEFAULT_THUMB = "https://files.patternripple.com/thumb-default.jpg";
+export const metadata: Metadata = {
+  title: "PatternRipple Collections - Spoonflower Designs by Nick Panek",
+  description:
+    "I used to sell patterns directly here. You can now find my latest fabric and wallpaper designs on Spoonflower.",
+  alternates: { canonical: "https://www.patternripple.com/collections" },
+  openGraph: {
+    title: "PatternRipple Collections - Spoonflower Designs by Nick Panek",
+    description:
+      "Browse my current fabric and wallpaper designs on Spoonflower. No subscriptions, just creative work.",
+    url: "https://www.patternripple.com/collections",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PatternRipple Collections - Spoonflower Designs by Nick Panek",
+    description:
+      "See my Spoonflower shop for all current fabric and wallpaper designs.",
+  },
+};
 
 export default function CollectionsPage() {
-  const data = useMemo(() => {
-    return COLLECTIONS.map((c) => {
-      const items = filterByCollection(products, c.key);
-      const count = items.length;
-      // prefers a real product thumbnail if any; else c.cover from R2
-      const src = pickCollectionCover(products, c.key);
-      const href = collectionHref(c.key);
-      // simple fallback blurb
-      const blurb = `${c.name} patterns and prints`;
-      return { key: c.key, title: c.name, blurb, href, src, count };
-    });
-  }, []);
-
-  const [hovered, setHovered] = useState<string | null>(null);
-
   return (
-    <main className="mx-auto max-w-7xl p-6 space-y-6">
-      <div className="flex flex-wrap gap-3 justify-center text-sm">
-        <span className="px-3 py-1 rounded-full bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white">
-          {data.length} Collections
-        </span>
-        <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-900">
-          {products.length} Exclusive Patterns
-        </span>
-        <span className="px-3 py-1 rounded-full bg-rose-100 text-rose-900">
-          Once sold, gone forever
-        </span>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex flex-col">
+      {/* Hero */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-16">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h1 className="text-5xl font-thin tracking-wide text-gray-900 mb-4">
+            PatternRipple Collections
+          </h1>
+          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+            I used to sell patterns right here, but I’ve moved everything over to
+            Spoonflower where you can order fabric, wallpaper, and home decor.
+            I’m still a one-person team building creative software, but my artwork
+            continues there.
+          </p>
 
-      <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {data.map((c) => (
-          <Link
-            key={c.key}
-            href={c.href}
-            className={`group rounded-2xl overflow-hidden border bg-white ${
-              hovered === c.key ? "shadow-xl" : "shadow"
-            }`}
-            onMouseEnter={() => setHovered(c.key)}
-            onMouseLeave={() => setHovered(null)}
-          >
-            <div className="relative aspect-[16/10]">
-              <Image
-                src={c.src}
-                alt={`${c.title} cover`}
-                fill
-                sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
-                className="object-cover"
-                onError={(e) => {
-                  const t = e.currentTarget as HTMLImageElement;
-                  if (t.src !== DEFAULT_THUMB) t.src = DEFAULT_THUMB;
-                }}
-              />
-              <div className="absolute top-3 right-3 text-xs bg-black/70 text-white px-2 py-1 rounded-full">
-                {c.count} {c.count === 1 ? "pattern" : "patterns"}
-              </div>
-            </div>
-            <div className="p-5">
-              <h3 className="text-lg font-semibold">{c.title}</h3>
-              <p className="text-sm opacity-75 mt-1">{c.blurb}</p>
-              <span className="inline-flex items-center gap-2 text-sm text-violet-700 mt-3">
-                View Collection <span aria-hidden>›</span>
-              </span>
-            </div>
-          </Link>
-        ))}
-      </section>
-    </main>
+          <div className="mt-8">
+            <a
+              href="https://www.spoonflower.com/profiles/nickpanek?sub_action=shop&utm_medium=social&utm_source=heylink.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-purple-600 text-white text-lg font-medium px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Visit My Spoonflower Shop →
+            </a>
+          </div>
+
+          <div className="mt-6">
+            <Link
+              href="/lab"
+              className="inline-block text-gray-700 underline hover:text-purple-700 text-sm"
+            >
+              Back to the Lab
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Placeholder / Visual */}
+      <main className="flex-grow flex items-center justify-center">
+        <div className="text-center text-gray-500 text-sm px-4">
+          <p>This page now simply points to my external shop.</p>
+          <p className="mt-2">No tracking, no subscriptions, just links.</p>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 text-center text-sm py-6">
+        <p>&copy; 2025 PatternRipple. All rights reserved.</p>
+      </footer>
+    </div>
   );
 }
