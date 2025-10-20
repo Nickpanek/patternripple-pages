@@ -1,123 +1,79 @@
-import NextHead from "next/head";
+// app/blog/page.tsx
+import type { Metadata } from "next";
 import Link from "next/link";
-import path from "path";
-import { promises as fs } from "fs";
 
-type PostMeta = {
-  title: string;
-  slug: string;
-  description?: string;
-  published: string; // ISO 8601
-  modified?: string; // ISO 8601
-  tags?: string[];
+export const metadata: Metadata = {
+  title: "Blog - PatternRipple",
+  description:
+    "News and updates. Older posts may be archived. Visit the Lab and Spoonflower for current work.",
+  alternates: { canonical: "https://www.patternripple.com/blog" },
+  openGraph: {
+    title: "Blog - PatternRipple",
+    description:
+      "News and updates. Visit the Lab and Spoonflower for current work.",
+    url: "https://www.patternripple.com/blog",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog - PatternRipple",
+    description:
+      "News and updates. Visit the Lab and Spoonflower for current work.",
+  },
 };
 
-function toAbsolute(url: string) {
-  return `https://www.patternripple.com${url}`;
-}
-
-function isDailyDrops(p: PostMeta) {
-  const inTitle = /daily\s*drops?/i.test(p.title ?? "");
-  const inSlug = /daily-?drops?/i.test(p.slug ?? "");
-  const inTags = Array.isArray(p.tags) && p.tags.some((t) => /daily|drops?/i.test(t));
-  return inTitle || inSlug || inTags;
-}
-
-async function loadPosts(): Promise<PostMeta[]> {
-  const blogDir = path.join(process.cwd(), "app", "blog");
-  const entries = await fs.readdir(blogDir, { withFileTypes: true });
-
-  const jsonFiles = entries
-    .filter((e) => e.isFile() && e.name.endsWith(".json"))
-    .map((e) => path.join(blogDir, e.name));
-
-  const posts: PostMeta[] = [];
-  for (const file of jsonFiles) {
-    try {
-      const raw = await fs.readFile(file, "utf8");
-      const data = JSON.parse(raw);
-      if (data?.title && data?.slug && data?.published) {
-        posts.push({
-          title: data.title,
-          slug: data.slug,
-          description: data.description ?? "",
-          published: data.published,
-          modified: data.modified ?? data.published,
-          tags: Array.isArray(data.tags) ? data.tags : [],
-        });
-      }
-    } catch {
-      // ignore malformed json
-    }
-  }
-
-  // drop any Daily Drops entries
-  const filtered = posts.filter((p) => !isDailyDrops(p));
-
-  // newest first
-  filtered.sort(
-    (a, b) => new Date(b.published).getTime() - new Date(a.published).getTime()
-  );
-
-  return filtered;
-}
-
-export const dynamic = "force-static";
-
-export default async function BlogPage() {
-  const posts = await loadPosts();
-
-  const pageTitle = "PatternRipple Blog | Software notes and updates";
-  const pageDesc =
-    "Short posts on tool updates, release notes, and build tips for browser software. No subscriptions.";
-  const pageUrl = toAbsolute("/blog");
-
-  const itemListJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    itemListElement: posts.map((p, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      url: toAbsolute(`/blog/${p.slug}`),
-      name: p.title,
-    })),
-  };
-
-  const webPageJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: "PatternRipple Blog",
-    description: pageDesc,
-    url: pageUrl,
-  };
-
+export default function BlogIndex() {
   return (
-    <>
-      <NextHead>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDesc} />
-        <link rel="canonical" href={pageUrl} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDesc} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={pageUrl} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
-        />
-      </NextHead>
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-16">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h1 className="text-4xl font-semibold tracking-tight text-gray-900">
+            Blog
+          </h1>
+          <p className="mt-3 text-gray-700">
+            Updates and notes. For tools, visit the Lab. For fabric and wallpaper, visit Spoonflower.
+          </p>
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <Link
+              href="/lab"
+              className="rounded-md bg-gray-900 px-4 py-2 text-white hover:bg-gray-800"
+            >
+              Go to Lab
+            </Link>
+            <a
+              href="https://www.spoonflower.com/profiles/patternripple"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-900 hover:bg-gray-50"
+            >
+              Spoonflower Shop
+            </a>
+          </div>
+        </div>
+      </header>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-        {/* Hero */}
-        <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-16">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h1 className="text-4xl font-thin tracking-wide text-gray-900 mb-4">
-              PatternRipple Blog
-            </h1>
-            <p className="text-lg text-gray-600">
-              Software notes, tool
+      <section className="max-w-4xl mx-auto px-4 py-12">
+        <ul className="space-y-6">
+          <li className="rounded-lg border border-gray-200 bg-white p-5">
+            <h2 className="text-xl font-medium text-gray-900">
+              Daily Pattern Drops - Archived
+            </h2>
+            <p className="mt-1 text-gray-700">
+              This entry is archived. It now points to the Lab and Spoonflower.
+            </p>
+            <div className="mt-3">
+              <Link
+                href="/blog/daily-pattern-drops"
+                className="text-blue-700 hover:underline"
+              >
+                View entry
+              </Link>
+            </div>
+          </li>
+
+          {/* Add more posts here as you publish new entries */}
+        </ul>
+      </section>
+    </main>
+  );
+}
