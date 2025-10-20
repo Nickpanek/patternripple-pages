@@ -4,15 +4,14 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import Script from "next/script";
-import Search from "@/components/Search";
 
 // stop Next from preloading the font to remove preload warnings
 const inter = Inter({ subsets: ["latin"], display: "swap", preload: false });
 
 export const metadata: Metadata = {
-  title: "PatternRipple - Exclusive Digital Patterns",
+  title: "PatternRipple - Creative Tools and Utilities",
   description:
-    "Exclusive digital patterns that no one else will have. Once sold, it's yours forever.",
+    "Free and paid creative tools that run in your browser. Built without subscriptions.",
 };
 
 export default function RootLayout({
@@ -52,7 +51,7 @@ export default function RootLayout({
             >
               PatternRipple
             </Link>
-            <Search />
+            {/* Search removed */}
           </div>
         </nav>
         {children}
