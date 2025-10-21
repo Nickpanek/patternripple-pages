@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <title>Audio Loop Creator - Mobile</title>
+  <style>
+    :root { --fg:#00ff00; --bg:#0a0a0a; --panel:#1a1a1a; --muted:#888; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    html,body { height:100%; background:var(--bg); color:var(--fg); font-family:"Courier New",monospace; }
+    .wrap { min-height:100%; display:flex; flex-direction:column; }
+    header {
+      position:sticky; top:0;
+      background:linear-gradient(0deg, #0a0a0a 0%, #0c0c0c 100%);
+      border-bottom:1px solid #114411;
+      padding:12px 16px env(safe-area-inset-top) 16px;
+      z-index:10;
+    }
+    h1 { font-size:18px; text-align:center; letter-spacing:1px; }
+    main { padding:12px; padding-bottom:84px; max-width:1000px; margin:0 auto; width:100%; }
+
+    .section {
+      background:var(--panel);
+      border:1px solid #333; border-radius:10px;
+      padding:12px; margin-bottom:12px;
+    }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .hint { font-size:12px; color:var(--muted); margin-top:6px; }
+
+    /* Controls */
+    label.block { display:block; margin-bottom:8px; font-size:14px; }
+    input[type="number"], input[type="range"] {
+      width:100%; background:#0a0a0a; color:var(--fg);
+      border:1px solid var(--fg); border-radius:8px; padding:10px;
+      font-size:16px;
+    }
+    input[type="checkbox"] { transform:scale(1.2); margin-right:8px; }
+    /* File input: keep visible for iOS reliability, but large and easy to tap */
+    input[type="file"] {
+      width:100%; padding:12px; border:1px solid var(--fg); border-radius:10px;
+      background:#0a0a0a; color:var(--fg); font-size:16px;
+    }
+
+    /* Buttons */
+    .btn {
+      flex:1;
+      padding:14px 18px; font-weight:700; font-size:16px;
+      background:var(--fg); color:#0a0a0a; border:none; border-radius:10px;
+      touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+    }
+    .btn[disabled] { background:#333; color:#777; }
+    .btn.small { padding:10px 12px; font-size:14px; }
+
+    /* Canvas - responsive and crisp */
+    .canvasWrap { width:100%; overflow:hidden; border:1px solid var(--fg); border-radius:8px; }
+    canvas { width:100%; height:auto; display:block; }
+    canvas.clickable { cursor:crosshair; }
+
+    /* Sticky action bar for phones */
+    .fab {
+      position:fixed; left:0; right:0; bottom:0;
+      padding:10px calc(12px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
+      background:rgba(10,10,10,0.98); border-top:1px solid #114411; backdrop-filter:saturate(120%) blur(6px);
+    }
+    .fab .row { gap:8px; }
+    .status { font-size:14px; color:#0f0; word-wrap:break-word; }
+
+    /* Touch target spacing */
+    .stack > * + * { margin-top:10px; }
+
+    /* Larger targets on small screens */
+    @media (max-width:768px) {
+      h1 { font-size:16px; }
+      .btn { font-size:16px; padding:14px; }
+      label.block { font-size:15px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>AUDIO LOOP CREATOR - MOBILE</h1>
+  </header>
+
+  <main>
+    <!-- Upload -->
+    <div class="section stack">
+      <label for="fileInput" class="block">UPLOAD AUDIO FILE</label>
+      <input
+        type="file"
+        id="fileInput"
+        accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac"
+      />
+      <div class="hint">Tip: On iPhone tap “Browse” to pick from Files.</div>
+    </div>
+
+    <!-- Waveform -->
+    <div id="waveformSection" class="section stack" style="display:none;">
+      <div>WAVEFORM <span id="waveformHint"></span></div>
+      <div class="canvasWrap">
+        <canvas id="waveform" height="170"></canvas>
+      </div>
+      <div class="hint" id="audioInfo"></div>
+    </div>
+
+    <!-- Crossfade -->
+    <div id="crossfadeSection" class="section stack" style="display:none;">
+      <label class="block">CROSSFADE DURATION (s): <span id="crossfadeValue">0.020</span></label>
+      <input type="range" id="crossfade" min="0.005" max="0.1" step="0.005" value="0.02" />
+    </div>
+
+    <!-- Advanced -->
+    <div id="advancedSection" class="section stack" style="display:none;">
+      <button id="advancedToggle" class="btn small" type="button">▼ ADVANCED CONTROLS</button>
+
+      <div id="advancedContent" style="display:block;">
+        <div>
+          <label><input type="checkbox" id="manualMode" /> MANUAL MODE (tap waveform to set points)</label>
+        </div>
+
+        <div id="autoControls" class="stack">
+          <label class="block">TARGET LOOP DURATION (s): <span id="targetValue">30</span></label>
+          <input type="range" id="targetDuration" min="5" max="180" step="5" value="30" />
+
+          <label class="block">FLEXIBILITY (±<span id="flexPercent">20</span>% = <span id="flexSeconds">6</span>s range)</label>
+          <input type="range" id="flexibility" min="0" max="50" step="5" value="20" />
+          <div class="hint">Allows <span id="flexMin">24</span>s - <span id="flexMax">36</span>s for better musical alignment.</div>
+        </div>
+
+        <div id="manualControls" class="stack" style="display:none;">
+          <div>
+            <label class="block">START TIME (s)</label>
+            <input type="number" id="manualStart" min="0" step="0.1" value="0" inputmode="decimal" />
+          </div>
+          <div>
+            <label class="block">END TIME (s)</label>
+            <input type="number" id="manualEnd" min="0" step="0.1" value="0" inputmode="decimal" />
+          </div>
+          <label><input type="checkbox" id="useZeroCrossing" checked /> SNAP TO ZERO-CROSSING</label>
+          <div class="row">
+            <button id="previewStart" class="btn" type="button">PREVIEW START</button>
+            <button id="previewEnd" class="btn" type="button">PREVIEW END</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div id="statusSection" class="section" style="display:none;">
+      <div>Status:</div>
+      <div class="status">&gt; <span id="status"></span></div>
+    </div>
+
+    <!-- Manual -->
+    <div class="section" style="font-size:12px; white-space:pre-wrap;">
+INSTRUCTIONS:
+1) Upload audio
+2) Use AUTO or MANUAL
+3) Set crossfade
+4) CREATE LOOP
+5) PLAY LOOP
+6) EXPORT WAV
+    </div>
+  </main>
+
+  <!-- Sticky actions -->
+  <div class="fab">
+    <div class="row">
+      <button id="createLoop" class="btn" type="button">CREATE LOOP</button>
+      <button id="playLoop" class="btn" type="button" disabled>PLAY LOOP</button>
+      <button id="exportLoop" class="btn" type="button" disabled>EXPORT WAV</button>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <button id="downloadHTML" class="btn small" type="button">DOWNLOAD HTML FOR OFFLINE USE</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // State
+  let audioContext = null;
+  let audioBuffer = null;
+  let loopBuffer = null;
+  let sourceNode = null;
+  let isPlaying = false;
+  let manualStart = 0;
+  let manualEnd = 0;
+
+  // Safe query helpers
+  const $ = (id) => document.getElementById(id);
+  const show = (el) => el.style.display = '';
+  const hide = (el) => el.style.display = 'none';
+
+  // Init listeners (no AudioContext yet - create lazily on first file)
+  document.addEventListener('DOMContentLoaded', () => {
+    $('fileInput').addEventListener('change', handleFileUpload, { passive:true });
+    $('crossfade').addEventListener('input', (e) => $('crossfadeValue').textContent = parseFloat(e.target.value).toFixed(3));
+    $('targetDuration').addEventListener('input', (e) => { const v = parseInt(e.target.value); $('targetValue').textContent = v; updateFlexibilityDisplay(v, parseInt($('flexibility').value)); });
+    $('flexibility').addEventListener('input', (e) => { const v = parseInt(e.target.value); $('flexPercent').textContent = v; updateFlexibilityDisplay(parseInt($('targetDuration').value), v); });
+    $('advancedToggle').addEventListener('click', toggleAdvanced);
+    $('manualMode').addEventListener('change', toggleManualMode);
+    $('manualStart').addEventListener('input', (e) => { manualStart = parseFloat(e.target.value||0); if (audioBuffer) drawWaveform(audioBuffer, manualStart, manualEnd); });
+    $('manualEnd').addEventListener('input', (e) => { manualEnd = parseFloat(e.target.value||0); if (audioBuffer) drawWaveform(audioBuffer, manualStart, manualEnd); });
+    $('createLoop').addEventListener('click', createLoop, { passive:true });
+    $('playLoop').addEventListener('click', togglePlayback, { passive:true });
+    $('exportLoop').addEventListener('click', exportLoop, { passive:true });
+    $('previewStart').addEventListener('click', () => previewSection('start'), { passive:true });
+    $('previewEnd').addEventListener('click', () => previewSection('end'), { passive:true });
+    $('downloadHTML').addEventListener('click', downloadHTML, { passive:true });
+
+    // Resize/rotation: keep canvas sharp
+    window.addEventListener('resize', resizeCanvasHiDPI);
+    window.addEventListener('orientationchange', () => setTimeout(resizeCanvasHiDPI, 150));
+  });
+
+  function ensureAudioContext() {
+    if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function updateFlexibilityDisplay(target, flex) {
+    const range = Math.round(target * flex / 100);
+    $('flexSeconds').textContent = range;
+    $('flexMin').textContent = target - range;
+    $('flexMax').textContent = target + range;
+  }
+
+  function toggleAdvanced() {
+    const c = $('advancedContent');
+    const hidden = c.style.display === 'none';
+    c.style.display = hidden ? 'block' : 'none';
+    $('advancedToggle').textContent = hidden ? '▼ ADVANCED CONTROLS' : '▶ ADVANCED CONTROLS';
+  }
+
+  function toggleManualMode() {
+    const isManual = $('manualMode').checked;
+    $('autoControls').style.display = isManual ? 'none' : 'block';
+    $('manualControls').style.display = isManual ? 'block' : 'none';
+    $('waveformHint').textContent = isManual ? '(TAP TO SET LOOP POINTS)' : '';
+    const canvas = $('waveform');
+    canvas.classList.toggle('clickable', isManual);
+    if (audioBuffer && isManual) {
+      manualStart = 0;
+      manualEnd = Math.min(audioBuffer.duration, 30);
+      $('manualStart').max = audioBuffer.duration;
+      $('manualEnd').max = audioBuffer.duration;
+      $('manualStart').value = 0;
+      $('manualEnd').value = manualEnd;
+      drawWaveform(audioBuffer, 0, manualEnd);
+    }
+  }
+
+  async function handleFileUpload(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    ensureAudioContext();
+    setStatus('Loading audio...');
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+      show($('waveformSection'));
+      show($('crossfadeSection'));
+      show($('advancedSection'));
+      show($('statusSection'));
+
+      $('audioInfo').textContent = `Duration: ${audioBuffer.duration.toFixed(2)}s | Sample Rate: ${audioBuffer.sampleRate}Hz`;
+      resizeCanvasHiDPI();
+      drawWaveform(audioBuffer, 0, 0);
+      setStatus('Audio loaded');
+
+      $('manualStart').max = audioBuffer.duration;
+      $('manualEnd').max = audioBuffer.duration;
+      manualEnd = Math.min(audioBuffer.duration, 30);
+      $('manualEnd').value = manualEnd;
+
+      // Enable actions
+      $('createLoop').disabled = false;
+      $('exportLoop').disabled = true;
+      $('playLoop').disabled = true;
+
+      // Canvas tap for manual selection
+      $('waveform').onclick = handleCanvasClick;
+    } catch (err) {
+      setStatus(`Error loading audio: ${err.message}`);
+    }
+  }
+
+  function resizeCanvasHiDPI() {
+    const canvas = $('waveform');
+    if (!canvas) return;
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const rect = canvas.getBoundingClientRect();
+    const targetW = Math.max(320, Math.floor(rect.width * dpr));
+    const targetH = Math.floor((rect.width * 0.22) * dpr); // ~22% aspect for mobile
+    if (canvas.width !== targetW || canvas.height !== targetH) {
+      canvas.width = targetW;
+      canvas.height = targetH;
+      if (audioBuffer) drawWaveform(audioBuffer, manualStart, manualEnd);
+    }
+  }
+
+  function drawWaveform(buffer, highlightStart = 0, highlightEnd = 0) {
+    const canvas = $('waveform');
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const data = buffer.getChannelData(0);
+    const step = Math.ceil(data.length / width);
+    const amp = height / 2;
+
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(0, 0, width, height);
+
+    if (highlightEnd > highlightStart) {
+      const startX = (highlightStart / buffer.duration) * width;
+      const endX = (highlightEnd / buffer.duration) * width;
+      ctx.fillStyle = 'rgba(0,255,0,0.10)';
+      ctx.fillRect(startX, 0, endX - startX, height);
+    }
+
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = 0; i < width; i++) {
+      let min = 1.0, max = -1.0;
+      const base = i * step;
+      for (let j = 0; j < step && base + j < data.length; j++) {
+        const v = data[base + j];
+        if (v < min) min = v;
+        if (v > max) max = v;
+      }
+      ctx.moveTo(i, (1 + min) * amp);
+      ctx.lineTo(i, (1 + max) * amp);
+    }
+    ctx.stroke();
+
+    if (highlightEnd > highlightStart) {
+      const startX = (highlightStart / buffer.duration) * width;
+      const endX = (highlightEnd / buffer.duration) * width;
+      ctx.strokeStyle = '#ffff00';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(startX, 0); ctx.lineTo(startX, height);
+      ctx.moveTo(endX, 0);   ctx.lineTo(endX, height);
+      ctx.stroke();
+    }
+  }
+
+  function handleCanvasClick(ev) {
+    if (!audioBuffer || !$('manualMode').checked) return;
+    const canvas = $('waveform');
+    const rect = canvas.getBoundingClientRect();
+    const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rect.left;
+    const clickTime = (x / rect.width) * audioBuffer.duration;
+
+    if (manualStart === 0 || (manualEnd > 0 && clickTime < manualStart)) {
+      manualStart = clickTime;
+      manualEnd = 0;
+      $('manualStart').value = manualStart.toFixed(2);
+      drawWaveform(audioBuffer, manualStart, 0);
+    } else {
+      manualEnd = clickTime;
+      $('manualEnd').value = manualEnd.toFixed(2);
+      drawWaveform(audioBuffer, manualStart, manualEnd);
+    }
+  }
+
+  function findZeroCrossing(data, startIndex, direction = 1) {
+    let index = startIndex;
+    const maxSearch = 1000;
+    let searched = 0;
+    while (searched < maxSearch && index >= 0 && index < data.length - 1) {
+      const a = data[index], b = data[index + 1];
+      if ((a >= 0 && b < 0) || (a < 0 && b >= 0)) return index;
+      index += direction; searched++;
+    }
+    return startIndex;
+  }
+
+  function detectBeats(buffer) {
+    const data = buffer.getChannelData(0);
+    const sampleRate = buffer.sampleRate;
+    const windowSize = Math.floor(sampleRate * 0.1);
+    const energies = [];
+    for (let i = 0; i < data.length; i += windowSize) {
+      let energy = 0;
+      for (let j = 0; j < windowSize && i + j < data.length; j++) energy += data[i + j] * data[i + j];
+      energies.push(energy / windowSize);
+    }
+    const avgEnergy = energies.reduce((a,b)=>a+b,0) / energies.length;
+    const beats = [];
+    for (let i = 1; i < energies.length - 1; i++) {
+      if (energies[i] > avgEnergy * 1.3 && energies[i] > energies[i-1] && energies[i] > energies[i+1]) {
+        beats.push(i * windowSize);
+      }
+    }
+    return beats;
+  }
+
+  function analyzeTrackSections(buffer) {
+    const data = buffer.getChannelData(0);
+    const sr = buffer.sampleRate;
+    const win = Math.floor(sr * 0.5);
+    const sections = [];
+    for (let i=0;i<data.length;i+=win){
+      let energy=0, zc=0;
+      for (let j=0;j<win && i+j<data.length;j++){
+        const v = data[i+j]; energy += v*v;
+        if (j>0){ const pv=data[i+j-1]; if ((v>=0 && pv<0) || (v<0 && pv>=0)) zc++; }
+      }
+      sections.push({ startSample:i, energy:energy/win, zcr:zc/win, time:i/sr });
+    }
+    return sections;
+  }
+
+  function findBestStartingPoint(buffer, targetDur) {
+    const sections = analyzeTrackSections(buffer);
+    const data = buffer.getChannelData(0);
+    const sr = buffer.sampleRate;
+    const duration = buffer.duration;
+
+    const avgE = sections.reduce((s,x)=>s+x.energy,0)/sections.length;
+    const thr = avgE * 0.3;
+    let actualStart = 0;
+    for (let i=0;i<sections.length;i++){ if (sections[i].energy > thr){ actualStart = sections[i].time; break; } }
+
+    const targetSamples = targetDur * sr;
+    const candidates = [];
+    const step = Math.floor(sr * 2);
+
+    for (let startSample = Math.floor(actualStart * sr);
+         startSample < data.length - targetSamples;
+         startSample += step) {
+
+      const endSample = Math.min(startSample + targetSamples, data.length - sr);
+      if (endSample - startSample < targetSamples * 0.5) continue;
+
+      const win = Math.floor(sr * 0.5);
+      const energies = [];
+      const n = Math.floor((endSample - startSample) / win);
+      if (n < 2) continue;
+
+      for (let i=0;i<n;i++){
+        let e=0, base = startSample + i*win;
+        for (let j=0;j<win && base+j<endSample;j++) e += data[base+j]*data[base+j];
+        energies.push(e/win);
+      }
+      const avg = energies.reduce((a,b)=>a+b,0)/energies.length;
+      const varE = energies.reduce((s,e)=>s+Math.pow(e-avg,2),0)/energies.length;
+
+      const cmpWin = Math.floor(sr * 0.1);
+      let m=0;
+      for (let i=0;i<cmpWin;i++){
+        const a = data[startSample+i], b = data[endSample-cmpWin+i]; m += Math.abs(a-b);
+      }
+      const match = 1 / (m / cmpWin + 0.001);
+      const pos = startSample / data.length;
+      const posScore = 1 - Math.abs(pos - 0.5) * 2;
+      const eScore = Math.min(avg / avgE, 2);
+
+      const score = (1/(Math.sqrt(varE)+0.001))*50 + match*30 + posScore*10 + eScore*10;
+      candidates.push({ startSample, endSample, score });
+    }
+
+    if (candidates.length){
+      candidates.sort((a,b)=>b.score-a.score);
+      return candidates[0];
+    }
+    return {
+      startSample: Math.floor(actualStart * sr),
+      endSample: Math.min(Math.floor((actualStart + targetDur) * sr), data.length - sr)
+    };
+  }
+
+  function findOptimalLoopPoints(buffer, targetDur, flexibility) {
+    const data = buffer.getChannelData(0);
+    const sr = buffer.sampleRate;
+    const beats = detectBeats(buffer);
+    const bpm = beats.length > 1 ? (60 / ((beats[1] - beats[0]) / sr)) : 120;
+    const spb = (60 / bpm) * sr;
+
+    const minDur = targetDur - (targetDur * flexibility / 100);
+    const maxDur = targetDur + (targetDur * flexibility / 100);
+    const bestSection = findBestStartingPoint(buffer, targetDur);
+
+    const candidates = [];
+    const beatsPerBar = 4;
+
+    for (let bars = 2; bars <= 64; bars += 2) {
+      const beatsNeeded = bars * beatsPerBar;
+      const candDur = (beatsNeeded / bpm) * 60;
+      if (candDur < minDur || candDur > maxDur) continue;
+
+      const targetSamples = spb * beatsNeeded;
+      const startSample = bestSection.startSample;
+      const endSample = Math.min(startSample + targetSamples, data.length - sr);
+      if (endSample <= startSample || (endSample - startSample) <= targetSamples * 0.5) continue;
+
+      const startZC = findZeroCrossing(data, startSample, 1);
+      const endZC = findZeroCrossing(data, endSample, -1);
+
+      const win = Math.floor(sr * 0.5);
+      let varAbs = 0;
+      const n = Math.floor((endZC - startZC) / win);
+      if (n > 1) {
+        const energies = [];
+        for (let i=0;i<n;i++){
+          let e=0, base = startZC + i*win;
+          for (let j=0;j<win && base+j<endZC;j++) e += data[base+j]*data[base+j];
+          energies.push(e/win);
+        }
+        const avg = energies.reduce((a,b)=>a+b,0)/energies.length;
+        varAbs = energies.reduce((s,e)=>s+Math.abs(e-avg),0)/energies.length;
+      }
+      const durDiff = Math.abs(candDur - targetDur);
+      const score = (1/(varAbs+0.01)) - (durDiff*0.1);
+
+      candidates.push({ start:startZC/sr, end:endZC/sr, duration:candDur, bars, score });
+    }
+
+    if (candidates.length){
+      candidates.sort((a,b)=>b.score-a.score);
+      return candidates[0];
+    }
+
+    const startZC = findZeroCrossing(data, bestSection.startSample, 1);
+    const endZC = findZeroCrossing(data, bestSection.endSample, -1);
+    const beatsNeeded = Math.round(((endZC - startZC)/sr/60)*bpm);
+    return { start:startZC/sr, end:endZC/sr, duration:(endZC-startZC)/sr, bars:Math.round(beatsNeeded/4) };
+  }
+
+  async function createLoop() {
+    if (!audioBuffer) return;
+    const btn = $('createLoop');
+    btn.disabled = true; btn.textContent = 'PROCESSING...';
+    setStatus('Finding optimal loop points...');
+
+    try {
+      let start, end;
+      const isManual = $('manualMode').checked;
+
+      if (isManual) {
+        const data = audioBuffer.getChannelData(0);
+        const sr = audioBuffer.sampleRate;
+        if ($('useZeroCrossing').checked) {
+          const sIdx = Math.floor(manualStart * sr);
+          const eIdx = Math.floor(manualEnd * sr);
+          start = findZeroCrossing(data, sIdx, 1) / sr;
+          end   = findZeroCrossing(data, eIdx, -1) / sr;
+          setStatus('Applied zero-crossing to manual points');
+        } else {
+          start = manualStart; end = manualEnd;
+          setStatus('Using exact manual points');
+        }
+      } else {
+        const targetDur = parseInt($('targetDuration').value);
+        const flex = parseInt($('flexibility').value);
+        const res = findOptimalLoopPoints(audioBuffer, targetDur, flex);
+        start = res.start; end = res.end;
+        const actual = end - start;
+        const diff = Math.abs(actual - targetDur);
+        setStatus(`Auto-detected ${res.bars} bars (${actual.toFixed(1)}s${diff>1?`, ${diff.toFixed(1)}s from target`:''})`);
+      }
+
+      setStatus('Applying crossfade...');
+      const crossfade = parseFloat($('crossfade').value);
+      loopBuffer = await applyLoopCrossfade(audioBuffer, start, end, crossfade);
+
+      drawWaveform(audioBuffer, start, end);
+      setStatus(`Loop created: ${start.toFixed(2)}s - ${end.toFixed(2)}s (dur ${(end-start).toFixed(2)}s)`);
+      $('playLoop').disabled = false;
+      $('exportLoop').disabled = false;
+    } catch (e) {
+      setStatus(`Error: ${e.message}`);
+    } finally {
+      btn.disabled = false; btn.textContent = 'CREATE LOOP';
+    }
+  }
+
+  async function applyLoopCrossfade(buffer, startTime, endTime, fadeDuration) {
+    const sr = buffer.sampleRate;
+    const sS = Math.floor(startTime * sr);
+    const eS = Math.floor(endTime * sr);
+    const loopLen = eS - sS;
+    const fadeS = Math.max(1, Math.floor(fadeDuration * sr));
+    const ch = buffer.numberOfChannels;
+    ensureAudioContext();
+    const out = audioContext.createBuffer(ch, loopLen, sr);
+
+    for (let c=0;c<ch;c++){
+      const input = buffer.getChannelData(c);
+      const outCh = out.getChannelData(c);
+      for (let i=0;i<loopLen;i++) outCh[i] = input[sS+i];
+
+      for (let i=0;i<fadeS;i++){
+        const outPos = loopLen - fadeS + i;
+        const inPos = i;
+        const t = i / fadeS;
+        outCh[inPos] = outCh[inPos]*(1-t) + outCh[outPos]*t;
+      }
+    }
+    return out;
+  }
+
+  function togglePlayback() { isPlaying ? stopPlayback() : playLoop(); }
+
+  function playLoop() {
+    if (!loopBuffer) return;
+    ensureAudioContext();
+    sourceNode = audioContext.createBufferSource();
+    sourceNode.buffer = loopBuffer;
+    sourceNode.loop = true;
+    sourceNode.connect(audioContext.destination);
+    sourceNode.start();
+    isPlaying = true;
+    $('playLoop').textContent = 'STOP';
+  }
+
+  function stopPlayback() {
+    if (sourceNode) { try { sourceNode.stop(); } catch(_){} sourceNode.disconnect(); sourceNode = null; }
+    isPlaying = false;
+    $('playLoop').textContent = 'PLAY LOOP';
+  }
+
+  function previewSection(type) {
+    if (!audioBuffer) return;
+    stopPlayback();
+    ensureAudioContext();
+    const src = audioContext.createBufferSource();
+    src.buffer = audioBuffer;
+    src.connect(audioContext.destination);
+    if (type === 'start') src.start(0, manualStart, 3);
+    else src.start(0, Math.max(0, manualEnd - 3), 3);
+    sourceNode = src;
+  }
+
+  function exportLoop() {
+    if (!loopBuffer) return;
+
+    const ch = loopBuffer.numberOfChannels;
+    const len = loopBuffer.length * ch * 2;
+    const buf = new ArrayBuffer(44 + len);
+    const view = new DataView(buf);
+
+    const writeStr = (o,s)=>{ for(let i=0;i<s.length;i++) view.setUint8(o+i, s.charCodeAt(i)); };
+
+    writeStr(0,'RIFF'); view.setUint32(4, 36 + len, true);
+    writeStr(8,'WAVE'); writeStr(12,'fmt ');
+    view.setUint32(16, 16, true); view.setUint16(20, 1, true);
+    view.setUint16(22, ch, true);
+    view.setUint32(24, loopBuffer.sampleRate, true);
+    view.setUint32(28, loopBuffer.sampleRate * ch * 2, true);
+    view.setUint16(32, ch * 2, true); view.setUint16(34, 16, true);
+    writeStr(36,'data'); view.setUint32(40, len, true);
+
+    const channels = []; for (let i=0;i<ch;i++) channels.push(loopBuffer.getChannelData(i));
+    let offset = 44;
+    for (let i=0;i<loopBuffer.length;i++){
+      for (let c=0;c<ch;c++){
+        const s = Math.max(-1, Math.min(1, channels[c][i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        offset += 2;
+      }
+    }
+
+    const blob = new Blob([buf], { type:'audio/wav' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'audio_loop.wav'; a.click();
+    URL.revokeObjectURL(url);
+    setStatus('Loop exported');
+  }
+
+  function downloadHTML() {
+    const html = document.documentElement.outerHTML;
+    const blob = new Blob([html], { type:'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'audio_loop_creator_mobile.html'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function setStatus(msg) {
+    $('status').textContent = msg;
+    show($('statusSection'));
+  }
+</script>
+</body>
+</html>
