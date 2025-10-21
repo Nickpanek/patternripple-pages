@@ -1,4 +1,4 @@
-/* app.js - Photo Compressions Lab - Free */
+/* app.js - Photo Compressions Lab - Free (PNG upload enabled, JPEG export only) */
 
 (() => {
   const cfg = window.PCL_CONFIG || {
@@ -44,7 +44,7 @@
     if (typeof window.__pclSetProgress === 'function') window.__pclSetProgress(pct);
   }
 
-  // ----- Minimal EXIF orientation reader (tag 0x0112) -----
+  // ----- Minimal EXIF orientation reader (tag 0x0112) for JPEG only -----
   async function readOrientation(file) {
     try {
       const buf = await file.slice(0, 128 * 1024).arrayBuffer();
@@ -92,7 +92,7 @@
 
   // ----- Pipeline -----
   async function processImage(file) {
-    const orientation = await readOrientation(file);
+    const orientation = await readOrientation(file); // will be 1 for PNG
 
     // decode
     const bitmap = await createImageBitmap(file).catch(async () => {
@@ -167,7 +167,7 @@
       ctx.globalAlpha = 1;
     }
 
-    // encode jpeg (re-encode strips metadata regardless of chkStrip)
+    // encode jpeg only (re-encode strips metadata)
     const q = quality01();
     const blob = await new Promise((res, rej) =>
       canvas.toBlob((b) => b ? res(b) : rej(new Error('Encoding failed')), 'image/jpeg', q)
@@ -209,11 +209,18 @@
     }
   }
 
+  // accept JPEG and PNG for upload, export remains JPEG only
   function addFiles(files) {
-    const list = Array.from(files).filter(f => /^image\/jpe?g$/i.test(f.type));
+    const list = Array.from(files).filter(f => /^image\/(jpe?g|png)$/i.test(f.type));
     for (const f of list) state.items.push({ file: f, id: uid(), name: f.name, size: f.size });
     renderQueue();
-    toast(list.length ? `Added ${list.length} JPEG${list.length > 1 ? 's' : ''}` : 'No JPEGs detected');
+    if (list.length) {
+      const jpegCount = list.filter(f => /^image\/jpe?g$/i.test(f.type)).length;
+      const pngCount = list.filter(f => /^image\/png$/i.test(f.type)).length;
+      toast(`Added ${list.length} image${list.length > 1 ? 's' : ''} (${jpegCount} JPG, ${pngCount} PNG)`);
+    } else {
+      toast('Only PNG and JPEG are supported');
+    }
   }
 
   // ----- Export -----
@@ -234,7 +241,8 @@
     for (const item of items) {
       try {
         const blob = await processImage(item.file);
-        const outName = item.name.replace(/\.(jpe?g)$/i, '') + `_compressed.jpg`;
+        const base = item.name.replace(/\.[^.]+$/i, '');
+        const outName = `${base}_compressed.jpg`;
         zip.file(outName, blob);
       } catch (e) {
         console.error(e);
@@ -286,6 +294,6 @@
 
   // Improve accept attribute if HTML missed it
   if (el.fileInput && !el.fileInput.getAttribute('accept')) {
-    el.fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/pjpeg');
+    el.fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/pjpeg,image/png');
   }
 })();
