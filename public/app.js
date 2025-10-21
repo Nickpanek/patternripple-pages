@@ -19,7 +19,6 @@
     toast: document.getElementById('toast'),
     inpLongEdge: document.getElementById('inpLongEdge'),
     inpQuality: document.getElementById('inpQuality'),
-    chkStrip: document.getElementById('chkStrip'),
     wmText: document.getElementById('wmText'),
     wmOpacity: document.getElementById('wmOpacity'),
   };
@@ -43,7 +42,7 @@
     if (typeof window.__pclSetProgress === 'function') window.__pclSetProgress(pct);
   }
 
-  // ----- Minimal EXIF orientation reader (tag 0x0112) for JPEG only -----
+  // ----- Minimal EXIF orientation reader (JPEG only, tag 0x0112) -----
   async function readOrientation(file) {
     try {
       const buf = await file.slice(0, 128 * 1024).arrayBuffer();
@@ -58,14 +57,13 @@
           off += 6;
           const tiff = off;
           const little = v.getUint16(tiff) === 0x4949;
-          const get16 = (o) => little ? v.getUint16(o, true) : v.getUint16(o, false);
-          const get32 = (o) => little ? v.getUint32(o, true) : v.getUint32(o, false);
+          const get16 = (o) => v.getUint16(o, little);
+          const get32 = (o) => v.getUint32(o, little);
           const ifd0 = tiff + get32(tiff + 4);
           const n = get16(ifd0);
           for (let i = 0; i < n; i++) {
             const e = ifd0 + 2 + i * 12;
-            const tag = get16(e);
-            if (tag === 0x0112) return get16(e + 8) || 1;
+            if (get16(e) === 0x0112) return get16(e + 8) || 1;
           }
           break;
         } else {
@@ -76,23 +74,40 @@
     return 1;
   }
 
-  function applyOrientation(ctx, canvas, orientation, w, h) {
+  // Draw bitmap into a new canvas with the correct final orientation and size. No residual transforms.
+  function drawOrientedToCanvas(bitmap, orientation, targetW, targetH) {
+    // For orientations 5-8 the width/height swap
+    const swap = orientation >= 5 && orientation <= 8;
+    const cw = swap ? targetH : targetW;
+    const ch = swap ? targetW : targetH;
+
+    const c = document.createElement('canvas');
+    c.width = cw; c.height = ch;
+    const ctx = c.getContext('2d', { alpha: false });
+    if (!ctx) throw new Error('Canvas unsupported');
+
+    ctx.save();
     switch (orientation) {
-      case 2: ctx.translate(w, 0); ctx.scale(-1, 1); break;
-      case 3: ctx.translate(w, h); ctx.rotate(Math.PI); break;
-      case 4: ctx.translate(0, h); ctx.scale(1, -1); break;
-      case 5: canvas.width = h; canvas.height = w; ctx.rotate(0.5 * Math.PI); ctx.scale(1, -1); ctx.translate(0, -h); return;
-      case 6: canvas.width = h; canvas.height = w; ctx.rotate(0.5 * Math.PI); ctx.translate(0, -h); return;
-      case 7: canvas.width = h; canvas.height = w; ctx.rotate(0.5 * Math.PI); ctx.translate(w, -h); ctx.scale(-1, 1); return;
-      case 8: canvas.width = h; canvas.height = w; ctx.rotate(-0.5 * Math.PI); ctx.translate(-w, 0); return;
-      default: break;
+      case 2: ctx.translate(cw, 0); ctx.scale(-1, 1); break;                     // flip X
+      case 3: ctx.translate(cw, ch); ctx.rotate(Math.PI); break;                 // 180
+      case 4: ctx.translate(0, ch); ctx.scale(1, -1); break;                     // flip Y
+      case 5: ctx.rotate(0.5 * Math.PI); ctx.scale(1, -1); ctx.translate(0, -targetH); break;      // 90 + flip X
+      case 6: ctx.rotate(0.5 * Math.PI); ctx.translate(0, -targetH); break;                         // 90 CW
+      case 7: ctx.rotate(0.5 * Math.PI); ctx.translate(targetW, -targetH); ctx.scale(-1, 1); break; // 90 + flip Y
+      case 8: ctx.rotate(-0.5 * Math.PI); ctx.translate(-targetW, 0); break;                        // 270
+      default: break; // 1
     }
+    // After transform, draw the bitmap into the intended targetW x targetH box
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(bitmap, 0, 0, targetW, targetH);
+    ctx.restore();
+    return c;
   }
 
   // ----- Pipeline -----
   async function processImage(file) {
     const orientation = await readOrientation(file); // 1 for PNG
-
     // decode
     const bitmap = await createImageBitmap(file).catch(async () => {
       const url = URL.createObjectURL(file);
@@ -106,70 +121,62 @@
       return img;
     });
 
+    // size
     const srcW = bitmap.width, srcH = bitmap.height;
     const targetLong = longEdgePx();
     const long = Math.max(srcW, srcH);
     const scale = long > targetLong ? targetLong / long : 1;
-    const outW0 = Math.round(srcW * scale);
-    const outH0 = Math.round(srcH * scale);
+    const tW = Math.round(srcW * scale);
+    const tH = Math.round(srcH * scale);
 
-    const canvas = document.createElement('canvas');
-    canvas.width = outW0; canvas.height = outH0;
-    const ctx = canvas.getContext('2d', { alpha: false });
-    if (!ctx) throw new Error('Canvas unsupported');
+    // draw into clean canvas with correct orientation
+    const canvas = drawOrientedToCanvas(bitmap, orientation, tW, tH);
+    const ctx = canvas.getContext('2d');
 
-    // apply orientation transform, then draw the bitmap
-    applyOrientation(ctx, canvas, orientation, outW0, outH0);
-    if (orientation >= 5 && orientation <= 8) {
-      ctx.drawImage(bitmap, 0, 0, canvas.height, canvas.width);
-    } else {
-      ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    }
+    // overlays use identity transform and canvas.width/height
+    const cw = canvas.width, ch = canvas.height;
 
-    // critical fix: reset transform before drawing overlays so positions are correct
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-    // user watermark (optional)
+    // user watermark
     const wmText = String(el.wmText?.value || '').trim();
     if (wmText) {
       const o = clamp(Number(el.wmOpacity?.value) || 0.2, 0, 1);
+      const pad = Math.round(Math.min(cw, ch) * 0.02);
+      const fontSize = Math.round(Math.min(cw, ch) * 0.035);
+      ctx.save();
       ctx.globalAlpha = o;
-      const pad = Math.round(Math.min(canvas.width, canvas.height) * 0.02);
-      const fontSize = Math.round(Math.min(canvas.width, canvas.height) * 0.035);
       ctx.font = `${fontSize}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
       ctx.fillStyle = '#000000';
       ctx.textBaseline = 'bottom';
       ctx.lineWidth = Math.max(2, Math.round(fontSize * 0.08));
       ctx.strokeStyle = 'rgba(255,255,255,0.9)';
       const m = ctx.measureText(wmText);
-      const x = canvas.width - pad - m.width;
-      const y = canvas.height - pad;
+      const x = cw - pad - m.width;
+      const y = ch - pad;
       ctx.strokeText(wmText, x, y);
       ctx.fillText(wmText, x, y);
-      ctx.globalAlpha = 1;
+      ctx.restore();
     }
 
     // free badge
     if (!cfg.IS_PRO && cfg.FREE_BADGE_TEXT) {
       const o = clamp(Number(cfg.FREE_BADGE_OPACITY) || 0.55, 0, 1);
-      ctx.globalAlpha = o;
-      const fontSize = Math.max(12, Math.round(Math.min(canvas.width, canvas.height) * 0.025));
-      ctx.font = `bold ${fontSize}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
-      ctx.textBaseline = 'top';
+      const fontSize = Math.max(12, Math.round(Math.min(cw, ch) * 0.025));
       const pad = Math.round(fontSize * 0.4);
       const text = cfg.FREE_BADGE_TEXT;
-      const w = ctx.measureText(text).width + pad * 1.6;
+      const w = ctx.measureText(text, ctx.font = `bold ${fontSize}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial`).width + pad * 1.6;
       const h = Math.round(fontSize * 1.6);
-      const x = canvas.width - w - pad;
+      const x = cw - w - pad;
       const y = pad;
+      ctx.save();
+      ctx.globalAlpha = o;
       ctx.fillStyle = 'rgba(255,255,255,0.95)';
       ctx.fillRect(x, y, w, h);
       ctx.fillStyle = '#0f172a';
       ctx.fillText(text, x + pad * 0.8, y + Math.round((h - fontSize) * 0.5));
-      ctx.globalAlpha = 1;
+      ctx.restore();
     }
 
-    // encode jpeg only (re-encode strips metadata)
+    // encode jpeg only
     const q = quality01();
     const blob = await new Promise((res, rej) =>
       canvas.toBlob((b) => b ? res(b) : rej(new Error('Encoding failed')), 'image/jpeg', q)
@@ -231,7 +238,7 @@
     if (!state.items.length) { toast('Add images first'); return; }
 
     const maxCount = cfg.IS_PRO ? state.items.length : Math.min(cfg.FREE_MAX_PER_EXPORT, state.items.length);
-    const items = state.items.slice(0, maxCount); // enforce free cap here
+    const items = state.items.slice(0, maxCount);
 
     state.busy = true;
     setStatus('Processing...');
@@ -242,7 +249,7 @@
 
     for (const item of items) {
       try {
-        const blob = await processImage(item.file); // always processed, always watermarked/badged
+        const blob = await processImage(item.file);
         const base = item.name.replace(/\.[^.]+$/i, '');
         const outName = `${base}_compressed.jpg`;
         zip.file(outName, blob);
@@ -294,7 +301,7 @@
 
   el.btnExport?.addEventListener('click', () => { exportZip(); }, { passive: true });
 
-  // Improve accept attribute if HTML missed it
+  // accept attribute safety
   if (el.fileInput && !el.fileInput.getAttribute('accept')) {
     el.fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/pjpeg,image/png');
   }
