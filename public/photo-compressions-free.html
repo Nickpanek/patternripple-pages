@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Photo Compressions Lab – Free | PatternRipple</title>
-  <meta name="description" content="Free browser-based photo compressor by PatternRipple. Upload PNG or JPEG, resize, watermark, and export as JPEG only. No uploads to server." />
+  <title>Photo Compressions Lab - Free | PatternRipple</title>
+  <meta name="description" content="Free browser-based photo compressor by PatternRipple. Upload PNG or JPEG, resize, watermark, and export as JPEG only. No server uploads." />
   <link rel="icon" href="data:," />
   <meta name="color-scheme" content="light dark" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,23 +12,15 @@
   <style>
     :root { color-scheme: light dark; }
     body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-    .dropzone {
-      border: 2px dashed #94a3b8;
-      transition: border-color .15s, background-color .15s;
-    }
+    .dropzone { border: 2px dashed #94a3b8; transition: border-color .15s, background-color .15s; }
     .dropzone:hover { border-color: #0f172a; background-color: rgba(15,23,42,0.05); }
     .thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; }
-    #toast {
-      position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
-      background: rgba(15,23,42,0.9); color: #fff;
-      padding: .5rem 1rem; border-radius: .25rem; font-size: .875rem;
-      transition: opacity .3s; z-index: 50;
-    }
+    #toast { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,0.9); color: #fff; padding: .5rem 1rem; border-radius: .25rem; font-size: .875rem; transition: opacity .3s; z-index: 50; }
   </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col items-center p-4">
   <header class="mb-6 text-center">
-    <h1 class="text-2xl font-bold">Photo Compressions Lab – Free</h1>
+    <h1 class="text-2xl font-bold">Photo Compressions Lab - Free</h1>
     <p class="text-sm text-slate-500">Supports PNG + JPEG upload → Exports JPEG only</p>
   </header>
 
@@ -58,7 +50,7 @@
         <input id="wmText" type="text" placeholder="Your name or brand" class="border rounded px-2 py-1">
       </label>
       <label class="flex flex-col">
-        <span>Watermark Opacity (0–1)</span>
+        <span>Watermark Opacity (0-1)</span>
         <input id="wmOpacity" type="number" step="0.05" min="0" max="1" value="0.3" class="border rounded px-2 py-1">
       </label>
     </div>
@@ -69,8 +61,14 @@
       <div id="status" class="ml-auto text-sm text-slate-500 self-center">Idle</div>
     </div>
 
-    <div class="text-center text-xs text-slate-400 mt-8">
-      <p>Free version – max 5 images per export. <a href="https://patternripple.gumroad.com/l/photo-compressions-pro" class="underline text-slate-500 hover:text-slate-700">Upgrade to Pro</a></p>
+    <div class="text-center text-xs text-slate-400 mt-6">
+      <p>Free version - max 5 images per export.</p>
+      <p class="mt-2">
+        <a href="https://buymeacoffee.com/prompternick" target="_blank" rel="noopener noreferrer"
+           class="inline-block px-3 py-1 rounded bg-yellow-300 text-slate-900 hover:bg-yellow-400 font-medium">
+          Support this site
+        </a>
+      </p>
     </div>
   </main>
 
@@ -81,6 +79,9 @@
     document.querySelector('#dropzone button')?.addEventListener('click', () =>
       document.getElementById('fileInput').click()
     );
+    document.getElementById('dropzone')?.addEventListener('click', (e) => {
+      if (e.target.id === 'dropzone') document.getElementById('fileInput').click();
+    });
   </script>
 </body>
 </html>
