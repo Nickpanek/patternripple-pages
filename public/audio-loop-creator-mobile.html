@@ -30,21 +30,17 @@
     .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .hint { font-size:12px; color:var(--muted); margin-top:6px; }
 
-    /* Controls */
     label.block { display:block; margin-bottom:8px; font-size:14px; }
     input[type="number"], input[type="range"] {
       width:100%; background:#0a0a0a; color:var(--fg);
       border:1px solid var(--fg); border-radius:8px; padding:10px;
       font-size:16px;
     }
-    input[type="checkbox"] { transform:scale(1.2); margin-right:8px; }
-    /* File input: keep visible for iOS reliability, but large and easy to tap */
     input[type="file"] {
       width:100%; padding:12px; border:1px solid var(--fg); border-radius:10px;
       background:#0a0a0a; color:var(--fg); font-size:16px;
     }
 
-    /* Buttons */
     .btn {
       flex:1;
       padding:14px 18px; font-weight:700; font-size:16px;
@@ -54,12 +50,9 @@
     .btn[disabled] { background:#333; color:#777; }
     .btn.small { padding:10px 12px; font-size:14px; }
 
-    /* Canvas - responsive and crisp */
     .canvasWrap { width:100%; overflow:hidden; border:1px solid var(--fg); border-radius:8px; }
     canvas { width:100%; height:auto; display:block; }
-    canvas.clickable { cursor:crosshair; }
 
-    /* Sticky action bar for phones */
     .fab {
       position:fixed; left:0; right:0; bottom:0;
       padding:10px calc(12px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
@@ -68,10 +61,8 @@
     .fab .row { gap:8px; }
     .status { font-size:14px; color:#0f0; word-wrap:break-word; }
 
-    /* Touch target spacing */
     .stack > * + * { margin-top:10px; }
 
-    /* Larger targets on small screens */
     @media (max-width:768px) {
       h1 { font-size:16px; }
       .btn { font-size:16px; padding:14px; }
@@ -99,7 +90,7 @@
 
     <!-- Waveform -->
     <div id="waveformSection" class="section stack" style="display:none;">
-      <div>WAVEFORM <span id="waveformHint"></span></div>
+      <div>WAVEFORM</div>
       <div class="canvasWrap">
         <canvas id="waveform" height="170"></canvas>
       </div>
@@ -112,39 +103,16 @@
       <input type="range" id="crossfade" min="0.005" max="0.1" step="0.005" value="0.02" />
     </div>
 
-    <!-- Advanced -->
+    <!-- Advanced (auto-only) -->
     <div id="advancedSection" class="section stack" style="display:none;">
       <button id="advancedToggle" class="btn small" type="button">▼ ADVANCED CONTROLS</button>
-
       <div id="advancedContent" style="display:block;">
-        <div>
-          <label><input type="checkbox" id="manualMode" /> MANUAL MODE (tap waveform to set points)</label>
-        </div>
+        <label class="block">TARGET LOOP DURATION (s): <span id="targetValue">30</span></label>
+        <input type="range" id="targetDuration" min="5" max="180" step="5" value="30" />
 
-        <div id="autoControls" class="stack">
-          <label class="block">TARGET LOOP DURATION (s): <span id="targetValue">30</span></label>
-          <input type="range" id="targetDuration" min="5" max="180" step="5" value="30" />
-
-          <label class="block">FLEXIBILITY (±<span id="flexPercent">20</span>% = <span id="flexSeconds">6</span>s range)</label>
-          <input type="range" id="flexibility" min="0" max="50" step="5" value="20" />
-          <div class="hint">Allows <span id="flexMin">24</span>s - <span id="flexMax">36</span>s for better musical alignment.</div>
-        </div>
-
-        <div id="manualControls" class="stack" style="display:none;">
-          <div>
-            <label class="block">START TIME (s)</label>
-            <input type="number" id="manualStart" min="0" step="0.1" value="0" inputmode="decimal" />
-          </div>
-          <div>
-            <label class="block">END TIME (s)</label>
-            <input type="number" id="manualEnd" min="0" step="0.1" value="0" inputmode="decimal" />
-          </div>
-          <label><input type="checkbox" id="useZeroCrossing" checked /> SNAP TO ZERO-CROSSING</label>
-          <div class="row">
-            <button id="previewStart" class="btn" type="button">PREVIEW START</button>
-            <button id="previewEnd" class="btn" type="button">PREVIEW END</button>
-          </div>
-        </div>
+        <label class="block">FLEXIBILITY (±<span id="flexPercent">20</span>% = <span id="flexSeconds">6</span>s range)</label>
+        <input type="range" id="flexibility" min="0" max="50" step="5" value="20" />
+        <div class="hint">Allows <span id="flexMin">24</span>s - <span id="flexMax">36</span>s for better musical alignment.</div>
       </div>
     </div>
 
@@ -158,7 +126,7 @@
     <div class="section" style="font-size:12px; white-space:pre-wrap;">
 INSTRUCTIONS:
 1) Upload audio
-2) Use AUTO or MANUAL
+2) Adjust Target and Flex
 3) Set crossfade
 4) CREATE LOOP
 5) PLAY LOOP
@@ -169,7 +137,7 @@ INSTRUCTIONS:
   <!-- Sticky actions -->
   <div class="fab">
     <div class="row">
-      <button id="createLoop" class="btn" type="button">CREATE LOOP</button>
+      <button id="createLoop" class="btn" type="button" disabled>CREATE LOOP</button>
       <button id="playLoop" class="btn" type="button" disabled>PLAY LOOP</button>
       <button id="exportLoop" class="btn" type="button" disabled>EXPORT WAV</button>
     </div>
@@ -186,32 +154,23 @@ INSTRUCTIONS:
   let loopBuffer = null;
   let sourceNode = null;
   let isPlaying = false;
-  let manualStart = 0;
-  let manualEnd = 0;
 
-  // Safe query helpers
   const $ = (id) => document.getElementById(id);
   const show = (el) => el.style.display = '';
   const hide = (el) => el.style.display = 'none';
 
-  // Init listeners (no AudioContext yet - create lazily on first file)
   document.addEventListener('DOMContentLoaded', () => {
     $('fileInput').addEventListener('change', handleFileUpload, { passive:true });
     $('crossfade').addEventListener('input', (e) => $('crossfadeValue').textContent = parseFloat(e.target.value).toFixed(3));
     $('targetDuration').addEventListener('input', (e) => { const v = parseInt(e.target.value); $('targetValue').textContent = v; updateFlexibilityDisplay(v, parseInt($('flexibility').value)); });
     $('flexibility').addEventListener('input', (e) => { const v = parseInt(e.target.value); $('flexPercent').textContent = v; updateFlexibilityDisplay(parseInt($('targetDuration').value), v); });
     $('advancedToggle').addEventListener('click', toggleAdvanced);
-    $('manualMode').addEventListener('change', toggleManualMode);
-    $('manualStart').addEventListener('input', (e) => { manualStart = parseFloat(e.target.value||0); if (audioBuffer) drawWaveform(audioBuffer, manualStart, manualEnd); });
-    $('manualEnd').addEventListener('input', (e) => { manualEnd = parseFloat(e.target.value||0); if (audioBuffer) drawWaveform(audioBuffer, manualStart, manualEnd); });
+
     $('createLoop').addEventListener('click', createLoop, { passive:true });
     $('playLoop').addEventListener('click', togglePlayback, { passive:true });
     $('exportLoop').addEventListener('click', exportLoop, { passive:true });
-    $('previewStart').addEventListener('click', () => previewSection('start'), { passive:true });
-    $('previewEnd').addEventListener('click', () => previewSection('end'), { passive:true });
     $('downloadHTML').addEventListener('click', downloadHTML, { passive:true });
 
-    // Resize/rotation: keep canvas sharp
     window.addEventListener('resize', resizeCanvasHiDPI);
     window.addEventListener('orientationchange', () => setTimeout(resizeCanvasHiDPI, 150));
   });
@@ -234,24 +193,6 @@ INSTRUCTIONS:
     $('advancedToggle').textContent = hidden ? '▼ ADVANCED CONTROLS' : '▶ ADVANCED CONTROLS';
   }
 
-  function toggleManualMode() {
-    const isManual = $('manualMode').checked;
-    $('autoControls').style.display = isManual ? 'none' : 'block';
-    $('manualControls').style.display = isManual ? 'block' : 'none';
-    $('waveformHint').textContent = isManual ? '(TAP TO SET LOOP POINTS)' : '';
-    const canvas = $('waveform');
-    canvas.classList.toggle('clickable', isManual);
-    if (audioBuffer && isManual) {
-      manualStart = 0;
-      manualEnd = Math.min(audioBuffer.duration, 30);
-      $('manualStart').max = audioBuffer.duration;
-      $('manualEnd').max = audioBuffer.duration;
-      $('manualStart').value = 0;
-      $('manualEnd').value = manualEnd;
-      drawWaveform(audioBuffer, 0, manualEnd);
-    }
-  }
-
   async function handleFileUpload(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
@@ -272,18 +213,9 @@ INSTRUCTIONS:
       drawWaveform(audioBuffer, 0, 0);
       setStatus('Audio loaded');
 
-      $('manualStart').max = audioBuffer.duration;
-      $('manualEnd').max = audioBuffer.duration;
-      manualEnd = Math.min(audioBuffer.duration, 30);
-      $('manualEnd').value = manualEnd;
-
-      // Enable actions
       $('createLoop').disabled = false;
       $('exportLoop').disabled = true;
       $('playLoop').disabled = true;
-
-      // Canvas tap for manual selection
-      $('waveform').onclick = handleCanvasClick;
     } catch (err) {
       setStatus(`Error loading audio: ${err.message}`);
     }
@@ -295,11 +227,11 @@ INSTRUCTIONS:
     const dpr = Math.max(1, window.devicePixelRatio || 1);
     const rect = canvas.getBoundingClientRect();
     const targetW = Math.max(320, Math.floor(rect.width * dpr));
-    const targetH = Math.floor((rect.width * 0.22) * dpr); // ~22% aspect for mobile
+    const targetH = Math.floor((rect.width * 0.22) * dpr);
     if (canvas.width !== targetW || canvas.height !== targetH) {
       canvas.width = targetW;
       canvas.height = targetH;
-      if (audioBuffer) drawWaveform(audioBuffer, manualStart, manualEnd);
+      if (audioBuffer) drawWaveform(audioBuffer, 0, 0);
     }
   }
 
@@ -350,37 +282,6 @@ INSTRUCTIONS:
     }
   }
 
-  function handleCanvasClick(ev) {
-    if (!audioBuffer || !$('manualMode').checked) return;
-    const canvas = $('waveform');
-    const rect = canvas.getBoundingClientRect();
-    const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rect.left;
-    const clickTime = (x / rect.width) * audioBuffer.duration;
-
-    if (manualStart === 0 || (manualEnd > 0 && clickTime < manualStart)) {
-      manualStart = clickTime;
-      manualEnd = 0;
-      $('manualStart').value = manualStart.toFixed(2);
-      drawWaveform(audioBuffer, manualStart, 0);
-    } else {
-      manualEnd = clickTime;
-      $('manualEnd').value = manualEnd.toFixed(2);
-      drawWaveform(audioBuffer, manualStart, manualEnd);
-    }
-  }
-
-  function findZeroCrossing(data, startIndex, direction = 1) {
-    let index = startIndex;
-    const maxSearch = 1000;
-    let searched = 0;
-    while (searched < maxSearch && index >= 0 && index < data.length - 1) {
-      const a = data[index], b = data[index + 1];
-      if ((a >= 0 && b < 0) || (a < 0 && b >= 0)) return index;
-      index += direction; searched++;
-    }
-    return startIndex;
-  }
-
   function detectBeats(buffer) {
     const data = buffer.getChannelData(0);
     const sampleRate = buffer.sampleRate;
@@ -421,7 +322,6 @@ INSTRUCTIONS:
     const sections = analyzeTrackSections(buffer);
     const data = buffer.getChannelData(0);
     const sr = buffer.sampleRate;
-    const duration = buffer.duration;
 
     const avgE = sections.reduce((s,x)=>s+x.energy,0)/sections.length;
     const thr = avgE * 0.3;
@@ -527,10 +427,23 @@ INSTRUCTIONS:
       return candidates[0];
     }
 
+    // Fallback
     const startZC = findZeroCrossing(data, bestSection.startSample, 1);
     const endZC = findZeroCrossing(data, bestSection.endSample, -1);
     const beatsNeeded = Math.round(((endZC - startZC)/sr/60)*bpm);
     return { start:startZC/sr, end:endZC/sr, duration:(endZC-startZC)/sr, bars:Math.round(beatsNeeded/4) };
+  }
+
+  function findZeroCrossing(data, startIndex, direction = 1) {
+    let index = startIndex;
+    const maxSearch = 1000;
+    let searched = 0;
+    while (searched < maxSearch && index >= 0 && index < data.length - 1) {
+      const a = data[index], b = data[index + 1];
+      if ((a >= 0 && b < 0) || (a < 0 && b >= 0)) return index;
+      index += direction; searched++;
+    }
+    return startIndex;
   }
 
   async function createLoop() {
@@ -540,38 +453,17 @@ INSTRUCTIONS:
     setStatus('Finding optimal loop points...');
 
     try {
-      let start, end;
-      const isManual = $('manualMode').checked;
-
-      if (isManual) {
-        const data = audioBuffer.getChannelData(0);
-        const sr = audioBuffer.sampleRate;
-        if ($('useZeroCrossing').checked) {
-          const sIdx = Math.floor(manualStart * sr);
-          const eIdx = Math.floor(manualEnd * sr);
-          start = findZeroCrossing(data, sIdx, 1) / sr;
-          end   = findZeroCrossing(data, eIdx, -1) / sr;
-          setStatus('Applied zero-crossing to manual points');
-        } else {
-          start = manualStart; end = manualEnd;
-          setStatus('Using exact manual points');
-        }
-      } else {
-        const targetDur = parseInt($('targetDuration').value);
-        const flex = parseInt($('flexibility').value);
-        const res = findOptimalLoopPoints(audioBuffer, targetDur, flex);
-        start = res.start; end = res.end;
-        const actual = end - start;
-        const diff = Math.abs(actual - targetDur);
-        setStatus(`Auto-detected ${res.bars} bars (${actual.toFixed(1)}s${diff>1?`, ${diff.toFixed(1)}s from target`:''})`);
-      }
+      const targetDur = parseInt($('targetDuration').value);
+      const flex = parseInt($('flexibility').value);
+      const res = findOptimalLoopPoints(audioBuffer, targetDur, flex);
+      const start = res.start, end = res.end;
 
       setStatus('Applying crossfade...');
       const crossfade = parseFloat($('crossfade').value);
       loopBuffer = await applyLoopCrossfade(audioBuffer, start, end, crossfade);
 
       drawWaveform(audioBuffer, start, end);
-      setStatus(`Loop created: ${start.toFixed(2)}s - ${end.toFixed(2)}s (dur ${(end-start).toFixed(2)}s)`);
+      setStatus(`Loop created: ${start.toFixed(2)}s - ${end.toFixed(2)}s (dur ${(end-start).toFixed(2)}s, ${res.bars} bars)`);
       $('playLoop').disabled = false;
       $('exportLoop').disabled = false;
     } catch (e) {
@@ -582,20 +474,19 @@ INSTRUCTIONS:
   }
 
   async function applyLoopCrossfade(buffer, startTime, endTime, fadeDuration) {
+    ensureAudioContext();
     const sr = buffer.sampleRate;
     const sS = Math.floor(startTime * sr);
     const eS = Math.floor(endTime * sr);
     const loopLen = eS - sS;
     const fadeS = Math.max(1, Math.floor(fadeDuration * sr));
     const ch = buffer.numberOfChannels;
-    ensureAudioContext();
     const out = audioContext.createBuffer(ch, loopLen, sr);
 
     for (let c=0;c<ch;c++){
       const input = buffer.getChannelData(c);
       const outCh = out.getChannelData(c);
       for (let i=0;i<loopLen;i++) outCh[i] = input[sS+i];
-
       for (let i=0;i<fadeS;i++){
         const outPos = loopLen - fadeS + i;
         const inPos = i;
@@ -626,18 +517,6 @@ INSTRUCTIONS:
     $('playLoop').textContent = 'PLAY LOOP';
   }
 
-  function previewSection(type) {
-    if (!audioBuffer) return;
-    stopPlayback();
-    ensureAudioContext();
-    const src = audioContext.createBufferSource();
-    src.buffer = audioBuffer;
-    src.connect(audioContext.destination);
-    if (type === 'start') src.start(0, manualStart, 3);
-    else src.start(0, Math.max(0, manualEnd - 3), 3);
-    sourceNode = src;
-  }
-
   function exportLoop() {
     if (!loopBuffer) return;
 
@@ -645,7 +524,6 @@ INSTRUCTIONS:
     const len = loopBuffer.length * ch * 2;
     const buf = new ArrayBuffer(44 + len);
     const view = new DataView(buf);
-
     const writeStr = (o,s)=>{ for(let i=0;i<s.length;i++) view.setUint8(o+i, s.charCodeAt(i)); };
 
     writeStr(0,'RIFF'); view.setUint32(4, 36 + len, true);
