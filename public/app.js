@@ -1,4 +1,5 @@
 /* app.js - Photo Compressions Lab - Free (PNG upload enabled, JPEG export only) */
+/* Orientation-safe: browser handles EXIF. We never rotate manually. */
 (() => {
   const cfg = window.PCL_CONFIG || {
     IS_PRO: false,
@@ -42,98 +43,43 @@
     if (typeof window.__pclSetProgress === 'function') window.__pclSetProgress(pct);
   }
 
-  // ----- Minimal EXIF orientation reader (JPEG only, tag 0x0112) -----
-  async function readOrientation(file) {
-    try {
-      const buf = await file.slice(0, 128 * 1024).arrayBuffer();
-      const v = new DataView(buf);
-      if (v.getUint16(0) !== 0xFFD8) return 1; // not JPEG
-      let off = 2;
-      while (off + 3 < v.byteLength) {
-        const marker = v.getUint16(off); off += 2;
-        if (marker === 0xFFE1) {
-          const len = v.getUint16(off); off += 2;
-          if (v.getUint32(off) !== 0x45786966) break; // "Exif"
-          off += 6;
-          const tiff = off;
-          const little = v.getUint16(tiff) === 0x4949;
-          const get16 = (o) => v.getUint16(o, little);
-          const get32 = (o) => v.getUint32(o, little);
-          const ifd0 = tiff + get32(tiff + 4);
-          const n = get16(ifd0);
-          for (let i = 0; i < n; i++) {
-            const e = ifd0 + 2 + i * 12;
-            if (get16(e) === 0x0112) return get16(e + 8) || 1;
-          }
-          break;
-        } else {
-          const len = v.getUint16(off); off += len;
-        }
-      }
-    } catch {}
-    return 1;
-  }
-
-  // Draw bitmap into a new canvas with the correct final orientation and size. No residual transforms.
-  function drawOrientedToCanvas(bitmap, orientation, targetW, targetH) {
-    // For orientations 5-8 the width/height swap
-    const swap = orientation >= 5 && orientation <= 8;
-    const cw = swap ? targetH : targetW;
-    const ch = swap ? targetW : targetH;
-
-    const c = document.createElement('canvas');
-    c.width = cw; c.height = ch;
-    const ctx = c.getContext('2d', { alpha: false });
-    if (!ctx) throw new Error('Canvas unsupported');
-
-    ctx.save();
-    switch (orientation) {
-      case 2: ctx.translate(cw, 0); ctx.scale(-1, 1); break;                     // flip X
-      case 3: ctx.translate(cw, ch); ctx.rotate(Math.PI); break;                 // 180
-      case 4: ctx.translate(0, ch); ctx.scale(1, -1); break;                     // flip Y
-      case 5: ctx.rotate(0.5 * Math.PI); ctx.scale(1, -1); ctx.translate(0, -targetH); break;      // 90 + flip X
-      case 6: ctx.rotate(0.5 * Math.PI); ctx.translate(0, -targetH); break;                         // 90 CW
-      case 7: ctx.rotate(0.5 * Math.PI); ctx.translate(targetW, -targetH); ctx.scale(-1, 1); break; // 90 + flip Y
-      case 8: ctx.rotate(-0.5 * Math.PI); ctx.translate(-targetW, 0); break;                        // 270
-      default: break; // 1
-    }
-    // After transform, draw the bitmap into the intended targetW x targetH box
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(bitmap, 0, 0, targetW, targetH);
-    ctx.restore();
-    return c;
+  // ----- Decode (HTMLImageElement so the browser applies EXIF orientation) -----
+  function loadImage(file) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); res(img); };
+      img.onerror = (e) => { URL.revokeObjectURL(url); rej(e); };
+      img.src = url;
+    });
   }
 
   // ----- Pipeline -----
   async function processImage(file) {
-    const orientation = await readOrientation(file); // 1 for PNG
-    // decode
-    const bitmap = await createImageBitmap(file).catch(async () => {
-      const url = URL.createObjectURL(file);
-      const img = await new Promise((res, rej) => {
-        const im = new Image();
-        im.onload = () => res(im);
-        im.onerror = rej;
-        im.src = url;
-      });
-      URL.revokeObjectURL(url);
-      return img;
-    });
+    const img = await loadImage(file);
 
-    // size
-    const srcW = bitmap.width, srcH = bitmap.height;
+    // size from natural pixels after browser orientation
+    const srcW = img.naturalWidth || img.width;
+    const srcH = img.naturalHeight || img.height;
     const targetLong = longEdgePx();
     const long = Math.max(srcW, srcH);
     const scale = long > targetLong ? targetLong / long : 1;
     const tW = Math.round(srcW * scale);
     const tH = Math.round(srcH * scale);
 
-    // draw into clean canvas with correct orientation
-    const canvas = drawOrientedToCanvas(bitmap, orientation, tW, tH);
-    const ctx = canvas.getContext('2d');
+    // clean canvas with identity transform
+    const canvas = document.createElement('canvas');
+    canvas.width = tW;
+    canvas.height = tH;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) throw new Error('Canvas unsupported');
 
-    // overlays use identity transform and canvas.width/height
+    // draw source
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, 0, 0, tW, tH);
+
+    // overlays
     const cw = canvas.width, ch = canvas.height;
 
     // user watermark
@@ -163,15 +109,18 @@
       const fontSize = Math.max(12, Math.round(Math.min(cw, ch) * 0.025));
       const pad = Math.round(fontSize * 0.4);
       const text = cfg.FREE_BADGE_TEXT;
-      const w = ctx.measureText(text, ctx.font = `bold ${fontSize}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial`).width + pad * 1.6;
+
+      ctx.save();
+      ctx.font = `bold ${fontSize}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
+      const w = ctx.measureText(text).width + pad * 1.6;
       const h = Math.round(fontSize * 1.6);
       const x = cw - w - pad;
       const y = pad;
-      ctx.save();
       ctx.globalAlpha = o;
       ctx.fillStyle = 'rgba(255,255,255,0.95)';
       ctx.fillRect(x, y, w, h);
       ctx.fillStyle = '#0f172a';
+      ctx.textBaseline = 'top';
       ctx.fillText(text, x + pad * 0.8, y + Math.round((h - fontSize) * 0.5));
       ctx.restore();
     }
@@ -249,7 +198,7 @@
 
     for (const item of items) {
       try {
-        const blob = await processImage(item.file);
+        const blob = await processImage(item.file); // always processed after browser EXIF
         const base = item.name.replace(/\.[^.]+$/i, '');
         const outName = `${base}_compressed.jpg`;
         zip.file(outName, blob);
