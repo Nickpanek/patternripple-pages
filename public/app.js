@@ -1,5 +1,4 @@
 /* app.js - Photo Compressions Lab - Free (PNG upload enabled, JPEG export only) */
-
 (() => {
   const cfg = window.PCL_CONFIG || {
     IS_PRO: false,
@@ -92,7 +91,7 @@
 
   // ----- Pipeline -----
   async function processImage(file) {
-    const orientation = await readOrientation(file); // will be 1 for PNG
+    const orientation = await readOrientation(file); // 1 for PNG
 
     // decode
     const bitmap = await createImageBitmap(file).catch(async () => {
@@ -119,15 +118,18 @@
     const ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) throw new Error('Canvas unsupported');
 
+    // apply orientation transform, then draw the bitmap
     applyOrientation(ctx, canvas, orientation, outW0, outH0);
-
     if (orientation >= 5 && orientation <= 8) {
       ctx.drawImage(bitmap, 0, 0, canvas.height, canvas.width);
     } else {
       ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     }
 
-    // user watermark
+    // critical fix: reset transform before drawing overlays so positions are correct
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    // user watermark (optional)
     const wmText = String(el.wmText?.value || '').trim();
     if (wmText) {
       const o = clamp(Number(el.wmOpacity?.value) || 0.2, 0, 1);
@@ -229,7 +231,7 @@
     if (!state.items.length) { toast('Add images first'); return; }
 
     const maxCount = cfg.IS_PRO ? state.items.length : Math.min(cfg.FREE_MAX_PER_EXPORT, state.items.length);
-    const items = state.items.slice(0, maxCount);
+    const items = state.items.slice(0, maxCount); // enforce free cap here
 
     state.busy = true;
     setStatus('Processing...');
@@ -240,7 +242,7 @@
 
     for (const item of items) {
       try {
-        const blob = await processImage(item.file);
+        const blob = await processImage(item.file); // always processed, always watermarked/badged
         const base = item.name.replace(/\.[^.]+$/i, '');
         const outName = `${base}_compressed.jpg`;
         zip.file(outName, blob);
