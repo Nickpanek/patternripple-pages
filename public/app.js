@@ -1,5 +1,4 @@
-/* app.js - Orientation and watermark test with EXIF orientation detection */
-
+/* app.js - deterministic orientation + watermark */
 (() => {
   const cfg = window.PCL_CONFIG || {
     IS_PRO: false,
@@ -9,7 +8,6 @@
     MAX_JPEG_QUALITY: 100
   };
 
-  // ----- DOM -----
   const el = {
     fileInput: document.getElementById('fileInput'),
     dropzone: document.getElementById('dropzone'),
@@ -26,149 +24,142 @@
 
   const state = { items: [], busy: false };
 
-  // ----- Utils -----
-  const uid = () => Math.random().toString(36).slice(2, 10);
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-  const quality01 = () => clamp((Number(el.inpQuality?.value) || 80) / 100, 0, 1);
+  const quality01 = () => clamp((Number(el.inpQuality?.value) || 80) / 100, 0.1, 1);
   const longEdgePx = () => clamp(Number(el.inpLongEdge?.value) || 2500, 200, 12000);
+  const uid = () => Math.random().toString(36).slice(2,10);
+  const toast = (m,ms=1800)=>{ if(!el.toast) return; el.toast.textContent=m; el.toast.classList.remove('hidden'); setTimeout(()=>el.toast.classList.add('hidden'), ms); };
+  const setStatus = (t)=>{ if(el.status) el.status.textContent=t; };
 
-  function toast(msg, ms = 2200) {
-    if (!el.toast) return;
-    el.toast.textContent = msg;
-    el.toast.style.visibility = 'visible';
-    setTimeout(() => {
-      if (el.toast) el.toast.style.visibility = 'hidden';
-    }, ms);
-  }
-  function setStatus(txt) { if (el.status) el.status.textContent = txt; }
-  function setProgress(pct) { /* stub progress */ }
-
-  // ----- EXIF orientation reader -----
-  async function getOrientation(file) {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const view = new DataView(e.target.result);
-        if (view.getUint16(0, false) !== 0xFFD8) {
-          return resolve(1); // not a JPEG
-        }
-        let offset = 2;
-        const length = view.byteLength;
-        while (offset < length) {
-          const marker = view.getUint16(offset, false);
-          offset += 2;
-          if (marker === 0xFFE1) {
-            const app1Length = view.getUint16(offset, false);
-            offset += 2;
-            if (view.getUint32(offset, false) !== 0x45786966) break; // not "Exif"
-            offset += 6; // skip "Exif\0\0"
-            const little = view.getUint16(offset, false) === 0x4949;
-            offset += view.getUint32(offset + 4, little);
-            const tags = view.getUint16(offset, little);
-            offset += 2;
-            for (let i = 0; i < tags; i++) {
-              const entryOffset = offset + i * 12;
-              const tag = view.getUint16(entryOffset, little);
-              if (tag === 0x0112) {
-                const orientation = view.getUint16(entryOffset + 8, little);
-                return resolve(orientation);
-              }
-            }
-            break;
-          } else if ((marker & 0xff00) !== 0xff00) {
-            break;
-          } else {
-            offset += view.getUint16(offset, false);
+  // --- Read EXIF Orientation (JPEG only) ---
+  async function getOrientation(file){
+    try{
+      const buf = await file.slice(0, 64*1024).arrayBuffer();
+      const v = new DataView(buf);
+      if (v.getUint16(0,false) !== 0xFFD8) return 1;
+      let off = 2;
+      while (off + 1 < v.byteLength){
+        const marker = v.getUint16(off,false); off += 2;
+        if (marker === 0xFFE1){
+          const len = v.getUint16(off,false); off += 2;
+          if (v.getUint32(off,false) !== 0x45786966) break; // "Exif"
+          off += 6;
+          const tiff = off;
+          const little = v.getUint16(tiff,false) === 0x4949;
+          const get16 = (o)=> v.getUint16(o, little);
+          const get32 = (o)=> v.getUint32(o, little);
+          const ifd0 = tiff + get32(tiff + 4);
+          const n = get16(ifd0);
+          for(let i=0;i<n;i++){
+            const e = ifd0 + 2 + i*12;
+            if (get16(e) === 0x0112) return get16(e+8) || 1;
           }
+          break;
+        } else {
+          const len = v.getUint16(off,false); off += len;
         }
-        return resolve(1);
-      };
-      reader.readAsArrayBuffer(file.slice(0, 64 * 1024));
-    });
+      }
+    } catch {}
+    return 1;
   }
 
-  // ----- Decode via browser (honours EXIF when simply displayed) -----
-  function loadImage(file) {
-    return new Promise((res, rej) => {
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = () => { URL.revokeObjectURL(url); res(img); };
-      img.onerror = (e) => { URL.revokeObjectURL(url); rej(e); };
-      img.src = url;
-    });
-  }
-
-  // ----- Pipeline -----
-  async function processImage(file) {
-    const orientation = await getOrientation(file);
-    const img = await loadImage(file);
-
-    const srcW = img.naturalWidth || img.width;
-    const srcH = img.naturalHeight || img.height;
-
-    // Determine oriented width/height
-    let oW = srcW;
-    let oH = srcH;
-    if ([5, 6, 7, 8].includes(orientation)) {
-      oW = srcH;
-      oH = srcW;
+  // --- Decode with oriented pixels if possible ---
+  async function decodeWithAutoOrientation(file){
+    if (typeof createImageBitmap === 'function') {
+      try {
+        // Request pixels already oriented per EXIF
+        const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+        return { bitmap: bmp, alreadyOriented: true };
+      } catch {}
     }
+    // Fallback to <img> (browsers differ: some apply EXIF visually, but canvas gets raw pixels)
+    const url = URL.createObjectURL(file);
+    const img = await new Promise((res, rej)=>{
+      const im = new Image();
+      im.onload=()=>res(im); im.onerror=rej; im.src=url;
+    });
+    URL.revokeObjectURL(url);
+    return { bitmap: img, alreadyOriented: false };
+  }
 
-    // Scaling based on oriented dimensions
-    const targetLong = longEdgePx();
-    const long = Math.max(oW, oH);
-    const scale = long > targetLong ? targetLong / long : 1;
-    const destW = Math.round(oW * scale);
-    const destH = Math.round(oH * scale);
-
+  // --- Draw with optional manual orientation ---
+  function drawToCanvas(src, orientation, alreadyOriented, targetW, targetH){
+    // If pixels came pre-oriented, no transform and use src.width/height directly
+    let outW = targetW, outH = targetH;
+    if (!alreadyOriented && [5,6,7,8].includes(orientation)){
+      // canvas dims swap when rotating 90
+      [outW, outH] = [targetH, targetW];
+    }
     const canvas = document.createElement('canvas');
-    canvas.width = destW;
-    canvas.height = destH;
+    canvas.width = outW; canvas.height = outH;
     const ctx = canvas.getContext('2d', { alpha: false });
-    if (!ctx) throw new Error('Canvas unsupported');
-
-    // Orientation transform mapping
-    switch (orientation) {
-      case 2: ctx.transform(-1, 0, 0, 1, destW, 0); break;             // horizontal flip
-      case 3: ctx.transform(-1, 0, 0, -1, destW, destH); break;         // 180° rotate
-      case 4: ctx.transform(1, 0, 0, -1, 0, destH); break;              // vertical flip
-      case 5: ctx.transform(0, 1, 1, 0, 0, 0); break;                   // vertical flip + 90° rotate
-      case 6: ctx.transform(0, 1, -1, 0, destW, 0); break;              // 90° rotate
-      case 7: ctx.transform(0, -1, -1, 0, destW, destH); break;         // horizontal flip + 90° rotate
-      case 8: ctx.transform(0, -1, 1, 0, 0, destH); break;              // 90° rotate other way
-      default: break;                                                   // orientation 1: no transform
-    }
-
-    // Draw original image into oriented/scaled canvas
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(img, 0, 0, srcW, srcH, 0, 0, destW, destH);
 
-    // Overlays (watermark and badge)
-    const cw = destW;
-    const ch = destH;
+    if (!alreadyOriented) {
+      switch (orientation) {
+        case 2: ctx.transform(-1,0,0,1,outW,0); break;                 // flip X
+        case 3: ctx.transform(-1,0,0,-1,outW,outH); break;             // 180
+        case 4: ctx.transform(1,0,0,-1,0,outH); break;                 // flip Y
+        case 5: ctx.transform(0,1,1,0,0,0); break;                     // 90 + flip X
+        case 6: ctx.transform(0,1,-1,0,outW,0); break;                 // 90 CW
+        case 7: ctx.transform(0,-1,-1,0,outW,outH); break;             // 90 + flip Y
+        case 8: ctx.transform(0,-1,1,0,0,outH); break;                  // 90 CCW
+        default: break;
+      }
+    }
+    // Draw scaled
+    ctx.drawImage(src, 0, 0, src.width || src.naturalWidth, src.height || src.naturalHeight, 0, 0, targetW, targetH);
+    // Reset to identity for overlays
+    ctx.setTransform(1,0,0,1,0,0);
+    return { canvas, ctx };
+  }
 
-    const wmTextVal = String(el.wmText?.value || '').trim();
-    if (wmTextVal) {
+  async function processImage(file){
+    const isJPEG = /^image\/jpe?g$/i.test(file.type);
+    const orientation = isJPEG ? await getOrientation(file) : 1;
+    const { bitmap, alreadyOriented } = await decodeWithAutoOrientation(file);
+
+    // Source dims that match how we will draw
+    let srcW = bitmap.width || bitmap.naturalWidth;
+    let srcH = bitmap.height || bitmap.naturalHeight;
+
+    // When pixels are not already oriented, swap intended target box for 90/270
+    const rotate90 = !alreadyOriented && [5,6,7,8].includes(orientation);
+    const orientedW = rotate90 ? srcH : srcW;
+    const orientedH = rotate90 ? srcW : srcH;
+
+    const targetLong = longEdgePx();
+    const scale = Math.min(1, targetLong / Math.max(orientedW, orientedH));
+    const tW = Math.round(orientedW * scale);
+    const tH = Math.round(orientedH * scale);
+
+    const { canvas, ctx } = drawToCanvas(bitmap, orientation, alreadyOriented, tW, tH);
+    const cw = canvas.width, ch = canvas.height;
+
+    // Watermark
+    const wmText = String(el.wmText?.value || '').trim();
+    if (wmText) {
       const o = clamp(Number(el.wmOpacity?.value) || 0.2, 0, 1);
       const pad = Math.round(Math.min(cw, ch) * 0.02);
       const fontSize = Math.round(Math.min(cw, ch) * 0.035);
       ctx.save();
       ctx.globalAlpha = o;
       ctx.font = `${fontSize}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
-      ctx.fillStyle = '#000000';
+      ctx.fillStyle = '#000';
       ctx.textBaseline = 'bottom';
       ctx.lineWidth = Math.max(2, Math.round(fontSize * 0.08));
       ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-      const m = ctx.measureText(wmTextVal);
+      const m = ctx.measureText(wmText);
       const x = cw - pad - m.width;
       const y = ch - pad;
-      ctx.strokeText(wmTextVal, x, y);
-      ctx.fillText(wmTextVal, x, y);
+      ctx.strokeText(wmText, x, y);
+      ctx.fillText(wmText, x, y);
       ctx.restore();
     }
 
-    if (!cfg.IS_PRO && cfg.FREE_BADGE_TEXT) {
+    // Free badge
+    if (!cfg.IS_PRO && cfg.FREE_BADGE_TEXT){
       const o = clamp(Number(cfg.FREE_BADGE_OPACITY) || 0.55, 0, 1);
       const fontSize = Math.max(12, Math.round(Math.min(cw, ch) * 0.025));
       const pad = Math.round(fontSize * 0.4);
@@ -177,8 +168,7 @@
       ctx.font = `bold ${fontSize}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
       const w = ctx.measureText(text).width + pad * 1.6;
       const h = Math.round(fontSize * 1.6);
-      const x = cw - w - pad;
-      const y = pad;
+      const x = cw - w - pad, y = pad;
       ctx.globalAlpha = o;
       ctx.fillStyle = 'rgba(255,255,255,0.95)';
       ctx.fillRect(x, y, w, h);
@@ -189,13 +179,68 @@
     }
 
     const q = quality01();
-    const blob = await new Promise((res, rej) =>
-      canvas.toBlob((b) => b ? res(b) : rej(new Error('Encoding failed')), 'image/jpeg', q)
-    );
-
+    const blob = await new Promise((res,rej)=>canvas.toBlob(b=>b?res(b):rej(new Error('encode')), 'image/jpeg', q));
     return blob;
   }
 
-  // The rest of the code (renderQueue, addFiles, exportZip and event handlers) remains unchanged
-  // …
+  // ---- Queue UI / Export (unchanged) ----
+  function renderQueue(){
+    const wrap = el.queue; if(!wrap) return; wrap.innerHTML='';
+    for(const item of state.items){
+      const row = document.createElement('div');
+      row.className='flex items-center gap-3 p-2 rounded border';
+      const img = document.createElement('img');
+      img.className='thumb'; img.loading='lazy'; img.alt=item.name;
+      img.src = URL.createObjectURL(item.file); img.onload=()=>URL.revokeObjectURL(img.src);
+      const meta = document.createElement('div');
+      meta.className='text-sm';
+      meta.innerHTML = `<div class="font-medium truncate max-w-[14rem]" title="${item.name}">${item.name}</div>
+        <div class="text-slate-500">${Math.round(item.size/1024)} KB</div>`;
+      const del = document.createElement('button');
+      del.className='ml-auto px-2 py-1 text-xs rounded bg-slate-200 hover:bg-slate-300';
+      del.textContent='Remove';
+      del.addEventListener('click',()=>{ state.items = state.items.filter(x=>x.id!==item.id); renderQueue(); }, {passive:true});
+      row.append(img, meta, del); wrap.appendChild(row);
+    }
+  }
+
+  function addFiles(files){
+    const list = Array.from(files).filter(f=>/^image\/(jpe?g|png)$/i.test(f.type));
+    for(const f of list) state.items.push({ file:f, id:uid(), name:f.name, size:f.size });
+    renderQueue();
+    if (!list.length) toast('Only PNG and JPEG are supported');
+  }
+
+  async function exportZip(){
+    if (state.busy) return;
+    if (!state.items.length) { toast('Add images first'); return; }
+    const maxCount = cfg.IS_PRO ? state.items.length : Math.min(cfg.FREE_MAX_PER_EXPORT, state.items.length);
+    const items = state.items.slice(0, maxCount);
+
+    state.busy = true; setStatus('Processing...');
+    const zip = new JSZip(); let i=0;
+    for (const it of items){
+      try{
+        const blob = await processImage(it.file);
+        const base = it.name.replace(/\.[^.]+$/,'');
+        zip.file(`${base}_compressed.jpg`, blob);
+      } catch(e){ console.error(e); toast(`Failed: ${it.name}`); }
+      finally { i++; }
+    }
+    setStatus('Zipping...');
+    const zipBlob = await zip.generateAsync({ type:'blob', compression:'DEFLATE' });
+    const a = document.createElement('a'); const url = URL.createObjectURL(zipBlob);
+    a.href=url; a.download=`photos_${Date.now()}.zip`; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    state.busy = false; setStatus('Idle'); toast(`Exported ${items.length} file${items.length>1?'s':''}`);
+  }
+
+  el.fileInput?.addEventListener('change', e => { const files = /** @type {HTMLInputElement} */(e.target).files; if (files?.length) addFiles(files); });
+  el.dropzone?.addEventListener('drop', (e)=>{ e.preventDefault(); const dt=e.dataTransfer; if (dt?.files?.length) addFiles(dt.files); }, {passive:false});
+  el.btnClear?.addEventListener('click', ()=>{ state.items=[]; renderQueue(); setStatus('Idle'); }, {passive:true});
+  el.btnExport?.addEventListener('click', ()=>{ exportZip(); }, {passive:true});
+
+  if (el.fileInput && !el.fileInput.getAttribute('accept')) {
+    el.fileInput.setAttribute('accept','image/jpeg,image/jpg,image/pjpeg,image/png');
+  }
 })();
