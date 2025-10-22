@@ -54,19 +54,21 @@ export default function BlogIndex() {
 
       <section className="max-w-4xl mx-auto px-4 py-12">
         <ul className="space-y-6">
+          {/* New SmoothSnap blog entry */}
           <li className="rounded-lg border border-gray-200 bg-white p-5">
             <h2 className="text-xl font-medium text-gray-900">
-              Daily Pattern Drops - Archived
+              SmoothSnap Pattern Checker - Verify Seamless Repeats Fast
             </h2>
             <p className="mt-1 text-gray-700">
-              This entry is archived. It now points to the Lab and Spoonflower.
+              Learn how to preview and verify seamless pattern repeats using SmoothSnap. 
+              Upload your PNG, JPG, or WebP files, adjust grid and gap settings, and spot seams before printing.
             </p>
             <div className="mt-3">
               <Link
-                href="/blog/daily-pattern-drops"
+                href="/blog/smoothsnap-pattern-checker"
                 className="text-blue-700 hover:underline"
               >
-                View entry
+                Read post
               </Link>
             </div>
           </li>
