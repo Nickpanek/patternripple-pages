@@ -27,6 +27,8 @@ type Tool = {
   href: string;
   summary: string;
   badge?: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
 };
 
 const tools: Tool[] = [
@@ -48,11 +50,13 @@ const tools: Tool[] = [
   },
   {
     slug: "audio-looper-panek",
-    title: "Audio Looper",
+    title: "Audio Looper - Desktop Edition",
     href: "/audio-looper-panek.html",
     summary:
-      "Loop audio in your browser with adjustable start and end points, tempo control, and panning. Good for testing loops or stems.",
+      "Desktop edition. Loop audio with adjustable start/end points, tempo control, and panning. Good for testing loops or stems.",
     badge: "Audio",
+    secondaryHref: "https://www.patternripple.com/audio-loop-creator-mobile.html",
+    secondaryLabel: "Open mobile tool",
   },
   {
     slug: "audio-processor",
@@ -146,7 +150,6 @@ export default function LabPage() {
             >
               Back to Home
             </Link>
-            {/* removed games link */}
           </div>
         </div>
       </header>
@@ -175,7 +178,7 @@ export default function LabPage() {
 
                 <p className="mt-3 text-gray-700 text-sm flex-1">{tool.summary}</p>
 
-                <div className="mt-5">
+                <div className="mt-5 grid gap-2">
                   <Link
                     href={tool.href}
                     className="inline-flex items-center justify-center w-full bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-purple-600 transition-colors"
@@ -184,6 +187,16 @@ export default function LabPage() {
                   >
                     Open tool
                   </Link>
+
+                  {tool.secondaryHref && tool.secondaryLabel ? (
+                    <a
+                      href={tool.secondaryHref}
+                      className="inline-flex items-center justify-center w-full bg-white text-gray-900 border border-gray-300 px-4 py-2.5 rounded-lg hover:border-purple-500 hover:text-purple-700 transition-colors"
+                      title={tool.secondaryLabel}
+                    >
+                      {tool.secondaryLabel}
+                    </a>
+                  ) : null}
                 </div>
               </div>
             </article>
@@ -193,9 +206,11 @@ export default function LabPage() {
         {/* Notes */}
         <section className="mt-12 text-sm text-gray-600">
           <p>
-            Feature requests and bugs - email <a href="mailto:nick@patternripple.com" className="underline">nick@patternripple.com</a>.
+            Feature requests and bugs - email{" "}
+            <a href="mailto:nick@patternripple.com" className="underline">
+              nick@patternripple.com
+            </a>.
           </p>
-          {/* removed any invitation to GitHub */}
         </section>
       </main>
     </div>
