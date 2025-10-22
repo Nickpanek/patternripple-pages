@@ -42,11 +42,13 @@ const tools: Tool[] = [
   },
   {
     slug: "seamless-pattern-checker",
-    title: "Seamless Pattern Checker",
-    href: "/pattern-checker.html",
+    title: "Seamless Pattern Checker - SmoothSnap v1",
+    href: "/pattern-checker-smoothsnap.html",
     summary:
-      "Load an image and preview it as tiles. Set rows and columns, toggle gaps to spot seams, or load from a URL.",
+      "Upgraded checker with smooth snapping and refined controls. Preview tiles, tune rows and columns, toggle gaps, and spot seams fast.",
     badge: "Design",
+    secondaryHref: "/pattern-checker.html",
+    secondaryLabel: "v0",
   },
   {
     slug: "audio-looper-panek",
