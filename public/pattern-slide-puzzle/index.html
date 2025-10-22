@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PatternRipple Slide Puzzle - Daily Themed Sets</title>
+<meta name="description" content="Solve a 3x3 slide puzzle built from PatternRipple designs. Themes rotate daily. View any solved design on Spoonflower." />
+<link rel="canonical" href="https://www.patternripple.com/pattern-slide-puzzle/">
+<meta property="og:type" content="game">
+<meta property="og:title" content="PatternRipple Slide Puzzle">
+<meta property="og:description" content="Daily themed puzzles using PatternRipple designs.">
+<style>
+  :root { --ui:#111; --bg:#f7f7f7; --card:#fff; --muted:#777; }
+  html,body { height:100%; margin:0; background:var(--bg); color:var(--ui); font:16px system-ui,-apple-system,Segoe UI,Roboto,Arial; }
+  .wrap { max-width:960px; margin:20px auto; padding:16px; }
+  header { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  select,button { font:inherit; padding:8px 10px; border:1px solid #ccc; border-radius:8px; background:#fff; cursor:pointer; }
+  button.primary { background:#111; color:#fff; border-color:#111; }
+  .stats { margin-left:auto; display:flex; gap:12px; color:var(--muted); }
+  .board-wrap { display:grid; place-items:center; margin-top:16px; }
+  .board { width:min(92vw,600px); aspect-ratio:1; background:var(--card); border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:10px; }
+  .grid { width:100%; height:100%; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:6px; }
+  .tile { position:relative; border-radius:8px; background-size:300% 300%; background-repeat:no-repeat; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12); transition:transform .08s; }
+  .tile:active { transform:scale(.98); }
+  .tile.empty { background:repeating-conic-gradient(#eee 0 25%,#fafafa 0 50%) 50%/16px 16px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.06); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; }
+  .muted { color:var(--muted); font-size:14px; }
+  dialog { border:none; border-radius:12px; padding:18px; max-width:420px; box-shadow:0 10px 40px rgba(0,0,0,.2); }
+  dialog::backdrop { background:rgba(0,0,0,.4); }
+  .row { display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  a.cta { display:inline-block; padding:10px 12px; border-radius:8px; background:#111; color:#fff; text-decoration:none; }
+  .foot { margin-top:14px; font-size:13px; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <strong>Pattern Slide Puzzle</strong>
+    <div class="controls">
+      <label class="muted">Theme
+        <select id="setSelect" aria-label="Theme"></select>
+      </label>
+      <label class="muted">Pattern
+        <select id="patternSelect" aria-label="Pattern"></select>
+      </label>
+      <button id="shuffle" class="primary">New puzzle</button>
+    </div>
+    <div class="stats">
+      <div id="moves">Moves: 0</div>
+      <div id="time">Time: 0s</div>
+    </div>
+  </header>
+
+  <div class="board-wrap">
+    <div class="board">
+      <div id="grid" class="grid" aria-label="3 by 3 sliding puzzle"></div>
+    </div>
+    <div class="foot">Finish to reveal the Spoonflower link for this design. Daily theme auto selected. You can switch sets anytime.</div>
+  </div>
+</div>
+
+<dialog id="win">
+  <h3 id="winTitle">Solved</h3>
+  <p id="winMsg" class="muted">Stats will show here.</p>
+  <div class="row">
+    <a id="buy" class="cta" target="_blank" rel="noopener">View on Spoonflower</a>
+    <button id="again">Play again</button>
+  </div>
+</dialog>
+
+<script>
+  // -------------------------------
+  // Config
+  // -------------------------------
+  const THEMES = [
+    { id:"faux-embroidery", title:"Faux Embroidery" },
+    { id:"impasto-floral",  title:"Impasto Floral" },
+    { id:"midcentury",      title:"Mid-Century" },
+    { id:"geometric",       title:"Geometric" },
+    { id:"ufo-retro",       title:"UFO Retro" }
+  ];
+
+  const IMG_MAX_KB = 250; // content guidance - not enforced here
+  const gridEl = document.getElementById("grid");
+  const setSelect = document.getElementById("setSelect");
+  const selEl = document.getElementById("patternSelect");
+  const movesEl = document.getElementById("moves");
+  const timeEl = document.getElementById("time");
+  const shuffleBtn = document.getElementById("shuffle");
+  const dlg = document.getElementById("win");
+  const buy = document.getElementById("buy");
+  const winTitle = document.getElementById("winTitle");
+  const winMsg = document.getElementById("winMsg");
+  const again = document.getElementById("again");
+
+  let DESIGNS = [];         // current theme designs
+  let state = [];           // tile indexes 0..8, where 8 is empty
+  let moves = 0;
+  let t0 = 0;
+  let timerId = null;
+  let current = null;
+
+  // -------------------------------
+  // Boot
+  // -------------------------------
+  buildGrid();
+  buildThemeSelector();
+  autoSelectTodayTheme();
+  // After theme loads, initPuzzleWithDesigns is called
+
+  // -------------------------------
+  // UI builders
+  // -------------------------------
+  function buildGrid() {
+    gridEl.innerHTML = "";
+    for (let i = 0; i < 9; i++) {
+      const tile = document.createElement("button");
+      tile.className = "tile";
+      tile.setAttribute("data-idx", i);
+      tile.setAttribute("aria-label", "tile");
+      tile.addEventListener("click", onTile);
+      tile.addEventListener("touchend", onTile, { passive: true });
+      gridEl.appendChild(tile);
+    }
+  }
+
+  function buildThemeSelector() {
+    setSelect.innerHTML = "";
+    THEMES.forEach((t) => {
+      const opt = document.createElement("option");
+      opt.value = t.id;
+      opt.textContent = t.title;
+      setSelect.appendChild(opt);
+    });
+    setSelect.onchange = async () => {
+      const id = setSelect.value;
+      await loadTheme(id);
+      initPuzzleWithDesigns(DESIGNS);
+      localStorage.setItem("puzzleThemeId", id);
+    };
+  }
+
+  function buildPatternSelector() {
+    selEl.innerHTML = "";
+    DESIGNS.forEach((d) => {
+      const opt = document.createElement("option");
+      opt.value = d.id;
+      opt.textContent = d.title;
+      selEl.appendChild(opt);
+    });
+    selEl.onchange = () => {
+      const id = selEl.value;
+      current = DESIGNS.find(d => d.id === id) || DESIGNS[0];
+      localStorage.setItem("puzzleDesignId", id);
+      applyDesign(current);
+      newGame();
+    };
+  }
+
+  // -------------------------------
+  // Theme rotation - daily default
+  // -------------------------------
+  function todayThemeIndex() {
+    const d = new Date();
+    const s = `${d.getUTCFullYear()}${(d.getUTCMonth()+1).toString().padStart(2,"0")}${d.getUTCDate().toString().padStart(2,"0")}`;
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h,16777619); }
+    return (h >>> 0) % THEMES.length;
+  }
+
+  async function autoSelectTodayTheme() {
+    const savedTheme = localStorage.getItem("puzzleThemeId");
+    const idx = savedTheme ? THEMES.findIndex(t => t.id === savedTheme) : todayThemeIndex();
+    const theme = THEMES[Math.max(0, idx)];
+    setSelect.value = theme.id;
+    await loadTheme(theme.id);
+    initPuzzleWithDesigns(DESIGNS);
+  }
+
+  async function loadTheme(themeId) {
+    try {
+      const res = await fetch(`collections/${themeId}.json`, { cache:"no-store" });
+      DESIGNS = await res.json();
+    } catch (e) {
+      // Fallback to a minimal inline set if fetch fails
+      DESIGNS = [
+        { id:"fallback-1", title:"Fallback Pattern 1", img:"img/rose-grid.jpg", url:"https://www.spoonflower.com/?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=fallback" }
+      ];
+    }
+  }
+
+  // -------------------------------
+  // Init and events
+  // -------------------------------
+  function initPuzzleWithDesigns(list) {
+    DESIGNS = list;
+    buildPatternSelector();
+    const savedDesign = localStorage.getItem("puzzleDesignId");
+    current = (savedDesign && DESIGNS.find(d => d.id === savedDesign)) || DESIGNS[0];
+    selEl.value = current.id;
+    applyDesign(current);
+    newGame();
+  }
+
+  shuffleBtn.addEventListener("click", newGame);
+  again.addEventListener("click", () => { dlg.close(); newGame(); });
+
+  // -------------------------------
+  // Daily seeded shuffle
+  // -------------------------------
+  function seedFromDate(d = new Date()) {
+    const iso = d.toISOString().slice(0,10);
+    let h = 2166136261;
+    for (let i = 0; i < iso.length; i++) { h ^= iso.charCodeAt(i); h = Math.imul(h,16777619); }
+    return h >>> 0;
+  }
+  function mulberry32(seed) {
+    return function() {
+      let t = seed += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function shuffleSeeded(arr, rand) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // -------------------------------
+  // Game core
+  // -------------------------------
+  function applyDesign(design) {
+    const tiles = [...gridEl.children];
+    tiles.forEach((tile, i) => {
+      const pos = indexToPos(i);
+      tile.style.backgroundImage = `url(${design.img})`;
+      tile.style.backgroundSize = "300% 300%";
+      tile.style.backgroundPosition = `${pos.x * 50}% ${pos.y * 50}%`;
+    });
+  }
+
+  function newGame() {
+    const rand = mulberry32(seedFromDate(new Date()));
+    do {
+      state = shuffleSeeded([...Array(9).keys()], rand);
+    } while (!isSolvable(state) || isSolved(state));
+    moves = 0; movesEl.textContent = "Moves: 0";
+    startTimer();
+    paint();
+  }
+
+  function paint() {
+    const tiles = [...gridEl.children];
+    for (let gridIndex = 0; gridIndex < 9; gridIndex++) {
+      const tileIndex = state[gridIndex];
+      const tileEl = tiles[gridIndex];
+      if (tileIndex === 8) {
+        tileEl.classList.add("empty");
+        tileEl.style.backgroundImage = "none";
+        tileEl.setAttribute("aria-label", "empty space");
+      } else {
+        tileEl.classList.remove("empty");
+        tileEl.style.backgroundImage = `url(${current.img})`;
+        const pos = indexToPos(tileIndex);
+        tileEl.style.backgroundPosition = `${pos.x * 50}% ${pos.y * 50}%`;
+        tileEl.setAttribute("aria-label", "tile");
+      }
+    }
+  }
+
+  function onTile(e) {
+    const tiles = [...gridEl.children];
+    const clickedGridIndex = tiles.indexOf(e.currentTarget);
+    const emptyGridIndex = state.indexOf(8);
+    if (isNeighbor(clickedGridIndex, emptyGridIndex)) {
+      [state[clickedGridIndex], state[emptyGridIndex]] = [state[emptyGridIndex], state[clickedGridIndex]];
+      moves++; movesEl.textContent = "Moves: " + moves;
+      paint();
+      if (isSolved(state)) {
+        stopTimer();
+        victory();
+      }
+    }
+    if ("vibrate" in navigator) navigator.vibrate?.(10);
+  }
+
+  function startTimer() {
+    t0 = Date.now();
+    clearInterval(timerId);
+    timerId = setInterval(() => {
+      const s = Math.floor((Date.now() - t0) / 1000);
+      timeEl.textContent = "Time: " + s + "s";
+    }, 250);
+  }
+  function stopTimer() { clearInterval(timerId); }
+
+  function victory() {
+    const s = Math.floor((Date.now() - t0) / 1000);
+    winMsg.textContent = `Moves ${moves}, time ${s}s`;
+    buy.href = current.url;
+    dlg.showModal();
+    // Optional analytics hook
+    if (window.gtag) gtag("event","puzzle_complete",{ theme:setSelect.value, design:current.id, moves:moves, seconds:s });
+  }
+
+  // Helpers
+  function indexToPos(i) { return { x: i % 3, y: Math.floor(i / 3) }; }
+  function isNeighbor(a,b){ const ax=a%3, ay=Math.floor(a/3), bx=b%3, by=Math.floor(b/3); return Math.abs(ax-bx)+Math.abs(ay-by)===1; }
+  function isSolved(arr){ for(let i=0;i<9;i++) if(arr[i]!==i) return false; return true; }
+  function isSolvable(arr){
+    let inv=0;
+    for(let i=0;i<9;i++){
+      for(let j=i+1;j<9;j++){
+        if(arr[i]===8||arr[j]===8) continue;
+        if(arr[i]>arr[j]) inv++;
+      }
+    }
+    return inv%2===0;
+  }
+</script>
+</body>
+</html>
