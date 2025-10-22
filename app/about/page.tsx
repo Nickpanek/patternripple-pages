@@ -3,196 +3,107 @@ import type { Metadata } from "next";
 
 // SEO
 export const metadata: Metadata = {
-  title: "PatternRipple Lab - Free tools and prototypes",
+  title: "About PatternRipple | Nick Panek",
   description:
-    "Free in-browser tools and prototypes. Seamless pattern creator, tile checker, audio tools, slideshow maker, and the cqs-rs browser demo.",
-  alternates: { canonical: "https://www.patternripple.com/lab" },
+    "PatternRipple by Nick Panek – creative tools, free lab projects, and digital assets. No subscriptions ever. Build smarter, faster, and freely.",
+  alternates: { canonical: "https://www.patternripple.com/about" },
   openGraph: {
-    title: "PatternRipple Lab - Free tools and prototypes",
+    title: "About PatternRipple | Nick Panek",
     description:
-      "Try the seamless pattern creator, tile checker, audio tools, slideshow maker, and the cqs-rs browser demo.",
-    url: "https://www.patternripple.com/lab",
+      "Learn about PatternRipple, created by Nick Panek. Free creative tools, pattern lab, and time-saving digital resources.",
+    url: "https://www.patternripple.com/about",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PatternRipple Lab - Free tools and prototypes",
-    description: "Hands-on browser tools. No install.",
+    title: "About PatternRipple | Nick Panek",
+    description:
+      "Free creative tools built by Nick Panek. No subscriptions ever.",
   },
 };
 
-type Tool = {
-  slug: string;
-  title: string;
-  href: string;
-  summary: string;
-  category: string;
-};
-
-const tools: Tool[] = [
-  {
-    slug: "seamless-pattern-creator",
-    title: "Seamless Pattern Creator",
-    href: "/seamless-pattern-creator.html",
-    summary:
-      "Build seamless tiles in your browser. Offset and wrap artwork, preview as repeating tiles, and export the final image.",
-    category: "Design",
-  },
-  {
-    slug: "seamless-pattern-checker",
-    title: "Seamless Pattern Checker",
-    href: "/pattern-checker.html",
-    summary:
-      "Load an image and preview it as tiles. Set rows and columns, toggle gaps to spot seams, or load from a URL.",
-    category: "Design",
-  },
-  {
-    slug: "audio-looper-panek",
-    title: "Audio Looper",
-    href: "/audio-looper-panek.html",
-    summary:
-      "Loop audio in your browser with adjustable start and end points, tempo control, and panning. Good for testing loops or stems.",
-    category: "Audio",
-  },
-  {
-    slug: "audio-processor",
-    title: "Audio Processor - Fade plus Normalize",
-    href: "/audio-processor.html",
-    summary:
-      "Browser-based fades and normalization using Web Audio. Works offline in the tab. Export WAV or MP3.",
-    category: "Audio",
-  },
-  {
-    slug: "property-slideshow-maker",
-    title: "Property Slideshow Maker",
-    href: "/property-slideshow-maker.html",
-    summary:
-      "Build quick listing videos. Choose aspect ratio, add address, price, details, color, and logo. Export WebM, GIF, or frames ZIP.",
-    category: "Video",
-  },
-  {
-    slug: "cqs-rs-browser-simulator",
-    title: "cqs-rs Browser Demo",
-    href: "/cqs_rs_docs.html",
-    summary:
-      "Run small quantum circuit programs in the browser. JSON editor, shots control, and inline results for a demo subset of the Rust simulator.",
-    category: "Experimental",
-  },
-];
-
-// sort tools logically
-const order: Record<string, number> = {
-  "seamless-pattern-creator": 10,
-  "seamless-pattern-checker": 20,
-  "audio-looper-panek": 30,
-  "audio-processor": 40,
-  "property-slideshow-maker": 50,
-  "cqs-rs-browser-simulator": 90,
-};
-
-const sortedTools = [...tools].sort(
-  (a, b) => (order[a.slug] ?? 999) - (order[b.slug] ?? 999)
-);
-
-// JSON-LD
-const itemListJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ItemList",
-  itemListElement: sortedTools.map((t, i) => ({
-    "@type": "ListItem",
-    position: i + 1,
-    url: `https://www.patternripple.com${t.href}`,
-    name: t.title,
-  })),
-};
-
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "PatternRipple Lab",
-  url: "https://www.patternripple.com/lab",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: "https://www.patternripple.com/search?q={query}",
-    "query-input": "required name=query",
-  },
-};
-
-export default function LabPage() {
+export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-      />
-
       {/* Hero */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-12">
-        <div className="max-w-6xl mx-auto px-4 text-center">
+        <div className="max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-5xl font-thin tracking-wide text-gray-900 mb-3">
-            PatternRipple Lab
+            PatternRipple
           </h1>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">
             I used to sell patterns on this site. I’m now building software that
             will never have a subscription. It’s just me here—a one-man team—and
             I’ll squash bugs as fast as I can. Files stay local where possible.
           </p>
-          <div className="mt-5 flex justify-center gap-3">
+
+          <div className="mt-6 flex justify-center gap-3">
             <Link
               href="/"
               className="inline-block bg-white border border-gray-300 text-gray-900 px-5 py-3 rounded-lg hover:border-purple-500 hover:text-purple-700 transition-colors"
             >
               Back to Home
             </Link>
+            <Link
+              href="/lab"
+              className="inline-block bg-gray-900 text-white px-5 py-3 rounded-lg hover:bg-purple-600 transition-colors"
+            >
+              Visit the Lab
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* Tools grid */}
-      <main className="max-w-6xl mx-auto px-4 py-10">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedTools.map((tool) => (
-            <article
-              key={tool.slug}
-              className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all ring-1 ring-gray-200"
-            >
-              <div className="p-6 flex flex-col h-full">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-light text-gray-900">
-                    <Link href={tool.href} className="hover:text-purple-700">
-                      {tool.title}
-                    </Link>
-                  </h2>
-                  <span className="ml-3 text-xs font-semibold tracking-wide bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
-                    {tool.category}
-                  </span>
-                </div>
-
-                <p className="mt-3 text-gray-700 text-sm flex-1">{tool.summary}</p>
-
-                <div className="mt-5">
-                  <Link
-                    href={tool.href}
-                    className="inline-flex items-center justify-center w-full bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-purple-600 transition-colors"
-                    prefetch={false}
-                    title={`Open ${tool.title}`}
-                  >
-                    Open tool
-                  </Link>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {/* Notes */}
-        <section className="mt-12 text-sm text-gray-600">
+      {/* About Section */}
+      <main className="max-w-4xl mx-auto px-4 py-14 text-gray-800">
+        <section className="prose prose-gray max-w-none">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+            About PatternRipple
+          </h2>
           <p>
-            Found a bug or want a feature added? Email{" "}
+            I’m Nick Panek, the creator of PatternRipple. This started as a place
+            to share my seamless patterns, but it’s evolved into a hub for creative
+            tools and digital resources that save time and cut wasted effort.
+          </p>
+          <p>
+            Every tool I build comes from real workflow problems I’ve solved for
+            myself—and now I share them with anyone who wants to work smarter.
+          </p>
+          <p>
+            All PatternRipple Lab tools are free and will always stay free. Every
+            update keeps a link to the previous version, so if something changes and
+            you prefer an older release, you can keep using it. I never delete old
+            versions. Your workflow, your choice.
+          </p>
+          <p>
+            In the future, I’ll also release paid tools—but never subscription-based.
+            No monthly fees, no SaaS lock-ins. That subscription plague is exactly
+            why I started building my own tools in the first place. You buy it once,
+            you own it.
+          </p>
+          <p>
+            I also share free assets for gamers, content creators, authors, and
+            haunted house designers—resources built to inspire creativity across
+            different projects. I still sell fabric and wallpaper designs, and if one
+            of my free tools helps you out, you can buy me a coffee as a thank-you.
+          </p>
+          <p>
+            Explore everything I make and share here:{" "}
+            <a
+              href="https://heylink.me/nickpanek/"
+              className="text-purple-700 underline hover:text-purple-800"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              heylink.me/nickpanek
+            </a>
+          </p>
+        </section>
+
+        {/* Footer Contact */}
+        <section className="mt-10 text-sm text-gray-600">
+          <p>
+            Found a bug or have feedback? Email{" "}
             <a
               href="mailto:nick@patternripple.com"
               className="underline hover:text-purple-700"
