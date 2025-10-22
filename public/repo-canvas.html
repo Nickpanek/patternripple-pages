@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repo-to-One-Image + OCR</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { color-scheme: light dark; }
+  body { margin:0; font:14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  header { position:sticky; top:0; background:Canvas; border-bottom:1px solid; padding:8px; display:flex; gap:8px; align-items:center; z-index:10; }
+  input, button, select { padding:6px 8px; }
+  #status { margin-left:auto; opacity:.8; }
+  #doc { padding:16px; white-space:pre-wrap; overflow-wrap:anywhere; }
+  .file-block { border:1px solid; border-radius:6px; margin:12px 0; padding:10px; }
+  .file-title { font-weight:700; margin-bottom:6px; }
+  .hidden { display:none; }
+</style>
+<!-- highlight.js for readable code in the render -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+<!-- html2canvas for rasterizing the page -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<!-- Tesseract.js for optional in-browser OCR -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
+</head>
+<body>
+<header>
+  <label>Owner/repo <input id="repo" size="26" placeholder="owner/name" value="Nickpanek/patternripple-pages"></label>
+  <label>Branch <input id="branch" size="10" value="main"></label>
+  <label>Max files <input id="maxFiles" type="number" value="200" min="1"></label>
+  <label>Max chars per file <input id="maxChars" type="number" value="50000" min="1000"></label>
+  <select id="includeExt">
+    <option value="text">Text only</option>
+    <option value="all">All files as text best effort</option>
+  </select>
+  <button id="buildBtn">Build image</button>
+  <button id="ocrBtn" disabled>OCR that image</button>
+  <a id="downloadImg" class="hidden">Download PNG</a>
+  <a id="downloadTxt" class="hidden">Download OCR.txt</a>
+  <span id="status"></span>
+</header>
+
+<main id="doc">
+  <!-- Repo content will be injected here before rasterization -->
+</main>
+
+<script>
+const $ = (id)=>document.getElementById(id);
+const textLike = new Set([
+  ".md",".txt",".html",".htm",".css",".scss",".less",".js",".mjs",".cjs",".ts",".tsx",".jsx",
+  ".json",".yml",".yaml",".toml",".xml",".svg",".py",".rb",".go",".rs",".c",".cc",".cpp",".h",
+  ".hpp",".java",".kt",".php",".sh",".bat",".ps1",".sql",".ini",".env",".cfg",".conf",".mdx"
+]);
+
+function ext(path){
+  const i = path.lastIndexOf(".");
+  return i> -1 ? path.slice(i).toLowerCase() : "";
+}
+
+function humanKB(n){ return (n/1024).toFixed(1)+" KB"; }
+
+async function fetchJSON(url){
+  const r = await fetch(url, { headers: { "Accept":"application/vnd.github+json" } });
+  if(!r.ok) throw new Error("HTTP "+r.status+" for "+url);
+  return r.json();
+}
+
+async function fetchText(url){
+  const r = await fetch(url);
+  if(!r.ok) throw new Error("HTTP "+r.status+" for raw");
+  return r.text();
+}
+
+// Get a flat tree of files
+async function listFiles(ownerRepo, branch){
+  const [owner,repo] = ownerRepo.split("/");
+  const ref = encodeURIComponent("heads/"+branch);
+  const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`;
+  const data = await fetchJSON(url);
+  if(!data.tree) throw new Error("Tree not found. Check repo or branch.");
+  return data.tree.filter(n=>n.type==="blob");
+}
+
+// Build a single HTML document in the page
+async function buildDoc(){
+  const ownerRepo = $("repo").value.trim();
+  const branch = $("branch").value.trim();
+  const maxFiles = +$("maxFiles").value;
+  const maxChars = +$("maxChars").value;
+  const mode = $("includeExt").value;
+
+  $("status").textContent = "Listing files...";
+  const files = await listFiles(ownerRepo, branch);
+
+  // Filter to text-like unless user chose all
+  const chosen = [];
+  for(const f of files){
+    const e = ext(f.path);
+    const looksText = textLike.has(e) || e==="" || f.path.toLowerCase().includes("license") || f.path.toLowerCase().includes("readme");
+    if(mode==="text" && !looksText) continue;
+    chosen.push(f);
+    if(chosen.length>=maxFiles) break;
+  }
+
+  $("doc").innerHTML = "";
+  let idx = 0;
+  for(const f of chosen){
+    idx++;
+    $("status").textContent = `Fetching ${idx}/${chosen.length}...`;
+    // Use raw.githubusercontent.com to skip base64 decode for speed
+    const rawUrl = `https://raw.githubusercontent.com/${ownerRepo}/${branch}/${encodeURIComponent(f.path).replace(/%2F/g,"/")}`;
+    let text = "";
+    try {
+      text = await fetchText(rawUrl);
+    } catch(e){
+      text = "";
+    }
+    if(text.length>maxChars) text = text.slice(0, maxChars) + "\n...[truncated]";
+    const block = document.createElement("section");
+    block.className = "file-block";
+    const title = document.createElement("div");
+    title.className = "file-title";
+    title.textContent = f.path + "  (" + humanKB(f.size||text.length) + ")";
+    const pre = document.createElement("pre");
+    const code = document.createElement("code");
+    code.textContent = text;
+    pre.appendChild(code);
+    block.appendChild(title);
+    block.appendChild(pre);
+    $("doc").appendChild(block);
+  }
+  $("status").textContent = "Formatting...";
+  document.querySelectorAll("pre code").forEach(el=>hljs.highlightElement(el));
+  $("status").textContent = "Ready to rasterize";
+}
+
+async function toSingleImage(){
+  $("status").textContent = "Rasterizing to PNG...";
+  // Warning: browsers have max canvas size. Target height cap to reduce failure.
+  const target = document.body;
+  // Scale to 2x for readability but cap pixel height
+  const MAX_H = 30000; // browsers often fail beyond 32k
+  const rect = target.getBoundingClientRect();
+  const scale = 2;
+  const estH = Math.min(rect.height * scale, MAX_H);
+  const canvas = await html2canvas(target, {
+    useCORS: true,
+    scale,
+    windowWidth: Math.ceil(rect.width),
+    windowHeight: Math.ceil(rect.height),
+    backgroundColor: getComputedStyle(document.body).backgroundColor || "#ffffff",
+    onclone: (doc)=>{
+      // Hide header during render to get only content if preferred
+      // Comment next line out if you want header included
+      doc.querySelector("header").style.display = "none";
+    }
+  });
+  // If taller than MAX_H, crop to MAX_H
+  let outCanvas = canvas;
+  if(canvas.height > MAX_H){
+    const c = document.createElement("canvas");
+    c.width = canvas.width;
+    c.height = MAX_H;
+    const cx = c.getContext("2d");
+    cx.drawImage(canvas, 0, 0, canvas.width, MAX_H, 0, 0, canvas.width, MAX_H);
+    outCanvas = c;
+  }
+  const dataURL = outCanvas.toDataURL("image/png");
+  const a = $("downloadImg");
+  a.href = dataURL;
+  a.download = "repo-single-image.png";
+  a.textContent = "Download PNG";
+  a.classList.remove("hidden");
+  $("ocrBtn").disabled = false;
+  $("status").textContent = "PNG ready";
+}
+
+async function runOCR(){
+  $("status").textContent = "OCR running...";
+  const imgLink = $("downloadImg");
+  if(imgLink.classList.contains("hidden")) { $("status").textContent = "No image yet"; return; }
+  const worker = await Tesseract.createWorker();
+  await worker.loadLanguage("eng");
+  await worker.initialize("eng");
+  const res = await worker.recognize(imgLink.href);
+  await worker.terminate();
+  const text = res.data && res.data.text ? res.data.text : "";
+  const blob = new Blob([text], { type:"text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = $("downloadTxt");
+  a.href = url;
+  a.download = "repo-ocr.txt";
+  a.textContent = "Download OCR.txt";
+  a.classList.remove("hidden");
+  $("status").textContent = "OCR done";
+}
+
+$("buildBtn").onclick = async ()=>{
+  try {
+    $("downloadImg").classList.add("hidden");
+    $("downloadTxt").classList.add("hidden");
+    $("ocrBtn").disabled = true;
+    await buildDoc();
+    await toSingleImage();
+  } catch(e){
+    $("status").textContent = "Error: " + e.message;
+  }
+};
+$("ocrBtn").onclick = runOCR;
+</script>
+</body>
+</html>
