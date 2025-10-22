@@ -1,279 +1,300 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Repo Canvas – Flatten, Rasterize, OCR</title>
-<link rel="icon" href="data:,">
-<style>
-  :root { color-scheme: light dark; }
-  body { margin:0; font:14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  header { position:sticky; top:0; background:Canvas; border-bottom:1px solid; padding:8px; display:flex; gap:8px; align-items:center; z-index:10; flex-wrap:wrap; }
-  input, button, select, textarea { padding:6px 8px; font:inherit; }
-  #status { margin-left:auto; opacity:.8; }
-  #doc { padding:16px; white-space:pre-wrap; overflow-wrap:anywhere; }
-  .file-block { border:1px solid; border-radius:6px; margin:12px 0; padding:10px; }
-  .file-title { font-weight:700; margin-bottom:6px; }
-  .hidden { display:none; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Repo Canvas - Flatten, Rasterize, OCR</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin:0; font:14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    header { position:sticky; top:0; background:Canvas; border-bottom:1px solid; padding:8px; display:flex; gap:8px; align-items:center; z-index:10; flex-wrap:wrap; }
+    input, button, select, textarea { padding:6px 8px; font:inherit; }
+    #status { margin-left:auto; opacity:.8; }
+    #doc { padding:16px; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .file-block { border:1px solid; border-radius:6px; margin:12px 0; padding:10px; }
+    .file-title { font-weight:700; margin-bottom:6px; }
+    .hidden { display:none; }
+    #hint { padding:12px 16px; opacity:.9; }
+  </style>
 
-<!-- Highlight.js (fixed version) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/build/highlight.min.js"></script>
-<script>hljs.configure({ignoreUnescapedHTML:true});</script>
+  <!-- Highlight.js -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/build/highlight.min.js"></script>
+  <script>hljs.configure({ignoreUnescapedHTML:true});</script>
 
-<!-- Other libs -->
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.js"></script>
-<script>pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.min.js";</script>
-<script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
+  <!-- Libs -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.js"></script>
+  <script>pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.min.js";</script>
+  <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
 </head>
 
 <body>
-<header>
-  <select id="source">
-    <option value="github">GitHub</option>
-    <option value="files">Files</option>
-    <option value="paste">Paste</option>
-    <option value="url">URL</option>
-  </select>
+  <header>
+    <select id="source" aria-label="Source">
+      <option value="github">GitHub</option>
+      <option value="files">Files</option>
+      <option value="paste">Paste</option>
+      <option value="url">URL</option>
+    </select>
 
-  <label>Owner/repo <input id="repo" size="22" value="Nickpanek/patternripple-pages"></label>
-  <label>Branch <input id="branch" size="8" value="main"></label>
-  <label>Max files <input id="maxFiles" type="number" value="200" min="1"></label>
-  <label>Max chars/file <input id="maxChars" type="number" value="50000" min="1000"></label>
-  <select id="includeExt">
-    <option value="text">Text only</option>
-    <option value="all">All files</option>
-  </select>
+    <label>Owner/repo
+      <input id="repo" size="26" value="Nickpanek/collapse-redistribution-benchmark">
+    </label>
+    <label>Branch
+      <input id="branch" size="8" value="main">
+    </label>
+    <label>Max files
+      <input id="maxFiles" type="number" value="20" min="1">
+    </label>
+    <label>Max chars/file
+      <input id="maxChars" type="number" value="5000" min="1000">
+    </label>
 
-  <input id="fileInput" type="file" multiple accept=".txt,.md,.html,.htm,.pdf,.epub" style="display:none">
-  <input id="urlInput" type="url" placeholder="https://example.com/book.pdf" style="display:none" size="30">
-  <textarea id="pasteInput" placeholder="Paste text here" style="display:none;width:280px;height:32px"></textarea>
+    <select id="includeExt" aria-label="File types">
+      <option value="text">Text only</option>
+      <option value="all">All files</option>
+    </select>
 
-  <button id="buildBtn">Build image</button>
-  <button id="ocrBtn" disabled>OCR that image</button>
-  <a id="downloadImg" class="hidden">Download PNG</a>
-  <a id="downloadTxt" class="hidden">Download OCR.txt</a>
-  <span id="status"></span>
-</header>
+    <input id="fileInput" type="file" multiple accept=".txt,.md,.html,.htm,.pdf,.epub" style="display:none">
+    <input id="urlInput" type="url" placeholder="https://example.com/book.pdf" style="display:none" size="32">
+    <textarea id="pasteInput" placeholder="Paste text here" style="display:none;width:280px;height:32px"></textarea>
 
-<main id="doc"></main>
+    <button id="buildBtn">Build image</button>
+    <button id="ocrBtn" disabled>OCR that image</button>
+    <a id="downloadImg" class="hidden">Download PNG</a>
+    <a id="downloadTxt" class="hidden">Download OCR.txt</a>
+    <span id="status"></span>
+  </header>
 
-<script>
-if (typeof hljs === "undefined" || !hljs.highlightElement) {
-  console.warn("Highlight.js failed to load; disabling syntax highlight.");
-  window.hljs = { highlightElement: ()=>{} };
-}
+  <p id="hint">
+    Use the form above to load files from a GitHub repository, local files, pasted text, or a URL.
+    Lower the Max files and Max chars per file for faster processing. Click Build image to generate a PNG. Then run OCR if needed.
+  </p>
 
-const $ = (id)=>document.getElementById(id);
-const textLike = new Set([
-  ".md",".txt",".html",".htm",".css",".scss",".less",".js",".mjs",".cjs",".ts",".tsx",".jsx",
-  ".json",".yml",".yaml",".toml",".xml",".svg",".py",".rb",".go",".rs",".c",".cc",".cpp",".h",
-  ".hpp",".java",".kt",".php",".sh",".bat",".ps1",".sql",".ini",".env",".cfg",".conf",".mdx"
-]);
-function ext(path){ const i=path.lastIndexOf("."); return i>-1?path.slice(i).toLowerCase():""; }
-function humanKB(n){ return (n/1024).toFixed(1)+" KB"; }
+  <main id="doc"></main>
 
-async function fetchJSON(url){
-  const r=await fetch(url,{headers:{"Accept":"application/vnd.github+json"}});
-  if(!r.ok) throw new Error("HTTP "+r.status);
-  return r.json();
-}
-async function fetchText(url){
-  const r=await fetch(url);
-  if(!r.ok) throw new Error("HTTP "+r.status);
-  return r.text();
-}
-async function listFiles(ownerRepo,branch){
-  const [owner,repo]=ownerRepo.split("/");
-  const ref=encodeURIComponent("heads/"+branch);
-  const url=`https://api.github.com/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`;
-  const data=await fetchJSON(url);
-  if(!data.tree) throw new Error("Tree not found");
-  return data.tree.filter(n=>n.type==="blob");
-}
+  <script>
+    if (typeof hljs === "undefined" || !hljs.highlightElement) {
+      console.warn("Highlight.js failed to load - disabling syntax highlight.");
+      window.hljs = { highlightElement: ()=>{} };
+    }
 
-async function buildDoc(){
-  const ownerRepo=$("repo").value.trim();
-  const branch=$("branch").value.trim();
-  const maxFiles=+$("maxFiles").value;
-  const maxChars=+$("maxChars").value;
-  const mode=$("includeExt").value;
+    const $ = (id)=>document.getElementById(id);
+    const textLike = new Set([
+      ".md",".txt",".html",".htm",".css",".scss",".less",".js",".mjs",".cjs",".ts",".tsx",".jsx",
+      ".json",".yml",".yaml",".toml",".xml",".svg",".py",".rb",".go",".rs",".c",".cc",".cpp",".h",
+      ".hpp",".java",".kt",".php",".sh",".bat",".ps1",".sql",".ini",".env",".cfg",".conf",".mdx"
+    ]);
+    function ext(path){ const i=path.lastIndexOf("."); return i>-1?path.slice(i).toLowerCase():""; }
+    function humanKB(n){ return (n/1024).toFixed(1)+" KB"; }
 
-  $("status").textContent="Listing files...";
-  const files=await listFiles(ownerRepo,branch);
-  const chosen=[];
-  for(const f of files){
-    const e=ext(f.path);
-    const looks=textLike.has(e)||!e||f.path.toLowerCase().includes("readme");
-    if(mode==="text"&&!looks) continue;
-    chosen.push(f);
-    if(chosen.length>=maxFiles) break;
-  }
+    async function fetchJSON(url){
+      const r=await fetch(url,{headers:{"Accept":"application/vnd.github+json"}});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      return r.json();
+    }
+    async function fetchText(url){
+      const r=await fetch(url);
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      return r.text();
+    }
+    async function listFiles(ownerRepo,branch){
+      const [owner,repo]=ownerRepo.split("/");
+      const ref=encodeURIComponent("heads/"+branch);
+      const url=`https://api.github.com/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`;
+      const data=await fetchJSON(url);
+      if(!data.tree) throw new Error("Tree not found");
+      return data.tree.filter(n=>n.type==="blob");
+    }
 
-  $("doc").innerHTML="";
-  let idx=0;
-  for(const f of chosen){
-    idx++; $("status").textContent=`Fetching ${idx}/${chosen.length}...`;
-    const raw=`https://raw.githubusercontent.com/${ownerRepo}/${branch}/${encodeURIComponent(f.path).replace(/%2F/g,"/")}`;
-    let text="";
-    try{ text=await fetchText(raw); }catch{ text=""; }
-    if(text.length>maxChars) text=text.slice(0,maxChars)+"\n...[truncated]";
-    appendTextBlock(f.path,text);
-  }
-  $("status").textContent="Ready to rasterize";
-}
+    async function buildDoc(){
+      const ownerRepo=$("repo").value.trim();
+      const branch=$("branch").value.trim();
+      const maxFiles=+$("maxFiles").value;
+      const maxChars=+$("maxChars").value;
+      const mode=$("includeExt").value;
 
-function appendTextBlock(title,text){
-  const block=document.createElement("section");
-  block.className="file-block";
-  const head=document.createElement("div");
-  head.className="file-title";
-  head.textContent=title;
-  const pre=document.createElement("pre");
-  const code=document.createElement("code");
-  code.textContent=text;
-  pre.appendChild(code);
-  block.appendChild(head);
-  block.appendChild(pre);
-  $("doc").appendChild(block);
-  if (window.hljs && hljs.highlightElement) hljs.highlightElement(code);
-}
+      $("status").textContent="Listing files";
+      const files=await listFiles(ownerRepo,branch);
+      const chosen=[];
+      for(const f of files){
+        const e=ext(f.path);
+        const looks=textLike.has(e)||!e||f.path.toLowerCase().includes("readme");
+        if(mode==="text"&&!looks) continue;
+        chosen.push(f);
+        if(chosen.length>=maxFiles) break;
+      }
 
-async function toSingleImage(){
-  $("status").textContent="Rasterizing to PNG...";
-  const target=document.body;
-  const MAX_H=30000, scale=2;
-  const rect=target.getBoundingClientRect();
-  const canvas=await html2canvas(target,{
-    useCORS:true, scale,
-    windowWidth:Math.ceil(rect.width),
-    windowHeight:Math.ceil(rect.height),
-    backgroundColor:getComputedStyle(document.body).backgroundColor||"#fff",
-    onclone:(doc)=>{doc.querySelector("header").style.display="none";}
-  });
-  let outCanvas=canvas;
-  if(canvas.height>MAX_H){
-    const c=document.createElement("canvas");
-    c.width=canvas.width; c.height=MAX_H;
-    c.getContext("2d").drawImage(canvas,0,0,canvas.width,MAX_H,0,0,canvas.width,MAX_H);
-    outCanvas=c;
-  }
-  const dataURL=outCanvas.toDataURL("image/png");
-  const a=$("downloadImg");
-  a.href=dataURL; a.download="repo-canvas.png"; a.textContent="Download PNG";
-  a.classList.remove("hidden");
-  $("ocrBtn").disabled=false;
-  $("status").textContent="PNG ready";
-}
+      $("doc").innerHTML="";
+      $("hint").style.display="none";
+      let idx=0;
+      for(const f of chosen){
+        idx++; $("status").textContent=`Fetching ${idx}/${chosen.length}`;
+        const raw=`https://raw.githubusercontent.com/${ownerRepo}/${branch}/${encodeURIComponent(f.path).replace(/%2F/g,"/")}`;
+        let text="";
+        try{ text=await fetchText(raw); }catch{ text=""; }
+        if(text.length>maxChars) text=text.slice(0,maxChars)+"\n...[truncated]";
+        appendTextBlock(f.path,text);
+      }
+      $("status").textContent="Ready to rasterize";
+    }
 
-async function runOCR(){
-  $("status").textContent="Running OCR...";
-  const imgLink=$("downloadImg");
-  if(imgLink.classList.contains("hidden")){ $("status").textContent="No image"; return; }
-  const worker=await Tesseract.createWorker();
-  await worker.loadLanguage("eng"); await worker.initialize("eng");
-  const res=await worker.recognize(imgLink.href);
-  await worker.terminate();
-  const text=res.data?.text||"";
-  const blob=new Blob([text],{type:"text/plain"});
-  const url=URL.createObjectURL(blob);
-  const a=$("downloadTxt");
-  a.href=url; a.download="ocr.txt"; a.textContent="Download OCR.txt";
-  a.classList.remove("hidden");
-  $("status").textContent="OCR done";
-}
+    function appendTextBlock(title,text){
+      const block=document.createElement("section");
+      block.className="file-block";
+      const head=document.createElement("div");
+      head.className="file-title";
+      head.textContent=title;
+      const pre=document.createElement("pre");
+      const code=document.createElement("code");
+      code.textContent=text;
+      pre.appendChild(code);
+      block.appendChild(head);
+      block.appendChild(pre);
+      $("doc").appendChild(block);
+      if (window.hljs && hljs.highlightElement) hljs.highlightElement(code);
+    }
 
-// Mode switch
-$("source").addEventListener("change",()=>{
-  const v=$("source").value;
-  $("fileInput").style.display=v==="files"?"":"none";
-  $("urlInput").style.display=v==="url"?"":"none";
-  $("pasteInput").style.display=v==="paste"?"":"none";
-});
+    async function toSingleImage(){
+      $("status").textContent="Rasterizing to PNG";
+      const target=document.body;
+      const MAX_H=30000, scale=2;
+      const rect=target.getBoundingClientRect();
+      const canvas=await html2canvas(target,{
+        useCORS:true, scale,
+        windowWidth:Math.ceil(rect.width),
+        windowHeight:Math.ceil(rect.height),
+        backgroundColor:getComputedStyle(document.body).backgroundColor||"#fff",
+        onclone:(doc)=>{ const h=doc.querySelector("header"); if(h) h.style.display="none"; }
+      });
+      let outCanvas=canvas;
+      if(canvas.height>MAX_H){
+        const c=document.createElement("canvas");
+        c.width=canvas.width; c.height=MAX_H;
+        c.getContext("2d").drawImage(canvas,0,0,canvas.width,MAX_H,0,0,canvas.width,MAX_H);
+        outCanvas=c;
+      }
+      const dataURL=outCanvas.toDataURL("image/png");
+      const a=$("downloadImg");
+      a.href=dataURL; a.download="repo-canvas.png"; a.textContent="Download PNG";
+      a.classList.remove("hidden");
+      $("ocrBtn").disabled=false;
+      $("status").textContent="PNG ready";
+    }
 
-$("buildBtn").onclick=async()=>{
-  try{
-    $("downloadImg").classList.add("hidden");
-    $("downloadTxt").classList.add("hidden");
-    $("ocrBtn").disabled=true;
-    const mode=$("source").value;
-    if(mode==="github") await buildDoc();
-    else if(mode==="files") await buildFromFiles();
-    else if(mode==="paste") await buildFromPaste();
-    else if(mode==="url") await buildFromURL();
-    await toSingleImage();
-  }catch(e){ $("status").textContent="Error: "+e.message; }
-};
-$("ocrBtn").onclick=runOCR;
+    async function runOCR(){
+      $("status").textContent="Running OCR";
+      const imgLink=$("downloadImg");
+      if(imgLink.classList.contains("hidden")){ $("status").textContent="No image"; return; }
+      const worker=await Tesseract.createWorker();
+      await worker.loadLanguage("eng"); await worker.initialize("eng");
+      const res=await worker.recognize(imgLink.href);
+      await worker.terminate();
+      const text=res.data?.text||"";
+      const blob=new Blob([text],{type:"text/plain"});
+      const url=URL.createObjectURL(blob);
+      const a=$("downloadTxt");
+      a.href=url; a.download="ocr.txt"; a.textContent="Download OCR.txt";
+      a.classList.remove("hidden");
+      $("status").textContent="OCR done";
+    }
 
-// Local files
-async function buildFromFiles(){
-  const files=Array.from($("fileInput").files||[]);
-  if(!files.length) throw new Error("Choose files");
-  $("doc").innerHTML="";
-  let n=0;
-  for(const f of files){
-    n++; $("status").textContent=`Reading ${n}/${files.length}...`;
-    const ext=f.name.split(".").pop().toLowerCase();
-    if(ext==="pdf") await appendPDF(await f.arrayBuffer(),f.name);
-    else if(ext==="epub") await appendEPUB(await f.arrayBuffer(),f.name);
-    else appendTextBlock(f.name,await f.text());
-  }
-  $("status").textContent="Ready to rasterize";
-}
+    // Mode switch
+    $("source").addEventListener("change",()=>{
+      const v=$("source").value;
+      $("fileInput").style.display=v==="files"?"":"none";
+      $("urlInput").style.display=v==="url"?"":"none";
+      $("pasteInput").style.display=v==="paste"?"":"none";
+    });
 
-// Paste
-async function buildFromPaste(){
-  const text=$("pasteInput").value.trim();
-  if(!text) throw new Error("Paste text first");
-  $("doc").innerHTML=""; appendTextBlock("pasted.txt",text);
-  $("status").textContent="Ready to rasterize";
-}
+    $("buildBtn").onclick=async()=>{
+      try{
+        $("downloadImg").classList.add("hidden");
+        $("downloadTxt").classList.add("hidden");
+        $("ocrBtn").disabled=true;
+        const mode=$("source").value;
+        if(mode==="github") await buildDoc();
+        else if(mode==="files") await buildFromFiles();
+        else if(mode==="paste") await buildFromPaste();
+        else if(mode==="url") await buildFromURL();
+        await toSingleImage();
+      }catch(e){ $("status").textContent="Error: "+e.message; }
+    };
+    $("ocrBtn").onclick=runOCR;
 
-// URL
-async function buildFromURL(){
-  const url=$("urlInput").value.trim();
-  if(!url) throw new Error("Enter URL");
-  $("doc").innerHTML=""; $("status").textContent="Fetching URL...";
-  const r=await fetch(url);
-  if(!r.ok) throw new Error("Fetch failed "+r.status);
-  const ct=(r.headers.get("content-type")||"").toLowerCase();
-  if(ct.includes("pdf")||url.toLowerCase().endsWith(".pdf")) await appendPDF(await r.arrayBuffer(),url);
-  else if(url.toLowerCase().endsWith(".epub")) await appendEPUB(await r.arrayBuffer(),url);
-  else appendTextBlock(url,await r.text());
-  $("status").textContent="Ready to rasterize";
-}
+    // Local files
+    async function buildFromFiles(){
+      const files=Array.from($("fileInput").files||[]);
+      if(!files.length) throw new Error("Choose files");
+      $("doc").innerHTML="";
+      $("hint").style.display="none";
+      let n=0;
+      for(const f of files){
+        n++; $("status").textContent=`Reading ${n}/${files.length}`;
+        const ext=f.name.split(".").pop().toLowerCase();
+        if(ext==="pdf") await appendPDF(await f.arrayBuffer(),f.name);
+        else if(ext==="epub") await appendEPUB(await f.arrayBuffer(),f.name);
+        else appendTextBlock(f.name,await f.text());
+      }
+      $("status").textContent="Ready to rasterize";
+    }
 
-// PDF
-async function appendPDF(ab,label){
-  $("status").textContent="Parsing PDF...";
-  const pdf=await pdfjsLib.getDocument({data:ab}).promise;
-  let out="";
-  for(let p=1;p<=pdf.numPages;p++){
-    const page=await pdf.getPage(p);
-    const c=await page.getTextContent();
-    out+="\n\n--- Page "+p+" ---\n"+c.items.map(i=>i.str).join(" ");
-  }
-  appendTextBlock(label+" (PDF)",out);
-}
+    // Paste
+    async function buildFromPaste(){
+      const text=$("pasteInput").value.trim();
+      if(!text) throw new Error("Paste text first");
+      $("doc").innerHTML=""; $("hint").style.display="none";
+      appendTextBlock("pasted.txt",text);
+      $("status").textContent="Ready to rasterize";
+    }
 
-// EPUB
-async function appendEPUB(ab,label){
-  $("status").textContent="Parsing EPUB...";
-  const book=ePub(ab); await book.ready;
-  let out="";
-  const spine=book.spine?.spineItems||[];
-  for(let i=0;i<spine.length;i++){
-    const sec=spine[i];
-    const doc=await sec.load(book.load.bind(book));
-    out+="\n\n--- Section "+(i+1)+" ---\n"+(doc.documentElement.textContent||"");
-    sec.unload();
-  }
-  appendTextBlock(label+" (EPUB)",out);
-}
-</script>
+    // URL
+    async function buildFromURL(){
+      const url=$("urlInput").value.trim();
+      if(!url) throw new Error("Enter URL");
+      $("doc").innerHTML=""; $("hint").style.display="none";
+      $("status").textContent="Fetching URL";
+      const r=await fetch(url);
+      if(!r.ok) throw new Error("Fetch failed "+r.status);
+      const ct=(r.headers.get("content-type")||"").toLowerCase();
+      if(ct.includes("pdf")||url.toLowerCase().endsWith(".pdf")) await appendPDF(await r.arrayBuffer(),url);
+      else if(url.toLowerCase().endsWith(".epub")) await appendEPUB(await r.arrayBuffer(),url);
+      else appendTextBlock(url,await r.text());
+      $("status").textContent="Ready to rasterize";
+    }
+
+    // PDF
+    async function appendPDF(ab,label){
+      $("status").textContent="Parsing PDF";
+      const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+      let out="";
+      for(let p=1;p<=pdf.numPages;p++){
+        const page=await pdf.getPage(p);
+        const c=await page.getTextContent();
+        out+="\n\n--- Page "+p+" ---\n"+c.items.map(i=>i.str).join(" ");
+      }
+      appendTextBlock(label+" (PDF)",out);
+    }
+
+    // EPUB
+    async function appendEPUB(ab,label){
+      $("status").textContent="Parsing EPUB";
+      const book=ePub(ab); await book.ready;
+      let out="";
+      const spine=book.spine?.spineItems||[];
+      for(let i=0;i<spine.length;i++){
+        const sec=spine[i];
+        const doc=await sec.load(book.load.bind(book));
+        out+="\n\n--- Section "+(i+1)+" ---\n"+(doc.documentElement.textContent||"");
+        sec.unload();
+      }
+      appendTextBlock(label+" (EPUB)",out);
+    }
+  </script>
+
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"55dc231487504995addb7d1d00c088a8","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
