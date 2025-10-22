@@ -191,13 +191,23 @@ export default function LabPage() {
                   </Link>
 
                   {tool.secondaryHref && tool.secondaryLabel ? (
-                    <a
-                      href={tool.secondaryHref}
-                      className="inline-flex items-center justify-center w-full bg-white text-gray-900 border border-gray-300 px-4 py-2.5 rounded-lg hover:border-purple-500 hover:text-purple-700 transition-colors"
-                      title={tool.secondaryLabel}
-                    >
-                      {tool.secondaryLabel}
-                    </a>
+                    tool.slug === "seamless-pattern-checker" ? (
+                      <a
+                        href={tool.secondaryHref}
+                        className="text-sm text-gray-500 hover:text-gray-700 underline text-center"
+                        title={tool.secondaryLabel}
+                      >
+                        {tool.secondaryLabel} version
+                      </a>
+                    ) : (
+                      <a
+                        href={tool.secondaryHref}
+                        className="inline-flex items-center justify-center w-full bg-white text-gray-900 border border-gray-300 px-4 py-2.5 rounded-lg hover:border-purple-500 hover:text-purple-700 transition-colors"
+                        title={tool.secondaryLabel}
+                      >
+                        {tool.secondaryLabel}
+                      </a>
+                    )
                   ) : null}
                 </div>
               </div>
