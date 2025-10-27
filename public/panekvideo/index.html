@@ -2,105 +2,106 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Panek Video Program - Turn an image and an audio file into a 16:9 MP4</title>
+  <title>Panek Video Program - Turn an Image + Audio into a 16:9 MP4</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Free desktop app. Pick one image and one audio file, then render a clean 16:9 MP4 with AAC audio. Uses native file pickers on Linux and macOS for a polished feel." />
-  <link rel="canonical" href="https://www.patternripple.com/lab/panekvideo/" />
+  <meta name="description" content="Free desktop tool that turns one image and one audio file into a clean 16:9 MP4 video. Fast rendering and native file dialogs across Linux and macOS." />
+  <link rel="canonical" href="https://www.patternripple.com/panekvideo/" />
 
-  <!-- Open Graph -->
   <meta property="og:title" content="Panek Video Program" />
-  <meta property="og:description" content="Turn an image and audio into a 16:9 MP4. Native dialogs. Fast render. Free." />
+  <meta property="og:description" content="Turn a still image and an audio track into a polished MP4. Native dialogs. Fast render. Free." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.patternripple.com/lab/panekvideo/" />
-  <meta property="og:image" content="https://www.patternripple.com/lab/panekvideo/cover.jpg" />
+  <meta property="og:url" content="https://www.patternripple.com/panekvideo/" />
+  <meta property="og:image" content="https://www.patternripple.com/panekvideo/cover.jpg" />
 
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Panek Video Program" />
-  <meta name="twitter:description" content="Turn an image and audio into a 16:9 MP4. Native dialogs. Fast render. Free." />
-  <meta name="twitter:image" content="https://www.patternripple.com/lab/panekvideo/cover.jpg" />
+  <meta name="twitter:description" content="Turn one image and one audio file into a clean MP4." />
+  <meta name="twitter:image" content="https://www.patternripple.com/panekvideo/cover.jpg" />
 
-  <!-- JSON-LD -->
   <script type="application/ld+json">
   {
-    "@context":"https://schema.org",
-    "@type":"SoftwareApplication",
-    "name":"Panek Video Program",
-    "applicationCategory":"MultimediaApplication",
-    "operatingSystem":"Linux, macOS, Windows",
-    "softwareVersion":"1.0.0",
-    "description":"Turn a single image and an audio file into a 16:9 MP4 with AAC audio. Uses native dialogs when available.",
-    "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
-    "publisher":{"@type":"Organization","name":"PatternRipple Labs","url":"https://www.patternripple.com"}
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Panek Video Program",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Linux, macOS, Windows",
+    "softwareVersion": "1.0.0",
+    "description": "Convert a single image and an audio file into a 16:9 MP4 ready for upload.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "publisher": { "@type": "Organization", "name": "PatternRipple Labs" }
   }
   </script>
 
   <style>
     :root { --bg:#0b0c10; --fg:#e6e6e6; --muted:#9aa0a6; --brand:#2ecc71; --card:#16181d; }
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui, sans-serif;}
     .wrap{max-width:980px;margin:0 auto;padding:32px 20px;}
     header{display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;margin-bottom:28px;}
     h1{margin:0;font-size:32px;}
     p.lead{margin:0;color:var(--muted);}
     .cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:22px 0 30px;}
-    .btn{padding:12px 16px;border-radius:10px;text-decoration:none;color:#000;background:var(--brand);font-weight:600}
-    .btn.secondary{background:#2b2f36;color:#fff}
-    .grid{display:grid;grid-template-columns:1fr;gap:18px}
-    @media(min-width:860px){ .grid{grid-template-columns:1fr 1fr} }
-    .card{background:var(--card);border-radius:14px;padding:16px;border:1px solid #20242c}
-    h2{margin:0 0 10px 0;font-size:22px}
-    ul{margin:0 0 0 18px}
-    .small{color:var(--muted);font-size:14px}
-    footer{margin-top:30px;text-align:center;color:var(--muted)}
-    code{background:#0e1116;padding:2px 6px;border-radius:6px}
-    .kbd{font:14px ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;background:#0e1116;padding:2px 6px;border-radius:6px}
+    .btn{padding:12px 16px;border-radius:10px;text-decoration:none;color:#000;background:var(--brand);font-weight:600;}
+    .btn.secondary{background:#2b2f36;color:#fff;}
+    .grid{display:grid;grid-template-columns:1fr;gap:18px;}
+    @media(min-width:860px){ .grid{grid-template-columns:1fr 1fr;} }
+    .card{background:var(--card);border-radius:14px;padding:16px;border:1px solid #20242c;}
+    h2{margin:0 0 10px 0;font-size:22px;}
+    ul{margin:0 0 0 18px;}
+    .small{color:var(--muted);font-size:14px;}
+    footer{margin-top:30px;text-align:center;color:var(--muted);}
+    code,.kbd{background:#0e1116;padding:2px 6px;border-radius:6px;font:14px monospace;}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1>Panek Video Program</h1>
-      <p class="lead">Turn one image and one audio file into a clean 16:9 MP4. Native file dialogs on Linux and macOS. Fast and simple.</p>
+      <p class="lead">Turn one image and one audio file into a 16:9 MP4 video. Native dialogs. Fast. Simple.</p>
     </header>
 
     <div class="cta">
-      <a class="btn" href="https://github.com/PatternRipple/panek-video-program/releases/latest">Download - Linux</a>
-      <a class="btn secondary" href="https://github.com/PatternRipple/panek-video-program">View source on GitHub</a>
+      <a class="btn" href="https://github.com/PatternRipple/panek-video-program/releases/latest">Download (Linux AppImage / .deb)</a>
+      <a class="btn secondary" href="https://github.com/PatternRipple/panek-video-program">View Source on GitHub</a>
     </div>
 
     <section class="grid">
       <div class="card">
         <h2>What it does</h2>
-        <p>It combines a still image with an audio track and renders a 1920x1080 MP4 at 30 fps with AAC audio and faststart for web upload. The render button turns green when both files are selected.</p>
+        <p>Produces a clean 1920×1080 MP4 at 30 FPS using your image and audio track.</p>
         <ul>
-          <li>Image formats: JPG, PNG, WEBP</li>
-          <li>Audio formats: MP3, WAV</li>
+          <li>Image: JPG, PNG, WEBP</li>
+          <li>Audio: MP3, WAV</li>
           <li>Video: H.264 yuv420p, CRF 20</li>
         </ul>
       </div>
       <div class="card">
-        <h2>How it works</h2>
+        <h2>How to use</h2>
         <ol>
-          <li>Choose an output folder.</li>
-          <li>Select your image and audio.</li>
-          <li>Optionally set a title. Click <span class="kbd">Render Video</span>.</li>
+          <li>Open the app and choose an output folder.</li>
+          <li>Select your image + audio.</li>
+          <li>Click <span class="kbd">Render Video</span>.</li>
         </ol>
-        <p class="small">Native picker cascade on Linux and macOS: kdialog, zenity, osascript, then Qt fallback.</p>
+        <p class="small">Render button turns green when both files are selected.</p>
       </div>
       <div class="card">
-        <h2>Why it looks native</h2>
-        <p>The app prefers platform dialogs first, so file pickers match your desktop. If a native tool is missing, it falls back to Qt.</p>
+        <h2>Native Feel</h2>
+        <p>Uses native system dialogs when available:</p>
+        <ul>
+          <li>KDE: <code>kdialog</code></li>
+          <li>GNOME/XFCE: <code>zenity</code></li>
+          <li>macOS: <code>osascript</code></li>
+          <li>Fallback: Qt dialogs</li>
+        </ul>
       </div>
       <div class="card">
         <h2>FAQ</h2>
-        <p><b>Is ffmpeg required?</b> Yes. Install via your package manager.</p>
-        <p><b>Will it letterbox my image?</b> Yes, it scales to fit and pads to 16:9.</p>
-        <p><b>Where are files saved?</b> In the output folder you select.</p>
+        <p><b>Needs ffmpeg?</b> Yes, install via system package manager.</p>
+        <p><b>Letterboxing?</b> The image is scaled and padded so the output is always 16:9.</p>
       </div>
     </section>
 
     <footer>
-      <p class="small">Made by PatternRipple Labs. Questions or feedback: open an issue on GitHub.</p>
+      <p class="small">Made by PatternRipple Labs.</p>
     </footer>
   </div>
 </body>
