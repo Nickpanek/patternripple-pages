@@ -11,6 +11,7 @@ module.exports = {
       // Keep only legacy folder paths redirected to the blog
       { source: "/checker", destination: "/blog/seamless-pattern-checker", permanent: true },
       { source: "/pattern-checker", destination: "/blog/seamless-pattern-checker", permanent: true },
+      { source: '/panekvideo', destination: '/panekvideo/index.html', permanent: true },
       { source: "/checker/", destination: "/blog/seamless-pattern-checker", permanent: true },
       { source: "/pattern-checker/", destination: "/blog/seamless-pattern-checker", permanent: true },
     ];
