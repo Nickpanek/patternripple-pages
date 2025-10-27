@@ -44,6 +44,14 @@
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
+
+  <url>
+       <loc>https://www.patternripple.com/panekvideo/index.html</loc>
+       <lastmod>2025-10-27T00:00:00+00:00</lastmod>
+       <changefreq>daily</changefreq>
+       <priority>0.7000</priority>
+  </url>
+
   <url>
        <loc>https://www.patternripple.com/seamless-pattern-creator.html</loc>
        <lastmod>2025-10-24T19:36:07+00:00</lastmod>
@@ -98,4 +106,5 @@
        <changefreq>daily</changefreq>
        <priority>0.6400</priority>
   </url>
+
 </urlset>
