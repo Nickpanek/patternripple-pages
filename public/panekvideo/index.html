@@ -2,106 +2,341 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Panek Video Program - Turn an Image + Audio into a 16:9 MP4</title>
+  <title>Panek Video Program - Free Image to Video Converter | Create MP4 from Image + Audio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Free desktop tool that turns one image and one audio file into a clean 16:9 MP4 video. Fast rendering and native file dialogs across Linux and macOS." />
+  <meta name="description" content="Free desktop tool to create professional 1920×1080 MP4 videos from a single image and audio file. Perfect for YouTube, TikTok, music releases, and podcasts. Works on Linux and macOS with native file dialogs. Download now." />
+  <meta name="keywords" content="image to video converter, audio to video, create video from image, mp4 maker, youtube video creator, static image video, audio visualizer, music video maker, podcast video, linux video tool, free video creator" />
   <link rel="canonical" href="https://www.patternripple.com/panekvideo/" />
 
-  <meta property="og:title" content="Panek Video Program" />
-  <meta property="og:description" content="Turn a still image and an audio track into a polished MP4. Native dialogs. Fast render. Free." />
+  <!-- Open Graph / Facebook -->
+  <meta property="og:title" content="Panek Video Program - Turn Images + Audio into Professional MP4 Videos" />
+  <meta property="og:description" content="Free desktop tool that creates 1920×1080 MP4 videos from one image and one audio file. Fast rendering, native dialogs, perfect for YouTube and social media." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.patternripple.com/panekvideo/" />
   <meta property="og:image" content="https://www.patternripple.com/panekvideo/cover.jpg" />
 
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Panek Video Program" />
-  <meta name="twitter:description" content="Turn one image and one audio file into a clean MP4." />
+  <meta name="twitter:title" content="Panek Video Program - Free Image to Video Converter" />
+  <meta name="twitter:description" content="Create professional MP4 videos from one image and one audio file. Fast, simple, free." />
   <meta name="twitter:image" content="https://www.patternripple.com/panekvideo/cover.jpg" />
 
+  <!-- Structured Data - Software Application -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "Panek Video Program",
     "applicationCategory": "MultimediaApplication",
-    "operatingSystem": "Linux, macOS, Windows",
+    "operatingSystem": "Linux, macOS",
     "softwareVersion": "1.0.0",
-    "description": "Convert a single image and an audio file into a 16:9 MP4 ready for upload.",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "publisher": { "@type": "Organization", "name": "PatternRipple Labs" }
+    "description": "Convert a single image and an audio file into a professional 16:9 MP4 video ready for YouTube, TikTok, and social media platforms.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "PatternRipple Labs"
+    },
+    "downloadUrl": "https://github.com/Nickpanek/panek-video-program/releases/latest",
+    "softwareHelp": "https://github.com/Nickpanek/panek-video-program/blob/main/MANUAL.md",
+    "featureList": [
+      "Convert JPG, PNG, WEBP images to video",
+      "Support for MP3 and WAV audio",
+      "1920×1080 Full HD output",
+      "H.264 MP4 format",
+      "Native system file dialogs",
+      "Fast rendering with FFmpeg"
+    ]
+  }
+  </script>
+
+  <!-- Structured Data - FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Does Panek Video Program require FFmpeg?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, FFmpeg and FFprobe must be installed on your system. You can install FFmpeg using your system's package manager (apt, dnf, brew, etc.)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What image formats are supported?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Panek Video Program supports JPG, JPEG, PNG, and WEBP image formats."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What video resolution does it create?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The program outputs professional 1920×1080 (Full HD) MP4 videos at 30 FPS with H.264 encoding and AAC audio at 192kbps."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use the videos commercially?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, you own all the videos you create with Panek Video Program and can use them commercially for YouTube, TikTok, client work, or any other purpose."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What if my image isn't 16:9 aspect ratio?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The program automatically scales your image to fit 16:9 and adds black letterboxing or pillarboxing as needed to maintain the correct aspect ratio."
+        }
+      }
+    ]
   }
   </script>
 
   <style>
-    :root { --bg:#0b0c10; --fg:#e6e6e6; --muted:#9aa0a6; --brand:#2ecc71; --card:#16181d; }
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui, sans-serif;}
-    .wrap{max-width:980px;margin:0 auto;padding:32px 20px;}
-    header{display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;margin-bottom:28px;}
-    h1{margin:0;font-size:32px;}
-    p.lead{margin:0;color:var(--muted);}
-    .cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:22px 0 30px;}
-    .btn{padding:12px 16px;border-radius:10px;text-decoration:none;color:#000;background:var(--brand);font-weight:600;}
-    .btn.secondary{background:#2b2f36;color:#fff;}
-    .grid{display:grid;grid-template-columns:1fr;gap:18px;}
-    @media(min-width:860px){ .grid{grid-template-columns:1fr 1fr;} }
-    .card{background:var(--card);border-radius:14px;padding:16px;border:1px solid #20242c;}
-    h2{margin:0 0 10px 0;font-size:22px;}
-    ul{margin:0 0 0 18px;}
-    .small{color:var(--muted);font-size:14px;}
-    footer{margin-top:30px;text-align:center;color:var(--muted);}
-    code,.kbd{background:#0e1116;padding:2px 6px;border-radius:6px;font:14px monospace;}
+    :root { 
+      --bg:#0b0c10; 
+      --fg:#e6e6e6; 
+      --muted:#9aa0a6; 
+      --brand:#2ecc71; 
+      --accent:#3498db;
+      --card:#16181d; 
+    }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui, sans-serif;}
+    .wrap{max-width:1040px;margin:0 auto;padding:40px 20px;}
+    header{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;margin-bottom:32px;}
+    h1{margin:0;font-size:clamp(28px, 5vw, 38px);font-weight:700;line-height:1.2;}
+    p.lead{margin:0;color:var(--muted);font-size:clamp(16px, 2.5vw, 19px);}
+    .help-banner{background:#1a2332;border:1px solid #2d3e54;border-radius:12px;padding:16px 20px;margin:24px 0;text-align:center;}
+    .help-banner p{margin:0 0 10px 0;}
+    .cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:28px 0 36px;}
+    .btn{display:inline-block;padding:14px 22px;border-radius:10px;text-decoration:none;font-weight:600;transition:transform 0.2s, box-shadow 0.2s;}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+    .btn-primary{background:var(--brand);color:#000;}
+    .btn-secondary{background:#2b2f36;color:#fff;}
+    .btn-ai{background:var(--accent);color:#fff;}
+    .grid{display:grid;grid-template-columns:1fr;gap:20px;margin:36px 0;}
+    @media(min-width:860px){ .grid{grid-template-columns:repeat(2, 1fr);} }
+    .card{background:var(--card);border-radius:14px;padding:20px;border:1px solid #20242c;}
+    h2{margin:0 0 12px 0;font-size:clamp(20px, 3vw, 24px);font-weight:600;}
+    h3{margin:20px 0 10px 0;font-size:18px;}
+    ul,ol{margin:8px 0 0 20px;padding:0;}
+    li{margin:6px 0;}
+    .small{color:var(--muted);font-size:14px;line-height:1.5;}
+    .features-list{list-style:none;margin:0;padding:0;}
+    .features-list li:before{content:"✓ ";color:var(--brand);font-weight:bold;margin-right:6px;}
+    .use-cases{background:#13151a;border-radius:12px;padding:24px;margin:32px 0;}
+    code,.kbd{background:#0e1116;padding:3px 7px;border-radius:6px;font:14px monospace;color:#e6e6e6;}
+    .specs{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin:16px 0;}
+    .spec-item{background:#13151a;padding:12px;border-radius:8px;}
+    .spec-label{font-weight:600;color:var(--brand);font-size:14px;text-transform:uppercase;letter-spacing:0.5px;}
+    .spec-value{margin-top:4px;}
+    footer{margin-top:48px;padding-top:24px;border-top:1px solid #20242c;text-align:center;color:var(--muted);}
+    footer a{color:var(--accent);text-decoration:none;}
+    footer a:hover{text-decoration:underline;}
+    .emoji{font-style:normal;}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1>Panek Video Program</h1>
-      <p class="lead">Turn one image and one audio file into a 16:9 MP4 video. Native dialogs. Fast. Simple.</p>
+      <p class="lead">Create professional 1920×1080 MP4 videos from one image and one audio file.<br>
+      Perfect for YouTube, TikTok, music releases, podcasts, and social media content.</p>
     </header>
 
- <div class="cta">
-  <a class="btn" href="https://github.com/Nickpanek/panek-video-program/releases/latest">Download (Linux AppImage / .deb)</a>
-  <a class="btn secondary" href="https://github.com/Nickpanek/panek-video-program/">View Source on GitHub</a>
-</div>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/Nickpanek/panek-video-program/releases/latest" 
+         aria-label="Download Panek Video Program for Linux">
+        <span class="emoji">⬇️</span> Download for Linux (AppImage / .deb)
+      </a>
+      <a class="btn btn-ai" href="https://chatgpt.com/g/g-68ff031d991081919e3da5b0b7ea683f-panek-video-program-help-desk" 
+         aria-label="Get help from AI assistant">
+        <span class="emoji">🤖</span> AI Help Desk
+      </a>
+      <a class="btn btn-secondary" href="https://github.com/Nickpanek/panek-video-program/blob/main/MANUAL.md"
+         aria-label="Read the user manual">
+        <span class="emoji">📖</span> User Manual
+      </a>
+    </div>
+
+    <div class="help-banner">
+      <p><strong><span class="emoji">🤖</span> Need Help Installing or Using the Program?</strong></p>
+      <p class="small">Our <a href="https://chatgpt.com/g/g-68ff031d991081919e3da5b0b7ea683f-panek-video-program-help-desk" style="color:var(--accent);">AI Help Desk</a> is trained on installation and debugging across all platforms. Get instant, personalized support 24/7.</p>
+    </div>
 
     <section class="grid">
-      <div class="card">
-        <h2>What it does</h2>
-        <p>Produces a clean 1920×1080 MP4 at 30 FPS using your image and audio track.</p>
-        <ul>
-          <li>Image: JPG, PNG, WEBP</li>
-          <li>Audio: MP3, WAV</li>
-          <li>Video: H.264 yuv420p, CRF 20</li>
+      <article class="card">
+        <h2>What It Does</h2>
+        <p>Panek Video Program is a free, open-source desktop tool that converts a single static image and an audio file into a professional video ready for upload to any platform.</p>
+        <ul class="features-list">
+          <li><strong>Images:</strong> JPG, PNG, WEBP</li>
+          <li><strong>Audio:</strong> MP3, WAV</li>
+          <li><strong>Output:</strong> H.264 MP4, 1920×1080, 30 FPS</li>
+          <li><strong>Quality:</strong> CRF 20, AAC audio at 192kbps</li>
+          <li><strong>Smart scaling:</strong> Automatic 16:9 letterboxing</li>
         </ul>
-      </div>
-      <div class="card">
-        <h2>How to use</h2>
+      </article>
+
+      <article class="card">
+        <h2>How to Use</h2>
+        <p>Create videos in three simple steps:</p>
         <ol>
-          <li>Open the app and choose an output folder.</li>
-          <li>Select your image + audio.</li>
-          <li>Click <span class="kbd">Render Video</span>.</li>
+          <li><strong>Choose your files:</strong> Select an image and an audio file</li>
+          <li><strong>Set output:</strong> Optionally choose where to save and set a title</li>
+          <li><strong>Render:</strong> Click the <span class="kbd">Render Video</span> button</li>
         </ol>
-        <p class="small">Render button turns green when both files are selected.</p>
-      </div>
-      <div class="card">
-        <h2>Native Feel</h2>
-        <p>Uses native system dialogs when available:</p>
+        <p class="small">The render button turns green when both files are selected. Rendering typically takes 10-30 seconds for a 3-4 minute song.</p>
+      </article>
+
+      <article class="card">
+        <h2>Native System Integration</h2>
+        <p>Works seamlessly with your desktop environment using native file dialogs:</p>
         <ul>
-          <li>KDE: <code>kdialog</code></li>
-          <li>GNOME/XFCE: <code>zenity</code></li>
-          <li>macOS: <code>osascript</code></li>
-          <li>Fallback: Qt dialogs</li>
+          <li><strong>KDE/Plasma:</strong> Uses <code>kdialog</code></li>
+          <li><strong>GNOME/XFCE:</strong> Uses <code>zenity</code></li>
+          <li><strong>macOS:</strong> Uses <code>osascript</code></li>
+          <li><strong>Fallback:</strong> Qt-based dialogs</li>
         </ul>
+        <p class="small">Feels like a native application on every platform.</p>
+      </article>
+
+      <article class="card">
+        <h2>Requirements</h2>
+        <p><strong>FFmpeg Required:</strong> Install via your system's package manager.</p>
+        <p class="small" style="margin-top:12px;"><strong>Ubuntu/Debian:</strong> <code>sudo apt install ffmpeg</code><br>
+        <strong>Fedora:</strong> <code>sudo dnf install ffmpeg</code><br>
+        <strong>macOS:</strong> <code>brew install ffmpeg</code></p>
+        <p class="small" style="margin-top:12px;">Need help? Our <a href="https://chatgpt.com/g/g-68ff031d991081919e3da5b0b7ea683f-panek-video-program-help-desk" style="color:var(--accent);">AI Help Desk</a> can guide you through installation.</p>
+      </article>
+    </section>
+
+    <section class="use-cases">
+      <h2>Perfect For</h2>
+      <div class="grid">
+        <div>
+          <h3><span class="emoji">🎵</span> Musicians & Artists</h3>
+          <ul>
+            <li>Upload songs to YouTube with album artwork</li>
+            <li>Create videos for streaming platforms</li>
+            <li>Convert audio releases to video format</li>
+            <li>Make simple music videos quickly</li>
+          </ul>
+        </div>
+        <div>
+          <h3><span class="emoji">🎙️</span> Podcasters & Creators</h3>
+          <ul>
+            <li>Convert podcast episodes to video for YouTube</li>
+            <li>Add branding to audio content</li>
+            <li>Reach video platform audiences</li>
+            <li>Create meditation or ambient content</li>
+          </ul>
+        </div>
+        <div>
+          <h3><span class="emoji">📱</span> Social Media Content</h3>
+          <ul>
+            <li>Create content for TikTok, Reels, Shorts</li>
+            <li>Make countdown or announcement videos</li>
+            <li>Visual loops with audio</li>
+            <li>Quote graphics with voiceover</li>
+          </ul>
+        </div>
+        <div>
+          <h3><span class="emoji">💼</span> Business & Education</h3>
+          <ul>
+            <li>Audio presentations with branding</li>
+            <li>Product announcements</li>
+            <li>Educational content for video platforms</li>
+            <li>Simple video advertisements</li>
+          </ul>
+        </div>
       </div>
-      <div class="card">
-        <h2>FAQ</h2>
-        <p><b>Needs ffmpeg?</b> Yes, install via system package manager.</p>
-        <p><b>Letterboxing?</b> The image is scaled and padded so the output is always 16:9.</p>
+    </section>
+
+    <section class="card">
+      <h2>Technical Specifications</h2>
+      <div class="specs">
+        <div class="spec-item">
+          <div class="spec-label">Video Resolution</div>
+          <div class="spec-value">1920×1080 (Full HD)</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Frame Rate</div>
+          <div class="spec-value">30 FPS</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Video Codec</div>
+          <div class="spec-value">H.264 (libx264)</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Audio Codec</div>
+          <div class="spec-value">AAC, 192 kbps</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Quality</div>
+          <div class="spec-value">CRF 20 (High)</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Color Space</div>
+          <div class="spec-value">BT.709 (HD Standard)</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Frequently Asked Questions</h2>
+      
+      <h3>Does it require FFmpeg?</h3>
+      <p>Yes, FFmpeg and FFprobe must be installed on your system. You can install FFmpeg using your system's package manager.</p>
+
+      <h3>What if my image isn't 16:9?</h3>
+      <p>The program automatically scales your image to fit 16:9 aspect ratio and adds black letterboxing or pillarboxing as needed. Your image maintains its aspect ratio.</p>
+
+      <h3>Can I use the videos commercially?</h3>
+      <p>Yes! You own all the videos you create with Panek Video Program and can use them for any purpose, including commercial projects.</p>
+
+      <h3>How long does rendering take?</h3>
+      <p>Typically 10-30 seconds for a 3-4 minute song, depending on your computer's processing power.</p>
+
+      <h3>What platforms are supported?</h3>
+      <p>Currently Linux (all major distributions) and macOS. Windows support may come in future versions.</p>
+
+      <h3>Where can I get help?</h3>
+      <p>Check our <a href="https://github.com/Nickpanek/panek-video-program/blob/main/MANUAL.md" style="color:var(--accent);">User Manual</a> or use our <a href="https://chatgpt.com/g/g-68ff031d991081919e3da5b0b7ea683f-panek-video-program-help-desk" style="color:var(--accent);">AI Help Desk</a> for instant support.</p>
+    </section>
+
+    <section style="text-align:center;margin:40px 0;">
+      <h2>Get Started Now</h2>
+      <p class="small" style="margin-bottom:20px;">Free, open-source, and ready to use in minutes.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/Nickpanek/panek-video-program/releases/latest">
+          Download for Linux
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/Nickpanek/panek-video-program/">
+          View Source on GitHub
+        </a>
       </div>
     </section>
 
     <footer>
-      <p class="small">Made by PatternRipple Labs.</p>
+      <p><strong>Panek Video Program</strong> by <a href="https://www.patternripple.com/lab">PatternRipple Labs</a></p>
+      <p class="small">
+        <a href="https://github.com/Nickpanek/panek-video-program">GitHub</a> • 
+        <a href="https://github.com/Nickpanek/panek-video-program/blob/main/MANUAL.md">Documentation</a> • 
+        <a href="https://chatgpt.com/g/g-68ff031d991081919e3da5b0b7ea683f-panek-video-program-help-desk">AI Help</a> • 
+        <a href="https://buymeacoffee.com/prompternick">Support Development</a>
+      </p>
+      <p class="small" style="margin-top:16px;">Open source software for creating professional video content from static images and audio files.</p>
     </footer>
   </div>
 </body>
