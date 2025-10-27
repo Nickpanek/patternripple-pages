@@ -1,14 +1,12 @@
-```jsx
 "use client";
 
 import Link from "next/link";
 import Head from "next/head";
 
 export default function HomePage() {
-  const siteTitle =
-    "PatternRipple - Creative Tools & Browser Utilities | Free Prototypes & Apps";
+  const siteTitle = "PatternRipple - Creative Tools and Utilities";
   const siteDescription =
-    "PatternRipple provides free browser-based creative tools, utilities, and prototypes focused on speed, privacy, and practical workflows.";
+    "PatternRipple hosts browser-based creative tools and utilities. Visit the Lab to try free prototypes and apps.";
 
   const jsonLdWebsite = {
     "@context": "https://schema.org",
@@ -36,10 +34,6 @@ export default function HomePage() {
       <Head>
         <title>{siteTitle}</title>
         <meta name="description" content={siteDescription} />
-        <meta
-          name="keywords"
-          content="browser tools, creative utilities, patternripple, design apps, online lab tools"
-        />
         <link rel="canonical" href="https://www.patternripple.com/" />
         <meta property="og:title" content={siteTitle} />
         <meta property="og:description" content={siteDescription} />
@@ -49,7 +43,6 @@ export default function HomePage() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={siteTitle} />
         <meta name="twitter:description" content={siteDescription} />
-
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
@@ -63,10 +56,8 @@ export default function HomePage() {
       {/* Hero */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <Link href="/" aria-label="PatternRipple Home">
-            <h1 className="text-5xl font-thin tracking-wide text-gray-900 mb-4">
-              PatternRipple
-            </h1>
+          <Link href="/" className="inline-block" aria-label="PatternRipple home">
+            <h1 className="text-5xl font-thin tracking-wide text-gray-900 mb-4">PatternRipple</h1>
           </Link>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">
             Visit the Lab to try free tools and prototypes. Paid apps arrive as they are ready.
@@ -77,7 +68,7 @@ export default function HomePage() {
       {/* Top Nav */}
       <nav
         className="bg-white/50 backdrop-blur-sm border-b border-gray-100 sticky top-14 z-40"
-        aria-label="Main Navigation"
+        aria-label="Primary"
       >
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex flex-wrap gap-2 justify-center items-center">
@@ -92,6 +83,7 @@ export default function HomePage() {
             <Link href="/blog" className="text-gray-700 hover:text-purple-600 font-medium px-3">
               Blog
             </Link>
+            {/* removed games and pattern catalog links */}
           </div>
         </div>
       </nav>
@@ -100,10 +92,11 @@ export default function HomePage() {
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3">
         <div className="max-w-6xl mx-auto px-4 flex justify-center items-center gap-8 text-sm">
           <span>🧪 Visit the Lab for free tools and prototypes</span>
+          {/* removed counts for patterns and any games mention */}
         </div>
       </div>
 
-      {/* Intro */}
+      {/* Intro card - trimmed to avoid pattern or game links */}
       <section className="max-w-6xl mx-auto px-4 mt-10">
         <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
           <h2 className="text-2xl md:text-3xl font-light text-gray-900">
@@ -119,9 +112,12 @@ export default function HomePage() {
             >
               Explore the Lab
             </Link>
+            {/* removed See Games button */}
           </div>
         </div>
       </section>
+
+      {/* removed product grid and product links */}
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 mt-20">
@@ -133,7 +129,6 @@ export default function HomePage() {
                 Creative tools and browser apps with a focus on speed and privacy.
               </p>
             </div>
-
             <div>
               <h3 className="text-white font-medium mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm">
@@ -141,9 +136,9 @@ export default function HomePage() {
                 <li><Link href="/blog" className="hover:text-white">Blog</Link></li>
                 <li><Link href="/about" className="hover:text-white">About</Link></li>
                 <li><a href="mailto:nick@patternripple.com" className="hover:text-white">Contact</a></li>
+                {/* removed Collections and any pattern catalog links */}
               </ul>
             </div>
-
             <div>
               <h3 className="text-white font-medium mb-4">Legal</h3>
               <ul className="space-y-2 text-sm">
@@ -153,7 +148,6 @@ export default function HomePage() {
               </ul>
             </div>
           </div>
-
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
             <p>&copy; 2025 PatternRipple. All rights reserved.</p>
           </div>
@@ -162,4 +156,3 @@ export default function HomePage() {
     </div>
   );
 }
-```
