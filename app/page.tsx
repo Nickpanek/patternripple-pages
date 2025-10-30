@@ -56,43 +56,23 @@ export default function HomePage() {
       {/* Hero */}
       <header className="bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-gray-700 py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <Link href="/" className="inline-block" aria-label="PatternRipple home">
-            <h1 className="text-5xl font-thin tracking-wide text-gray-100 mb-4">PatternRipple</h1>
-          </Link>
+          <h1 className="text-5xl font-thin tracking-wide text-gray-100 mb-4">PatternRipple</h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Visit the Lab to try free tools and prototypes. Paid apps arrive as they are ready.
           </p>
         </div>
       </header>
 
-      {/* Top Nav */}
-      <nav
-        className="bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-gray-700 sticky top-14 z-40"
-        aria-label="Primary"
-      >
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex flex-wrap gap-2 justify-center items-center">
-            <Link href="/lab" className="text-gray-300 hover:text-accent font-medium px-3">
-              Lab
-            </Link>
-            <span className="text-gray-600">•</span>
-            <Link href="/about" className="text-gray-300 hover:text-accent font-medium px-3">
-              About
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* Stats */}
-      <div className="bg-accent text-white py-3">
-        <div className="max-w-6xl mx-auto px-4 flex justify-center items-center gap-8 text-sm">
-          <span>🧪 Visit the Lab for free tools and prototypes</span>
+      {/* Highlight banner */}
+      <div className="bg-accent text-black py-3">
+        <div className="max-w-6xl mx-auto px-4 flex justify-center items-center gap-8 text-sm font-medium">
+          🧪 Visit the Lab for free tools and prototypes
         </div>
       </div>
 
       {/* Intro card */}
       <section className="max-w-6xl mx-auto px-4 mt-10">
-        <div className="bg-[#1e1e1e] rounded-2xl shadow-lg p-6 md:p-8">
+        <div className="bg-[#1e1e1e] rounded-2xl shadow-lg p-6 md:p-8 ring-1 ring-gray-700">
           <h2 className="text-2xl md:text-3xl font-light text-gray-100">
             Tools that respect your time and data
           </h2>
