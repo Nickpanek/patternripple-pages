@@ -51,18 +51,8 @@ export default function PaidToolsPage() {
             <p className="mt-2 text-sm text-gray-400">
               Brief description of the tool. Who it’s for, what it solves.
             </p>
-            <div className="mt-4 flex justify-between items-center">
-              <span className="text-accent font-semibold">$9.99</span>
-              <Link
-                href="#"
-                className="bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors"
-              >
-                Buy Now
-              </Link>
-            </div>
+            <div className="mt-4 text-accent font-semibold">Coming Soon</div>
           </div>
-
-          {/* Repeat or dynamically map actual paid tools here */}
         </section>
 
         {/* Contact or support */}
