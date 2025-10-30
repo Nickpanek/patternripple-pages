@@ -30,7 +30,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+    <div className="min-h-screen bg-[#111] text-gray-200">
       <Head>
         <title>{siteTitle}</title>
         <meta name="description" content={siteDescription} />
@@ -54,12 +54,12 @@ export default function HomePage() {
       </Head>
 
       {/* Hero */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-12">
+      <header className="bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-gray-700 py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <Link href="/" className="inline-block" aria-label="PatternRipple home">
-            <h1 className="text-5xl font-thin tracking-wide text-gray-900 mb-4">PatternRipple</h1>
+            <h1 className="text-5xl font-thin tracking-wide text-gray-100 mb-4">PatternRipple</h1>
           </Link>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Visit the Lab to try free tools and prototypes. Paid apps arrive as they are ready.
           </p>
         </div>
@@ -67,57 +67,51 @@ export default function HomePage() {
 
       {/* Top Nav */}
       <nav
-        className="bg-white/50 backdrop-blur-sm border-b border-gray-100 sticky top-14 z-40"
+        className="bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-gray-700 sticky top-14 z-40"
         aria-label="Primary"
       >
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex flex-wrap gap-2 justify-center items-center">
-            <Link href="/lab" className="text-gray-700 hover:text-purple-600 font-medium px-3">
+            <Link href="/lab" className="text-gray-300 hover:text-accent font-medium px-3">
               Lab
             </Link>
-            <span className="text-gray-300">•</span>
-            <Link href="/about" className="text-gray-700 hover:text-purple-600 font-medium px-3">
+            <span className="text-gray-600">•</span>
+            <Link href="/about" className="text-gray-300 hover:text-accent font-medium px-3">
               About
             </Link>
-            <span className="text-gray-300">•</span>
-                       {/* removed games and pattern catalog links */}
           </div>
         </div>
       </nav>
 
       {/* Stats */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3">
+      <div className="bg-accent text-white py-3">
         <div className="max-w-6xl mx-auto px-4 flex justify-center items-center gap-8 text-sm">
           <span>🧪 Visit the Lab for free tools and prototypes</span>
-          {/* removed counts for patterns and any games mention */}
         </div>
       </div>
 
-      {/* Intro card - trimmed to avoid pattern or game links */}
+      {/* Intro card */}
       <section className="max-w-6xl mx-auto px-4 mt-10">
-        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-          <h2 className="text-2xl md:text-3xl font-light text-gray-900">
+        <div className="bg-[#1e1e1e] rounded-2xl shadow-lg p-6 md:p-8">
+          <h2 className="text-2xl md:text-3xl font-light text-gray-100">
             Tools that respect your time and data
           </h2>
-          <p className="mt-3 text-gray-700 leading-relaxed">
+          <p className="mt-3 text-gray-400 leading-relaxed">
             Simple browser utilities. No subscriptions. Clear licensing.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href="/lab"
-              className="inline-block bg-gray-900 text-white px-5 py-3 rounded-lg hover:bg-purple-600 transition-colors"
+              className="inline-block bg-accent text-white px-5 py-3 rounded-lg hover:bg-accent/90 transition-colors"
             >
               Explore the Lab
             </Link>
-            {/* removed See Games button */}
           </div>
         </div>
       </section>
 
-      {/* removed product grid and product links */}
-
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 mt-20">
+      <footer className="bg-[#1a1a1a] text-gray-400 mt-20">
         <div className="max-w-6xl mx-auto px-4 py-12">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
@@ -129,19 +123,17 @@ export default function HomePage() {
             <div>
               <h3 className="text-white font-medium mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/lab" className="hover:text-white">Lab</Link></li>
-                <li><Link href="/blog" className="hover:text-white">Blog</Link></li>
-                <li><Link href="/about" className="hover:text-white">About</Link></li>
-                <li><a href="mailto:nick@patternripple.com" className="hover:text-white">Contact</a></li>
-                {/* removed Collections and any pattern catalog links */}
+                <li><Link href="/lab" className="hover:text-accent">Lab</Link></li>
+                <li><Link href="/about" className="hover:text-accent">About</Link></li>
+                <li><a href="mailto:nick@patternripple.com" className="hover:text-accent">Contact</a></li>
               </ul>
             </div>
             <div>
               <h3 className="text-white font-medium mb-4">Legal</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/terms" className="hover:text-white">Terms of Service</Link></li>
-                <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
-                <li><Link href="/licenses" className="hover:text-white">License Agreement</Link></li>
+                <li><Link href="/terms" className="hover:text-accent">Terms of Service</Link></li>
+                <li><Link href="/privacy" className="hover:text-accent">Privacy Policy</Link></li>
+                <li><Link href="/licenses" className="hover:text-accent">License Agreement</Link></li>
               </ul>
             </div>
           </div>
