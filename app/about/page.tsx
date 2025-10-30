@@ -24,14 +24,14 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+    <div className="min-h-screen bg-[#111] text-gray-200">
       {/* Hero */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-12">
+      <header className="bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-gray-700 py-12">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-5xl font-thin tracking-wide text-gray-900 mb-3">
+          <h1 className="text-5xl font-thin tracking-wide text-gray-100 mb-3">
             PatternRipple
           </h1>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             I used to sell patterns on this site. I’m now building software that
             will never have a subscription. It’s just me here—a one-man team—and
             I’ll squash bugs as fast as I can. Files stay local where possible.
@@ -40,13 +40,13 @@ export default function AboutPage() {
           <div className="mt-6 flex justify-center gap-3">
             <Link
               href="/"
-              className="inline-block bg-white border border-gray-300 text-gray-900 px-5 py-3 rounded-lg hover:border-purple-500 hover:text-purple-700 transition-colors"
+              className="inline-block border border-accent text-accent px-5 py-3 rounded-lg hover:bg-accent hover:text-white transition-colors"
             >
               Back to Home
             </Link>
             <Link
               href="/lab"
-              className="inline-block bg-gray-900 text-white px-5 py-3 rounded-lg hover:bg-purple-600 transition-colors"
+              className="inline-block bg-accent text-white px-5 py-3 rounded-lg hover:bg-accent/90 transition-colors"
             >
               Visit the Lab
             </Link>
@@ -55,9 +55,9 @@ export default function AboutPage() {
       </header>
 
       {/* About Section */}
-      <main className="max-w-4xl mx-auto px-4 py-14 text-gray-800">
-        <section className="prose prose-gray max-w-none">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+      <main className="max-w-4xl mx-auto px-4 py-14 text-gray-200">
+        <section className="prose prose-invert prose-gray max-w-none">
+          <h2 className="text-2xl font-semibold text-gray-100 mb-4">
             About PatternRipple
           </h2>
           <p>
@@ -70,16 +70,14 @@ export default function AboutPage() {
             myself—and now I share them with anyone who wants to work smarter.
           </p>
           <p>
-            All PatternRipple Lab tools are free and will always stay free. Every
-            update keeps a link to the previous version, so if something changes and
-            you prefer an older release, you can keep using it. I never delete old
-            versions. Your workflow, your choice.
+            All tools listed in the <strong>Lab section are free</strong> and will
+            always stay free. They’re prototypes and experiments designed to run
+            in your browser, no account needed.
           </p>
           <p>
-            In the future, I’ll also release paid tools—but never subscription-based.
-            No monthly fees, no SaaS lock-ins. That subscription plague is exactly
-            why I started building my own tools in the first place. You buy it once,
-            you own it.
+            Tools listed in the <strong>Tools section are paid</strong>—but they’ll
+            always be one-time purchases. No subscriptions, no hidden fees, no SaaS
+            traps. You buy it once, you own it forever.
           </p>
           <p>
             I also share free assets for gamers, content creators, authors, and
@@ -91,7 +89,7 @@ export default function AboutPage() {
             Explore everything I make and share here:{" "}
             <a
               href="https://heylink.me/nickpanek/"
-              className="text-purple-700 underline hover:text-purple-800"
+              className="text-accent underline hover:text-accent/80"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -101,12 +99,12 @@ export default function AboutPage() {
         </section>
 
         {/* Footer Contact */}
-        <section className="mt-10 text-sm text-gray-600">
+        <section className="mt-10 text-sm text-gray-500">
           <p>
             Found a bug or have feedback? Email{" "}
             <a
               href="mailto:nick@patternripple.com"
-              className="underline hover:text-purple-700"
+              className="underline hover:text-accent"
             >
               nick@patternripple.com
             </a>.
