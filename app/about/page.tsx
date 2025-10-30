@@ -56,35 +56,41 @@ export default function AboutPage() {
 
       {/* About Section */}
       <main className="max-w-4xl mx-auto px-4 py-14 text-gray-200">
-        <section className="prose prose-invert prose-gray max-w-none">
+        <section className="prose prose-invert prose-gray max-w-none space-y-8">
           <h2 className="text-2xl font-semibold text-gray-100 mb-4">
             About PatternRipple
           </h2>
+
           <p>
             I’m Nick Panek, the creator of PatternRipple. This started as a place
             to share my seamless patterns, but it’s evolved into a hub for creative
             tools and digital resources that save time and cut wasted effort.
           </p>
+
           <p>
             Every tool I build comes from real workflow problems I’ve solved for
             myself—and now I share them with anyone who wants to work smarter.
           </p>
+
           <p>
             All tools listed in the <strong>Lab section are free</strong> and will
             always stay free. They’re prototypes and experiments designed to run
             in your browser, no account needed.
           </p>
+
           <p>
             Tools listed in the <strong>Tools section are paid</strong>—but they’ll
             always be one-time purchases. No subscriptions, no hidden fees, no SaaS
             traps. You buy it once, you own it forever.
           </p>
+
           <p>
             I also share free assets for gamers, content creators, authors, and
             haunted house designers—resources built to inspire creativity across
             different projects. I still sell fabric and wallpaper designs, and if one
             of my free tools helps you out, you can buy me a coffee as a thank-you.
           </p>
+
           <p>
             Explore everything I make and share here:{" "}
             <a
