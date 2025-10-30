@@ -46,6 +46,17 @@ export default function RootLayout({
             <Link href="/" className="text-xl font-bold text-accent">
               PatternRipple
             </Link>
+            <div className="flex gap-6 text-sm">
+              <Link href="/lab" className="hover:text-white transition-colors">
+                Lab
+              </Link>
+              <Link href="/tools" className="hover:text-white transition-colors">
+                Tools
+              </Link>
+              <Link href="/about" className="hover:text-white transition-colors">
+                About
+              </Link>
+            </div>
           </div>
         </nav>
         {children}
