@@ -40,18 +40,12 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body
-        className={`${inter.className} bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen`}
-      >
-        <nav className="bg-white/90 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+      <body className={`${inter.className} bg-[#111] text-gray-300 min-h-screen`}>
+        <nav className="bg-[#1a1a1a]/90 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
-            <Link
-              href="/"
-              className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
-            >
+            <Link href="/" className="text-xl font-bold text-accent">
               PatternRipple
             </Link>
-            {/* Search removed */}
           </div>
         </nav>
         {children}
