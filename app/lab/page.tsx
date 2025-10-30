@@ -50,7 +50,7 @@ const tools: Tool[] = [
     secondaryHref: "/pattern-checker.html",
     secondaryLabel: "v0",
   },
-   {
+  {
     slug: "panek-video-program",
     title: "Panek Video Program",
     href: "/panekvideo/",
@@ -96,7 +96,6 @@ const tools: Tool[] = [
   },
 ];
 
-// custom sort to present tools in a logical order
 const order: Record<string, number> = {
   "seamless-pattern-creator": 10,
   "seamless-pattern-checker": 20,
@@ -110,7 +109,6 @@ const sortedTools = [...tools].sort(
   (a, b) => (order[a.slug] ?? 999) - (order[b.slug] ?? 999)
 );
 
-// JSON-LD
 const itemListJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -136,7 +134,7 @@ const websiteJsonLd = {
 
 export default function LabPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+    <div className="min-h-screen bg-[#111] text-gray-200">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
@@ -147,18 +145,18 @@ export default function LabPage() {
       />
 
       {/* Hero */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-12">
+      <header className="bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-gray-700 py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h1 className="text-5xl font-thin tracking-wide text-gray-900 mb-3">
+          <h1 className="text-5xl font-thin tracking-wide text-gray-100 mb-3">
             PatternRipple Lab
           </h1>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Free browser tools and prototypes. Files stay local where possible.
           </p>
           <div className="mt-5 flex justify-center gap-3">
             <Link
               href="/"
-              className="inline-block bg-white border border-gray-300 text-gray-900 px-5 py-3 rounded-lg hover:border-purple-500 hover:text-purple-700 transition-colors"
+              className="inline-block border border-accent text-accent px-5 py-3 rounded-lg hover:bg-accent hover:text-white transition-colors"
             >
               Back to Home
             </Link>
@@ -172,28 +170,28 @@ export default function LabPage() {
           {sortedTools.map((tool) => (
             <article
               key={tool.slug}
-              className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all ring-1 ring-gray-200"
+              className="bg-[#1e1e1e] rounded-2xl shadow-md hover:shadow-xl transition-all ring-1 ring-gray-700"
             >
               <div className="p-6 flex flex-col h-full">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-light text-gray-900">
-                    <Link href={tool.href} className="hover:text-purple-700">
+                  <h2 className="text-xl font-light text-gray-100">
+                    <Link href={tool.href} className="hover:text-accent">
                       {tool.title}
                     </Link>
                   </h2>
                   {tool.badge ? (
-                    <span className="ml-3 text-xs font-semibold tracking-wide bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full">
+                    <span className="ml-3 text-xs font-semibold tracking-wide bg-accent/20 text-accent px-2.5 py-1 rounded-full">
                       {tool.badge}
                     </span>
                   ) : null}
                 </div>
 
-                <p className="mt-3 text-gray-700 text-sm flex-1">{tool.summary}</p>
+                <p className="mt-3 text-gray-400 text-sm flex-1">{tool.summary}</p>
 
                 <div className="mt-5 grid gap-2">
                   <Link
                     href={tool.href}
-                    className="inline-flex items-center justify-center w-full bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-purple-600 transition-colors"
+                    className="inline-flex items-center justify-center w-full bg-accent text-white px-4 py-2.5 rounded-lg hover:bg-accent/90 transition-colors"
                     prefetch={false}
                     title={`Open ${tool.title}`}
                   >
@@ -204,7 +202,7 @@ export default function LabPage() {
                     tool.slug === "seamless-pattern-checker" ? (
                       <a
                         href={tool.secondaryHref}
-                        className="text-sm text-gray-500 hover:text-gray-700 underline text-center"
+                        className="text-sm text-gray-500 hover:text-gray-300 underline text-center"
                         title={tool.secondaryLabel}
                       >
                         {tool.secondaryLabel} version
@@ -212,7 +210,7 @@ export default function LabPage() {
                     ) : (
                       <a
                         href={tool.secondaryHref}
-                        className="inline-flex items-center justify-center w-full bg-white text-gray-900 border border-gray-300 px-4 py-2.5 rounded-lg hover:border-purple-500 hover:text-purple-700 transition-colors"
+                        className="inline-flex items-center justify-center w-full border border-accent text-accent bg-transparent px-4 py-2.5 rounded-lg hover:bg-accent hover:text-white transition-colors"
                         title={tool.secondaryLabel}
                       >
                         {tool.secondaryLabel}
@@ -226,10 +224,10 @@ export default function LabPage() {
         </div>
 
         {/* Notes */}
-        <section className="mt-12 text-sm text-gray-600">
+        <section className="mt-12 text-sm text-gray-500">
           <p>
             Feature requests and bugs - email{" "}
-            <a href="mailto:nick@patternripple.com" className="underline">
+            <a href="mailto:nick@patternripple.com" className="underline hover:text-accent">
               nick@patternripple.com
             </a>.
           </p>
