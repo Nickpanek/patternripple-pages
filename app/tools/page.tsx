@@ -47,9 +47,9 @@ export default function PaidToolsPage() {
         <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Example product */}
           <div className="bg-[#1e1e1e] ring-1 ring-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all">
-            <h2 className="text-xl font-light text-gray-100">Paid Tool Name</h2>
+            <h2 className="text-xl font-light text-gray-100">Coming Soon</h2>
             <p className="mt-2 text-sm text-gray-400">
-              Brief description of the tool. Who it’s for, what it solves.
+              Descriptions coming soon
             </p>
             <div className="mt-4 text-accent font-semibold">Coming Soon</div>
           </div>
