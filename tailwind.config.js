@@ -6,7 +6,11 @@ module.exports = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        accent: '#5399B5', // PR logo blue
+      },
+    },
   },
   plugins: [],
 }
