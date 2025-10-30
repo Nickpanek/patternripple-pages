@@ -80,10 +80,7 @@ export default function HomePage() {
               About
             </Link>
             <span className="text-gray-300">•</span>
-            <Link href="/blog" className="text-gray-700 hover:text-purple-600 font-medium px-3">
-              Blog
-            </Link>
-            {/* removed games and pattern catalog links */}
+                       {/* removed games and pattern catalog links */}
           </div>
         </div>
       </nav>
