@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 
 // SEO
 export const metadata: Metadata = {
-  title: "PatternRipple Lab - Free tools and prototypes",
+  title: "PatternRipple Beta Lab - Free tools and prototypes",
   description:
-    "Free in-browser tools and prototypes. Seamless pattern creator, tile checker, audio tools, slideshow maker, and the cqs-rs browser demo.",
+    "Free in-browser tools and prototypes. Seamless pattern creator, tile checker, audio tools, slideshow maker, and the cqs-rs browser demo. These will act as beta test for full software programs.",
   alternates: { canonical: "https://www.patternripple.com/lab" },
   openGraph: {
     title: "PatternRipple Lab - Free tools and prototypes",
