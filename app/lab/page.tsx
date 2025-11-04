@@ -148,10 +148,10 @@ export default function LabPage() {
       <header className="bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-gray-700 py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-5xl font-thin tracking-wide text-gray-100 mb-3">
-            PatternRipple Lab
+            PatternRipple Beta Lab
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            Free browser tools and prototypes. Files stay local where possible.
+            Free browser tools and prototypes. Files stay local where possible. These will act as beta versions of apps and software.
           </p>
           <div className="mt-5 flex justify-center gap-3">
             <Link
