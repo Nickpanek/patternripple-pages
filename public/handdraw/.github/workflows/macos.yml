@@ -1,0 +1,71 @@
+name: macOS Build
+
+on:
+  push:
+    branches: [main, claude/**]
+  pull_request:
+
+jobs:
+  build-macos:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: x86_64-apple-darwin,aarch64-apple-darwin
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: public/handdraw/src-tauri
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install TypeScript
+        run: npm install -g typescript
+
+      - name: Compile TypeScript
+        run: |
+          cd public/handdraw/app
+          tsc --outDir ../src-tauri/dist --module es2020 --target es2020 --skipLibCheck --allowSyntheticDefaultImports app.ts
+
+      - name: Copy static assets
+        run: |
+          mkdir -p public/handdraw/src-tauri/dist
+          cp public/handdraw/app/index.html public/handdraw/src-tauri/dist/
+          cp public/handdraw/app/styles.css public/handdraw/src-tauri/dist/
+          cp -r public/handdraw/app/assets public/handdraw/src-tauri/dist/
+
+      - name: Download FFmpeg-kit LGPL
+        run: |
+          mkdir -p public/handdraw/src-tauri/libs
+          cd public/handdraw/src-tauri/libs
+          curl -L -o ffmpeg-kit-macos.tar.xz https://github.com/arthenica/ffmpeg-kit/releases/download/v6.0/ffmpeg-kit-macos-universal-6.0.tar.xz
+          tar -xf ffmpeg-kit-macos.tar.xz
+          mv ffmpeg-kit-macos-universal-6.0/lib/* .
+          rm -rf ffmpeg-kit-macos-universal-6.0 ffmpeg-kit-macos.tar.xz
+
+      - name: Build Tauri Universal DMG
+        run: |
+          cd public/handdraw/src-tauri
+          cargo install tauri-cli --version '^1.0'
+          cargo tauri build --target universal-apple-darwin --bundles dmg
+
+      - name: Ad-hoc Sign (if no secrets)
+        run: |
+          if [ -z "${{ secrets.APPLE_CERTIFICATE }}" ]; then
+            echo "No Apple certificate, skipping signing"
+            codesign --force --deep --sign - public/handdraw/src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg || true
+          fi
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: handdraw-macos-dmg
+          path: public/handdraw/src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg

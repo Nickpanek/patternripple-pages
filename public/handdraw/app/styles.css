@@ -1,0 +1,196 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  overflow: hidden;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: 200px 1fr 250px;
+  grid-template-rows: 1fr 180px;
+  grid-template-areas:
+    "sidebar stage inspector"
+    "sidebar timeline inspector";
+  height: 100vh;
+}
+
+#sidebar {
+  grid-area: sidebar;
+  background: #252526;
+  padding: 16px;
+  overflow-y: auto;
+  border-right: 1px solid #3c3c3c;
+}
+
+#sidebar h2 {
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  color: #888;
+}
+
+#sidebar button {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  background: #0e639c;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+#sidebar button:hover {
+  background: #1177bb;
+}
+
+#assets-list {
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+#stage-container {
+  grid-area: stage;
+  position: relative;
+  background: #2d2d30;
+  overflow: hidden;
+}
+
+#toolbar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+#toolbar button {
+  padding: 6px 12px;
+  margin-right: 4px;
+  background: #3c3c3c;
+  color: #ccc;
+  border: 1px solid #555;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#toolbar button:hover {
+  background: #505050;
+}
+
+#stage {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#hand-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#inspector {
+  grid-area: inspector;
+  background: #252526;
+  padding: 16px;
+  overflow-y: auto;
+  border-left: 1px solid #3c3c3c;
+}
+
+#inspector h2 {
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  color: #888;
+}
+
+#inspector label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+#inspector input,
+#inspector select {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+  background: #3c3c3c;
+  color: #d4d4d4;
+  border: 1px solid #555;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+#timeline-container {
+  grid-area: timeline;
+  background: #1e1e1e;
+  border-top: 1px solid #3c3c3c;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+#timeline-controls {
+  margin-bottom: 12px;
+}
+
+#timeline-controls button {
+  padding: 6px 12px;
+  margin-right: 6px;
+  background: #0e639c;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#timeline-controls button:hover {
+  background: #1177bb;
+}
+
+#timeline {
+  height: 60px;
+  background: #2d2d30;
+  border: 1px solid #3c3c3c;
+  border-radius: 3px;
+  position: relative;
+  margin-bottom: 8px;
+}
+
+#waveform {
+  height: 50px;
+  background: #252526;
+  border: 1px solid #3c3c3c;
+  border-radius: 3px;
+}
+
+.segment {
+  position: absolute;
+  top: 10px;
+  height: 40px;
+  background: rgba(14, 99, 156, 0.7);
+  border: 1px solid #0e639c;
+  border-radius: 3px;
+  cursor: move;
+  font-size: 10px;
+  color: #fff;
+  padding: 4px;
+  overflow: hidden;
+}
+
+.segment:hover {
+  background: rgba(17, 119, 187, 0.8);
+}
