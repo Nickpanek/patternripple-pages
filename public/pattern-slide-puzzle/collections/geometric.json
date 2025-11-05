@@ -2,73 +2,73 @@
   {
     "id": "linear-waves",
     "title": "Linear Waves",
-    "img": "../img/linear-waves.jpg",
+    "img": "img/linear-waves.jpg",
     "url": "https://www.spoonflower.com/en/fabric/linear-waves?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "grid-pattern",
     "title": "Grid Pattern",
-    "img": "../img/grid-pattern.jpg",
+    "img": "img/grid-pattern.jpg",
     "url": "https://www.spoonflower.com/en/fabric/grid-pattern?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "modern-triangles",
     "title": "Modern Triangles",
-    "img": "../img/modern-triangles.jpg",
+    "img": "img/modern-triangles.jpg",
     "url": "https://www.spoonflower.com/en/fabric/modern-triangles?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "hexagon-tile",
     "title": "Hexagon Tile",
-    "img": "../img/hexagon-tile.jpg",
+    "img": "img/hexagon-tile.jpg",
     "url": "https://www.spoonflower.com/en/fabric/hexagon-tile?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "chevron-modern",
     "title": "Chevron Modern",
-    "img": "../img/chevron-modern.jpg",
+    "img": "img/chevron-modern.jpg",
     "url": "https://www.spoonflower.com/en/fabric/chevron-modern?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "diamond-lattice",
     "title": "Diamond Lattice",
-    "img": "../img/diamond-lattice.jpg",
+    "img": "img/diamond-lattice.jpg",
     "url": "https://www.spoonflower.com/en/fabric/diamond-lattice?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "parallel-lines",
     "title": "Parallel Lines",
-    "img": "../img/parallel-lines.jpg",
+    "img": "img/parallel-lines.jpg",
     "url": "https://www.spoonflower.com/en/fabric/parallel-lines?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "circle-geometry",
     "title": "Circle Geometry",
-    "img": "../img/circle-geometry.jpg",
+    "img": "img/circle-geometry.jpg",
     "url": "https://www.spoonflower.com/en/fabric/circle-geometry?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "angular-shapes",
     "title": "Angular Shapes",
-    "img": "../img/angular-shapes.jpg",
+    "img": "img/angular-shapes.jpg",
     "url": "https://www.spoonflower.com/en/fabric/angular-shapes?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "tessellation",
     "title": "Tessellation",
-    "img": "../img/tessellation.jpg",
+    "img": "img/tessellation.jpg",
     "url": "https://www.spoonflower.com/en/fabric/tessellation?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "op-art-pattern",
     "title": "Op Art Pattern",
-    "img": "../img/op-art-pattern.jpg",
+    "img": "img/op-art-pattern.jpg",
     "url": "https://www.spoonflower.com/en/fabric/op-art-pattern?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   },
   {
     "id": "minimal-geometry",
     "title": "Minimal Geometry",
-    "img": "../img/minimal-geometry.jpg",
+    "img": "img/minimal-geometry.jpg",
     "url": "https://www.spoonflower.com/en/fabric/minimal-geometry?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=geometric"
   }
 ]

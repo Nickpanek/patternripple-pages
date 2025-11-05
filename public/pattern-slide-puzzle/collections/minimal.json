@@ -2,73 +2,73 @@
   {
     "id": "simple-dots",
     "title": "Simple Dots",
-    "img": "../img/simple-dots.jpg",
+    "img": "img/simple-dots.jpg",
     "url": "https://www.spoonflower.com/en/fabric/simple-dots?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "neutral-lines",
     "title": "Neutral Lines",
-    "img": "../img/neutral-lines.jpg",
+    "img": "img/neutral-lines.jpg",
     "url": "https://www.spoonflower.com/en/fabric/neutral-lines?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "linen-texture",
     "title": "Linen Texture",
-    "img": "../img/linen-texture.jpg",
+    "img": "img/linen-texture.jpg",
     "url": "https://www.spoonflower.com/en/fabric/linen-texture?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "beige-waves",
     "title": "Beige Waves",
-    "img": "../img/beige-waves.jpg",
+    "img": "img/beige-waves.jpg",
     "url": "https://www.spoonflower.com/en/fabric/beige-waves?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "subtle-stripe",
     "title": "Subtle Stripe",
-    "img": "../img/subtle-stripe.jpg",
+    "img": "img/subtle-stripe.jpg",
     "url": "https://www.spoonflower.com/en/fabric/subtle-stripe?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "white-on-white",
     "title": "White on White",
-    "img": "../img/white-on-white.jpg",
+    "img": "img/white-on-white.jpg",
     "url": "https://www.spoonflower.com/en/fabric/white-on-white?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "sand-tones",
     "title": "Sand Tones",
-    "img": "../img/sand-tones.jpg",
+    "img": "img/sand-tones.jpg",
     "url": "https://www.spoonflower.com/en/fabric/sand-tones?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "minimal-sketch",
     "title": "Minimal Sketch",
-    "img": "../img/minimal-sketch.jpg",
+    "img": "img/minimal-sketch.jpg",
     "url": "https://www.spoonflower.com/en/fabric/minimal-sketch?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "soft-organic",
     "title": "Soft Organic",
-    "img": "../img/soft-organic.jpg",
+    "img": "img/soft-organic.jpg",
     "url": "https://www.spoonflower.com/en/fabric/soft-organic?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "quiet-geometry",
     "title": "Quiet Geometry",
-    "img": "../img/quiet-geometry.jpg",
+    "img": "img/quiet-geometry.jpg",
     "url": "https://www.spoonflower.com/en/fabric/quiet-geometry?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "barely-there",
     "title": "Barely There",
-    "img": "../img/barely-there.jpg",
+    "img": "img/barely-there.jpg",
     "url": "https://www.spoonflower.com/en/fabric/barely-there?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   },
   {
     "id": "zen-simplicity",
     "title": "Zen Simplicity",
-    "img": "../img/zen-simplicity.jpg",
+    "img": "img/zen-simplicity.jpg",
     "url": "https://www.spoonflower.com/en/fabric/zen-simplicity?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=minimal"
   }
 ]
