@@ -1,0 +1,74 @@
+[
+  {
+    "id": "palm-leaves",
+    "title": "Palm Leaves",
+    "img": "../img/palm-leaves.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/palm-leaves?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "monstera-jungle",
+    "title": "Monstera Jungle",
+    "img": "../img/monstera-jungle.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/monstera-jungle?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "tropical-hibiscus",
+    "title": "Tropical Hibiscus",
+    "img": "../img/tropical-hibiscus.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/tropical-hibiscus?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "bird-of-paradise",
+    "title": "Bird of Paradise",
+    "img": "../img/bird-of-paradise.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/bird-of-paradise?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "banana-leaf",
+    "title": "Banana Leaf",
+    "img": "../img/banana-leaf.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/banana-leaf?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "exotic-flowers",
+    "title": "Exotic Flowers",
+    "img": "../img/exotic-flowers.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/exotic-flowers?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "rainforest-canopy",
+    "title": "Rainforest Canopy",
+    "img": "../img/rainforest-canopy.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/rainforest-canopy?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "toucans-and-palms",
+    "title": "Toucans and Palms",
+    "img": "../img/toucans-and-palms.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/toucans-and-palms?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "paradise-botanicals",
+    "title": "Paradise Botanicals",
+    "img": "../img/paradise-botanicals.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/paradise-botanicals?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "island-vibes",
+    "title": "Island Vibes",
+    "img": "../img/island-vibes.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/island-vibes?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "jungle-print",
+    "title": "Jungle Print",
+    "img": "../img/jungle-print.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/jungle-print?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  },
+  {
+    "id": "tropical-paradise",
+    "title": "Tropical Paradise",
+    "img": "../img/tropical-paradise.jpg",
+    "url": "https://www.spoonflower.com/en/fabric/tropical-paradise?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=tropical"
+  }
+]
