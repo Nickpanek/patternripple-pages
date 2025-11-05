@@ -296,6 +296,8 @@
         tileEl.setAttribute("aria-label", "empty space");
       } else {
         tileEl.classList.remove("empty");
+        const dailyBust = Date.now() - (Date.now() % 86400000);
+        tileEl.style.backgroundImage = `url(${current.img}?t=${dailyBust})`;
         const pos = indexToPos(tileIndex);
         tileEl.style.backgroundPosition = `${pos.x * 50}% ${pos.y * 50}%`;
         tileEl.setAttribute("aria-label", "tile");
@@ -328,7 +330,8 @@
     } catch {}
   }
   document.addEventListener('click', markUserGesture, { once: true });
-  shuffleBtn.addEventListener('click', ensureAudioStart);
+  shuffleBtn.addEventListener('click', () => { ensureAudioStart(); newGame(); });
+  again.addEventListener('click', () => { dlg.close(); newGame(); });
   document.getElementById('audioToggle').addEventListener('click', async (e) => {
     markUserGesture();
     if (!audioEl || !audioReady) return;
