@@ -1,0 +1,42 @@
+{
+  "faux-embroidery": {
+    "title": "Faux Embroidery Theme",
+    "src": "../audio/faux-embroidery.mp3",
+    "buy": "https://gumroad.com/l/faux-embroidery-theme?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=audio"
+  },
+  "impasto-floral": {
+    "title": "Impasto Floral Theme",
+    "src": "../audio/impasto-floral.mp3",
+    "buy": "https://gumroad.com/l/impasto-floral-theme?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=audio"
+  },
+  "midcentury": {
+    "title": "Mid Century Theme",
+    "src": "../audio/midcentury.mp3",
+    "buy": "https://gumroad.com/l/midcentury-theme?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=audio"
+  },
+  "geometric": {
+    "title": "Geometric Theme",
+    "src": "../audio/geometric.mp3",
+    "buy": "https://gumroad.com/l/geometric-theme?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=audio"
+  },
+  "ufo-retro": {
+    "title": "UFO Retro Theme",
+    "src": "../audio/ufo-retro.mp3",
+    "buy": "https://gumroad.com/l/ufo-retro-theme?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=audio"
+  },
+  "tropical": {
+    "title": "Tropical Theme",
+    "src": "../audio/tropical.mp3",
+    "buy": "https://gumroad.com/l/tropical-theme?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=audio"
+  },
+  "minimal": {
+    "title": "Minimal Theme",
+    "src": "../audio/minimal.mp3",
+    "buy": "https://gumroad.com/l/minimal-theme?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=audio"
+  },
+  "maximalist": {
+    "title": "Maximalist Theme",
+    "src": "../audio/maximalist.mp3",
+    "buy": "https://gumroad.com/l/maximalist-theme?utm_source=patternripple&utm_medium=slide-puzzle&utm_campaign=audio"
+  }
+}
