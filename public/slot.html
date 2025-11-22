@@ -351,7 +351,7 @@ async function processCascades() {
         balance += roundWin;
         totalWinThisSpin += roundWin;
         updateUI();
-        showFloatText(roundWin);
+        if(roundWin > 0) showFloatText(roundWin);
 
         if (bonusTriggered) {
             await wait(500);
@@ -375,7 +375,6 @@ async function processCascades() {
             setTimeout(() => startSpin(true), 800);
         } else if (autoEnabled) {
             isSpinning = false;
-            // FIX: Turn off bonus mode visual when free spins end during auto
             toggleBonusMode(false); 
             
             if (balance >= currentBet) {
@@ -400,51 +399,60 @@ function checkWins() {
     let foundWins = [];
     let bonusTriggered = false;
 
+    // 1. Standard Payline Logic (ignoring Bonus symbol for line matches)
     PAYLINES.forEach(line => {
         let symbols = line.map(pos => grid[pos[0]][pos[1]]);
         
-        let consecutiveBonus = 0;
-        for(let s of symbols) {
-            if(s === BONUS_ID) consecutiveBonus++;
-            else break;
-        }
+        let firstNonWild = symbols.find(s => s !== 5 && s !== BONUS_ID); 
+        let matchTarget = (firstNonWild === undefined) ? 5 : firstNonWild;
 
-        let isBonusLine = false;
         let count = 0;
-        let matchTarget = -1;
-
-        if (consecutiveBonus >= 3) {
-            isBonusLine = true;
-            bonusTriggered = true;
-            count = consecutiveBonus;
-            matchTarget = BONUS_ID;
-        } else {
-            let firstNonWild = symbols.find(s => s !== 5); 
-            matchTarget = (firstNonWild === undefined) ? 5 : firstNonWild;
-
-            if (matchTarget === BONUS_ID) {
-                count = 0; 
-            } else {
-                for (let s of symbols) {
-                    if (s === matchTarget || s === 5) count++;
-                    else break;
-                }
+        // If matchTarget is Bonus, we skip this line (handled by scatter logic below)
+        if (matchTarget !== BONUS_ID) {
+            for (let s of symbols) {
+                if (s === matchTarget || s === 5) count++;
+                else break;
             }
         }
 
-        if (count >= 3 && matchTarget !== -1) {
+        if (count >= 3) {
             let multiplier = PAYOUTS[matchTarget][count-1];
             let winAmount = currentBet * multiplier * 0.1;
             
-            if (winAmount > 0 || isBonusLine) {
+            if (winAmount > 0) {
                 foundWins.push({ 
                     payout: winAmount, 
                     coords: line.slice(0, count),
-                    isBonus: isBonusLine
+                    isBonus: false
                 });
             }
         }
     });
+
+    // 2. Bonus Scatter Logic: Check for Bonus (ID 6) in Cols 0, 1, 2
+    let scatterCoords = [];
+    for(let c=0; c<3; c++) {
+        for(let r=0; r<ROWS; r++) {
+            if(grid[r][c] === BONUS_ID) {
+                scatterCoords.push([r,c]);
+            }
+        }
+    }
+
+    // Must have at least one bonus in Col 0, Col 1, and Col 2
+    const hasC0 = scatterCoords.some(p => p[1] === 0);
+    const hasC1 = scatterCoords.some(p => p[1] === 1);
+    const hasC2 = scatterCoords.some(p => p[1] === 2);
+
+    if (hasC0 && hasC1 && hasC2) {
+        bonusTriggered = true;
+        foundWins.push({
+            payout: 0, // Scatters trigger free spins, no immediate cash (or modify if needed)
+            coords: scatterCoords,
+            isBonus: true
+        });
+    }
+
     return { wins: foundWins, bonusTriggered };
 }
 
@@ -578,5 +586,4 @@ init();
 </script>
 </body>
 </html>
-
 
