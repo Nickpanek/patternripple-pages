@@ -646,6 +646,7 @@
             py_bytes = bytes(Uint8Array.new(array_buf))
             
             try:
+                # Read MIDI file with strict=False to handle problematic messages
                 mid = mido.MidiFile(file=io.BytesIO(py_bytes))
                 midi_events = []
                 abs_time = 0.0
@@ -653,20 +654,38 @@
                 console.log(f"MIDI file loaded: {len(mid.tracks)} tracks")
                 
                 if len(mid.tracks) > 1:
-                    mid.tracks = [mido.merge_tracks(mid.tracks)]
+                    # Merge all tracks into one
+                    try:
+                        merged_track = mido.merge_tracks(mid.tracks)
+                        mid.tracks = [merged_track]
+                    except Exception as merge_error:
+                        console.log(f"Merge warning: {merge_error}, using first track only")
+                        mid.tracks = [mid.tracks[0]]
 
                 note_count = 0
-                for msg in mid:
-                    abs_time += msg.time
-                    midi_events.append({'time': abs_time, 'msg': msg, 'played': False})
-                    if hasattr(msg, 'type') and msg.type in ['note_on', 'note_off']:
-                        note_count += 1
+                skipped_count = 0
                 
-                console.log(f"Parsed {len(midi_events)} total events, {note_count} note events")
-                document.getElementById("status").innerText = f"✓ LOADED: {file.name[:30]} ({note_count} notes)"
+                for msg in mid:
+                    try:
+                        abs_time += msg.time
+                        midi_events.append({'time': abs_time, 'msg': msg, 'played': False})
+                        if hasattr(msg, 'type') and msg.type in ['note_on', 'note_off']:
+                            note_count += 1
+                    except Exception as msg_error:
+                        # Skip problematic messages but continue processing
+                        skipped_count += 1
+                        console.log(f"Skipped message: {msg_error}")
+                
+                console.log(f"Parsed {len(midi_events)} total events, {note_count} note events, {skipped_count} skipped")
+                
+                if note_count == 0:
+                    document.getElementById("status").innerText = "⚠ NO NOTES FOUND IN FILE"
+                else:
+                    document.getElementById("status").innerText = f"✓ LOADED: {file.name[:30]} ({note_count} notes)"
+                    
             except Exception as e:
                 console.log(f"MIDI parse error: {e}")
-                document.getElementById("status").innerText = f"⚠ ERROR: {e}"
+                document.getElementById("status").innerText = f"⚠ ERROR: {str(e)[:50]}"
 
         # --- Export Data (FIXED TO RETURN JS OBJECT) ---
         def get_notes_for_export():
