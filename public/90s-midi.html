@@ -38,7 +38,7 @@
             border-bottom: 2px solid #00ff00; /* Neon green bottom border */
         }
         .title-text {
-            font-family: 'Press Start +2P', cursive; /* More impactful pixel font */
+            font-family: 'Press Start 2P', cursive; /* Fixed font name */
             font-size: 1.5rem;
             color: #00ff00; /* Neon Green */
             text-shadow: 0 0 5px rgba(0, 255, 0, 0.6), 0 0 10px rgba(0, 255, 0, 0.4);
@@ -201,15 +201,15 @@
                     volume: -5
                 };
             } else if (type === 'drums') {
-                // Uses the previous "Electric Glitch" MetalSynth config, now named Drums
+                // Uses MetalSynth for metallic, sharp clicks/glitches
                 return {
                     type: 'PolySynth',
                     voice: Tone.MetalSynth,
                     options: {
-                        envelope: { attack: 0.001, decay: 0.08, release: 0.02 }, // Slightly longer decay
-                        harmonicity: 20, // Increased for a thinner, high-pitched effect
+                        envelope: { attack: 0.001, decay: 0.08, release: 0.02 }, 
+                        harmonicity: 20, 
                         modulationIndex: 8, 
-                        resonance: 4000, // Increased for a sharper, more sustained metallic quality
+                        resonance: 4000, 
                         octaves: 1
                     },
                     volume: -10
@@ -240,7 +240,8 @@
 
         async function initAudio() {
             if (!isAudioInit) {
-                await Tone.start();
+                // This starts the audio context, requiring a user gesture
+                await Tone.start(); 
                 await loadInstrument('piano');
                 isAudioInit = true;
             }
@@ -689,3 +690,6 @@
         document.getElementById("btn-play").addEventListener("click", create_proxy(play_midi))
         document.getElementById("btn-stop").addEventListener("click", create_proxy(stop_midi))
         document.getElementById("status").innerText = "Ready."
+    </script>
+</body>
+</html>
