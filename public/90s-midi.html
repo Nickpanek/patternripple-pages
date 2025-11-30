@@ -3,184 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>90s Midi by PatternRipple</title>
+    <title>⚡ 90s MIDI VISUALIZER ⚡</title>
     
-    <!-- PyScript --><link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <!-- PyScript -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
     
-    <!-- Tone.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Tone.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 
-    <!-- Tailwind --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
         
         body { 
-            background-color: #1a1a2e; /* Dark Blue/Purple */
-            color: #e0e0e0; /* Off-white text */
-            font-family: 'VT323', monospace; /* Pixelated/Console font */
+            background: linear-gradient(135deg, #1a0033 0%, #0d001a 50%, #1a0033 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #00ff00;
+            font-family: 'VT323', monospace;
             overflow: hidden; 
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 0, 0.1);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+            z-index: 9999;
         }
         
         #canvas-container {
             position: relative;
             width: 100%;
-            height: calc(100vh - 100px);
-            background: #0d0d1a; /* Even darker background for canvas */
-            border-top: 2px solid #3f3f6e; /* Stronger border */
-            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2); /* Subtle green glow */
+            height: calc(100vh - 120px);
+            background: #000000;
+            border: 4px solid #00ff00;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 255, 0, 0.3),
+                0 0 30px rgba(0, 255, 0, 0.5),
+                0 0 60px rgba(255, 0, 255, 0.3);
+            border-radius: 8px;
         }
         canvas { display: block; width: 100%; height: 100%; }
         
-        /* Header & Title */
+        /* Header */
         .header {
-            background: linear-gradient(to right, #2c2c54, #4a4a7a); /* Gradient 90s */
-            border-bottom: 2px solid #00ff00; /* Neon green bottom border */
+            background: linear-gradient(90deg, 
+                #ff00ff 0%, 
+                #00ffff 25%, 
+                #ffff00 50%, 
+                #00ffff 75%, 
+                #ff00ff 100%);
+            background-size: 200% auto;
+            animation: rainbow 3s linear infinite;
+            border: 3px solid #00ff00;
+            border-radius: 8px;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 0, 0.6),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
         }
+
+        @keyframes rainbow {
+            to { background-position: 200% center; }
+        }
+        
         .title-text {
-            font-family: 'Press Start 2P', cursive; /* Fixed font name */
-            font-size: 1.5rem;
-            color: #00ff00; /* Neon Green */
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.6), 0 0 10px rgba(0, 255, 0, 0.4);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.3rem;
+            color: #000000;
+            text-shadow: 
+                2px 2px 0px #00ff00,
+                4px 4px 0px #ff00ff,
+                6px 6px 0px #00ffff;
+            animation: blink 2s infinite;
+            letter-spacing: 2px;
         }
-        #status {
-            color: #8c8cd9; /* Muted purple */
+
+        .subtitle {
             font-family: 'VT323', monospace;
-            font-size: 0.9rem;
+            font-size: 1.1rem;
+            color: #000000;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        #status {
+            color: #00ff00;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 2px solid #00ff00;
         }
 
         /* UI Components */
         .control-group {
-            display: flex; gap: 8px; align-items: center;
-            background: #2b2b4d; /* Darker blue-grey */
-            padding: 6px 12px;
-            border-radius: 4px;
-            border: 1px solid #4a4a7a;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.4); /* 3D effect */
+            display: flex; 
+            gap: 8px; 
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 3px solid #ff00ff;
+            box-shadow: 
+                0 0 15px rgba(255, 0, 255, 0.6),
+                inset 0 0 10px rgba(255, 0, 255, 0.2);
         }
         
         .btn {
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 10px 18px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 700;
+            font-size: 1rem;
+            font-weight: 900;
             transition: all 0.1s ease-in-out;
             white-space: nowrap;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-            border: 1px solid transparent;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            border: 3px solid;
+            font-family: 'VT323', monospace;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
         
         .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.8);
         }
         .btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            transform: translateY(1px) scale(0.98);
         }
 
-        .btn-blue { background: #007bff; color: white; border-color: #0056b3; }
-        .btn-blue:hover { background: #0069d9; }
+        .btn-blue { 
+            background: linear-gradient(135deg, #0066ff, #00ccff); 
+            color: white; 
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        }
+        .btn-blue:hover { 
+            background: linear-gradient(135deg, #0088ff, #00eeff);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.9);
+        }
         
-        .btn-green { background: #28a745; color: white; border-color: #1e7e34; }
-        .btn-green:hover { background: #218838; }
+        .btn-green { 
+            background: linear-gradient(135deg, #00ff00, #00cc00); 
+            color: #000000; 
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+        }
+        .btn-green:hover { 
+            background: linear-gradient(135deg, #33ff33, #00ff00);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.9);
+        }
         
-        .btn-red { background: #dc3545; color: white; border-color: #bd2130; }
-        .btn-red:hover { background: #c82333; }
+        .btn-red { 
+            background: linear-gradient(135deg, #ff0066, #ff0000); 
+            color: white; 
+            border-color: #ff00ff;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
+        }
+        .btn-red:hover { 
+            background: linear-gradient(135deg, #ff0088, #ff3333);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.9);
+        }
         
         .btn-purple { 
-            background: linear-gradient(to bottom right, #8a2be2, #4b0082); /* Deep purple gradient */
-            color: #00ff00; /* Neon Green text */
-            border-color: #6a0dad; 
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+            background: linear-gradient(135deg, #ff00ff, #8800ff); 
+            color: #00ff00;
+            border-color: #ffff00;
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
+            animation: pulse 2s infinite;
         }
         .btn-purple:hover { 
-            background: linear-gradient(to bottom right, #9932cc, #6a0dad); 
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5), 0 4px 8px rgba(0,0,0,0.6);
+            background: linear-gradient(135deg, #ff33ff, #aa00ff);
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.9);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 255, 0, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(255, 255, 0, 1); }
         }
         
         select {
-            background: #3f3f6e; /* Dark purple for select */
-            color: #00ff00; /* Neon green text */
-            border: 1px solid #6a0dad;
-            border-radius: 3px;
-            padding: 4px;
+            background: linear-gradient(135deg, #000000, #330033);
+            color: #00ff00;
+            border: 3px solid #00ffff;
+            border-radius: 6px;
+            padding: 6px 10px;
             outline: none; 
-            font-size: 0.9rem; 
+            font-size: 1rem; 
             cursor: pointer; 
             width: 100%;
-            -webkit-appearance: none; /* Remove default arrow */
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300ff00%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-5.4H18.6c-5%200-9.3%201.8-13.2%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2013.2l128%20128c3.9%203.9%208.7%205.8%2013.2%205.8s9.3-1.9%2013.2-5.8l128-128c3.6-3.8%205.4-8.1%205.4-13.2%200-4.9-1.8-9.2-5.4-13.1z%22%2F%3E%3C%2Fsvg%3E'); /* Custom neon green arrow */
-            background-repeat: no-repeat;
-            background-position: right 8px top 50%;
-            background-size: 12px auto;
+            font-family: 'VT323', monospace;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
+        
+        select:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+
         select option {
-            background: #2b2b4d; /* Dark background for options */
-            color: #00ff00; /* Neon green text */
+            background: #000000;
+            color: #00ff00;
         }
 
-        button:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(50%); }
-
-        /* Canvas element colors - Python will use these for drawing */
-        .canvas-bg { background-color: #0d0d1a; }
-        .key-white-bg { background-color: #ffffff; }
-        .key-black-bg { background-color: #000000; }
-        .key-active-bg { background-color: #00ff00; } /* Neon green active key */
-        .note-color-hue { /* Py will generate hsl */ } 
-        .note-glow { box-shadow: 0 0 10px rgba(0, 255, 0, 0.7); } /* Neon green glow for falling notes */
+        button:disabled { 
+            opacity: 0.3; 
+            cursor: not-allowed; 
+            filter: grayscale(80%);
+            box-shadow: none !important;
+        }
 
     </style>
 </head>
-<body class="flex flex-col h-screen">
+<body class="flex flex-col h-screen p-3">
+    <div class="scanline"></div>
 
-    <!-- Header / Controls --><div class="header flex items-center justify-between px-4 py-3 z-10 h-[100px]">
+    <!-- Header / Controls -->
+    <div class="header flex items-center justify-between px-5 py-4 z-10 mb-3">
         <div class="flex flex-col justify-center">
-            <h1 class="title-text">
-                90s Midi by PatternRipple
-            </h1>
-            <div id="status" class="mt-1 truncate max-w-[250px]">Initializing Python...</div>
+            <h1 class="title-text">⚡ 90s MIDI ⚡</h1>
+            <div class="subtitle">BY PATTERNRIPPLE</div>
+            <div id="status" class="mt-2">► READY TO JAM ◄</div>
         </div>
         
-        <div class="flex gap-3 items-center">
+        <div class="flex gap-3 items-center flex-wrap">
             
-            <div class="control-group w-40">
+            <div class="control-group w-48">
                 <select id="instrument-select" onchange="changeInstrument(this.value)">
-                    <option value="piano">🎹 Real Piano</option>
-                    <option value="drums">🥁 Drums</option>
-                    <option value="synth">🌌 Synthwave</option>
-                    <option value="lovecraft">🐙 Lovecraft Pad</option>
+                    <option value="piano">🎹 REAL PIANO</option>
+                    <option value="drums">🥁 DRUMS</option>
+                    <option value="synth">🌌 SYNTHWAVE</option>
+                    <option value="lovecraft">🐙 LOVECRAFT PAD</option>
                 </select>
             </div>
 
-            <div class="flex gap-2">
+            <div class="flex gap-2 flex-wrap">
                 <label class="btn btn-blue">
                     <input type="file" id="midi-upload" accept=".mid,.midi" style="display:none">
-                    📂 UPLOAD MIDI
+                    📂 LOAD MIDI
                 </label>
                 <button id="btn-play" class="btn btn-green">▶ PLAY</button>
                 <button id="btn-stop" class="btn btn-red">⏹ STOP</button>
+                <button id="btn-download" onclick="downloadWav()" class="btn btn-purple">
+                    💾 SAVE WAV
+                </button>
             </div>
-
-            <!-- Download Button (Uses selected instrument) --><button id="btn-download" onclick="downloadWav()" class="btn btn-purple">
-                💾 DOWNLOAD WAV
-            </button>
         </div>
     </div>
 
-    <!-- Main Visualization Area --><div id="canvas-container">
+    <!-- Main Visualization Area -->
+    <div id="canvas-container">
         <canvas id="visualizer"></canvas>
     </div>
 
-    <!-- PyConfig --><py-config>
+    <!-- PyConfig -->
+    <py-config>
         packages = ["mido"]
     </py-config>
 
-    <!-- JS Audio Bridge & WAV Encoder --><script>
+    <!-- JS Audio Bridge & WAV Encoder -->
+    <script>
         let currentSynth = null; 
         let isAudioInit = false;
         let selectedInstrument = 'piano';
@@ -201,7 +329,6 @@
                     volume: -5
                 };
             } else if (type === 'drums') {
-                // Uses MetalSynth for metallic, sharp clicks/glitches
                 return {
                     type: 'PolySynth',
                     voice: Tone.MetalSynth,
@@ -219,7 +346,8 @@
                     type: 'PolySynth',
                     voice: Tone.FMSynth,
                     options: {
-                        modulationIndex: 12.22, envelope: { attack: 0.01, decay: 0.2 },
+                        modulationIndex: 12.22, 
+                        envelope: { attack: 0.01, decay: 0.2 },
                         modulation: { type: "square" },
                         oscillator: { type: "sawtooth" }
                     },
@@ -240,7 +368,6 @@
 
         async function initAudio() {
             if (!isAudioInit) {
-                // This starts the audio context, requiring a user gesture
                 await Tone.start(); 
                 await loadInstrument('piano');
                 isAudioInit = true;
@@ -260,7 +387,7 @@
                 } catch(e) { console.warn("Cleanup error:", e); }
             }
 
-            document.getElementById("status").innerText = "Loading Instrument...";
+            document.getElementById("status").innerText = "⌛ LOADING INSTRUMENT...";
             const config = getInstrumentConfig(type);
             let tempSynth;
 
@@ -273,7 +400,6 @@
                         }).toDestination();
                     });
                 } else {
-                    // Handle PolySynth types (Drums, Lovecraft, Synthwave)
                     try {
                         tempSynth = new Tone.PolySynth(config.voice, config.options).toDestination();
                     } catch (polyError) {
@@ -282,17 +408,16 @@
                     }
                 }
                 
-                // Adjust volume
                 if (tempSynth.volume) {
                     tempSynth.volume.value = config.volume;
                 }
                 
                 currentSynth = tempSynth;
-                document.getElementById("status").innerText = "Instrument Ready.";
+                document.getElementById("status").innerText = "✓ INSTRUMENT READY";
                 
             } catch (e) {
                 console.error("Critical Instrument Load Error:", e);
-                document.getElementById("status").innerText = "Load Error. Using Backup.";
+                document.getElementById("status").innerText = "⚠ LOAD ERROR. USING BACKUP.";
                 currentSynth = new Tone.PolySynth(Tone.Synth).toDestination();
             }
         }
@@ -302,13 +427,10 @@
             else selectedInstrument = val;
         };
 
-        // Simplified playback logic: all current instruments are pitch-aware/polyphonic
         window.js_play_note_on_contact = (note_name, duration) => {
             if (!currentSynth) return; 
             try {
                 if (currentSynth.name === 'Sampler' && !currentSynth.loaded) return;
-                
-                // All current instruments use the standard pitch/duration attack
                 currentSynth.triggerAttackRelease(note_name, duration);
             } catch (e) {
                 // Silently ignore glitches during playback
@@ -321,36 +443,35 @@
             }
         };
 
-        // --- WAV Export Logic ---
+        // --- WAV Export Logic (FIXED) ---
         window.downloadWav = async () => {
+            // Check if Python function exists
             if (!window.py_get_notes) {
-                alert("Please load a MIDI file first.");
+                alert("⚠ Please load a MIDI file first!");
                 return;
             }
 
-            document.getElementById("status").innerText = "Preparing Audio Render...";
+            document.getElementById("status").innerText = "🎵 PREPARING AUDIO RENDER...";
             const btn = document.getElementById("btn-download");
             btn.disabled = true;
             btn.innerText = "⏳ PROCESSING...";
 
-            const songDataProxy = window.py_get_notes(); 
-            const songData = songDataProxy.toJs ? songDataProxy.toJs() : songDataProxy; // Convert PyProxy
-
-            if (!songData || !Array.isArray(songData.notes)) {
-                alert("Error retrieving note data. Please ensure a MIDI file is loaded and parsed.");
-                resetBtn();
-                return;
-            }
-            
-            if (songData.notes.length === 0) {
-                alert("No playable notes found in the MIDI data.");
-                resetBtn();
-                return;
-            }
-
             try {
+                // Get the note data from Python - this returns a JS object directly
+                const songData = window.py_get_notes();
+                
+                console.log("Song data received:", songData);
+
+                if (!songData || !songData.notes || songData.notes.length === 0) {
+                    alert("⚠ No playable notes found in the MIDI data.");
+                    resetBtn();
+                    return;
+                }
+
                 const config = getInstrumentConfig(selectedInstrument);
                 
+                document.getElementById("status").innerText = "🎹 RENDERING AUDIO...";
+
                 const buffer = await Tone.Offline(async ({ transport }) => {
                     let synth;
 
@@ -374,25 +495,28 @@
                     }
 
                     songData.notes.forEach(n => {
-                        // Standard pitch/duration attack works for all current instruments
                         synth.triggerAttackRelease(n.note, n.duration, n.time, n.velocity);
                     });
 
                 }, songData.duration + 2); 
 
-                document.getElementById("status").innerText = "Encoding WAV...";
+                document.getElementById("status").innerText = "💾 ENCODING WAV...";
                 const wavBlob = bufferToWave(buffer, 0, buffer.length);
                 const url = URL.createObjectURL(wavBlob);
                 
                 const anchor = document.createElement("a");
-                anchor.download = `90s_Midi_by_PatternRipple_${selectedInstrument}.wav`; 
+                anchor.download = `90s_Midi_${selectedInstrument}_${Date.now()}.wav`; 
                 anchor.href = url;
                 anchor.click();
                 
-                document.getElementById("status").innerText = "DOWNLOAD COMPLETE!";
+                document.getElementById("status").innerText = "✓ DOWNLOAD COMPLETE!";
+                setTimeout(() => {
+                    document.getElementById("status").innerText = "► READY TO JAM ◄";
+                }, 3000);
             } catch (e) {
-                console.error(e);
-                alert("Error rendering audio: " + e);
+                console.error("Download error:", e);
+                alert("⚠ Error rendering audio: " + e.message);
+                document.getElementById("status").innerText = "⚠ RENDER FAILED";
             }
             
             resetBtn();
@@ -401,10 +525,10 @@
         function resetBtn() {
             const btn = document.getElementById("btn-download");
             btn.disabled = false;
-            btn.innerText = "💾 DOWNLOAD WAV";
+            btn.innerText = "💾 SAVE WAV";
         }
 
-        // --- WAV Encoder Helper (Unchanged) ---
+        // --- WAV Encoder Helper ---
         function bufferToWave(abuffer, offset, len) {
             let numOfChan = abuffer.numberOfChannels,
                 length = len * numOfChan * 2 + 44,
@@ -458,12 +582,13 @@
         resizeCanvas();
     </script>
 
-    <!-- Python Logic --><script type="py">
+    <!-- Python Logic (FIXED) -->
+    <script type="py">
         import asyncio
         import io
         import mido
-        from js import document, window, Uint8Array, requestAnimationFrame, Math
-        from pyodide.ffi import create_proxy, to_js
+        from js import document, window, Uint8Array, requestAnimationFrame, console
+        from pyodide.ffi import create_proxy
 
         # --- Globals ---
         canvas = document.getElementById("visualizer")
@@ -473,13 +598,12 @@
         active_keys = set()   
         is_playing = False
         start_time_real = 0.0
-        audio_cursor = 0
         
         NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
         WHITE_KEYS = [0, 2, 4, 5, 7, 9, 11]
         PIANO_HEIGHT = 100
         SCROLL_TIME = 2.0
-        NOTE_BAR_HEIGHT = 30 # Height of the falling note visual
+        NOTE_BAR_HEIGHT = 30
 
         def midi_to_name(note):
             n = NOTE_NAMES[note % 12]
@@ -493,7 +617,7 @@
             if not file_list: return
 
             file = file_list.item(0)
-            document.getElementById("status").innerText = "PARSING MIDI FILE..."
+            document.getElementById("status").innerText = "📀 PARSING MIDI FILE..."
             array_buf = await file.arrayBuffer()
             py_bytes = bytes(Uint8Array.new(array_buf))
             
@@ -505,19 +629,19 @@
                 if len(mid.tracks) > 1:
                     mid.tracks = [mido.merge_tracks(mid.tracks)]
 
-                # Store event with absolute time and a 'played' flag
                 for msg in mid:
                     abs_time += msg.time
                     midi_events.append({'time': abs_time, 'msg': msg, 'played': False})
                 
-                document.getElementById("status").innerText = f"MIDI LOADED: {file.name}"
+                document.getElementById("status").innerText = f"✓ LOADED: {file.name[:30]}"
             except Exception as e:
-                document.getElementById("status").innerText = f"ERROR: {e}"
+                document.getElementById("status").innerText = f"⚠ ERROR: {e}"
 
-        # --- Export Data ---
+        # --- Export Data (FIXED TO RETURN JS OBJECT) ---
         def get_notes_for_export():
+            """Returns a plain JavaScript object with notes data"""
             if not midi_events:
-                return to_js({"duration": 0, "notes": []})
+                return {"duration": 0, "notes": []}
 
             notes = []
             active_notes = {} 
@@ -541,9 +665,13 @@
                             "velocity": start_data['vel']
                         })
             
-            return to_js({"duration": total_time, "notes": notes})
+            # Return as a Python dict - Pyodide will automatically convert it to a JS object
+            result = {"duration": total_time, "notes": notes}
+            console.log(f"Python: Returning {len(notes)} notes, duration {total_time}")
+            return result
 
-        window.py_get_notes = get_notes_for_export
+        # Expose the function to JavaScript
+        window.py_get_notes = create_proxy(get_notes_for_export)
 
         # --- Visualizer ---
         def get_piano_layout(screen_width):
@@ -571,7 +699,7 @@
                 requestAnimationFrame(create_proxy(animation_frame))
 
         def update_and_draw():
-            global audio_cursor, is_playing, active_keys
+            global is_playing, active_keys
             now = window.performance.now() / 1000.0
             song_time = now - start_time_real
             
@@ -579,81 +707,91 @@
             h = canvas.height
             key_layout = get_piano_layout(w)
             
-            ctx.fillStyle = "#0d0d1a" # Canvas background matching container
+            # Cosmic background
+            ctx.fillStyle = "#000000"
             ctx.fillRect(0, 0, w, h)
             
             fall_height_area = h - PIANO_HEIGHT
             
-            # This loop now handles both visual and audio triggers based on contact
+            # Draw falling notes and trigger audio on contact
             for idx, evt in enumerate(midi_events):
                 evt_time = evt['time']
                 msg = evt['msg']
-
-                # Calculate visual position for falling note
-                time_diff = evt_time - song_time # Time until this event occurs
+                time_diff = evt_time - song_time
                 
-                # Only draw notes that are 'on-screen' (about to play or recently played)
                 if time_diff < SCROLL_TIME and msg.type == 'note_on' and msg.velocity > 0:
                     note = msg.note
                     if note in key_layout:
                         k = key_layout[note]
-                        # y_pos is the top of the note block
                         y_pos_top = (1 - (time_diff / SCROLL_TIME)) * fall_height_area 
-                        y_pos_bottom = y_pos_top + NOTE_BAR_HEIGHT # Bottom of the note block
+                        y_pos_bottom = y_pos_top + NOTE_BAR_HEIGHT
 
-                        hue = (note * 7) % 360 # Keeps color cycling per note
+                        hue = (note * 7) % 360
                         
-                        ctx.fillStyle = f"hsl({hue}, 100%, 60%)" # Brighter, more saturated 90s note color
-                        ctx.shadowBlur = 8
-                        ctx.shadowColor = "rgba(0, 255, 0, 0.7)" # Neon green glow
+                        # Draw note with glow
+                        ctx.fillStyle = f"hsl({hue}, 100%, 60%)"
+                        ctx.shadowBlur = 15
+                        ctx.shadowColor = f"hsl({hue}, 100%, 50%)"
                         ctx.fillRect(k['x'], y_pos_top, k['w'], NOTE_BAR_HEIGHT)
                         ctx.shadowBlur = 0
 
-                        # AUDIO TRIGGER ON CONTACT
-                        # Check if the bottom of the falling note has touched the top of the piano key
+                        # Trigger audio on contact
                         if not evt['played'] and y_pos_bottom >= fall_height_area:
                             window.js_play_note_on_contact(midi_to_name(note), 2.0)
                             active_keys.add(note)
-                            evt['played'] = True # Mark as played
+                            evt['played'] = True
 
-                # Note Offs for active keys (can be done based on original MIDI timing)
+                # Note offs
                 if time_diff < 0 and (msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0)):
-                    if msg.note in active_keys: active_keys.remove(msg.note)
+                    if msg.note in active_keys: 
+                        active_keys.remove(msg.note)
 
-
-            # Draw Keys
+            # Draw white keys
             for note in range(21, 109):
                 if note not in key_layout: continue
                 k = key_layout[note]
-                is_active = note in active_keys
-                
                 if not k['black']:
-                    ctx.fillStyle = "#a8a8a8" if not is_active else "#00ff00" # Light gray / Neon green
-                    ctx.shadowBlur = 10 if is_active else 0
-                    ctx.shadowColor = "#00ff00" # Neon green glow
+                    is_active = note in active_keys
+                    
+                    if is_active:
+                        ctx.fillStyle = "#00ff00"
+                        ctx.shadowBlur = 20
+                        ctx.shadowColor = "#00ff00"
+                    else:
+                        ctx.fillStyle = "#e0e0e0"
+                        ctx.shadowBlur = 0
+                    
                     ctx.fillRect(k['x'], h - k['h'], k['w'], k['h'])
-                    ctx.strokeStyle = "#3f3f6e" # Dark purple border
-                    ctx.lineWidth = 1
+                    
+                    ctx.strokeStyle = "#000000"
+                    ctx.lineWidth = 2
                     ctx.strokeRect(k['x'], h - k['h'], k['w'], k['h'])
+                    ctx.shadowBlur = 0
 
+            # Draw black keys
             for note in range(21, 109):
                 if note not in key_layout: continue
                 k = key_layout[note]
                 if k['black']:
                     is_active = note in active_keys
-                    ctx.fillStyle = "#333333" if not is_active else "#00ff00" # Dark gray / Neon green
-                    ctx.shadowBlur = 10 if is_active else 0
-                    ctx.shadowColor = "#00ff00" # Neon green glow
+                    
+                    if is_active:
+                        ctx.fillStyle = "#ff00ff"
+                        ctx.shadowBlur = 20
+                        ctx.shadowColor = "#ff00ff"
+                    else:
+                        ctx.fillStyle = "#1a1a1a"
+                        ctx.shadowBlur = 0
+                    
                     ctx.fillRect(k['x'], h - PIANO_HEIGHT, k['w'], k['h'])
-                    ctx.strokeStyle = "#000000" # Black border
+                    
+                    ctx.strokeStyle = "#00ff00"
                     ctx.lineWidth = 1
                     ctx.strokeRect(k['x'], h - PIANO_HEIGHT, k['w'], k['h'])
-                    ctx.fillStyle = "rgba(255,255,255,0.1)" # Subtle highlight on black keys
-                    ctx.fillRect(k['x'], h - PIANO_HEIGHT, k['w']*0.2, k['h'])
-
+                    ctx.shadowBlur = 0
 
         async def play_midi(event):
-            global is_playing, start_time_real, audio_cursor, active_keys
+            global is_playing, start_time_real, active_keys
             if not midi_events: return
 
             await window.initAudio()
@@ -662,12 +800,12 @@
             for evt in midi_events:
                 evt['played'] = False
 
-            audio_cursor = 0 
             is_playing = True
             start_time_real = window.performance.now() / 1000.0
             
             document.getElementById("btn-play").disabled = True
             document.getElementById("btn-stop").disabled = False
+            document.getElementById("status").innerText = "▶ NOW PLAYING!"
             requestAnimationFrame(create_proxy(animation_frame))
 
         def stop_midi(event):
@@ -676,20 +814,19 @@
             window.js_stop_all()
             document.getElementById("btn-play").disabled = False
             document.getElementById("btn-stop").disabled = True
+            document.getElementById("status").innerText = "⏹ STOPPED"
             
-            # Redraw canvas to clear notes but keep piano keys
             w = canvas.width
             h = canvas.height
-            ctx.fillStyle = "#0d0d1a"
-            ctx.fillRect(0, 0, w, h - PIANO_HEIGHT) # Clear only the falling notes area
-            update_and_draw() # Redraw piano keys
-            active_keys.clear() # Clear active keys state
-
+            ctx.fillStyle = "#000000"
+            ctx.fillRect(0, 0, w, h - PIANO_HEIGHT)
+            update_and_draw()
+            active_keys.clear()
 
         document.getElementById("midi-upload").addEventListener("change", create_proxy(on_file_change))
         document.getElementById("btn-play").addEventListener("click", create_proxy(play_midi))
         document.getElementById("btn-stop").addEventListener("click", create_proxy(stop_midi))
-        document.getElementById("status").innerText = "Ready."
+        document.getElementById("status").innerText = "► READY TO JAM ◄"
     </script>
 </body>
 </html>
