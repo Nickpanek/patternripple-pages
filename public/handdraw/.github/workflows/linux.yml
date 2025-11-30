@@ -1,0 +1,88 @@
+name: Linux Build
+
+on:
+  push:
+    branches: [main, claude/**]
+  pull_request:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.0-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: public/handdraw/src-tauri
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install TypeScript
+        run: npm install -g typescript
+
+      - name: Compile TypeScript
+        run: |
+          cd public/handdraw/app
+          tsc --outDir ../src-tauri/dist --module es2020 --target es2020 --skipLibCheck --allowSyntheticDefaultImports app.ts
+
+      - name: Copy static assets
+        run: |
+          mkdir -p public/handdraw/src-tauri/dist
+          cp public/handdraw/app/index.html public/handdraw/src-tauri/dist/
+          cp public/handdraw/app/styles.css public/handdraw/src-tauri/dist/
+          cp -r public/handdraw/app/assets public/handdraw/src-tauri/dist/
+
+      - name: Download FFmpeg-kit LGPL
+        run: |
+          mkdir -p public/handdraw/src-tauri/libs
+          cd public/handdraw/src-tauri/libs
+          wget -q https://github.com/arthenica/ffmpeg-kit/releases/download/v6.0/ffmpeg-kit-linux-x86_64-6.0.tar.xz
+          tar -xf ffmpeg-kit-linux-x86_64-6.0.tar.xz
+          mv ffmpeg-kit-linux-x86_64-6.0/lib/* .
+          rm -rf ffmpeg-kit-linux-x86_64-6.0 ffmpeg-kit-linux-x86_64-6.0.tar.xz
+
+      - name: Build Tauri AppImage
+        run: |
+          cd public/handdraw/src-tauri
+          cargo install tauri-cli --version '^1.0'
+          cargo tauri build --bundles appimage
+
+      - name: Build Tauri deb
+        run: |
+          cd public/handdraw/src-tauri
+          cargo tauri build --bundles deb
+
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: handdraw-linux-appimage
+          path: public/handdraw/src-tauri/target/release/bundle/appimage/*.AppImage
+
+      - name: Upload deb
+        uses: actions/upload-artifact@v4
+        with:
+          name: handdraw-linux-deb
+          path: public/handdraw/src-tauri/target/release/bundle/deb/*.deb
