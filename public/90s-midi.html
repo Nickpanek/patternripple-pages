@@ -276,7 +276,7 @@
             
             <div class="control-group w-48">
                 <select id="instrument-select" onchange="changeInstrument(this.value)">
-                    <option value="piano">🎹 REAL PIANO</option>
+                    <option value="piano" selected>🎹 REAL PIANO</option>
                     <option value="drums">🥁 DRUMS</option>
                     <option value="synth">🌌 SYNTHWAVE</option>
                     <option value="lovecraft">🐙 LOVECRAFT PAD</option>
@@ -458,12 +458,36 @@
 
             try {
                 // Get the note data from Python - this returns a JS object directly
-                const songData = window.py_get_notes();
+                let songData = window.py_get_notes();
                 
-                console.log("Song data received:", songData);
+                console.log("Song data received (raw):", songData);
+                console.log("Type of songData:", typeof songData);
+                console.log("Song data keys:", Object.keys(songData));
+                
+                // Handle PyProxy if needed
+                if (songData && typeof songData.toJs === 'function') {
+                    console.log("Converting PyProxy to JS...");
+                    songData = songData.toJs();
+                }
+                
+                console.log("Song data after conversion:", songData);
+                console.log("Notes array:", songData?.notes);
+                console.log("Notes length:", songData?.notes?.length);
 
-                if (!songData || !songData.notes || songData.notes.length === 0) {
-                    alert("⚠ No playable notes found in the MIDI data.");
+                if (!songData) {
+                    alert("⚠ Failed to retrieve MIDI data from Python.");
+                    resetBtn();
+                    return;
+                }
+
+                if (!songData.notes) {
+                    alert("⚠ MIDI data has no notes array.");
+                    resetBtn();
+                    return;
+                }
+
+                if (songData.notes.length === 0) {
+                    alert("⚠ No playable notes found in the MIDI data. Make sure your MIDI file contains note events.");
                     resetBtn();
                     return;
                 }
@@ -626,21 +650,31 @@
                 midi_events = []
                 abs_time = 0.0
                 
+                console.log(f"MIDI file loaded: {len(mid.tracks)} tracks")
+                
                 if len(mid.tracks) > 1:
                     mid.tracks = [mido.merge_tracks(mid.tracks)]
 
+                note_count = 0
                 for msg in mid:
                     abs_time += msg.time
                     midi_events.append({'time': abs_time, 'msg': msg, 'played': False})
+                    if hasattr(msg, 'type') and msg.type in ['note_on', 'note_off']:
+                        note_count += 1
                 
-                document.getElementById("status").innerText = f"✓ LOADED: {file.name[:30]}"
+                console.log(f"Parsed {len(midi_events)} total events, {note_count} note events")
+                document.getElementById("status").innerText = f"✓ LOADED: {file.name[:30]} ({note_count} notes)"
             except Exception as e:
+                console.log(f"MIDI parse error: {e}")
                 document.getElementById("status").innerText = f"⚠ ERROR: {e}"
 
         # --- Export Data (FIXED TO RETURN JS OBJECT) ---
         def get_notes_for_export():
             """Returns a plain JavaScript object with notes data"""
+            console.log(f"Python: get_notes_for_export called, midi_events length: {len(midi_events)}")
+            
             if not midi_events:
+                console.log("Python: No MIDI events found")
                 return {"duration": 0, "notes": []}
 
             notes = []
@@ -652,18 +686,21 @@
                 msg = evt['msg']
                 total_time = max(total_time, abs_time)
                 
-                if msg.type == 'note_on' and msg.velocity > 0:
-                    active_notes[msg.note] = {'start': abs_time, 'vel': msg.velocity / 127.0}
-                elif (msg.type == 'note_off') or (msg.type == 'note_on' and msg.velocity == 0):
-                    if msg.note in active_notes:
-                        start_data = active_notes.pop(msg.note)
-                        duration = abs_time - start_data['start']
-                        notes.append({
-                            "note": midi_to_name(msg.note),
-                            "time": start_data['start'],
-                            "duration": duration,
-                            "velocity": start_data['vel']
-                        })
+                # Check if msg has the required attributes
+                if hasattr(msg, 'type') and hasattr(msg, 'note'):
+                    if msg.type == 'note_on' and msg.velocity > 0:
+                        active_notes[msg.note] = {'start': abs_time, 'vel': msg.velocity / 127.0}
+                    elif (msg.type == 'note_off') or (msg.type == 'note_on' and msg.velocity == 0):
+                        if msg.note in active_notes:
+                            start_data = active_notes.pop(msg.note)
+                            duration = abs_time - start_data['start']
+                            if duration > 0:  # Only add notes with positive duration
+                                notes.append({
+                                    "note": midi_to_name(msg.note),
+                                    "time": start_data['start'],
+                                    "duration": duration,
+                                    "velocity": start_data['vel']
+                                })
             
             # Return as a Python dict - Pyodide will automatically convert it to a JS object
             result = {"duration": total_time, "notes": notes}
