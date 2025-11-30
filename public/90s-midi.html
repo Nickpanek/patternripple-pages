@@ -11,7 +11,85 @@
 ```
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/midi-parser-js@4.0.4/src/midi-parser.min.js"></script>
+
+<!-- Inline MIDI Parser (since CDN is broken) -->
+<script>
+// Minimal MIDI parser
+var MidiParser = {
+    parse: function(data) {
+        const view = new DataView(data.buffer);
+        const result = { track: [] };
+        
+        // Skip header, get division
+        result.timeDivision = view.getUint16(12);
+        
+        let pos = 14; // Start of track data
+        
+        // Find track chunks
+        while (pos < data.length - 8) {
+            const chunkType = String.fromCharCode(data[pos], data[pos+1], data[pos+2], data[pos+3]);
+            pos += 4;
+            const chunkLength = view.getUint32(pos);
+            pos += 4;
+            
+            if (chunkType === 'MTrk') {
+                const trackEnd = pos + chunkLength;
+                const events = [];
+                let runningStatus = 0;
+                
+                while (pos < trackEnd) {
+                    // Read delta time
+                    let deltaTime = 0;
+                    let byte;
+                    do {
+                        byte = data[pos++];
+                        deltaTime = (deltaTime << 7) | (byte & 0x7F);
+                    } while (byte & 0x80);
+                    
+                    // Read event
+                    let status = data[pos];
+                    if (status < 0x80) {
+                        status = runningStatus;
+                    } else {
+                        pos++;
+                    }
+                    
+                    const eventType = status >> 4;
+                    const channel = status & 0x0F;
+                    
+                    let event = { deltaTime, type: eventType, channel };
+                    
+                    if (eventType === 0x8 || eventType === 0x9 || eventType === 0xA || eventType === 0xB || eventType === 0xE) {
+                        event.data = [data[pos++], data[pos++]];
+                        runningStatus = status;
+                    } else if (eventType === 0xC || eventType === 0xD) {
+                        event.data = [data[pos++]];
+                        runningStatus = status;
+                    } else if (eventType === 0xF) {
+                        if (status === 0xFF) {
+                            event.metaType = data[pos++];
+                            let length = data[pos++];
+                            event.data = Array.from(data.slice(pos, pos + length));
+                            pos += length;
+                        } else {
+                            let length = data[pos++];
+                            pos += length;
+                        }
+                    }
+                    
+                    events.push({ event });
+                }
+                
+                result.track.push({ event: events });
+            }
+            
+            pos = Math.min(pos, trackEnd);
+        }
+        
+        return result;
+    }
+};
+</script>
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700&display=swap');
@@ -732,6 +810,73 @@
     @keyframes spin {
         to { transform: rotate(360deg); }
     }
+
+    /* Buy Me a Coffee Section */
+    .coffee-section {
+        background: var(--window-bg);
+        border: 2px solid var(--border-primary);
+        border-radius: 8px;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 0 20px var(--glow-color);
+        transition: all 0.3s ease;
+    }
+
+    .coffee-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 30px var(--glow-color);
+    }
+
+    .coffee-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+
+    .coffee-text {
+        flex: 1;
+    }
+
+    .coffee-title {
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+
+    .coffee-subtitle {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+    }
+
+    .coffee-btn {
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #FFDD00, #FFA500);
+        border: 2px solid #FFDD00;
+        border-radius: 6px;
+        color: #000;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+        box-shadow: 0 0 15px rgba(255, 221, 0, 0.5);
+    }
+
+    .coffee-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 25px rgba(255, 221, 0, 0.8);
+    }
+
+    @media (max-width: 767px) {
+        .coffee-section {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
 </style>
 ```
 
@@ -885,6 +1030,20 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Buy Me a Coffee -->
+            <div class="coffee-section">
+                <div class="coffee-icon" style="background: linear-gradient(135deg, #FFDD00, #FFA500); display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                    ☕
+                </div>
+                <div class="coffee-text">
+                    <div class="coffee-title">ENJOY THE SYNTH?</div>
+                    <div class="coffee-subtitle">Support development!</div>
+                </div>
+                <a href="https://www.buymeacoffee.com/patternripple" target="_blank" rel="noopener" class="coffee-btn">
+                    💛 BUY COFFEE
+                </a>
             </div>
         </div>
     </div>
@@ -1065,8 +1224,9 @@
                 let absoluteTicks = 0;
                 const activeNotes = {};
                 
-                track.event.forEach(event => {
-                    absoluteTicks += event.deltaTime;
+                track.event.forEach(eventWrapper => {
+                    const event = eventWrapper.event || eventWrapper;
+                    absoluteTicks += event.deltaTime || 0;
                     const timeInSeconds = (absoluteTicks / ticksPerBeat) * (tempo / 1000000);
                     
                     if (event.type === 9 && event.data && event.data[1] > 0) { // Note On
@@ -1087,13 +1247,35 @@
                             });
                             delete activeNotes[note];
                         }
-                    } else if (event.type === 255 && event.metaType === 81) { // Set Tempo
+                    } else if (event.type === 15 && event.metaType === 81) { // Set Tempo (0xF = 15)
                         tempo = (event.data[0] << 16) | (event.data[1] << 8) | event.data[2];
-                    } else if (event.type === 255 && (event.metaType === 1 || event.metaType === 5)) { // Lyrics
+                    } else if (event.type === 15 && (event.metaType === 1 || event.metaType === 5)) { // Lyrics
                         try {
                             const text = String.fromCharCode.apply(null, event.data);
                             lyrics.push({ time: timeInSeconds, text });
                         } catch (e) {
+                            console.warn('Lyric parse error:', e);
+                        }
+                    }
+                });
+            });
+            
+            notes.sort((a, b) => a.time - b.time);
+            const duration = notes.length > 0 ? Math.max(...notes.map(n => n.time + n.duration)) + 1 : 0;
+            const bpm = Math.round(60000000 / tempo);
+            
+            return {
+                notes,
+                lyrics,
+                duration,
+                tempo: bpm,
+                tracks: parsed.track.length
+            };
+        } catch (e) {
+            console.error('MIDI parse error:', e);
+            throw new Error('Failed to parse MIDI file: ' + e.message);
+        }
+    }
                             console.warn('Lyric parse error:', e);
                         }
                     }
