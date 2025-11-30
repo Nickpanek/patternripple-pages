@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>90s Midi by PatternRipple</title>
+    
+    <!-- PyScript --><link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    
+    <!-- Tone.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <!-- Tailwind --><script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+        
+        body { 
+            background-color: #1a1a2e; /* Dark Blue/Purple */
+            color: #e0e0e0; /* Off-white text */
+            font-family: 'VT323', monospace; /* Pixelated/Console font */
+            overflow: hidden; 
+        }
+        
+        #canvas-container {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 100px);
+            background: #0d0d1a; /* Even darker background for canvas */
+            border-top: 2px solid #3f3f6e; /* Stronger border */
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2); /* Subtle green glow */
+        }
+        canvas { display: block; width: 100%; height: 100%; }
+        
+        /* Header & Title */
+        .header {
+            background: linear-gradient(to right, #2c2c54, #4a4a7a); /* Gradient 90s */
+            border-bottom: 2px solid #00ff00; /* Neon green bottom border */
+        }
+        .title-text {
+            font-family: 'Press Start +2P', cursive; /* More impactful pixel font */
+            font-size: 1.5rem;
+            color: #00ff00; /* Neon Green */
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.6), 0 0 10px rgba(0, 255, 0, 0.4);
+        }
+        #status {
+            color: #8c8cd9; /* Muted purple */
+            font-family: 'VT323', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* UI Components */
+        .control-group {
+            display: flex; gap: 8px; align-items: center;
+            background: #2b2b4d; /* Darker blue-grey */
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #4a4a7a;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.4); /* 3D effect */
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 700;
+            transition: all 0.1s ease-in-out;
+            white-space: nowrap;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            border: 1px solid transparent;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+        }
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .btn-blue { background: #007bff; color: white; border-color: #0056b3; }
+        .btn-blue:hover { background: #0069d9; }
+        
+        .btn-green { background: #28a745; color: white; border-color: #1e7e34; }
+        .btn-green:hover { background: #218838; }
+        
+        .btn-red { background: #dc3545; color: white; border-color: #bd2130; }
+        .btn-red:hover { background: #c82333; }
+        
+        .btn-purple { 
+            background: linear-gradient(to bottom right, #8a2be2, #4b0082); /* Deep purple gradient */
+            color: #00ff00; /* Neon Green text */
+            border-color: #6a0dad; 
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+        }
+        .btn-purple:hover { 
+            background: linear-gradient(to bottom right, #9932cc, #6a0dad); 
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5), 0 4px 8px rgba(0,0,0,0.6);
+        }
+        
+        select {
+            background: #3f3f6e; /* Dark purple for select */
+            color: #00ff00; /* Neon green text */
+            border: 1px solid #6a0dad;
+            border-radius: 3px;
+            padding: 4px;
+            outline: none; 
+            font-size: 0.9rem; 
+            cursor: pointer; 
+            width: 100%;
+            -webkit-appearance: none; /* Remove default arrow */
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300ff00%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-5.4H18.6c-5%200-9.3%201.8-13.2%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2013.2l128%20128c3.9%203.9%208.7%205.8%2013.2%205.8s9.3-1.9%2013.2-5.8l128-128c3.6-3.8%205.4-8.1%205.4-13.2%200-4.9-1.8-9.2-5.4-13.1z%22%2F%3E%3C%2Fsvg%3E'); /* Custom neon green arrow */
+            background-repeat: no-repeat;
+            background-position: right 8px top 50%;
+            background-size: 12px auto;
+        }
+        select option {
+            background: #2b2b4d; /* Dark background for options */
+            color: #00ff00; /* Neon green text */
+        }
+
+        button:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(50%); }
+
+        /* Canvas element colors - Python will use these for drawing */
+        .canvas-bg { background-color: #0d0d1a; }
+        .key-white-bg { background-color: #ffffff; }
+        .key-black-bg { background-color: #000000; }
+        .key-active-bg { background-color: #00ff00; } /* Neon green active key */
+        .note-color-hue { /* Py will generate hsl */ } 
+        .note-glow { box-shadow: 0 0 10px rgba(0, 255, 0, 0.7); } /* Neon green glow for falling notes */
+
+    </style>
+</head>
+<body class="flex flex-col h-screen">
+
+    <!-- Header / Controls --><div class="header flex items-center justify-between px-4 py-3 z-10 h-[100px]">
+        <div class="flex flex-col justify-center">
+            <h1 class="title-text">
+                90s Midi by PatternRipple
+            </h1>
+            <div id="status" class="mt-1 truncate max-w-[250px]">Initializing Python...</div>
+        </div>
+        
+        <div class="flex gap-3 items-center">
+            
+            <div class="control-group w-40">
+                <select id="instrument-select" onchange="changeInstrument(this.value)">
+                    <option value="piano">🎹 Real Piano</option>
+                    <option value="drums">🥁 Drums</option>
+                    <option value="synth">🌌 Synthwave</option>
+                    <option value="lovecraft">🐙 Lovecraft Pad</option>
+                </select>
+            </div>
+
+            <div class="flex gap-2">
+                <label class="btn btn-blue">
+                    <input type="file" id="midi-upload" accept=".mid,.midi" style="display:none">
+                    📂 UPLOAD MIDI
+                </label>
+                <button id="btn-play" class="btn btn-green">▶ PLAY</button>
+                <button id="btn-stop" class="btn btn-red">⏹ STOP</button>
+            </div>
+
+            <!-- Download Button (Uses selected instrument) --><button id="btn-download" onclick="downloadWav()" class="btn btn-purple">
+                💾 DOWNLOAD WAV
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Visualization Area --><div id="canvas-container">
+        <canvas id="visualizer"></canvas>
+    </div>
+
+    <!-- PyConfig --><py-config>
+        packages = ["mido"]
+    </py-config>
+
+    <!-- JS Audio Bridge & WAV Encoder --><script>
+        let currentSynth = null; 
+        let isAudioInit = false;
+        let selectedInstrument = 'piano';
+
+        // --- Instrument Configs ---
+        function getInstrumentConfig(type) {
+            if (type === 'piano') {
+                return {
+                    type: 'Sampler',
+                    options: {
+                        urls: {
+                            "C4": "C4.mp3", "D#4": "Ds4.mp3", "F#4": "Fs4.mp3", "A4": "A4.mp3",
+                            "C5": "C5.mp3", "D#5": "Ds5.mp3", "F#5": "Fs5.mp3", "A5": "A5.mp3",
+                        },
+                        release: 1,
+                        baseUrl: "https://tonejs.github.io/audio/salamander/"
+                    },
+                    volume: -5
+                };
+            } else if (type === 'drums') {
+                // Uses the previous "Electric Glitch" MetalSynth config, now named Drums
+                return {
+                    type: 'PolySynth',
+                    voice: Tone.MetalSynth,
+                    options: {
+                        envelope: { attack: 0.001, decay: 0.08, release: 0.02 }, // Slightly longer decay
+                        harmonicity: 20, // Increased for a thinner, high-pitched effect
+                        modulationIndex: 8, 
+                        resonance: 4000, // Increased for a sharper, more sustained metallic quality
+                        octaves: 1
+                    },
+                    volume: -10
+                };
+            } else if (type === 'lovecraft') {
+                return {
+                    type: 'PolySynth',
+                    voice: Tone.FMSynth,
+                    options: {
+                        modulationIndex: 12.22, envelope: { attack: 0.01, decay: 0.2 },
+                        modulation: { type: "square" },
+                        oscillator: { type: "sawtooth" }
+                    },
+                    volume: -10
+                };
+            } else { // Synthwave (default)
+                return {
+                    type: 'PolySynth',
+                    voice: Tone.Synth,
+                    options: {
+                        oscillator: { type: "fatsawtooth", count: 3, spread: 30 },
+                        envelope: { attack: 0.01, decay: 0.1, sustain: 0.5, release: 0.4 }
+                    },
+                    volume: -8
+                };
+            }
+        }
+
+        async function initAudio() {
+            if (!isAudioInit) {
+                await Tone.start();
+                await loadInstrument('piano');
+                isAudioInit = true;
+            }
+        }
+
+        async function loadInstrument(type) {
+            selectedInstrument = type;
+            
+            let oldSynth = currentSynth;
+            currentSynth = null; 
+            if (oldSynth) {
+                try {
+                    oldSynth.releaseAll();
+                    oldSynth.disconnect();
+                    oldSynth.dispose();
+                } catch(e) { console.warn("Cleanup error:", e); }
+            }
+
+            document.getElementById("status").innerText = "Loading Instrument...";
+            const config = getInstrumentConfig(type);
+            let tempSynth;
+
+            try {
+                if (config.type === 'Sampler') {
+                    tempSynth = await new Promise(resolve => {
+                        const s = new Tone.Sampler({
+                            ...config.options,
+                            onload: () => resolve(s)
+                        }).toDestination();
+                    });
+                } else {
+                    // Handle PolySynth types (Drums, Lovecraft, Synthwave)
+                    try {
+                        tempSynth = new Tone.PolySynth(config.voice, config.options).toDestination();
+                    } catch (polyError) {
+                        console.warn("Complex synth failed, falling back to default:", polyError);
+                        tempSynth = new Tone.PolySynth(Tone.Synth).toDestination();
+                    }
+                }
+                
+                // Adjust volume
+                if (tempSynth.volume) {
+                    tempSynth.volume.value = config.volume;
+                }
+                
+                currentSynth = tempSynth;
+                document.getElementById("status").innerText = "Instrument Ready.";
+                
+            } catch (e) {
+                console.error("Critical Instrument Load Error:", e);
+                document.getElementById("status").innerText = "Load Error. Using Backup.";
+                currentSynth = new Tone.PolySynth(Tone.Synth).toDestination();
+            }
+        }
+
+        window.changeInstrument = (val) => {
+            if (isAudioInit) loadInstrument(val);
+            else selectedInstrument = val;
+        };
+
+        // Simplified playback logic: all current instruments are pitch-aware/polyphonic
+        window.js_play_note_on_contact = (note_name, duration) => {
+            if (!currentSynth) return; 
+            try {
+                if (currentSynth.name === 'Sampler' && !currentSynth.loaded) return;
+                
+                // All current instruments use the standard pitch/duration attack
+                currentSynth.triggerAttackRelease(note_name, duration);
+            } catch (e) {
+                // Silently ignore glitches during playback
+            }
+        };
+        
+        window.js_stop_all = () => {
+            if (currentSynth) {
+                try { currentSynth.releaseAll(); } catch(e) {}
+            }
+        };
+
+        // --- WAV Export Logic ---
+        window.downloadWav = async () => {
+            if (!window.py_get_notes) {
+                alert("Please load a MIDI file first.");
+                return;
+            }
+
+            document.getElementById("status").innerText = "Preparing Audio Render...";
+            const btn = document.getElementById("btn-download");
+            btn.disabled = true;
+            btn.innerText = "⏳ PROCESSING...";
+
+            const songDataProxy = window.py_get_notes(); 
+            const songData = songDataProxy.toJs ? songDataProxy.toJs() : songDataProxy; // Convert PyProxy
+
+            if (!songData || !Array.isArray(songData.notes)) {
+                alert("Error retrieving note data. Please ensure a MIDI file is loaded and parsed.");
+                resetBtn();
+                return;
+            }
+            
+            if (songData.notes.length === 0) {
+                alert("No playable notes found in the MIDI data.");
+                resetBtn();
+                return;
+            }
+
+            try {
+                const config = getInstrumentConfig(selectedInstrument);
+                
+                const buffer = await Tone.Offline(async ({ transport }) => {
+                    let synth;
+
+                    try {
+                        if (config.type === 'Sampler') {
+                            synth = new Tone.Sampler(config.options).toDestination();
+                            await Tone.loaded(); 
+                        } else {
+                            try {
+                                synth = new Tone.PolySynth(config.voice, config.options).toDestination();
+                            } catch(e) {
+                                synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                            }
+                        }
+                    } catch (e) {
+                         synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                    }
+                    
+                    if (synth.volume) {
+                        synth.volume.value = config.volume;
+                    }
+
+                    songData.notes.forEach(n => {
+                        // Standard pitch/duration attack works for all current instruments
+                        synth.triggerAttackRelease(n.note, n.duration, n.time, n.velocity);
+                    });
+
+                }, songData.duration + 2); 
+
+                document.getElementById("status").innerText = "Encoding WAV...";
+                const wavBlob = bufferToWave(buffer, 0, buffer.length);
+                const url = URL.createObjectURL(wavBlob);
+                
+                const anchor = document.createElement("a");
+                anchor.download = `90s_Midi_by_PatternRipple_${selectedInstrument}.wav`; 
+                anchor.href = url;
+                anchor.click();
+                
+                document.getElementById("status").innerText = "DOWNLOAD COMPLETE!";
+            } catch (e) {
+                console.error(e);
+                alert("Error rendering audio: " + e);
+            }
+            
+            resetBtn();
+        };
+
+        function resetBtn() {
+            const btn = document.getElementById("btn-download");
+            btn.disabled = false;
+            btn.innerText = "💾 DOWNLOAD WAV";
+        }
+
+        // --- WAV Encoder Helper (Unchanged) ---
+        function bufferToWave(abuffer, offset, len) {
+            let numOfChan = abuffer.numberOfChannels,
+                length = len * numOfChan * 2 + 44,
+                buffer = new ArrayBuffer(length),
+                view = new DataView(buffer),
+                channels = [], i, sample,
+                pos = 0;
+
+            setUint32(0x46464952);                         // "RIFF"
+            setUint32(length - 8);                         // file length - 8
+            setUint32(0x45564157);                         // "WAVE"
+
+            setUint32(0x20746d66);                         // "fmt " chunk
+            setUint32(16);                                 // length = 16
+            setUint16(1);                                  // PCM (uncompressed)
+            setUint16(numOfChan);
+            setUint32(abuffer.sampleRate);
+            setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+            setUint16(numOfChan * 2);                      // block-align
+            setUint16(16);                                 // 16-bit
+
+            setUint32(0x61746164);                         // "data" - chunk
+            setUint32(length - pos - 4);                   // chunk length
+
+            for(i = 0; i < abuffer.numberOfChannels; i++)
+                channels.push(abuffer.getChannelData(i));
+
+            while(pos < length) {
+                for(i = 0; i < numOfChan; i++) {             
+                    sample = Math.max(-1, Math.min(1, channels[i][offset])); 
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; 
+                    view.setInt16(pos, sample, true);          
+                    pos += 2;
+                }
+                offset++                                     
+            }
+
+            return new Blob([buffer], {type: "audio/wav"});
+
+            function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+            function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+        }
+
+        const canvas = document.getElementById('visualizer');
+        const container = document.getElementById('canvas-container');
+        function resizeCanvas() {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
+
+    <!-- Python Logic --><script type="py">
+        import asyncio
+        import io
+        import mido
+        from js import document, window, Uint8Array, requestAnimationFrame, Math
+        from pyodide.ffi import create_proxy, to_js
+
+        # --- Globals ---
+        canvas = document.getElementById("visualizer")
+        ctx = canvas.getContext("2d")
+        
+        midi_events = []      
+        active_keys = set()   
+        is_playing = False
+        start_time_real = 0.0
+        audio_cursor = 0
+        
+        NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+        WHITE_KEYS = [0, 2, 4, 5, 7, 9, 11]
+        PIANO_HEIGHT = 100
+        SCROLL_TIME = 2.0
+        NOTE_BAR_HEIGHT = 30 # Height of the falling note visual
+
+        def midi_to_name(note):
+            n = NOTE_NAMES[note % 12]
+            o = (note // 12) - 1
+            return f"{n}{o}"
+
+        # --- MIDI Parsing ---
+        async def on_file_change(event):
+            global midi_events
+            file_list = event.target.files
+            if not file_list: return
+
+            file = file_list.item(0)
+            document.getElementById("status").innerText = "PARSING MIDI FILE..."
+            array_buf = await file.arrayBuffer()
+            py_bytes = bytes(Uint8Array.new(array_buf))
+            
+            try:
+                mid = mido.MidiFile(file=io.BytesIO(py_bytes))
+                midi_events = []
+                abs_time = 0.0
+                
+                if len(mid.tracks) > 1:
+                    mid.tracks = [mido.merge_tracks(mid.tracks)]
+
+                # Store event with absolute time and a 'played' flag
+                for msg in mid:
+                    abs_time += msg.time
+                    midi_events.append({'time': abs_time, 'msg': msg, 'played': False})
+                
+                document.getElementById("status").innerText = f"MIDI LOADED: {file.name}"
+            except Exception as e:
+                document.getElementById("status").innerText = f"ERROR: {e}"
+
+        # --- Export Data ---
+        def get_notes_for_export():
+            if not midi_events:
+                return to_js({"duration": 0, "notes": []})
+
+            notes = []
+            active_notes = {} 
+            total_time = 0
+
+            for evt in midi_events:
+                abs_time = evt['time']
+                msg = evt['msg']
+                total_time = max(total_time, abs_time)
+                
+                if msg.type == 'note_on' and msg.velocity > 0:
+                    active_notes[msg.note] = {'start': abs_time, 'vel': msg.velocity / 127.0}
+                elif (msg.type == 'note_off') or (msg.type == 'note_on' and msg.velocity == 0):
+                    if msg.note in active_notes:
+                        start_data = active_notes.pop(msg.note)
+                        duration = abs_time - start_data['start']
+                        notes.append({
+                            "note": midi_to_name(msg.note),
+                            "time": start_data['start'],
+                            "duration": duration,
+                            "velocity": start_data['vel']
+                        })
+            
+            return to_js({"duration": total_time, "notes": notes})
+
+        window.py_get_notes = get_notes_for_export
+
+        # --- Visualizer ---
+        def get_piano_layout(screen_width):
+            total_white_keys = 52
+            key_width = screen_width / total_white_keys
+            keys = {} 
+            white_key_index = 0
+            for note in range(21, 109):
+                octave_idx = note % 12
+                is_black = octave_idx not in WHITE_KEYS
+                if not is_black:
+                    x = white_key_index * key_width
+                    keys[note] = {'x': x, 'w': key_width, 'black': False, 'h': PIANO_HEIGHT}
+                    white_key_index += 1
+                else:
+                    prev_white_x = (white_key_index - 1) * key_width
+                    b_w = key_width * 0.6
+                    x = (prev_white_x + key_width) - (b_w / 2)
+                    keys[note] = {'x': x, 'w': b_w, 'black': True, 'h': PIANO_HEIGHT * 0.65}
+            return keys
+
+        def animation_frame(timestamp):
+            if is_playing:
+                update_and_draw()
+                requestAnimationFrame(create_proxy(animation_frame))
+
+        def update_and_draw():
+            global audio_cursor, is_playing, active_keys
+            now = window.performance.now() / 1000.0
+            song_time = now - start_time_real
+            
+            w = canvas.width
+            h = canvas.height
+            key_layout = get_piano_layout(w)
+            
+            ctx.fillStyle = "#0d0d1a" # Canvas background matching container
+            ctx.fillRect(0, 0, w, h)
+            
+            fall_height_area = h - PIANO_HEIGHT
+            
+            # This loop now handles both visual and audio triggers based on contact
+            for idx, evt in enumerate(midi_events):
+                evt_time = evt['time']
+                msg = evt['msg']
+
+                # Calculate visual position for falling note
+                time_diff = evt_time - song_time # Time until this event occurs
+                
+                # Only draw notes that are 'on-screen' (about to play or recently played)
+                if time_diff < SCROLL_TIME and msg.type == 'note_on' and msg.velocity > 0:
+                    note = msg.note
+                    if note in key_layout:
+                        k = key_layout[note]
+                        # y_pos is the top of the note block
+                        y_pos_top = (1 - (time_diff / SCROLL_TIME)) * fall_height_area 
+                        y_pos_bottom = y_pos_top + NOTE_BAR_HEIGHT # Bottom of the note block
+
+                        hue = (note * 7) % 360 # Keeps color cycling per note
+                        
+                        ctx.fillStyle = f"hsl({hue}, 100%, 60%)" # Brighter, more saturated 90s note color
+                        ctx.shadowBlur = 8
+                        ctx.shadowColor = "rgba(0, 255, 0, 0.7)" # Neon green glow
+                        ctx.fillRect(k['x'], y_pos_top, k['w'], NOTE_BAR_HEIGHT)
+                        ctx.shadowBlur = 0
+
+                        # AUDIO TRIGGER ON CONTACT
+                        # Check if the bottom of the falling note has touched the top of the piano key
+                        if not evt['played'] and y_pos_bottom >= fall_height_area:
+                            window.js_play_note_on_contact(midi_to_name(note), 2.0)
+                            active_keys.add(note)
+                            evt['played'] = True # Mark as played
+
+                # Note Offs for active keys (can be done based on original MIDI timing)
+                if time_diff < 0 and (msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0)):
+                    if msg.note in active_keys: active_keys.remove(msg.note)
+
+
+            # Draw Keys
+            for note in range(21, 109):
+                if note not in key_layout: continue
+                k = key_layout[note]
+                is_active = note in active_keys
+                
+                if not k['black']:
+                    ctx.fillStyle = "#a8a8a8" if not is_active else "#00ff00" # Light gray / Neon green
+                    ctx.shadowBlur = 10 if is_active else 0
+                    ctx.shadowColor = "#00ff00" # Neon green glow
+                    ctx.fillRect(k['x'], h - k['h'], k['w'], k['h'])
+                    ctx.strokeStyle = "#3f3f6e" # Dark purple border
+                    ctx.lineWidth = 1
+                    ctx.strokeRect(k['x'], h - k['h'], k['w'], k['h'])
+
+            for note in range(21, 109):
+                if note not in key_layout: continue
+                k = key_layout[note]
+                if k['black']:
+                    is_active = note in active_keys
+                    ctx.fillStyle = "#333333" if not is_active else "#00ff00" # Dark gray / Neon green
+                    ctx.shadowBlur = 10 if is_active else 0
+                    ctx.shadowColor = "#00ff00" # Neon green glow
+                    ctx.fillRect(k['x'], h - PIANO_HEIGHT, k['w'], k['h'])
+                    ctx.strokeStyle = "#000000" # Black border
+                    ctx.lineWidth = 1
+                    ctx.strokeRect(k['x'], h - PIANO_HEIGHT, k['w'], k['h'])
+                    ctx.fillStyle = "rgba(255,255,255,0.1)" # Subtle highlight on black keys
+                    ctx.fillRect(k['x'], h - PIANO_HEIGHT, k['w']*0.2, k['h'])
+
+
+        async def play_midi(event):
+            global is_playing, start_time_real, audio_cursor, active_keys
+            if not midi_events: return
+
+            await window.initAudio()
+            active_keys.clear()
+            
+            for evt in midi_events:
+                evt['played'] = False
+
+            audio_cursor = 0 
+            is_playing = True
+            start_time_real = window.performance.now() / 1000.0
+            
+            document.getElementById("btn-play").disabled = True
+            document.getElementById("btn-stop").disabled = False
+            requestAnimationFrame(create_proxy(animation_frame))
+
+        def stop_midi(event):
+            global is_playing
+            is_playing = False
+            window.js_stop_all()
+            document.getElementById("btn-play").disabled = False
+            document.getElementById("btn-stop").disabled = True
+            
+            # Redraw canvas to clear notes but keep piano keys
+            w = canvas.width
+            h = canvas.height
+            ctx.fillStyle = "#0d0d1a"
+            ctx.fillRect(0, 0, w, h - PIANO_HEIGHT) # Clear only the falling notes area
+            update_and_draw() # Redraw piano keys
+            active_keys.clear() # Clear active keys state
+
+
+        document.getElementById("midi-upload").addEventListener("change", create_proxy(on_file_change))
+        document.getElementById("btn-play").addEventListener("click", create_proxy(play_midi))
+        document.getElementById("btn-stop").addEventListener("click", create_proxy(stop_midi))
+        document.getElementById("status").innerText = "Ready."
