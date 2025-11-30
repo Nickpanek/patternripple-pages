@@ -646,37 +646,34 @@
             py_bytes = bytes(Uint8Array.new(array_buf))
             
             try:
-                # Read MIDI file with strict=False to handle problematic messages
-                mid = mido.MidiFile(file=io.BytesIO(py_bytes))
+                # Use charset='latin1' and clip=True to handle problematic MIDI files
+                mid = mido.MidiFile(file=io.BytesIO(py_bytes), charset='latin1', clip=True)
                 midi_events = []
                 abs_time = 0.0
                 
-                console.log(f"MIDI file loaded: {len(mid.tracks)} tracks")
+                console.log(f"MIDI file loaded: {len(mid.tracks)} tracks, type: {mid.type}")
                 
-                if len(mid.tracks) > 1:
-                    # Merge all tracks into one
-                    try:
-                        merged_track = mido.merge_tracks(mid.tracks)
-                        mid.tracks = [merged_track]
-                    except Exception as merge_error:
-                        console.log(f"Merge warning: {merge_error}, using first track only")
-                        mid.tracks = [mid.tracks[0]]
-
+                # Process each track separately to avoid merge issues
+                all_messages = []
+                for track_idx, track in enumerate(mid.tracks):
+                    track_time = 0.0
+                    for msg in track:
+                        track_time += msg.time
+                        # Only keep note messages and tempo/time signature
+                        if hasattr(msg, 'type'):
+                            if msg.type in ['note_on', 'note_off', 'set_tempo', 'time_signature']:
+                                all_messages.append({'time': track_time, 'msg': msg})
+                
+                # Sort by time
+                all_messages.sort(key=lambda x: x['time'])
+                
                 note_count = 0
-                skipped_count = 0
+                for item in all_messages:
+                    midi_events.append({'time': item['time'], 'msg': item['msg'], 'played': False})
+                    if item['msg'].type in ['note_on', 'note_off']:
+                        note_count += 1
                 
-                for msg in mid:
-                    try:
-                        abs_time += msg.time
-                        midi_events.append({'time': abs_time, 'msg': msg, 'played': False})
-                        if hasattr(msg, 'type') and msg.type in ['note_on', 'note_off']:
-                            note_count += 1
-                    except Exception as msg_error:
-                        # Skip problematic messages but continue processing
-                        skipped_count += 1
-                        console.log(f"Skipped message: {msg_error}")
-                
-                console.log(f"Parsed {len(midi_events)} total events, {note_count} note events, {skipped_count} skipped")
+                console.log(f"Parsed {len(midi_events)} total events, {note_count} note events")
                 
                 if note_count == 0:
                     document.getElementById("status").innerText = "⚠ NO NOTES FOUND IN FILE"
