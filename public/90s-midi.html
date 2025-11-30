@@ -690,6 +690,8 @@
         # --- Export Data (FIXED TO RETURN JS OBJECT) ---
         def get_notes_for_export():
             """Returns a plain JavaScript object with notes data"""
+            from js import Object, Array
+            
             console.log(f"Python: get_notes_for_export called, midi_events length: {len(midi_events)}")
             
             if not midi_events:
@@ -714,16 +716,21 @@
                             start_data = active_notes.pop(msg.note)
                             duration = abs_time - start_data['start']
                             if duration > 0:  # Only add notes with positive duration
-                                notes.append({
-                                    "note": midi_to_name(msg.note),
-                                    "time": start_data['start'],
-                                    "duration": duration,
-                                    "velocity": start_data['vel']
-                                })
+                                note_obj = Object.new()
+                                note_obj.note = midi_to_name(msg.note)
+                                note_obj.time = start_data['start']
+                                note_obj.duration = duration
+                                note_obj.velocity = start_data['vel']
+                                notes.append(note_obj)
             
-            # Return as a Python dict - Pyodide will automatically convert it to a JS object
-            result = {"duration": total_time, "notes": notes}
-            console.log(f"Python: Returning {len(notes)} notes, duration {total_time}")
+            console.log(f"Python: Created {len(notes)} note objects")
+            
+            # Create JS object explicitly
+            result = Object.new()
+            result.duration = total_time
+            result.notes = notes
+            
+            console.log(f"Python: Returning object with {len(notes)} notes, duration {total_time}")
             return result
 
         # Expose the function to JavaScript
