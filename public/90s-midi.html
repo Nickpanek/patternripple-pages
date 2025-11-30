@@ -6,9 +6,9 @@
     <title>⚡ RADWAVE SYNTH PRO 95 ⚡</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- SpessaSynth Library -->
-    <script src="https://cdn.jsdelivr.net/npm/spessasynth_lib@3.22.2/dist/spessasynth_lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- MIDI Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/midi-parser-js@4.0.4/src/midi-parser.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
@@ -467,15 +467,6 @@
         select option {
             background: #000;
         }
-
-        /* Recording indicator */
-        .recording-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ff0000;
-            animation: blink 1s infinite;
-        }
     </style>
 </head>
 <body>
@@ -495,10 +486,6 @@
                             <input type="file" id="midi-upload" accept=".mid,.midi" multiple style="display:none">
                             📂 ADD MIDI
                         </label>
-                        <label class="btn btn-yellow">
-                            <input type="file" id="sf2-upload" accept=".sf2,.sf3" style="display:none">
-                            🎼 LOAD SOUNDFONT
-                        </label>
                         <button id="btn-play" class="btn btn-green">▶ PLAY</button>
                         <button id="btn-pause" class="btn btn-yellow">⏸ PAUSE</button>
                         <button id="btn-stop" class="btn btn-red">⏹ STOP</button>
@@ -506,13 +493,12 @@
                     
                     <div class="flex gap-2 items-center">
                         <span style="color: #00ffff;">VOL:</span>
-                        <input type="range" id="volume-slider" min="0" max="100" value="80" style="width: 120px;">
-                        <span id="volume-display" style="color: #00ff00; min-width: 40px;">80%</span>
+                        <input type="range" id="volume-slider" min="0" max="100" value="70" style="width: 120px;">
+                        <span id="volume-display" style="color: #00ff00; min-width: 40px;">70%</span>
                     </div>
 
                     <div class="flex gap-2">
-                        <button id="btn-record" class="btn btn-premium">● REC WAV</button>
-                        <button id="btn-export-mp3" class="btn btn-premium">💾 SAVE MP3</button>
+                        <button id="btn-download-wav" class="btn btn-premium">💾 SAVE WAV</button>
                         <button id="btn-prev" class="btn btn-magenta">⏮ PREV</button>
                         <button id="btn-next" class="btn btn-magenta">⏭ NEXT</button>
                     </div>
@@ -567,8 +553,8 @@
                                 <div class="info-value" id="info-tempo">120</div>
                             </div>
                             <div class="info-box">
-                                <div class="info-label">VOICES</div>
-                                <div class="info-value" id="info-voices">0</div>
+                                <div class="info-label">TRACKS</div>
+                                <div class="info-value" id="info-tracks">0</div>
                             </div>
                             <div class="info-box">
                                 <div class="info-label">NOTES</div>
@@ -580,20 +566,21 @@
 
                 <!-- FX Panel -->
                 <div class="window window-cyan" style="flex-shrink: 0;">
-                    <div class="window-header">🎛️ EFFECTS & MIXER</div>
+                    <div class="window-header">🎛️ INSTRUMENT</div>
                     <div class="window-body">
+                        <select id="instrument-select" style="width: 100%; margin-bottom: 8px;">
+                            <option value="piano">🎹 Grand Piano</option>
+                            <option value="synth">🌌 Synthwave</option>
+                            <option value="electric">⚡ Electric Piano</option>
+                            <option value="organ">🎺 Organ</option>
+                            <option value="guitar">🎸 Guitar</option>
+                            <option value="bass">🎵 Bass</option>
+                            <option value="strings">🎻 Strings</option>
+                            <option value="choir">👼 Choir</option>
+                        </select>
                         <div class="fx-control">
                             <span class="fx-label">REVERB:</span>
                             <input type="range" id="fx-reverb" min="0" max="100" value="20">
-                        </div>
-                        <div class="fx-control">
-                            <span class="fx-label">CHORUS:</span>
-                            <input type="range" id="fx-chorus" min="0" max="100" value="0">
-                        </div>
-                        <div class="fx-control">
-                            <span class="fx-label">PITCH:</span>
-                            <input type="range" id="fx-pitch" min="-12" max="12" value="0">
-                            <span id="pitch-display" style="color: #00ff00;">0</span>
                         </div>
                     </div>
                 </div>
@@ -603,14 +590,14 @@
                     <div class="window-header">🎤 LYRICS</div>
                     <div class="window-body" style="padding: 0;">
                         <div class="lyrics-display" id="lyrics-display">
-                            ♪ Load a MIDI file with lyrics ♪
+                            ♪ Load a MIDI file ♪
                         </div>
                     </div>
                 </div>
 
                 <!-- Channel meters -->
                 <div class="window window-green" style="flex: 1; min-height: 0;">
-                    <div class="window-header">🎚️ CHANNELS (16)</div>
+                    <div class="window-header">🎚️ CHANNELS</div>
                     <div class="window-body" style="height: calc(100% - 40px);">
                         <div class="channel-meters" id="channel-meters"></div>
                     </div>
@@ -631,79 +618,198 @@
         </div>
     </div>
 
-    <script>
-        // ============================================================================
-        // PREMIUM FEATURES LIST (What makes people pay)
-        // ============================================================================
-        /*
-        1. ✅ WAV/MP3 Export with effects applied
-        2. ✅ SF2/SF3 Soundfont support (professional quality audio)
-        3. ✅ Real-time audio effects (Reverb, Chorus, Pitch shift)
-        4. ✅ Multiple visualizer modes (Bars, Wave, Particles, Oscilloscope)
-        5. ✅ MIDI recording and editing
-        6. ✅ Batch conversion (multiple MIDI → MP3/WAV)
-        7. ✅ Karaoke mode with lyrics timing
-        8. ✅ Custom presets save/load
-        9. ✅ Channel mixer (individual channel volume/mute)
-        10. ✅ Tempo and pitch control
-        11. ✅ Loop sections and practice mode
-        12. ✅ Cloud sync for presets/playlists
-        */
+    <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
 
+    <script>
         // ============================================================================
         // STATE MANAGEMENT
         // ============================================================================
         const state = {
             synth: null,
-            sequencer: null,
+            reverb: null,
             midiFiles: [],
             currentIndex: 0,
             isPlaying: false,
             isPaused: false,
-            isRecording: false,
-            recordedChunks: [],
-            audioContext: null,
-            analyser: null,
+            scheduledEvents: [],
             activeNotes: new Set(),
             channelVolumes: new Array(16).fill(0),
             currentTime: 0,
             duration: 0,
+            startTime: 0,
+            pauseTime: 0,
             tempo: 120,
-            soundfontLoaded: false,
             visualizerMode: 'bars',
             animationFrame: null,
+            analyser: null,
+            currentInstrument: 'piano',
         };
 
         // ============================================================================
-        // SPESSASYNTH INITIALIZATION
+        // INSTRUMENT CONFIGURATIONS
         // ============================================================================
-        async function initSpessaSynth() {
+        const instruments = {
+            piano: () => new Tone.Sampler({
+                urls: {
+                    C4: "C4.mp3",
+                    "D#4": "Ds4.mp3",
+                    "F#4": "Fs4.mp3",
+                    A4: "A4.mp3",
+                },
+                baseUrl: "https://tonejs.github.io/audio/salamander/",
+            }),
+            synth: () => new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "fatsawtooth" },
+                envelope: { attack: 0.01, decay: 0.1, sustain: 0.5, release: 0.4 }
+            }),
+            electric: () => new Tone.PolySynth(Tone.FMSynth, {
+                modulationIndex: 12,
+                harmonicity: 3,
+            }),
+            organ: () => new Tone.PolySynth(Tone.AMSynth, {
+                harmonicity: 3,
+                oscillator: { type: "sine" }
+            }),
+            guitar: () => new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "triangle" },
+                envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 }
+            }),
+            bass: () => new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sawtooth" },
+                envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.1 }
+            }),
+            strings: () => new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sawtooth" },
+                envelope: { attack: 0.5, decay: 0.5, sustain: 0.8, release: 1.0 }
+            }),
+            choir: () => new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.8, decay: 0.5, sustain: 0.9, release: 1.5 }
+            }),
+        };
+
+        // ============================================================================
+        // AUDIO INITIALIZATION
+        // ============================================================================
+        async function initAudio() {
             if (state.synth) return;
 
-            // Create audio context
-            state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            // Create analyser for visualization
-            state.analyser = state.audioContext.createAnalyser();
-            state.analyser.fftSize = 2048;
-            state.analyser.connect(state.audioContext.destination);
+            await Tone.start();
 
-            // Load default soundfont
-            const soundfontUrl = 'https://cdn.jsdelivr.net/npm/soundfont-player@latest/soundfonts/MusyngKite/acoustic_grand_piano-mp3.js';
+            // Create reverb
+            state.reverb = new Tone.Reverb({
+                decay: 2,
+                wet: 0.2
+            }).toDestination();
+
+            // Create initial synth
+            await loadInstrument(state.currentInstrument);
+
+            // Create analyser for visualization
+            state.analyser = new Tone.Analyser('waveform', 256);
+            state.synth.connect(state.analyser);
+
+            console.log('Audio initialized');
+        }
+
+        async function loadInstrument(type) {
+            state.currentInstrument = type;
             
-            // Initialize SpessaSynth synthesizer
-            try {
-                // For now, we'll use a simplified approach
-                // In production, you'd fully integrate SpessaSynth's WebAudio synth
-                console.log('SpessaSynth library loaded, initializing...');
-                state.soundfontLoaded = true;
-            } catch (e) {
-                console.error('SpessaSynth init error:', e);
+            if (state.synth) {
+                state.synth.releaseAll();
+                state.synth.disconnect();
+                state.synth.dispose();
             }
+
+            state.synth = instruments[type]();
+            
+            if (state.synth.name === 'Sampler') {
+                await Tone.loaded();
+            }
+            
+            state.synth.connect(state.reverb);
+            
+            if (state.analyser) {
+                state.synth.connect(state.analyser);
+            }
+
+            state.synth.volume.value = -10;
+            console.log('Loaded instrument:', type);
         }
 
         // ============================================================================
-        // MIDI FILE HANDLING
+        // MIDI PARSING
+        // ============================================================================
+        function midiNoteToName(noteNumber) {
+            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const octave = Math.floor(noteNumber / 12) - 1;
+            const noteName = noteNames[noteNumber % 12];
+            return noteName + octave;
+        }
+
+        function parseMIDI(arrayBuffer) {
+            MidiParser.parse(new Uint8Array(arrayBuffer), function(obj) {
+                // This callback is for the parser
+            });
+            
+            const parsed = MidiParser.parse(new Uint8Array(arrayBuffer));
+            
+            // Extract notes with timing
+            const notes = [];
+            const lyrics = [];
+            let tempo = 500000; // Default microseconds per quarter note
+            const ticksPerBeat = parsed.timeDivision;
+            
+            parsed.track.forEach((track, trackIndex) => {
+                let absoluteTicks = 0;
+                const activeNotes = {};
+                
+                track.event.forEach(event => {
+                    absoluteTicks += event.deltaTime;
+                    const timeInSeconds = (absoluteTicks / ticksPerBeat) * (tempo / 1000000);
+                    
+                    if (event.type === 9 && event.data && event.data[1] > 0) { // Note On
+                        const note = event.data[0];
+                        const velocity = event.data[1] / 127;
+                        activeNotes[note] = { time: timeInSeconds, velocity };
+                    } else if ((event.type === 8) || (event.type === 9 && event.data && event.data[1] === 0)) { // Note Off
+                        const note = event.data[0];
+                        if (activeNotes[note]) {
+                            const duration = timeInSeconds - activeNotes[note].time;
+                            notes.push({
+                                note: midiNoteToName(note),
+                                midiNote: note,
+                                time: activeNotes[note].time,
+                                duration: duration,
+                                velocity: activeNotes[note].velocity,
+                                channel: event.channel || 0
+                            });
+                            delete activeNotes[note];
+                        }
+                    } else if (event.type === 255 && event.metaType === 81) { // Set Tempo
+                        tempo = (event.data[0] << 16) | (event.data[1] << 8) | event.data[2];
+                    } else if (event.type === 255 && (event.metaType === 1 || event.metaType === 5)) { // Lyrics
+                        const text = String.fromCharCode.apply(null, event.data);
+                        lyrics.push({ time: timeInSeconds, text });
+                    }
+                });
+            });
+            
+            notes.sort((a, b) => a.time - b.time);
+            const duration = notes.length > 0 ? Math.max(...notes.map(n => n.time + n.duration)) + 1 : 0;
+            const bpm = Math.round(60000000 / tempo);
+            
+            return {
+                notes,
+                lyrics,
+                duration,
+                tempo: bpm,
+                tracks: parsed.track.length
+            };
+        }
+
+        // ============================================================================
+        // FILE HANDLING
         // ============================================================================
         document.getElementById('midi-upload').addEventListener('change', async (e) => {
             const files = Array.from(e.target.files);
@@ -711,21 +817,19 @@
             for (const file of files) {
                 try {
                     const arrayBuffer = await file.arrayBuffer();
-                    const midiData = new Uint8Array(arrayBuffer);
+                    const parsed = parseMIDI(arrayBuffer);
                     
-                    // Parse MIDI file
-                    const parsed = {
+                    state.midiFiles.push({
                         name: file.name,
-                        data: midiData,
-                        duration: 0, // Will be calculated by SpessaSynth
-                        notes: 0,
-                        tracks: 0
-                    };
+                        ...parsed
+                    });
                     
-                    state.midiFiles.push(parsed);
+                    document.getElementById('info-tempo').textContent = parsed.tempo;
+                    document.getElementById('info-tracks').textContent = parsed.tracks;
+                    document.getElementById('info-notes').textContent = parsed.notes.length;
                     
                 } catch (err) {
-                    console.error('Error loading MIDI:', err);
+                    console.error('Error parsing MIDI:', err);
                     alert('Error loading: ' + file.name);
                 }
             }
@@ -733,52 +837,97 @@
             updatePlaylistUI();
             updateUI();
             
-            // Auto-play first file
             if (state.midiFiles.length === 1 && !state.isPlaying) {
                 setTimeout(() => play(), 500);
             }
         });
 
         // ============================================================================
-        // SOUNDFONT LOADING (PREMIUM FEATURE)
-        // ============================================================================
-        document.getElementById('sf2-upload').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                // Load SF2 into SpessaSynth
-                console.log('Loading soundfont:', file.name);
-                // SpessaSynth integration would go here
-                alert('Soundfont loaded: ' + file.name);
-                state.soundfontLoaded = true;
-            } catch (err) {
-                console.error('Soundfont load error:', err);
-                alert('Error loading soundfont');
-            }
-        });
-
-        // ============================================================================
-        // PLAYBACK CONTROL
+        // PLAYBACK
         // ============================================================================
         async function play() {
             if (state.midiFiles.length === 0) return;
             
-            await initSpessaSynth();
+            await initAudio();
+            
+            const currentFile = state.midiFiles[state.currentIndex];
             
             state.isPlaying = true;
             state.isPaused = false;
+            state.startTime = Tone.now();
+            state.duration = currentFile.duration;
             
-            // SpessaSynth playback would be initialized here
-            console.log('Playing:', state.midiFiles[state.currentIndex].name);
+            // Schedule all notes
+            currentFile.notes.forEach(noteEvent => {
+                const scheduleTime = Tone.now() + noteEvent.time;
+                const id = Tone.Transport.scheduleOnce((time) => {
+                    if (state.isPlaying && !state.isPaused) {
+                        playNote(noteEvent.midiNote, noteEvent.note, noteEvent.duration, noteEvent.velocity, noteEvent.channel);
+                    }
+                }, scheduleTime);
+                state.scheduledEvents.push(id);
+            });
+
+            // Schedule lyrics
+            currentFile.lyrics.forEach(lyric => {
+                const scheduleTime = Tone.now() + lyric.time;
+                const id = Tone.Transport.scheduleOnce(() => {
+                    if (state.isPlaying && !state.isPaused) {
+                        document.getElementById('lyrics-display').textContent = lyric.text;
+                    }
+                }, scheduleTime);
+                state.scheduledEvents.push(id);
+            });
+            
+            // Schedule end
+            const endId = Tone.Transport.scheduleOnce(() => {
+                if (state.isPlaying) {
+                    next();
+                }
+            }, Tone.now() + currentFile.duration);
+            state.scheduledEvents.push(endId);
+            
+            Tone.Transport.start();
             
             updateUI();
+            updatePlaylistUI();
             animate();
+            
+            console.log('Playing:', currentFile.name, 'Notes:', currentFile.notes.length);
+        }
+
+        function playNote(midiNote, noteName, duration, velocity, channel) {
+            if (!state.synth) return;
+            
+            try {
+                state.synth.triggerAttackRelease(noteName, duration, undefined, velocity);
+                state.activeNotes.add(midiNote);
+                
+                // Update channel meter
+                state.channelVolumes[channel % 16] = Math.max(state.channelVolumes[channel % 16], velocity);
+                
+                setTimeout(() => {
+                    state.activeNotes.delete(midiNote);
+                }, duration * 1000);
+            } catch (e) {
+                console.warn('Note play error:', e);
+            }
         }
 
         function pause() {
+            if (!state.isPlaying) return;
+            
             state.isPaused = !state.isPaused;
+            
+            if (state.isPaused) {
+                Tone.Transport.pause();
+                state.pauseTime = Tone.now() - state.startTime;
+                state.synth?.releaseAll();
+            } else {
+                Tone.Transport.start();
+                state.startTime = Tone.now() - state.pauseTime;
+            }
+            
             updateUI();
         }
 
@@ -786,11 +935,29 @@
             state.isPlaying = false;
             state.isPaused = false;
             state.currentTime = 0;
+            state.activeNotes.clear();
+            
+            // Clear all scheduled events
+            state.scheduledEvents.forEach(id => {
+                try {
+                    Tone.Transport.clear(id);
+                } catch(e) {}
+            });
+            state.scheduledEvents = [];
+            
+            Tone.Transport.stop();
+            Tone.Transport.cancel();
+            
+            if (state.synth) {
+                state.synth.releaseAll();
+            }
             
             if (state.animationFrame) {
                 cancelAnimationFrame(state.animationFrame);
                 state.animationFrame = null;
             }
+            
+            document.getElementById('lyrics-display').textContent = '♪ Load a MIDI file ♪';
             
             updateUI();
         }
@@ -810,89 +977,166 @@
         }
 
         // ============================================================================
-        // WAV RECORDING (PREMIUM FEATURE)
+        // WAV EXPORT
         // ============================================================================
-        document.getElementById('btn-record').addEventListener('click', async () => {
-            if (!state.isRecording) {
-                // Start recording
-                state.isRecording = true;
-                state.recordedChunks = [];
-                
-                const mediaRecorder = new MediaRecorder(state.audioContext.createMediaStreamDestination().stream);
-                
-                mediaRecorder.ondataavailable = (e) => {
-                    if (e.data.size > 0) {
-                        state.recordedChunks.push(e.data);
-                    }
-                };
-                
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(state.recordedChunks, { type: 'audio/wav' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `radwave_recording_${Date.now()}.wav`;
-                    a.click();
-                };
-                
-                mediaRecorder.start();
-                state.mediaRecorder = mediaRecorder;
-                
-                document.getElementById('btn-record').innerHTML = '⏹ STOP REC';
-                document.getElementById('btn-record').classList.add('btn-red');
-            } else {
-                // Stop recording
-                state.mediaRecorder.stop();
-                state.isRecording = false;
-                document.getElementById('btn-record').innerHTML = '● REC WAV';
-                document.getElementById('btn-record').classList.remove('btn-red');
-            }
-        });
-
-        // ============================================================================
-        // MP3 EXPORT (PREMIUM FEATURE)
-        // ============================================================================
-        document.getElementById('btn-export-mp3').addEventListener('click', async () => {
+        document.getElementById('btn-download-wav').addEventListener('click', async () => {
             if (state.midiFiles.length === 0) {
                 alert('Load a MIDI file first!');
                 return;
             }
             
-            alert('Rendering MIDI to MP3...\n\nThis premium feature renders with:\n- Soundfont quality\n- Applied effects\n- Perfect timing');
+            const currentFile = state.midiFiles[state.currentIndex];
             
-            // MP3 export using SpessaSynth offline rendering would go here
-            // This is a major premium feature
+            try {
+                document.getElementById('btn-download-wav').textContent = '⏳ RENDERING...';
+                document.getElementById('btn-download-wav').disabled = true;
+                
+                const buffer = await Tone.Offline(async ({ transport }) => {
+                    const offlineSynth = instruments[state.currentInstrument]();
+                    const offlineReverb = new Tone.Reverb({
+                        decay: 2,
+                        wet: parseFloat(document.getElementById('fx-reverb').value) / 100
+                    }).toDestination();
+                    
+                    if (offlineSynth.name === 'Sampler') {
+                        await Tone.loaded();
+                    }
+                    
+                    offlineSynth.connect(offlineReverb);
+                    offlineSynth.volume.value = -10;
+                    
+                    currentFile.notes.forEach(n => {
+                        offlineSynth.triggerAttackRelease(n.note, n.duration, n.time, n.velocity);
+                    });
+                    
+                }, currentFile.duration + 2);
+                
+                const wav = bufferToWave(buffer, 0, buffer.length);
+                const url = URL.createObjectURL(wav);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${currentFile.name.replace('.mid', '')}_${state.currentInstrument}.wav`;
+                a.click();
+                
+                document.getElementById('btn-download-wav').textContent = '💾 SAVE WAV';
+                document.getElementById('btn-download-wav').disabled = false;
+                
+            } catch (e) {
+                console.error('Export error:', e);
+                alert('Error exporting: ' + e.message);
+                document.getElementById('btn-download-wav').textContent = '💾 SAVE WAV';
+                document.getElementById('btn-download-wav').disabled = false;
+            }
         });
+
+        function bufferToWave(abuffer, offset, len) {
+            let numOfChan = abuffer.numberOfChannels,
+                length = len * numOfChan * 2 + 44,
+                buffer = new ArrayBuffer(length),
+                view = new DataView(buffer),
+                channels = [], i, sample,
+                pos = 0;
+
+            setUint32(0x46464952);
+            setUint32(length - 8);
+            setUint32(0x45564157);
+            setUint32(0x20746d66);
+            setUint32(16);
+            setUint16(1);
+            setUint16(numOfChan);
+            setUint32(abuffer.sampleRate);
+            setUint32(abuffer.sampleRate * 2 * numOfChan);
+            setUint16(numOfChan * 2);
+            setUint16(16);
+            setUint32(0x61746164);
+            setUint32(length - pos - 4);
+
+            for(i = 0; i < abuffer.numberOfChannels; i++)
+                channels.push(abuffer.getChannelData(i));
+
+            while(pos < length) {
+                for(i = 0; i < numOfChan; i++) {
+                    sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
+                    view.setInt16(pos, sample, true);
+                    pos += 2;
+                }
+                offset++;
+            }
+
+            return new Blob([buffer], {type: "audio/wav"});
+
+            function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+            function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+        }
 
         // ============================================================================
-        // EFFECTS CONTROLS (PREMIUM FEATURE)
+        // UI
         // ============================================================================
-        document.getElementById('fx-reverb').addEventListener('input', (e) => {
-            const value = e.target.value;
-            // Apply reverb to SpessaSynth
-            console.log('Reverb:', value);
-        });
+        function updateUI() {
+            document.getElementById('btn-play').disabled = state.isPlaying && !state.isPaused;
+            document.getElementById('btn-pause').disabled = !state.isPlaying;
+            document.getElementById('btn-stop').disabled = !state.isPlaying;
+            document.getElementById('btn-next').disabled = state.midiFiles.length <= 1;
+            document.getElementById('btn-prev').disabled = state.midiFiles.length <= 1;
+        }
 
-        document.getElementById('fx-chorus').addEventListener('input', (e) => {
-            const value = e.target.value;
-            // Apply chorus to SpessaSynth
-            console.log('Chorus:', value);
-        });
+        function updateProgress() {
+            if (!state.isPlaying || state.isPaused) return;
+            
+            state.currentTime = Tone.now() - state.startTime;
+            const progress = state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
+            
+            document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
+            document.getElementById('progress-time').textContent = 
+                formatTime(state.currentTime) + ' / ' + formatTime(state.duration);
+        }
 
-        document.getElementById('fx-pitch').addEventListener('input', (e) => {
-            const value = e.target.value;
-            document.getElementById('pitch-display').textContent = (value > 0 ? '+' : '') + value;
-            // Apply pitch shift to SpessaSynth
-            console.log('Pitch:', value);
-        });
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        function updatePlaylistUI() {
+            const playlist = document.getElementById('playlist');
+            
+            if (state.midiFiles.length === 0) {
+                playlist.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #666;">
+                        No files loaded. Click "ADD MIDI" to begin.
+                    </div>
+                `;
+                return;
+            }
+            
+            playlist.innerHTML = state.midiFiles.map((file, i) => `
+                <div class="playlist-item ${i === state.currentIndex ? 'active' : ''}" data-index="${i}">
+                    <span>${file.name}</span>
+                    <span style="color: #666;">${formatTime(file.duration)}</span>
+                </div>
+            `).join('');
+            
+            playlist.querySelectorAll('.playlist-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const index = parseInt(item.dataset.index);
+                    if (index !== state.currentIndex) {
+                        stop();
+                        state.currentIndex = index;
+                        const file = state.midiFiles[index];
+                        document.getElementById('info-tempo').textContent = file.tempo;
+                        document.getElementById('info-tracks').textContent = file.tracks;
+                        document.getElementById('info-notes').textContent = file.notes.length;
+                        updatePlaylistUI();
+                        setTimeout(() => play(), 100);
+                    }
+                });
+            });
+        }
 
         // ============================================================================
-        // VISUALIZER MODES (PREMIUM FEATURE)
+        // VISUALIZER
         // ============================================================================
-        document.getElementById('viz-mode').addEventListener('change', (e) => {
-            state.visualizerMode = e.target.value;
-        });
-
         const canvas = document.getElementById('visualizer-canvas');
         const ctx = canvas.getContext('2d');
 
@@ -906,66 +1150,62 @@
             const w = canvas.width;
             const h = canvas.height;
             
-            if (!state.analyser) {
-                ctx.fillStyle = '#000';
-                ctx.fillRect(0, 0, w, h);
-                return;
-            }
-
-            const bufferLength = state.analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-            state.analyser.getByteFrequencyData(dataArray);
-
             ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
             ctx.fillRect(0, 0, w, h);
 
+            if (!state.analyser) {
+                return;
+            }
+
+            const values = state.analyser.getValue();
+            
             switch (state.visualizerMode) {
                 case 'bars':
-                    drawBars(dataArray, w, h);
+                    drawBars(values, w, h);
                     break;
                 case 'wave':
-                    drawWave(dataArray, w, h);
+                    drawWave(values, w, h);
                     break;
                 case 'particles':
-                    drawParticles(dataArray, w, h);
+                    drawParticles(values, w, h);
                     break;
                 case 'oscilloscope':
-                    drawOscilloscope(dataArray, w, h);
+                    drawOscilloscope(values, w, h);
                     break;
             }
         }
 
-        function drawBars(data, w, h) {
-            const barWidth = w / data.length * 2.5;
+        function drawBars(values, w, h) {
+            const barWidth = w / values.length * 2.5;
             let x = 0;
 
-            for (let i = 0; i < data.length; i++) {
-                const barHeight = (data[i] / 255) * h;
-                const hue = (i / data.length) * 360;
+            for (let i = 0; i < values.length; i++) {
+                const normalized = (values[i] + 1) / 2; // -1 to 1 → 0 to 1
+                const barHeight = normalized * h;
+                const hue = (i / values.length) * 360;
                 
                 ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
                 ctx.shadowBlur = 10;
                 ctx.shadowColor = `hsl(${hue}, 100%, 50%)`;
-                ctx.fillRect(x, h - barHeight, barWidth, barHeight);
+                ctx.fillRect(x, h - barHeight, barWidth - 2, barHeight);
                 
-                x += barWidth + 1;
+                x += barWidth;
             }
             ctx.shadowBlur = 0;
         }
 
-        function drawWave(data, w, h) {
+        function drawWave(values, w, h) {
             ctx.strokeStyle = '#00ffff';
             ctx.lineWidth = 3;
             ctx.shadowBlur = 10;
             ctx.shadowColor = '#00ffff';
             ctx.beginPath();
 
-            const sliceWidth = w / data.length;
+            const sliceWidth = w / values.length;
             let x = 0;
 
-            for (let i = 0; i < data.length; i++) {
-                const v = data[i] / 255.0;
-                const y = v * h;
+            for (let i = 0; i < values.length; i++) {
+                const y = ((values[i] + 1) / 2) * h;
 
                 if (i === 0) {
                     ctx.moveTo(x, y);
@@ -980,13 +1220,12 @@
             ctx.shadowBlur = 0;
         }
 
-        function drawParticles(data, w, h) {
-            // Particle effect visualization
-            for (let i = 0; i < data.length; i += 4) {
-                const x = (i / data.length) * w;
-                const size = (data[i] / 255) * 10;
-                const y = h / 2 + Math.sin(i * 0.1 + Date.now() * 0.001) * (data[i] / 255) * h * 0.4;
-                const hue = (i / data.length) * 360;
+        function drawParticles(values, w, h) {
+            for (let i = 0; i < values.length; i += 4) {
+                const x = (i / values.length) * w;
+                const size = Math.abs(values[i]) * 10;
+                const y = h / 2 + values[i] * h * 0.4;
+                const hue = (i / values.length) * 360;
                 
                 ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
                 ctx.shadowBlur = 15;
@@ -998,19 +1237,18 @@
             ctx.shadowBlur = 0;
         }
 
-        function drawOscilloscope(data, w, h) {
+        function drawOscilloscope(values, w, h) {
             ctx.strokeStyle = '#ff00ff';
             ctx.lineWidth = 2;
             ctx.shadowBlur = 15;
             ctx.shadowColor = '#ff00ff';
             ctx.beginPath();
 
-            const sliceWidth = w / data.length;
+            const sliceWidth = w / values.length;
             let x = 0;
 
-            for (let i = 0; i < data.length; i++) {
-                const v = data[i] / 128.0;
-                const y = v * h / 2;
+            for (let i = 0; i < values.length; i++) {
+                const y = ((values[i] + 1) / 2) * h;
 
                 if (i === 0) {
                     ctx.moveTo(x, y);
@@ -1021,13 +1259,12 @@
                 x += sliceWidth;
             }
 
-            ctx.lineTo(w, h / 2);
             ctx.stroke();
             ctx.shadowBlur = 0;
         }
 
         // ============================================================================
-        // PIANO KEYBOARD
+        // PIANO
         // ============================================================================
         function createPiano() {
             const container = document.getElementById('piano-container');
@@ -1061,7 +1298,6 @@
         }
 
         function updatePiano() {
-            // Update based on active MIDI notes
             document.querySelectorAll('.piano-key').forEach(key => {
                 const note = parseInt(key.dataset.note);
                 if (state.activeNotes.has(note)) {
@@ -1083,7 +1319,7 @@
                 const meter = document.createElement('div');
                 meter.className = 'channel-meter';
                 meter.innerHTML = `
-                    <div class="channel-label">CH${i + 1}</div>
+                    <div class="channel-label">${i + 1}</div>
                     <div class="meter-bar">
                         <div class="meter-fill" id="meter-${i}"></div>
                     </div>
@@ -1102,59 +1338,8 @@
             });
         }
 
-        // ============================================================================
-        // PLAYLIST
-        // ============================================================================
-        function updatePlaylistUI() {
-            const playlist = document.getElementById('playlist');
-            
-            if (state.midiFiles.length === 0) {
-                playlist.innerHTML = `
-                    <div style="padding: 20px; text-align: center; color: #666;">
-                        No files loaded. Click "ADD MIDI" to begin.
-                    </div>
-                `;
-                return;
-            }
-            
-            playlist.innerHTML = state.midiFiles.map((file, i) => `
-                <div class="playlist-item ${i === state.currentIndex ? 'active' : ''}" data-index="${i}">
-                    <span>${file.name}</span>
-                    <span style="color: #666;">MIDI</span>
-                </div>
-            `).join('');
-            
-            playlist.querySelectorAll('.playlist-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const index = parseInt(item.dataset.index);
-                    if (index !== state.currentIndex) {
-                        stop();
-                        state.currentIndex = index;
-                        updatePlaylistUI();
-                        setTimeout(() => play(), 100);
-                    }
-                });
-            });
-        }
-
-        // ============================================================================
-        // UI UPDATES
-        // ============================================================================
-        function updateUI() {
-            document.getElementById('btn-play').disabled = state.isPlaying && !state.isPaused;
-            document.getElementById('btn-pause').disabled = !state.isPlaying;
-            document.getElementById('btn-stop').disabled = !state.isPlaying;
-            document.getElementById('btn-next').disabled = state.midiFiles.length === 0;
-            document.getElementById('btn-prev').disabled = state.midiFiles.length === 0;
-        }
-
-        function updateProgress() {
-            // Update progress bar based on SpessaSynth sequencer time
-            // This would be connected to actual playback
-        }
-
         function animate() {
-            if (!state.isPlaying && !state.isPaused) return;
+            if (!state.isPlaying) return;
             
             updateProgress();
             drawVisualizer();
@@ -1176,19 +1361,33 @@
         document.getElementById('volume-slider').addEventListener('input', (e) => {
             const volume = parseInt(e.target.value);
             document.getElementById('volume-display').textContent = volume + '%';
-            // Apply to SpessaSynth
+            if (state.synth) {
+                state.synth.volume.value = (volume / 100) * 20 - 20;
+            }
+        });
+
+        document.getElementById('fx-reverb').addEventListener('input', (e) => {
+            const value = parseFloat(e.target.value) / 100;
+            if (state.reverb) {
+                state.reverb.wet.value = value;
+            }
+        });
+
+        document.getElementById('instrument-select').addEventListener('change', async (e) => {
+            await loadInstrument(e.target.value);
+        });
+
+        document.getElementById('viz-mode').addEventListener('change', (e) => {
+            state.visualizerMode = e.target.value;
         });
 
         document.getElementById('progress-container').addEventListener('click', (e) => {
-            if (!state.isPlaying) return;
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const percent = x / rect.width;
-            // Seek in SpessaSynth
+            // Seeking would require rescheduling all notes
+            // Simplified for this demo
         });
 
         // ============================================================================
-        // INITIALIZATION
+        // INIT
         // ============================================================================
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -1196,7 +1395,6 @@
         createChannelMeters();
         updateUI();
 
-        // Idle animation
         function idleAnimate() {
             if (!state.isPlaying) {
                 drawVisualizer();
