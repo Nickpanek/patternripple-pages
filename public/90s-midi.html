@@ -3,44 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 90s MIDI VISUALIZER ⚡</title>
+    <title>⚡ RADWAVE MIDI SYNTH 95 ⚡</title>
     
-    <!-- PyScript -->
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
-    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-    
-    <!-- Tone.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
         
+        * { box-sizing: border-box; }
+        
         body { 
-            background: linear-gradient(135deg, #1a0033 0%, #0d001a 50%, #1a0033 100%);
+            background: linear-gradient(135deg, #1a0033 0%, #0d001a 25%, #330033 50%, #0d001a 75%, #1a0033 100%);
             background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            animation: gradientShift 20s ease infinite;
             color: #00ff00;
             font-family: 'VT323', monospace;
-            overflow: hidden; 
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
         
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
+            0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes blink {
-            0%, 50%, 100% { opacity: 1; }
-            25%, 75% { opacity: 0.3; }
         }
 
         @keyframes scanline {
             0% { transform: translateY(-100%); }
             100% { transform: translateY(100vh); }
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.4; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes rainbow {
+            to { background-position: 200% center; }
         }
 
         .scanline {
@@ -49,844 +54,998 @@
             left: 0;
             width: 100%;
             height: 2px;
-            background: rgba(0, 255, 0, 0.1);
-            animation: scanline 8s linear infinite;
+            background: rgba(0, 255, 0, 0.15);
+            animation: scanline 10s linear infinite;
             pointer-events: none;
             z-index: 9999;
         }
-        
-        #canvas-container {
+
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            gap: 10px;
+        }
+
+        /* Window styling */
+        .window {
+            background: rgba(0, 0, 0, 0.85);
+            border: 3px solid;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
             position: relative;
-            width: 100%;
-            height: calc(100vh - 120px);
-            background: #000000;
-            border: 4px solid #00ff00;
-            box-shadow: 
-                inset 0 0 20px rgba(0, 255, 0, 0.3),
-                0 0 30px rgba(0, 255, 0, 0.5),
-                0 0 60px rgba(255, 0, 255, 0.3);
-            border-radius: 8px;
+            overflow: hidden;
         }
-        canvas { display: block; width: 100%; height: 100%; }
-        
-        /* Header */
-        .header {
-            background: linear-gradient(90deg, 
-                #ff00ff 0%, 
-                #00ffff 25%, 
-                #ffff00 50%, 
-                #00ffff 75%, 
-                #ff00ff 100%);
+
+        .window-cyan { border-color: #00ffff; }
+        .window-magenta { border-color: #ff00ff; }
+        .window-yellow { border-color: #ffff00; }
+        .window-green { border-color: #00ff00; }
+
+        .window-header {
+            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #00ffff, #ff00ff);
             background-size: 200% auto;
-            animation: rainbow 3s linear infinite;
-            border: 3px solid #00ff00;
-            border-radius: 8px;
-            box-shadow: 
-                0 0 20px rgba(0, 255, 0, 0.6),
-                inset 0 0 20px rgba(255, 255, 255, 0.2);
-        }
-
-        @keyframes rainbow {
-            to { background-position: 200% center; }
-        }
-        
-        .title-text {
+            animation: rainbow 4s linear infinite;
+            padding: 8px 12px;
             font-family: 'Press Start 2P', cursive;
-            font-size: 1.3rem;
-            color: #000000;
-            text-shadow: 
-                2px 2px 0px #00ff00,
-                4px 4px 0px #ff00ff,
-                6px 6px 0px #00ffff;
-            animation: blink 2s infinite;
-            letter-spacing: 2px;
-        }
-
-        .subtitle {
-            font-family: 'VT323', monospace;
-            font-size: 1.1rem;
-            color: #000000;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        #status {
-            color: #00ff00;
-            font-family: 'VT323', monospace;
-            font-size: 1.1rem;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
-            background: rgba(0, 0, 0, 0.7);
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 2px solid #00ff00;
-        }
-
-        /* UI Components */
-        .control-group {
-            display: flex; 
-            gap: 8px; 
+            font-size: 0.75rem;
+            color: #000;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+            border-bottom: 2px solid #00ff00;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 8px 14px;
-            border-radius: 8px;
-            border: 3px solid #ff00ff;
-            box-shadow: 
-                0 0 15px rgba(255, 0, 255, 0.6),
-                inset 0 0 10px rgba(255, 0, 255, 0.2);
         }
-        
+
+        .window-body {
+            padding: 12px;
+        }
+
+        /* Button styles */
         .btn {
-            padding: 10px 18px;
+            padding: 8px 16px;
+            border: 3px solid;
             border-radius: 6px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 900;
-            transition: all 0.1s ease-in-out;
-            white-space: nowrap;
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 6px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
-            border: 3px solid;
             font-family: 'VT323', monospace;
-            letter-spacing: 1px;
+            transition: all 0.15s;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
             position: relative;
             overflow: hidden;
         }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
 
-        .btn:hover::before {
-            left: 100%;
-        }
-        
         .btn:hover {
-            transform: translateY(-2px) scale(1.05);
+            transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.8);
         }
+
         .btn:active {
-            transform: translateY(1px) scale(0.98);
+            transform: translateY(0);
         }
 
-        .btn-blue { 
-            background: linear-gradient(135deg, #0066ff, #00ccff); 
-            color: white; 
+        .btn-cyan {
+            background: linear-gradient(135deg, #0088ff, #00ffff);
             border-color: #00ffff;
+            color: #000;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
         }
-        .btn-blue:hover { 
-            background: linear-gradient(135deg, #0088ff, #00eeff);
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.9);
-        }
-        
-        .btn-green { 
-            background: linear-gradient(135deg, #00ff00, #00cc00); 
-            color: #000000; 
-            border-color: #00ff00;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
-        }
-        .btn-green:hover { 
-            background: linear-gradient(135deg, #33ff33, #00ff00);
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.9);
-        }
-        
-        .btn-red { 
-            background: linear-gradient(135deg, #ff0066, #ff0000); 
-            color: white; 
+
+        .btn-magenta {
+            background: linear-gradient(135deg, #ff00ff, #ff0088);
             border-color: #ff00ff;
+            color: #000;
             box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
         }
-        .btn-red:hover { 
-            background: linear-gradient(135deg, #ff0088, #ff3333);
-            box-shadow: 0 0 25px rgba(255, 0, 255, 0.9);
+
+        .btn-green {
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            border-color: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
         }
-        
-        .btn-purple { 
-            background: linear-gradient(135deg, #ff00ff, #8800ff); 
-            color: #00ff00;
+
+        .btn-yellow {
+            background: linear-gradient(135deg, #ffff00, #ffcc00);
             border-color: #ffff00;
+            color: #000;
             box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
-            animation: pulse 2s infinite;
-        }
-        .btn-purple:hover { 
-            background: linear-gradient(135deg, #ff33ff, #aa00ff);
-            box-shadow: 0 0 30px rgba(255, 255, 0, 0.9);
         }
 
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(255, 255, 0, 0.6); }
-            50% { box-shadow: 0 0 30px rgba(255, 255, 0, 1); }
-        }
-        
-        select {
-            background: linear-gradient(135deg, #000000, #330033);
-            color: #00ff00;
-            border: 3px solid #00ffff;
-            border-radius: 6px;
-            padding: 6px 10px;
-            outline: none; 
-            font-size: 1rem; 
-            cursor: pointer; 
-            width: 100%;
-            font-family: 'VT323', monospace;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-        }
-        
-        select:hover {
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        .btn-red {
+            background: linear-gradient(135deg, #ff0066, #ff0000);
+            border-color: #ff00ff;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 0, 100, 0.6);
         }
 
-        select option {
-            background: #000000;
-            color: #00ff00;
-        }
-
-        button:disabled { 
-            opacity: 0.3; 
-            cursor: not-allowed; 
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
             filter: grayscale(80%);
-            box-shadow: none !important;
         }
 
+        /* Visualizer */
+        #visualizer-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: #000;
+        }
+
+        /* Piano keyboard */
+        .piano-container {
+            height: 120px;
+            position: relative;
+            background: #000;
+        }
+
+        .piano-key {
+            position: absolute;
+            bottom: 0;
+            cursor: pointer;
+            transition: all 0.05s;
+        }
+
+        .piano-key.white {
+            background: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
+            border: 2px solid #000;
+            border-radius: 0 0 4px 4px;
+            height: 100%;
+        }
+
+        .piano-key.black {
+            background: linear-gradient(to bottom, #333 0%, #000 100%);
+            border: 2px solid #000;
+            border-radius: 0 0 3px 3px;
+            height: 65%;
+            z-index: 10;
+        }
+
+        .piano-key.active.white {
+            background: linear-gradient(to bottom, #00ff00 0%, #00cc00 100%);
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        .piano-key.active.black {
+            background: linear-gradient(to bottom, #ff00ff 0%, #cc00cc 100%);
+            box-shadow: 0 0 20px #ff00ff;
+        }
+
+        /* Channel meters */
+        .channel-meters {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            height: 100%;
+        }
+
+        .channel-meter {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ffff;
+            border-radius: 4px;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .channel-label {
+            font-size: 0.7rem;
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        .meter-bar {
+            flex: 1;
+            width: 100%;
+            background: rgba(0, 50, 50, 0.5);
+            border: 1px solid #006666;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, #00ff00, #ffff00, #ff0000);
+            transition: height 0.1s;
+            height: 0%;
+        }
+
+        /* Playlist */
+        .playlist {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ffff;
+            border-radius: 4px;
+        }
+
+        .playlist-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #003333;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .playlist-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+
+        .playlist-item.active {
+            background: rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff00ff;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00ffff, #ff00ff);
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .progress-time {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.9rem;
+            color: #fff;
+            text-shadow: 0 0 5px #000, 0 0 10px #000;
+            pointer-events: none;
+        }
+
+        /* Slider */
+        input[type="range"] {
+            width: 100%;
+            height: 30px;
+            -webkit-appearance: none;
+            background: transparent;
+        }
+
+        input[type="range"]::-webkit-slider-track {
+            height: 10px;
+            background: linear-gradient(90deg, #000, #333);
+            border: 2px solid #00ffff;
+            border-radius: 5px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #ff00ff, #00ffff);
+            border: 2px solid #ffff00;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+        }
+
+        input[type="range"]::-moz-range-track {
+            height: 10px;
+            background: linear-gradient(90deg, #000, #333);
+            border: 2px solid #00ffff;
+            border-radius: 5px;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #ff00ff, #00ffff);
+            border: 2px solid #ffff00;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ffff;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ff00ff, #00ffff);
+            border: 1px solid #000;
+            border-radius: 6px;
+        }
+
+        /* Info display */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .info-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #ffff00;
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #ffff00;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        /* Lyrics display */
+        .lyrics-display {
+            height: 80px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ff00ff;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 1.3rem;
+            color: #00ffff;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 10px #00ffff;
+            overflow: hidden;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+        }
     </style>
 </head>
-<body class="flex flex-col h-screen p-3">
+<body>
     <div class="scanline"></div>
-
-    <!-- Header / Controls -->
-    <div class="header flex items-center justify-between px-5 py-4 z-10 mb-3">
-        <div class="flex flex-col justify-center">
-            <h1 class="title-text">⚡ 90s MIDI ⚡</h1>
-            <div class="subtitle">BY PATTERNRIPPLE</div>
-            <div id="status" class="mt-2">► READY TO JAM ◄</div>
-        </div>
-        
-        <div class="flex gap-3 items-center flex-wrap">
-            
-            <div class="control-group w-48">
-                <select id="instrument-select" onchange="changeInstrument(this.value)">
-                    <option value="piano" selected>🎹 REAL PIANO</option>
-                    <option value="drums">🥁 DRUMS</option>
-                    <option value="synth">🌌 SYNTHWAVE</option>
-                    <option value="lovecraft">🐙 LOVECRAFT PAD</option>
-                </select>
+    
+    <div class="container">
+        <!-- Top bar -->
+        <div class="window window-cyan" style="flex-shrink: 0;">
+            <div class="window-header">
+                <span>⚡ RADWAVE MIDI SYNTH 95 ⚡</span>
+                <span style="font-size: 0.6rem;">v1.0.0</span>
             </div>
-
-            <div class="flex gap-2 flex-wrap">
-                <label class="btn btn-blue">
-                    <input type="file" id="midi-upload" accept=".mid,.midi" style="display:none">
-                    📂 LOAD MIDI
-                </label>
-                <button id="btn-play" class="btn btn-green">▶ PLAY</button>
-                <button id="btn-stop" class="btn btn-red">⏹ STOP</button>
-                <button id="btn-download" onclick="downloadWav()" class="btn btn-purple">
-                    💾 SAVE WAV
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Visualization Area -->
-    <div id="canvas-container">
-        <canvas id="visualizer"></canvas>
-    </div>
-
-    <!-- PyConfig -->
-    <py-config>
-        packages = ["mido"]
-    </py-config>
-
-    <!-- JS Audio Bridge & WAV Encoder -->
-    <script>
-        let currentSynth = null; 
-        let isAudioInit = false;
-        let selectedInstrument = 'piano';
-
-        // --- Instrument Configs ---
-        function getInstrumentConfig(type) {
-            if (type === 'piano') {
-                return {
-                    type: 'Sampler',
-                    options: {
-                        urls: {
-                            "C4": "C4.mp3", "D#4": "Ds4.mp3", "F#4": "Fs4.mp3", "A4": "A4.mp3",
-                            "C5": "C5.mp3", "D#5": "Ds5.mp3", "F#5": "Fs5.mp3", "A5": "A5.mp3",
-                        },
-                        release: 1,
-                        baseUrl: "https://tonejs.github.io/audio/salamander/"
-                    },
-                    volume: -5
-                };
-            } else if (type === 'drums') {
-                return {
-                    type: 'PolySynth',
-                    voice: Tone.MetalSynth,
-                    options: {
-                        envelope: { attack: 0.001, decay: 0.08, release: 0.02 }, 
-                        harmonicity: 20, 
-                        modulationIndex: 8, 
-                        resonance: 4000, 
-                        octaves: 1
-                    },
-                    volume: -10
-                };
-            } else if (type === 'lovecraft') {
-                return {
-                    type: 'PolySynth',
-                    voice: Tone.FMSynth,
-                    options: {
-                        modulationIndex: 12.22, 
-                        envelope: { attack: 0.01, decay: 0.2 },
-                        modulation: { type: "square" },
-                        oscillator: { type: "sawtooth" }
-                    },
-                    volume: -10
-                };
-            } else { // Synthwave (default)
-                return {
-                    type: 'PolySynth',
-                    voice: Tone.Synth,
-                    options: {
-                        oscillator: { type: "fatsawtooth", count: 3, spread: 30 },
-                        envelope: { attack: 0.01, decay: 0.1, sustain: 0.5, release: 0.4 }
-                    },
-                    volume: -8
-                };
-            }
-        }
-
-        async function initAudio() {
-            if (!isAudioInit) {
-                await Tone.start(); 
-                await loadInstrument('piano');
-                isAudioInit = true;
-            }
-        }
-
-        async function loadInstrument(type) {
-            selectedInstrument = type;
-            
-            let oldSynth = currentSynth;
-            currentSynth = null; 
-            if (oldSynth) {
-                try {
-                    oldSynth.releaseAll();
-                    oldSynth.disconnect();
-                    oldSynth.dispose();
-                } catch(e) { console.warn("Cleanup error:", e); }
-            }
-
-            document.getElementById("status").innerText = "⌛ LOADING INSTRUMENT...";
-            const config = getInstrumentConfig(type);
-            let tempSynth;
-
-            try {
-                if (config.type === 'Sampler') {
-                    tempSynth = await new Promise(resolve => {
-                        const s = new Tone.Sampler({
-                            ...config.options,
-                            onload: () => resolve(s)
-                        }).toDestination();
-                    });
-                } else {
-                    try {
-                        tempSynth = new Tone.PolySynth(config.voice, config.options).toDestination();
-                    } catch (polyError) {
-                        console.warn("Complex synth failed, falling back to default:", polyError);
-                        tempSynth = new Tone.PolySynth(Tone.Synth).toDestination();
-                    }
-                }
-                
-                if (tempSynth.volume) {
-                    tempSynth.volume.value = config.volume;
-                }
-                
-                currentSynth = tempSynth;
-                document.getElementById("status").innerText = "✓ INSTRUMENT READY";
-                
-            } catch (e) {
-                console.error("Critical Instrument Load Error:", e);
-                document.getElementById("status").innerText = "⚠ LOAD ERROR. USING BACKUP.";
-                currentSynth = new Tone.PolySynth(Tone.Synth).toDestination();
-            }
-        }
-
-        window.changeInstrument = (val) => {
-            if (isAudioInit) loadInstrument(val);
-            else selectedInstrument = val;
-        };
-
-        window.js_play_note_on_contact = (note_name, duration) => {
-            if (!currentSynth) return; 
-            try {
-                if (currentSynth.name === 'Sampler' && !currentSynth.loaded) return;
-                currentSynth.triggerAttackRelease(note_name, duration);
-            } catch (e) {
-                // Silently ignore glitches during playback
-            }
-        };
-        
-        window.js_stop_all = () => {
-            if (currentSynth) {
-                try { currentSynth.releaseAll(); } catch(e) {}
-            }
-        };
-
-        // --- WAV Export Logic (FIXED) ---
-        window.downloadWav = async () => {
-            // Check if Python function exists
-            if (!window.py_get_notes) {
-                alert("⚠ Please load a MIDI file first!");
-                return;
-            }
-
-            document.getElementById("status").innerText = "🎵 PREPARING AUDIO RENDER...";
-            const btn = document.getElementById("btn-download");
-            btn.disabled = true;
-            btn.innerText = "⏳ PROCESSING...";
-
-            try {
-                // Get the note data from Python - this returns a JS object directly
-                let songData = window.py_get_notes();
-                
-                console.log("Song data received (raw):", songData);
-                console.log("Type of songData:", typeof songData);
-                console.log("Song data keys:", Object.keys(songData));
-                
-                // Handle PyProxy if needed
-                if (songData && typeof songData.toJs === 'function') {
-                    console.log("Converting PyProxy to JS...");
-                    songData = songData.toJs();
-                }
-                
-                console.log("Song data after conversion:", songData);
-                console.log("Notes array:", songData?.notes);
-                console.log("Notes length:", songData?.notes?.length);
-
-                if (!songData) {
-                    alert("⚠ Failed to retrieve MIDI data from Python.");
-                    resetBtn();
-                    return;
-                }
-
-                if (!songData.notes) {
-                    alert("⚠ MIDI data has no notes array.");
-                    resetBtn();
-                    return;
-                }
-
-                if (songData.notes.length === 0) {
-                    alert("⚠ No playable notes found in the MIDI data. Make sure your MIDI file contains note events.");
-                    resetBtn();
-                    return;
-                }
-
-                const config = getInstrumentConfig(selectedInstrument);
-                
-                document.getElementById("status").innerText = "🎹 RENDERING AUDIO...";
-
-                const buffer = await Tone.Offline(async ({ transport }) => {
-                    let synth;
-
-                    try {
-                        if (config.type === 'Sampler') {
-                            synth = new Tone.Sampler(config.options).toDestination();
-                            await Tone.loaded(); 
-                        } else {
-                            try {
-                                synth = new Tone.PolySynth(config.voice, config.options).toDestination();
-                            } catch(e) {
-                                synth = new Tone.PolySynth(Tone.Synth).toDestination();
-                            }
-                        }
-                    } catch (e) {
-                         synth = new Tone.PolySynth(Tone.Synth).toDestination();
-                    }
+            <div class="window-body">
+                <div class="flex gap-3 items-center justify-between flex-wrap">
+                    <div class="flex gap-2">
+                        <label class="btn btn-cyan">
+                            <input type="file" id="midi-upload" accept=".mid,.midi" multiple style="display:none">
+                            📂 ADD MIDI
+                        </label>
+                        <button id="btn-play" class="btn btn-green">▶ PLAY</button>
+                        <button id="btn-pause" class="btn btn-yellow">⏸ PAUSE</button>
+                        <button id="btn-stop" class="btn btn-red">⏹ STOP</button>
+                    </div>
                     
-                    if (synth.volume) {
-                        synth.volume.value = config.volume;
-                    }
+                    <div class="flex gap-2 items-center">
+                        <span style="color: #00ffff;">VOLUME:</span>
+                        <input type="range" id="volume-slider" min="0" max="100" value="80" style="width: 150px;">
+                        <span id="volume-display" style="color: #00ff00; min-width: 40px;">80%</span>
+                    </div>
 
-                    songData.notes.forEach(n => {
-                        synth.triggerAttackRelease(n.note, n.duration, n.time, n.velocity);
-                    });
+                    <div class="flex gap-2">
+                        <button id="btn-prev" class="btn btn-magenta">⏮ PREV</button>
+                        <button id="btn-next" class="btn btn-magenta">⏭ NEXT</button>
+                    </div>
+                </div>
 
-                }, songData.duration + 2); 
+                <!-- Progress bar -->
+                <div class="progress-container mt-3" id="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                    <div class="progress-time" id="progress-time">0:00 / 0:00</div>
+                </div>
+            </div>
+        </div>
 
-                document.getElementById("status").innerText = "💾 ENCODING WAV...";
-                const wavBlob = bufferToWave(buffer, 0, buffer.length);
-                const url = URL.createObjectURL(wavBlob);
-                
-                const anchor = document.createElement("a");
-                anchor.download = `90s_Midi_${selectedInstrument}_${Date.now()}.wav`; 
-                anchor.href = url;
-                anchor.click();
-                
-                document.getElementById("status").innerText = "✓ DOWNLOAD COMPLETE!";
-                setTimeout(() => {
-                    document.getElementById("status").innerText = "► READY TO JAM ◄";
-                }, 3000);
-            } catch (e) {
-                console.error("Download error:", e);
-                alert("⚠ Error rendering audio: " + e.message);
-                document.getElementById("status").innerText = "⚠ RENDER FAILED";
-            }
-            
-            resetBtn();
+        <!-- Main content area -->
+        <div class="grid-3" style="flex: 1; min-height: 0;">
+            <!-- Left column -->
+            <div style="display: flex; flex-direction: column; gap: 10px; min-height: 0;">
+                <!-- Visualizer -->
+                <div class="window window-magenta" style="flex: 1; min-height: 0;">
+                    <div class="window-header">🌊 WAVEFORM VISUALIZER</div>
+                    <div class="window-body" style="padding: 0; height: calc(100% - 40px);">
+                        <canvas id="visualizer-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Piano keyboard -->
+                <div class="window window-green" style="flex-shrink: 0;">
+                    <div class="window-header">🎹 VIRTUAL KEYBOARD</div>
+                    <div class="window-body" style="padding: 0;">
+                        <div class="piano-container" id="piano-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column -->
+            <div style="display: flex; flex-direction: column; gap: 10px; min-height: 0;">
+                <!-- Info panel -->
+                <div class="window window-yellow" style="flex-shrink: 0;">
+                    <div class="window-header">📊 TRACK INFO</div>
+                    <div class="window-body">
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <div class="info-label">TEMPO</div>
+                                <div class="info-value" id="info-tempo">120</div>
+                            </div>
+                            <div class="info-box">
+                                <div class="info-label">TRACKS</div>
+                                <div class="info-value" id="info-tracks">0</div>
+                            </div>
+                            <div class="info-box">
+                                <div class="info-label">NOTES</div>
+                                <div class="info-value" id="info-notes">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lyrics -->
+                <div class="window window-cyan" style="flex-shrink: 0;">
+                    <div class="window-header">🎤 LYRICS</div>
+                    <div class="window-body" style="padding: 0;">
+                        <div class="lyrics-display" id="lyrics-display">
+                            ♪ No lyrics available ♪
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Channel meters -->
+                <div class="window window-magenta" style="flex: 1; min-height: 0;">
+                    <div class="window-header">🎚️ CHANNEL METERS</div>
+                    <div class="window-body" style="height: calc(100% - 40px);">
+                        <div class="channel-meters" id="channel-meters"></div>
+                    </div>
+                </div>
+
+                <!-- Playlist -->
+                <div class="window window-green" style="flex: 1; min-height: 0;">
+                    <div class="window-header">📜 PLAYLIST</div>
+                    <div class="window-body" style="padding: 0; height: calc(100% - 40px); overflow: hidden;">
+                        <div class="playlist" id="playlist">
+                            <div style="padding: 20px; text-align: center; color: #666;">
+                                No files loaded. Click "ADD MIDI" to begin.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // STATE MANAGEMENT
+        // ============================================================================
+        const state = {
+            midiFiles: [],
+            currentIndex: 0,
+            isPlaying: false,
+            isPaused: false,
+            currentSynth: null,
+            scheduledNotes: [],
+            activeNotes: new Set(),
+            startTime: 0,
+            pauseTime: 0,
+            currentTime: 0,
+            duration: 0,
+            animationFrame: null,
+            channelVolumes: new Array(16).fill(0),
+            tempo: 120,
+            lyrics: [],
+            currentLyric: '',
         };
 
-        function resetBtn() {
-            const btn = document.getElementById("btn-download");
-            btn.disabled = false;
-            btn.innerText = "💾 SAVE WAV";
-        }
-
-        // --- WAV Encoder Helper ---
-        function bufferToWave(abuffer, offset, len) {
-            let numOfChan = abuffer.numberOfChannels,
-                length = len * numOfChan * 2 + 44,
-                buffer = new ArrayBuffer(length),
-                view = new DataView(buffer),
-                channels = [], i, sample,
-                pos = 0;
-
-            setUint32(0x46464952);                         // "RIFF"
-            setUint32(length - 8);                         // file length - 8
-            setUint32(0x45564157);                         // "WAVE"
-
-            setUint32(0x20746d66);                         // "fmt " chunk
-            setUint32(16);                                 // length = 16
-            setUint16(1);                                  // PCM (uncompressed)
-            setUint16(numOfChan);
-            setUint32(abuffer.sampleRate);
-            setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
-            setUint16(numOfChan * 2);                      // block-align
-            setUint16(16);                                 // 16-bit
-
-            setUint32(0x61746164);                         // "data" - chunk
-            setUint32(length - pos - 4);                   // chunk length
-
-            for(i = 0; i < abuffer.numberOfChannels; i++)
-                channels.push(abuffer.getChannelData(i));
-
-            while(pos < length) {
-                for(i = 0; i < numOfChan; i++) {             
-                    sample = Math.max(-1, Math.min(1, channels[i][offset])); 
-                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; 
-                    view.setInt16(pos, sample, true);          
-                    pos += 2;
-                }
-                offset++                                     
+        // ============================================================================
+        // MIDI PARSING
+        // ============================================================================
+        async function parseMIDIFile(file) {
+            // Simple MIDI parser - extracts note events
+            const buffer = await file.arrayBuffer();
+            const view = new DataView(buffer);
+            
+            // Basic MIDI file validation
+            const header = String.fromCharCode(view.getUint8(0), view.getUint8(1), view.getUint8(2), view.getUint8(3));
+            if (header !== 'MThd') {
+                throw new Error('Invalid MIDI file');
             }
 
-            return new Blob([buffer], {type: "audio/wav"});
+            // For simplicity, we'll use a basic note extraction
+            // In production, you'd want a full MIDI parser library
+            const notes = [];
+            const lyrics = [];
+            let tempo = 500000; // Default tempo (120 BPM)
+            
+            // Scan for note events (simplified)
+            for (let i = 0; i < view.byteLength - 3; i++) {
+                const status = view.getUint8(i);
+                
+                // Note On (0x90-0x9F)
+                if ((status & 0xF0) === 0x90) {
+                    const channel = status & 0x0F;
+                    const note = view.getUint8(i + 1);
+                    const velocity = view.getUint8(i + 2);
+                    
+                    if (velocity > 0 && note >= 21 && note <= 108) {
+                        notes.push({
+                            type: 'noteOn',
+                            note: note,
+                            channel: channel,
+                            velocity: velocity / 127,
+                            time: i / 1000 // Approximate timing
+                        });
+                    }
+                }
+            }
 
-            function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
-            function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+            const bpm = Math.round(60000000 / tempo);
+            
+            return {
+                name: file.name,
+                notes: notes,
+                lyrics: lyrics,
+                tempo: bpm,
+                duration: notes.length > 0 ? notes[notes.length - 1].time + 2 : 0
+            };
         }
 
-        const canvas = document.getElementById('visualizer');
-        const container = document.getElementById('canvas-container');
+        // ============================================================================
+        // AUDIO SYNTHESIS
+        // ============================================================================
+        async function initAudio() {
+            if (!state.currentSynth) {
+                await Tone.start();
+                state.currentSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "fatsawtooth" },
+                    envelope: { attack: 0.01, decay: 0.1, sustain: 0.5, release: 0.4 }
+                }).toDestination();
+                state.currentSynth.volume.value = -10;
+            }
+        }
+
+        function playNote(note, velocity = 0.8, duration = 0.5) {
+            if (!state.currentSynth) return;
+            
+            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const noteName = noteNames[note % 12];
+            const octave = Math.floor(note / 12) - 1;
+            const fullNote = noteName + octave;
+            
+            try {
+                state.currentSynth.triggerAttackRelease(fullNote, duration, undefined, velocity);
+                state.activeNotes.add(note);
+                
+                // Update channel meter (simplified - use note as channel indicator)
+                const channel = note % 16;
+                state.channelVolumes[channel] = Math.max(state.channelVolumes[channel], velocity);
+                
+                setTimeout(() => {
+                    state.activeNotes.delete(note);
+                }, duration * 1000);
+            } catch (e) {
+                console.warn('Note play error:', e);
+            }
+        }
+
+        // ============================================================================
+        // PLAYBACK CONTROL
+        // ============================================================================
+        async function play() {
+            if (state.midiFiles.length === 0) return;
+            
+            await initAudio();
+            
+            const currentFile = state.midiFiles[state.currentIndex];
+            if (!currentFile) return;
+
+            state.isPlaying = true;
+            state.isPaused = false;
+            state.startTime = Tone.now();
+            state.duration = currentFile.duration;
+            
+            updateUI();
+            scheduleNotes();
+            animate();
+        }
+
+        function scheduleNotes() {
+            const currentFile = state.midiFiles[state.currentIndex];
+            if (!currentFile || !currentFile.notes) return;
+
+            // Schedule notes to play
+            currentFile.notes.forEach(noteEvent => {
+                const scheduleTime = state.startTime + noteEvent.time;
+                state.scheduledNotes.push(
+                    setTimeout(() => {
+                        if (state.isPlaying && !state.isPaused) {
+                            playNote(noteEvent.note, noteEvent.velocity, 0.5);
+                        }
+                    }, noteEvent.time * 1000)
+                );
+            });
+
+            // Auto-advance when song ends
+            state.scheduledNotes.push(
+                setTimeout(() => {
+                    if (state.isPlaying) {
+                        next();
+                    }
+                }, currentFile.duration * 1000)
+            );
+        }
+
+        function pause() {
+            if (!state.isPlaying) return;
+            
+            state.isPaused = !state.isPaused;
+            
+            if (state.isPaused) {
+                state.pauseTime = Tone.now() - state.startTime;
+                state.currentSynth?.releaseAll();
+            } else {
+                state.startTime = Tone.now() - state.pauseTime;
+            }
+            
+            updateUI();
+        }
+
+        function stop() {
+            state.isPlaying = false;
+            state.isPaused = false;
+            state.currentTime = 0;
+            state.activeNotes.clear();
+            
+            // Clear scheduled notes
+            state.scheduledNotes.forEach(timeout => clearTimeout(timeout));
+            state.scheduledNotes = [];
+            
+            if (state.currentSynth) {
+                state.currentSynth.releaseAll();
+            }
+            
+            if (state.animationFrame) {
+                cancelAnimationFrame(state.animationFrame);
+                state.animationFrame = null;
+            }
+            
+            updateUI();
+        }
+
+        function next() {
+            stop();
+            state.currentIndex = (state.currentIndex + 1) % state.midiFiles.length;
+            updatePlaylistUI();
+            setTimeout(() => play(), 100);
+        }
+
+        function prev() {
+            stop();
+            state.currentIndex = (state.currentIndex - 1 + state.midiFiles.length) % state.midiFiles.length;
+            updatePlaylistUI();
+            setTimeout(() => play(), 100);
+        }
+
+        // ============================================================================
+        // UI RENDERING
+        // ============================================================================
+        function updateUI() {
+            document.getElementById('btn-play').disabled = state.isPlaying && !state.isPaused;
+            document.getElementById('btn-pause').disabled = !state.isPlaying;
+            document.getElementById('btn-stop').disabled = !state.isPlaying;
+            document.getElementById('btn-next').disabled = state.midiFiles.length === 0;
+            document.getElementById('btn-prev').disabled = state.midiFiles.length === 0;
+        }
+
+        function updateProgress() {
+            if (!state.isPlaying || state.isPaused) return;
+            
+            state.currentTime = Tone.now() - state.startTime;
+            const progress = state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
+            
+            document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
+            document.getElementById('progress-time').textContent = 
+                formatTime(state.currentTime) + ' / ' + formatTime(state.duration);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        function animate() {
+            if (!state.isPlaying) return;
+            
+            updateProgress();
+            drawVisualizer();
+            updatePiano();
+            updateChannelMeters();
+            
+            state.animationFrame = requestAnimationFrame(animate);
+        }
+
+        // ============================================================================
+        // VISUALIZER
+        // ============================================================================
+        const canvas = document.getElementById('visualizer-canvas');
+        const ctx = canvas.getContext('2d');
+
         function resizeCanvas() {
+            const container = canvas.parentElement;
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
         }
+
+        function drawVisualizer() {
+            const w = canvas.width;
+            const h = canvas.height;
+            
+            // Clear with fade effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, w, h);
+            
+            // Draw active notes as bars
+            const noteArray = Array.from(state.activeNotes);
+            const barWidth = noteArray.length > 0 ? w / noteArray.length : 0;
+            
+            noteArray.forEach((note, i) => {
+                const x = i * barWidth;
+                const hue = (note * 7) % 360;
+                const barHeight = (note / 108) * h;
+                
+                ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = `hsl(${hue}, 100%, 50%)`;
+                ctx.fillRect(x, h - barHeight, barWidth - 2, barHeight);
+            });
+            
+            ctx.shadowBlur = 0;
+            
+            // Draw waveform effect
+            const time = Date.now() / 1000;
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let x = 0; x < w; x += 2) {
+                const y = h/2 + Math.sin(x * 0.02 + time * 2) * 20 * (state.activeNotes.size / 10);
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            
+            ctx.stroke();
+        }
+
+        // ============================================================================
+        // PIANO KEYBOARD
+        // ============================================================================
+        function createPiano() {
+            const container = document.getElementById('piano-container');
+            const width = container.clientWidth;
+            const whiteKeyWidth = width / 52;
+            
+            let whiteKeyIndex = 0;
+            
+            for (let note = 21; note <= 108; note++) {
+                const key = document.createElement('div');
+                key.className = 'piano-key';
+                key.dataset.note = note;
+                
+                const noteInOctave = note % 12;
+                const isBlack = [1, 3, 6, 8, 10].includes(noteInOctave);
+                
+                if (isBlack) {
+                    key.classList.add('black');
+                    const prevWhiteX = (whiteKeyIndex - 1) * whiteKeyWidth;
+                    key.style.left = (prevWhiteX + whiteKeyWidth - whiteKeyWidth * 0.3) + 'px';
+                    key.style.width = (whiteKeyWidth * 0.6) + 'px';
+                } else {
+                    key.classList.add('white');
+                    key.style.left = (whiteKeyIndex * whiteKeyWidth) + 'px';
+                    key.style.width = whiteKeyWidth + 'px';
+                    whiteKeyIndex++;
+                }
+                
+                key.addEventListener('mousedown', () => playNote(note));
+                container.appendChild(key);
+            }
+        }
+
+        function updatePiano() {
+            document.querySelectorAll('.piano-key').forEach(key => {
+                const note = parseInt(key.dataset.note);
+                if (state.activeNotes.has(note)) {
+                    key.classList.add('active');
+                } else {
+                    key.classList.remove('active');
+                }
+            });
+        }
+
+        // ============================================================================
+        // CHANNEL METERS
+        // ============================================================================
+        function createChannelMeters() {
+            const container = document.getElementById('channel-meters');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 16; i++) {
+                const meter = document.createElement('div');
+                meter.className = 'channel-meter';
+                meter.innerHTML = `
+                    <div class="channel-label">CH${i + 1}</div>
+                    <div class="meter-bar">
+                        <div class="meter-fill" id="meter-${i}"></div>
+                    </div>
+                `;
+                container.appendChild(meter);
+            }
+        }
+
+        function updateChannelMeters() {
+            state.channelVolumes.forEach((volume, i) => {
+                const fill = document.getElementById(`meter-${i}`);
+                if (fill) {
+                    fill.style.height = (volume * 100) + '%';
+                }
+                // Decay
+                state.channelVolumes[i] *= 0.9;
+            });
+        }
+
+        // ============================================================================
+        // PLAYLIST
+        // ============================================================================
+        function updatePlaylistUI() {
+            const playlist = document.getElementById('playlist');
+            
+            if (state.midiFiles.length === 0) {
+                playlist.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #666;">
+                        No files loaded. Click "ADD MIDI" to begin.
+                    </div>
+                `;
+                return;
+            }
+            
+            playlist.innerHTML = state.midiFiles.map((file, i) => `
+                <div class="playlist-item ${i === state.currentIndex ? 'active' : ''}" data-index="${i}">
+                    <span>${file.name}</span>
+                    <span style="color: #666;">${formatTime(file.duration)}</span>
+                </div>
+            `).join('');
+            
+            // Add click handlers
+            playlist.querySelectorAll('.playlist-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const index = parseInt(item.dataset.index);
+                    if (index !== state.currentIndex) {
+                        stop();
+                        state.currentIndex = index;
+                        updatePlaylistUI();
+                        setTimeout(() => play(), 100);
+                    }
+                });
+            });
+        }
+
+        // ============================================================================
+        // FILE HANDLING
+        // ============================================================================
+        document.getElementById('midi-upload').addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            
+            for (const file of files) {
+                try {
+                    const parsed = await parseMIDIFile(file);
+                    state.midiFiles.push(parsed);
+                    
+                    // Update info
+                    document.getElementById('info-tempo').textContent = parsed.tempo;
+                    document.getElementById('info-tracks').textContent = state.midiFiles.length;
+                    document.getElementById('info-notes').textContent = parsed.notes.length;
+                } catch (err) {
+                    console.error('Error parsing MIDI file:', err);
+                    alert('Error loading: ' + file.name);
+                }
+            }
+            
+            updatePlaylistUI();
+            updateUI();
+            
+            // Auto-play first file
+            if (state.midiFiles.length === 1 && !state.isPlaying) {
+                setTimeout(() => play(), 500);
+            }
+        });
+
+        // ============================================================================
+        // CONTROLS
+        // ============================================================================
+        document.getElementById('btn-play').addEventListener('click', play);
+        document.getElementById('btn-pause').addEventListener('click', pause);
+        document.getElementById('btn-stop').addEventListener('click', stop);
+        document.getElementById('btn-next').addEventListener('click', next);
+        document.getElementById('btn-prev').addEventListener('click', prev);
+
+        document.getElementById('volume-slider').addEventListener('input', (e) => {
+            const volume = parseInt(e.target.value);
+            document.getElementById('volume-display').textContent = volume + '%';
+            if (state.currentSynth) {
+                state.currentSynth.volume.value = (volume / 100) * 20 - 20; // -20 to 0 dB
+            }
+        });
+
+        document.getElementById('progress-container').addEventListener('click', (e) => {
+            if (!state.isPlaying) return;
+            
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percent = x / rect.width;
+            
+            // Seek (simplified - would need to reschedule notes)
+            state.currentTime = percent * state.duration;
+            state.startTime = Tone.now() - state.currentTime;
+        });
+
+        // ============================================================================
+        // INITIALIZATION
+        // ============================================================================
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-    </script>
+        createPiano();
+        createChannelMeters();
+        updateUI();
 
-    <!-- Python Logic (FIXED) -->
-    <script type="py">
-        import asyncio
-        import io
-        import mido
-        from js import document, window, Uint8Array, requestAnimationFrame, console
-        from pyodide.ffi import create_proxy
-
-        # --- Globals ---
-        canvas = document.getElementById("visualizer")
-        ctx = canvas.getContext("2d")
-        
-        midi_events = []      
-        active_keys = set()   
-        is_playing = False
-        start_time_real = 0.0
-        
-        NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-        WHITE_KEYS = [0, 2, 4, 5, 7, 9, 11]
-        PIANO_HEIGHT = 100
-        SCROLL_TIME = 2.0
-        NOTE_BAR_HEIGHT = 30
-
-        def midi_to_name(note):
-            n = NOTE_NAMES[note % 12]
-            o = (note // 12) - 1
-            return f"{n}{o}"
-
-        # --- MIDI Parsing ---
-        async def on_file_change(event):
-            global midi_events
-            file_list = event.target.files
-            if not file_list: return
-
-            file = file_list.item(0)
-            document.getElementById("status").innerText = "📀 PARSING MIDI FILE..."
-            array_buf = await file.arrayBuffer()
-            py_bytes = bytes(Uint8Array.new(array_buf))
-            
-            try:
-                # Use charset='latin1' and clip=True to handle problematic MIDI files
-                mid = mido.MidiFile(file=io.BytesIO(py_bytes), charset='latin1', clip=True)
-                midi_events = []
-                abs_time = 0.0
-                
-                console.log(f"MIDI file loaded: {len(mid.tracks)} tracks, type: {mid.type}")
-                
-                # Process each track separately to avoid merge issues
-                all_messages = []
-                for track_idx, track in enumerate(mid.tracks):
-                    track_time = 0.0
-                    for msg in track:
-                        track_time += msg.time
-                        # Only keep note messages and tempo/time signature
-                        if hasattr(msg, 'type'):
-                            if msg.type in ['note_on', 'note_off', 'set_tempo', 'time_signature']:
-                                all_messages.append({'time': track_time, 'msg': msg})
-                
-                # Sort by time
-                all_messages.sort(key=lambda x: x['time'])
-                
-                note_count = 0
-                for item in all_messages:
-                    midi_events.append({'time': item['time'], 'msg': item['msg'], 'played': False})
-                    if item['msg'].type in ['note_on', 'note_off']:
-                        note_count += 1
-                
-                console.log(f"Parsed {len(midi_events)} total events, {note_count} note events")
-                
-                if note_count == 0:
-                    document.getElementById("status").innerText = "⚠ NO NOTES FOUND IN FILE"
-                else:
-                    document.getElementById("status").innerText = f"✓ LOADED: {file.name[:30]} ({note_count} notes)"
-                    
-            except Exception as e:
-                console.log(f"MIDI parse error: {e}")
-                document.getElementById("status").innerText = f"⚠ ERROR: {str(e)[:50]}"
-
-        # --- Export Data (FIXED TO RETURN JS OBJECT) ---
-        def get_notes_for_export():
-            """Returns a plain JavaScript object with notes data"""
-            from js import Object, Array
-            
-            console.log(f"Python: get_notes_for_export called, midi_events length: {len(midi_events)}")
-            
-            if not midi_events:
-                console.log("Python: No MIDI events found")
-                return {"duration": 0, "notes": []}
-
-            notes = []
-            active_notes = {} 
-            total_time = 0
-
-            for evt in midi_events:
-                abs_time = evt['time']
-                msg = evt['msg']
-                total_time = max(total_time, abs_time)
-                
-                # Check if msg has the required attributes
-                if hasattr(msg, 'type') and hasattr(msg, 'note'):
-                    if msg.type == 'note_on' and msg.velocity > 0:
-                        active_notes[msg.note] = {'start': abs_time, 'vel': msg.velocity / 127.0}
-                    elif (msg.type == 'note_off') or (msg.type == 'note_on' and msg.velocity == 0):
-                        if msg.note in active_notes:
-                            start_data = active_notes.pop(msg.note)
-                            duration = abs_time - start_data['start']
-                            if duration > 0:  # Only add notes with positive duration
-                                note_obj = Object.new()
-                                note_obj.note = midi_to_name(msg.note)
-                                note_obj.time = start_data['start']
-                                note_obj.duration = duration
-                                note_obj.velocity = start_data['vel']
-                                notes.append(note_obj)
-            
-            console.log(f"Python: Created {len(notes)} note objects")
-            
-            # Create JS object explicitly
-            result = Object.new()
-            result.duration = total_time
-            result.notes = notes
-            
-            console.log(f"Python: Returning object with {len(notes)} notes, duration {total_time}")
-            return result
-
-        # Expose the function to JavaScript
-        window.py_get_notes = create_proxy(get_notes_for_export)
-
-        # --- Visualizer ---
-        def get_piano_layout(screen_width):
-            total_white_keys = 52
-            key_width = screen_width / total_white_keys
-            keys = {} 
-            white_key_index = 0
-            for note in range(21, 109):
-                octave_idx = note % 12
-                is_black = octave_idx not in WHITE_KEYS
-                if not is_black:
-                    x = white_key_index * key_width
-                    keys[note] = {'x': x, 'w': key_width, 'black': False, 'h': PIANO_HEIGHT}
-                    white_key_index += 1
-                else:
-                    prev_white_x = (white_key_index - 1) * key_width
-                    b_w = key_width * 0.6
-                    x = (prev_white_x + key_width) - (b_w / 2)
-                    keys[note] = {'x': x, 'w': b_w, 'black': True, 'h': PIANO_HEIGHT * 0.65}
-            return keys
-
-        def animation_frame(timestamp):
-            if is_playing:
-                update_and_draw()
-                requestAnimationFrame(create_proxy(animation_frame))
-
-        def update_and_draw():
-            global is_playing, active_keys
-            now = window.performance.now() / 1000.0
-            song_time = now - start_time_real
-            
-            w = canvas.width
-            h = canvas.height
-            key_layout = get_piano_layout(w)
-            
-            # Cosmic background
-            ctx.fillStyle = "#000000"
-            ctx.fillRect(0, 0, w, h)
-            
-            fall_height_area = h - PIANO_HEIGHT
-            
-            # Draw falling notes and trigger audio on contact
-            for idx, evt in enumerate(midi_events):
-                evt_time = evt['time']
-                msg = evt['msg']
-                time_diff = evt_time - song_time
-                
-                if time_diff < SCROLL_TIME and msg.type == 'note_on' and msg.velocity > 0:
-                    note = msg.note
-                    if note in key_layout:
-                        k = key_layout[note]
-                        y_pos_top = (1 - (time_diff / SCROLL_TIME)) * fall_height_area 
-                        y_pos_bottom = y_pos_top + NOTE_BAR_HEIGHT
-
-                        hue = (note * 7) % 360
-                        
-                        # Draw note with glow
-                        ctx.fillStyle = f"hsl({hue}, 100%, 60%)"
-                        ctx.shadowBlur = 15
-                        ctx.shadowColor = f"hsl({hue}, 100%, 50%)"
-                        ctx.fillRect(k['x'], y_pos_top, k['w'], NOTE_BAR_HEIGHT)
-                        ctx.shadowBlur = 0
-
-                        # Trigger audio on contact
-                        if not evt['played'] and y_pos_bottom >= fall_height_area:
-                            window.js_play_note_on_contact(midi_to_name(note), 2.0)
-                            active_keys.add(note)
-                            evt['played'] = True
-
-                # Note offs
-                if time_diff < 0 and (msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0)):
-                    if msg.note in active_keys: 
-                        active_keys.remove(msg.note)
-
-            # Draw white keys
-            for note in range(21, 109):
-                if note not in key_layout: continue
-                k = key_layout[note]
-                if not k['black']:
-                    is_active = note in active_keys
-                    
-                    if is_active:
-                        ctx.fillStyle = "#00ff00"
-                        ctx.shadowBlur = 20
-                        ctx.shadowColor = "#00ff00"
-                    else:
-                        ctx.fillStyle = "#e0e0e0"
-                        ctx.shadowBlur = 0
-                    
-                    ctx.fillRect(k['x'], h - k['h'], k['w'], k['h'])
-                    
-                    ctx.strokeStyle = "#000000"
-                    ctx.lineWidth = 2
-                    ctx.strokeRect(k['x'], h - k['h'], k['w'], k['h'])
-                    ctx.shadowBlur = 0
-
-            # Draw black keys
-            for note in range(21, 109):
-                if note not in key_layout: continue
-                k = key_layout[note]
-                if k['black']:
-                    is_active = note in active_keys
-                    
-                    if is_active:
-                        ctx.fillStyle = "#ff00ff"
-                        ctx.shadowBlur = 20
-                        ctx.shadowColor = "#ff00ff"
-                    else:
-                        ctx.fillStyle = "#1a1a1a"
-                        ctx.shadowBlur = 0
-                    
-                    ctx.fillRect(k['x'], h - PIANO_HEIGHT, k['w'], k['h'])
-                    
-                    ctx.strokeStyle = "#00ff00"
-                    ctx.lineWidth = 1
-                    ctx.strokeRect(k['x'], h - PIANO_HEIGHT, k['w'], k['h'])
-                    ctx.shadowBlur = 0
-
-        async def play_midi(event):
-            global is_playing, start_time_real, active_keys
-            if not midi_events: return
-
-            await window.initAudio()
-            active_keys.clear()
-            
-            for evt in midi_events:
-                evt['played'] = False
-
-            is_playing = True
-            start_time_real = window.performance.now() / 1000.0
-            
-            document.getElementById("btn-play").disabled = True
-            document.getElementById("btn-stop").disabled = False
-            document.getElementById("status").innerText = "▶ NOW PLAYING!"
-            requestAnimationFrame(create_proxy(animation_frame))
-
-        def stop_midi(event):
-            global is_playing
-            is_playing = False
-            window.js_stop_all()
-            document.getElementById("btn-play").disabled = False
-            document.getElementById("btn-stop").disabled = True
-            document.getElementById("status").innerText = "⏹ STOPPED"
-            
-            w = canvas.width
-            h = canvas.height
-            ctx.fillStyle = "#000000"
-            ctx.fillRect(0, 0, w, h - PIANO_HEIGHT)
-            update_and_draw()
-            active_keys.clear()
-
-        document.getElementById("midi-upload").addEventListener("change", create_proxy(on_file_change))
-        document.getElementById("btn-play").addEventListener("click", create_proxy(play_midi))
-        document.getElementById("btn-stop").addEventListener("click", create_proxy(stop_midi))
-        document.getElementById("status").innerText = "► READY TO JAM ◄"
+        // Start animation loop for visuals even when not playing
+        function idleAnimate() {
+            if (!state.isPlaying) {
+                drawVisualizer();
+            }
+            requestAnimationFrame(idleAnimate);
+        }
+        idleAnimate();
     </script>
 </body>
 </html>
