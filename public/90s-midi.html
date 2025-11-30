@@ -1,699 +1,993 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ RADWAVE SYNTH PRO 95 ⚡</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>⚡ RADWAVE SYNTH 95 ⚡</title>
+
+```
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/midi-parser-js@4.0.4/src/midi-parser.min.js"></script>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700&display=swap');
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <!-- MIDI Parser -->
-    <script src="https://cdn.jsdelivr.net/npm/midi-parser-js@4.0.4/src/midi-parser.min.js"></script>
+    * { 
+        box-sizing: border-box; 
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    
+    /* Color scheme variables */
+    :root {
+        --bg-primary: #1a0033;
+        --bg-secondary: #0d001a;
+        --bg-tertiary: #330033;
+        --text-primary: #00ff00;
+        --text-secondary: #00ffff;
+        --text-accent: #ff00ff;
+        --border-primary: #00ff00;
+        --border-secondary: #00ffff;
+        --window-bg: rgba(0, 0, 0, 0.85);
+        --scanline-color: rgba(0, 255, 0, 0.15);
+        --glow-color: rgba(0, 255, 0, 0.5);
+    }
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
-        
-        * { box-sizing: border-box; }
-        
-        body { 
-            background: linear-gradient(135deg, #1a0033 0%, #0d001a 25%, #330033 50%, #0d001a 75%, #1a0033 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 20s ease infinite;
-            color: #00ff00;
-            font-family: 'VT323', monospace;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
+    /* Light Mode (90s Windows vibe) */
+    body.light-mode {
+        --bg-primary: #008080;
+        --bg-secondary: #c0c0c0;
+        --bg-tertiary: #000080;
+        --text-primary: #000080;
+        --text-secondary: #800080;
+        --text-accent: #ff00ff;
+        --border-primary: #000000;
+        --border-secondary: #808080;
+        --window-bg: rgba(192, 192, 192, 0.95);
+        --scanline-color: rgba(255, 255, 255, 0.1);
+        --glow-color: rgba(255, 0, 255, 0.3);
+    }
 
-        @keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100vh); }
-        }
+    /* Dark Mode (Cyberpunk aesthetic) */
+    body.dark-mode {
+        --bg-primary: #0a0a1e;
+        --bg-secondary: #050510;
+        --bg-tertiary: #1a1a3e;
+        --text-primary: #00d9ff;
+        --text-secondary: #b388ff;
+        --text-accent: #ff00ff;
+        --border-primary: #00d9ff;
+        --border-secondary: #7b2cbf;
+        --window-bg: rgba(10, 10, 30, 0.95);
+        --scanline-color: rgba(0, 217, 255, 0.1);
+        --glow-color: rgba(0, 217, 255, 0.6);
+    }
+    
+    body { 
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%, var(--bg-primary) 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
+        color: var(--text-primary);
+        font-family: 'VT323', monospace;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
 
-        @keyframes blink {
-            0%, 50%, 100% { opacity: 1; }
-            25%, 75% { opacity: 0.4; }
-        }
+    body.dark-mode {
+        font-family: 'VT323', monospace;
+    }
 
-        @keyframes rainbow {
-            to { background-position: 200% center; }
-        }
+    body.light-mode {
+        font-family: 'VT323', monospace;
+        background: var(--bg-secondary);
+    }
+    
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
 
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
-            50% { text-shadow: 0 0 20px currentColor, 0 0 40px currentColor; }
-        }
+    @keyframes scanline {
+        0% { transform: translateY(-100%); }
+        100% { transform: translateY(100vh); }
+    }
 
-        .scanline {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: rgba(0, 255, 0, 0.15);
-            animation: scanline 10s linear infinite;
-            pointer-events: none;
-            z-index: 9999;
-        }
+    @keyframes vcr-flicker {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.98; }
+    }
 
+    @keyframes vcr-jitter {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-0.5px); }
+        40% { transform: translateX(0.5px); }
+        60% { transform: translateX(-0.5px); }
+        80% { transform: translateX(0.5px); }
+    }
+
+    @keyframes vcr-tracking {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 0% 100%; }
+    }
+
+    .scanline {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--scanline-color);
+        animation: scanline 8s linear infinite;
+        pointer-events: none;
+        z-index: 9999;
+    }
+
+    body.dark-mode .scanline {
+        height: 2px;
+        box-shadow: 0 0 10px var(--glow-color);
+    }
+
+    .container {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 8px;
+        gap: 8px;
+    }
+
+    @media (min-width: 768px) {
         .container {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
             padding: 10px;
             gap: 10px;
         }
+    }
 
-        /* Window styling */
-        .window {
-            background: rgba(0, 0, 0, 0.85);
-            border: 3px solid;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
+    /* Window styling */
+    .window {
+        background: var(--window-bg);
+        border: 3px solid var(--border-primary);
+        border-radius: 8px;
+        box-shadow: 0 0 20px var(--glow-color);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
 
-        .window-cyan { border-color: #00ffff; }
-        .window-magenta { border-color: #ff00ff; }
-        .window-yellow { border-color: #ffff00; }
-        .window-green { border-color: #00ff00; }
+    body.light-mode .window {
+        border-style: outset;
+        box-shadow: 3px 3px 0 #000, -1px -1px 0 #fff;
+    }
 
+    body.dark-mode .window {
+        box-shadow: 0 0 30px var(--glow-color), 0 8px 32px rgba(0, 0, 0, 0.6);
+        border-width: 2px;
+    }
+
+    .window-header {
+        background: linear-gradient(90deg, var(--text-accent), var(--text-secondary), var(--text-primary), var(--text-secondary), var(--text-accent));
+        background-size: 200% auto;
+        animation: rainbow 4s linear infinite;
+        padding: 6px 10px;
+        font-family: 'Press Start 2P', cursive;
+        font-size: 0.6rem;
+        color: #000;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        border-bottom: 2px solid var(--border-primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    @media (min-width: 768px) {
         .window-header {
-            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #00ffff, #ff00ff);
-            background-size: 200% auto;
-            animation: rainbow 4s linear infinite;
             padding: 8px 12px;
-            font-family: 'Press Start 2P', cursive;
             font-size: 0.75rem;
-            color: #000;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
-            border-bottom: 2px solid #00ff00;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
+    }
 
+    body.light-mode .window-header {
+        background: linear-gradient(to bottom, #fff, #c0c0c0);
+        color: #000;
+        border-bottom: 2px solid #808080;
+        animation: none;
+    }
+
+    body.dark-mode .window-header {
+        background: linear-gradient(135deg, #1a1a3e, #0a0a1e);
+        color: var(--text-primary);
+        text-shadow: 0 0 10px var(--glow-color);
+        border-bottom: 2px solid var(--border-primary);
+        animation: none;
+        box-shadow: 0 2px 10px rgba(0, 217, 255, 0.3);
+    }
+
+    @keyframes rainbow {
+        to { background-position: 200% center; }
+    }
+
+    .window-body {
+        padding: 10px;
+    }
+
+    @media (min-width: 768px) {
         .window-body {
             padding: 12px;
         }
+    }
 
-        /* Button styles */
+    /* Button styles */
+    .btn {
+        padding: 8px 12px;
+        border: 3px solid;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 900;
+        font-family: 'VT323', monospace;
+        transition: all 0.15s;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+        position: relative;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    @media (min-width: 768px) {
         .btn {
             padding: 8px 16px;
-            border: 3px solid;
-            border-radius: 6px;
-            cursor: pointer;
             font-size: 1rem;
-            font-weight: 900;
-            font-family: 'VT323', monospace;
-            transition: all 0.15s;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
-            position: relative;
-            overflow: hidden;
         }
+    }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.8);
-        }
+    body.dark-mode .btn {
+        font-family: 'VT323', monospace;
+        text-shadow: 0 0 8px currentColor;
+    }
 
-        .btn:active {
-            transform: translateY(0);
-        }
+    .btn:active {
+        transform: scale(0.95);
+    }
 
-        .btn-cyan {
-            background: linear-gradient(135deg, #0088ff, #00ffff);
-            border-color: #00ffff;
-            color: #000;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
-        }
+    .btn-cyan {
+        background: linear-gradient(135deg, #0088ff, #00ffff);
+        border-color: #00ffff;
+        color: #000;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    }
 
-        .btn-magenta {
-            background: linear-gradient(135deg, #ff00ff, #ff0088);
-            border-color: #ff00ff;
-            color: #000;
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
-        }
+    .btn-magenta {
+        background: linear-gradient(135deg, #ff00ff, #ff0088);
+        border-color: #ff00ff;
+        color: #000;
+        box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
+    }
 
-        .btn-green {
-            background: linear-gradient(135deg, #00ff00, #00cc00);
-            border-color: #00ff00;
-            color: #000;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
-        }
+    .btn-green {
+        background: linear-gradient(135deg, #00ff00, #00cc00);
+        border-color: #00ff00;
+        color: #000;
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+    }
 
-        .btn-yellow {
-            background: linear-gradient(135deg, #ffff00, #ffcc00);
-            border-color: #ffff00;
-            color: #000;
-            box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
-        }
+    .btn-yellow {
+        background: linear-gradient(135deg, #ffff00, #ffcc00);
+        border-color: #ffff00;
+        color: #000;
+        box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
+    }
 
-        .btn-red {
-            background: linear-gradient(135deg, #ff0066, #ff0000);
-            border-color: #ff00ff;
-            color: #fff;
-            box-shadow: 0 0 15px rgba(255, 0, 100, 0.6);
-        }
+    .btn-red {
+        background: linear-gradient(135deg, #ff0066, #ff0000);
+        border-color: #ff00ff;
+        color: #fff;
+        box-shadow: 0 0 15px rgba(255, 0, 100, 0.6);
+    }
 
-        .btn-premium {
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-            border-color: #ffff00;
-            color: #000;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-            animation: glow 2s infinite;
-        }
+    body.light-mode .btn {
+        border-style: outset;
+        box-shadow: 2px 2px 0 #000, -1px -1px 0 #fff;
+        text-shadow: none;
+    }
 
-        .btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            filter: grayscale(80%);
-        }
+    body.dark-mode .btn-cyan {
+        background: linear-gradient(135deg, #00d9ff, #0088cc);
+        border-color: #00d9ff;
+        color: #000;
+        box-shadow: 0 0 20px rgba(0, 217, 255, 0.7), 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
 
-        /* Visualizer */
-        #visualizer-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            background: #000;
-        }
+    body.dark-mode .btn-green {
+        background: linear-gradient(135deg, #00ff88, #00cc66);
+        border-color: #00ff88;
+        color: #000;
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
 
-        /* Piano keyboard */
+    body.dark-mode .btn-yellow {
+        background: linear-gradient(135deg, #b388ff, #7b2cbf);
+        border-color: #b388ff;
+        color: #000;
+        box-shadow: 0 0 20px rgba(179, 136, 255, 0.7), 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    body.dark-mode .btn-red {
+        background: linear-gradient(135deg, #ff00ff, #cc00cc);
+        border-color: #ff00ff;
+        color: #fff;
+        box-shadow: 0 0 20px rgba(255, 0, 255, 0.7), 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    body.dark-mode .btn-magenta {
+        background: linear-gradient(135deg, #ff00ff, #b388ff);
+        border-color: #ff00ff;
+        color: #000;
+        box-shadow: 0 0 20px rgba(255, 0, 255, 0.7), 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        filter: grayscale(80%);
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+    }
+
+    .theme-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        border: 2px solid var(--border-primary);
+        background: var(--window-bg);
+        color: var(--text-primary);
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+
+    .theme-btn.active {
+        background: var(--text-primary);
+        color: #000;
+        font-weight: bold;
+    }
+
+    /* Visualizer */
+    #visualizer-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: #000;
+    }
+
+    /* Piano keyboard */
+    .piano-container {
+        height: 80px;
+        position: relative;
+        background: #000;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    @media (min-width: 768px) {
         .piano-container {
             height: 120px;
-            position: relative;
-            background: #000;
-        }
-
-        .piano-key {
-            position: absolute;
-            bottom: 0;
-            cursor: pointer;
-            transition: all 0.05s;
-        }
-
-        .piano-key.white {
-            background: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
-            border: 2px solid #000;
-            border-radius: 0 0 4px 4px;
-            height: 100%;
-        }
-
-        .piano-key.black {
-            background: linear-gradient(to bottom, #333 0%, #000 100%);
-            border: 2px solid #000;
-            border-radius: 0 0 3px 3px;
-            height: 65%;
-            z-index: 10;
-        }
-
-        .piano-key.active.white {
-            background: linear-gradient(to bottom, #00ff00 0%, #00cc00 100%);
-            box-shadow: 0 0 20px #00ff00;
-        }
-
-        .piano-key.active.black {
-            background: linear-gradient(to bottom, #ff00ff 0%, #cc00cc 100%);
-            box-shadow: 0 0 20px #ff00ff;
-        }
-
-        /* Channel meters */
-        .channel-meters {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 4px;
-            height: 100%;
-        }
-
-        .channel-meter {
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #00ffff;
-            border-radius: 4px;
-            padding: 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .channel-label {
-            font-size: 0.7rem;
-            color: #00ffff;
-            text-shadow: 0 0 5px #00ffff;
-        }
-
-        .meter-bar {
-            flex: 1;
-            width: 100%;
-            background: rgba(0, 50, 50, 0.5);
-            border: 1px solid #006666;
-            border-radius: 2px;
-            position: relative;
             overflow: hidden;
         }
+    }
 
-        .meter-fill {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, #00ff00, #ffff00, #ff0000);
-            transition: height 0.1s;
-            height: 0%;
+    .piano-key {
+        position: absolute;
+        bottom: 0;
+        cursor: pointer;
+        transition: all 0.05s;
+        user-select: none;
+    }
+
+    .piano-key.white {
+        background: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
+        border: 2px solid #000;
+        border-radius: 0 0 4px 4px;
+        height: 100%;
+    }
+
+    .piano-key.black {
+        background: linear-gradient(to bottom, #333 0%, #000 100%);
+        border: 2px solid #000;
+        border-radius: 0 0 3px 3px;
+        height: 65%;
+        z-index: 10;
+    }
+
+    .piano-key.active.white {
+        background: linear-gradient(to bottom, var(--text-primary) 0%, var(--text-secondary) 100%);
+        box-shadow: 0 0 20px var(--glow-color);
+    }
+
+    .piano-key.active.black {
+        background: linear-gradient(to bottom, var(--text-accent) 0%, var(--text-secondary) 100%);
+        box-shadow: 0 0 20px var(--glow-color);
+    }
+
+    /* Channel meters */
+    .channel-meters {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 4px;
+        height: 100%;
+    }
+
+    @media (max-width: 767px) {
+        .channel-meters {
+            grid-template-columns: repeat(4, 1fr);
         }
+    }
 
-        /* Playlist */
+    .channel-meter {
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid var(--border-secondary);
+        border-radius: 4px;
+        padding: 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .channel-label {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        text-shadow: 0 0 5px var(--text-secondary);
+    }
+
+    .meter-bar {
+        flex: 1;
+        width: 100%;
+        background: rgba(0, 50, 50, 0.5);
+        border: 1px solid #006666;
+        border-radius: 2px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    body.dark-mode .meter-bar {
+        background: rgba(50, 0, 0, 0.5);
+        border-color: #660000;
+    }
+
+    .meter-fill {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, var(--text-primary), var(--text-secondary), var(--text-accent));
+        transition: height 0.1s;
+        height: 0%;
+    }
+
+    /* Playlist */
+    .playlist {
+        max-height: 150px;
+        overflow-y: auto;
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid var(--border-secondary);
+        border-radius: 4px;
+    }
+
+    @media (min-width: 768px) {
         .playlist {
             max-height: 200px;
-            overflow-y: auto;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #00ffff;
-            border-radius: 4px;
         }
+    }
 
-        .playlist-item {
-            padding: 8px 12px;
-            border-bottom: 1px solid #003333;
-            cursor: pointer;
-            transition: all 0.15s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .playlist-item {
+        padding: 8px 12px;
+        border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+    }
 
-        .playlist-item:hover {
-            background: rgba(0, 255, 255, 0.2);
-        }
+    .playlist-item:hover {
+        background: rgba(0, 255, 255, 0.2);
+    }
 
-        .playlist-item.active {
-            background: rgba(0, 255, 0, 0.3);
-            color: #00ff00;
-            font-weight: bold;
-        }
+    .playlist-item.active {
+        background: rgba(0, 255, 0, 0.3);
+        color: var(--text-primary);
+        font-weight: bold;
+    }
 
-        /* Progress bar */
+    /* Progress bar */
+    .progress-container {
+        width: 100%;
+        height: 25px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid var(--text-accent);
+        border-radius: 4px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
         .progress-container {
-            width: 100%;
             height: 30px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #ff00ff;
-            border-radius: 4px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
         }
+    }
 
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #00ff00, #00ffff, #ff00ff);
-            width: 0%;
-            transition: width 0.1s linear;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-        }
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--text-primary), var(--text-secondary), var(--text-accent));
+        width: 0%;
+        transition: width 0.1s linear;
+        box-shadow: 0 0 10px var(--glow-color);
+    }
 
-        .progress-time {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.9rem;
-            color: #fff;
-            text-shadow: 0 0 5px #000, 0 0 10px #000;
-            pointer-events: none;
-        }
+    .progress-time {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.8rem;
+        color: #fff;
+        text-shadow: 0 0 5px #000, 0 0 10px #000;
+        pointer-events: none;
+    }
 
-        /* Slider */
-        input[type="range"] {
-            width: 100%;
-            height: 30px;
-            -webkit-appearance: none;
-            background: transparent;
-        }
+    body.dark-mode .progress-time {
+        color: var(--text-primary);
+        text-shadow: 0 0 10px var(--text-primary);
+    }
 
-        input[type="range"]::-webkit-slider-track {
-            height: 10px;
-            background: linear-gradient(90deg, #000, #333);
-            border: 2px solid #00ffff;
-            border-radius: 5px;
-        }
+    /* Slider */
+    input[type="range"] {
+        width: 100%;
+        height: 25px;
+        -webkit-appearance: none;
+        background: transparent;
+    }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, #ff00ff, #00ffff);
-            border: 2px solid #ffff00;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
-        }
+    input[type="range"]::-webkit-slider-track {
+        height: 8px;
+        background: linear-gradient(90deg, #000, #333);
+        border: 2px solid var(--border-secondary);
+        border-radius: 5px;
+    }
 
-        input[type="range"]::-moz-range-track {
-            height: 10px;
-            background: linear-gradient(90deg, #000, #333);
-            border: 2px solid #00ffff;
-            border-radius: 5px;
-        }
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, var(--text-accent), var(--text-secondary));
+        border: 2px solid var(--text-primary);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 10px var(--glow-color);
+    }
 
-        input[type="range"]::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, #ff00ff, #00ffff);
-            border: 2px solid #ffff00;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
-        }
+    input[type="range"]::-moz-range-track {
+        height: 8px;
+        background: linear-gradient(90deg, #000, #333);
+        border: 2px solid var(--border-secondary);
+        border-radius: 5px;
+    }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 12px;
-        }
+    input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, var(--text-accent), var(--text-secondary));
+        border: 2px solid var(--text-primary);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 10px var(--glow-color);
+    }
 
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #00ffff;
-        }
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
 
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #ff00ff, #00ffff);
-            border: 1px solid #000;
-            border-radius: 6px;
-        }
+    ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--border-secondary);
+    }
 
-        /* Info display */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--text-accent), var(--text-secondary));
+        border: 1px solid #000;
+        border-radius: 6px;
+    }
 
-        .info-box {
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #ffff00;
-            border-radius: 4px;
-            padding: 8px;
-            text-align: center;
-        }
+    /* Info display */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
 
-        .info-label {
-            font-size: 0.8rem;
-            color: #ffff00;
-            margin-bottom: 4px;
-        }
+    .info-box {
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid var(--text-primary);
+        border-radius: 4px;
+        padding: 6px;
+        text-align: center;
+    }
 
+    .info-label {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        color: var(--text-primary);
+        text-shadow: 0 0 5px var(--glow-color);
+    }
+
+    @media (min-width: 768px) {
         .info-value {
             font-size: 1.2rem;
-            color: #00ff00;
-            text-shadow: 0 0 5px #00ff00;
         }
+    }
 
-        /* Lyrics display */
+    /* Lyrics display */
+    .lyrics-display {
+        height: 60px;
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid var(--text-accent);
+        border-radius: 4px;
+        padding: 8px;
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-shadow: 0 0 10px var(--text-secondary);
+        overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
         .lyrics-display {
             height: 80px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #ff00ff;
-            border-radius: 4px;
-            padding: 10px;
             font-size: 1.3rem;
-            color: #00ffff;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-shadow: 0 0 10px #00ffff;
-            overflow: hidden;
         }
+    }
 
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 10px;
-        }
+    /* FX Controls */
+    .fx-control {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+    }
 
-        /* FX Controls */
-        .fx-control {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
+    .fx-label {
+        min-width: 70px;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
 
-        .fx-label {
-            min-width: 80px;
-            color: #00ffff;
-            font-size: 0.9rem;
-        }
+    /* Select */
+    select {
+        background: rgba(0, 0, 0, 0.7);
+        color: var(--text-primary);
+        border: 2px solid var(--border-secondary);
+        border-radius: 4px;
+        padding: 6px;
+        font-family: 'VT323', monospace;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
 
-        /* Preset selector */
-        select {
-            background: rgba(0, 0, 0, 0.7);
-            color: #00ff00;
-            border: 2px solid #00ffff;
-            border-radius: 4px;
-            padding: 6px;
-            font-family: 'VT323', monospace;
-            font-size: 1rem;
-            cursor: pointer;
-        }
+    body.dark-mode select {
+        font-family: 'Orbitron', monospace;
+    }
 
-        select option {
-            background: #000;
+    select option {
+        background: #000;
+    }
+
+    /* Mobile responsive grid */
+    .grid-desktop {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 10px;
+    }
+
+    @media (max-width: 767px) {
+        .grid-desktop {
+            grid-template-columns: 1fr;
         }
-    </style>
+        
+        .mobile-hide {
+            display: none !important;
+        }
+    }
+
+    /* Loading indicator */
+    .loading {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid var(--text-primary);
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+```
+
 </head>
 <body>
     <div class="scanline"></div>
-    
-    <div class="container">
-        <!-- Top bar -->
-        <div class="window window-cyan" style="flex-shrink: 0;">
-            <div class="window-header">
-                <span>⚡ RADWAVE SYNTH PRO 95 ⚡</span>
-                <span style="font-size: 0.6rem;">PROFESSIONAL EDITION</span>
+
+```
+<div class="container">
+    <!-- Top bar -->
+    <div class="window" style="flex-shrink: 0;">
+        <div class="window-header">
+            <span>⚡ RADWAVE SYNTH 95 ⚡</span>
+            <div class="theme-toggle">
+                <button class="theme-btn" onclick="setTheme('default')" id="theme-default">💚</button>
+                <button class="theme-btn" onclick="setTheme('light')" id="theme-light">☀️</button>
+                <button class="theme-btn" onclick="setTheme('dark')" id="theme-dark">🌙</button>
             </div>
-            <div class="window-body">
-                <div class="flex gap-3 items-center justify-between flex-wrap">
-                    <div class="flex gap-2">
-                        <label class="btn btn-cyan">
-                            <input type="file" id="midi-upload" accept=".mid,.midi" multiple style="display:none">
-                            📂 ADD MIDI
-                        </label>
-                        <button id="btn-play" class="btn btn-green">▶ PLAY</button>
-                        <button id="btn-pause" class="btn btn-yellow">⏸ PAUSE</button>
-                        <button id="btn-stop" class="btn btn-red">⏹ STOP</button>
-                    </div>
-                    
-                    <div class="flex gap-2 items-center">
-                        <span style="color: #00ffff;">VOL:</span>
-                        <input type="range" id="volume-slider" min="0" max="100" value="70" style="width: 120px;">
-                        <span id="volume-display" style="color: #00ff00; min-width: 40px;">70%</span>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button id="btn-download-wav" class="btn btn-premium">💾 SAVE WAV</button>
-                        <button id="btn-prev" class="btn btn-magenta">⏮ PREV</button>
-                        <button id="btn-next" class="btn btn-magenta">⏭ NEXT</button>
-                    </div>
+        </div>
+        <div class="window-body">
+            <div class="flex gap-2 items-center justify-between flex-wrap" style="margin-bottom: 8px;">
+                <div class="flex gap-2 flex-wrap">
+                    <label class="btn btn-cyan">
+                        <input type="file" id="midi-upload" accept=".mid,.midi" multiple style="display:none">
+                        📂 <span class="mobile-hide">ADD </span>MIDI
+                    </label>
+                    <button id="btn-play" class="btn btn-green">▶</button>
+                    <button id="btn-pause" class="btn btn-yellow">⏸</button>
+                    <button id="btn-stop" class="btn btn-red">⏹</button>
                 </div>
+                
+                <div class="flex gap-2 items-center">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">VOL:</span>
+                    <input type="range" id="volume-slider" min="0" max="100" value="70" style="width: 80px;">
+                    <span id="volume-display" style="color: var(--text-primary); min-width: 35px; font-size: 0.85rem;">70%</span>
+                </div>
+            </div>
 
-                <!-- Progress bar -->
-                <div class="progress-container mt-3" id="progress-container">
-                    <div class="progress-bar" id="progress-bar"></div>
-                    <div class="progress-time" id="progress-time">0:00 / 0:00</div>
+            <div class="flex gap-2 flex-wrap" style="margin-bottom: 8px;">
+                <button id="btn-download-wav" class="btn btn-magenta">💾 <span class="mobile-hide">SAVE </span>WAV</button>
+                <button id="btn-prev" class="btn btn-cyan">⏮</button>
+                <button id="btn-next" class="btn btn-cyan">⏭</button>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+                <div class="progress-time" id="progress-time">0:00 / 0:00</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content area -->
+    <div class="grid-desktop" style="flex: 1; min-height: 0;">
+        <!-- Left column -->
+        <div style="display: flex; flex-direction: column; gap: 8px; min-height: 0;">
+            <!-- Visualizer -->
+            <div class="window" style="flex: 1; min-height: 200px;">
+                <div class="window-header">
+                    🌊 VISUALIZER
+                    <select id="viz-mode" style="font-size: 0.6rem; padding: 2px 4px;">
+                        <option value="bars">BARS</option>
+                        <option value="wave">WAVE</option>
+                        <option value="particles">PARTICLES</option>
+                        <option value="oscilloscope">SCOPE</option>
+                    </select>
+                </div>
+                <div class="window-body" style="padding: 0; height: calc(100% - 35px);">
+                    <canvas id="visualizer-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Piano keyboard -->
+            <div class="window" style="flex-shrink: 0;">
+                <div class="window-header">🎹 KEYBOARD</div>
+                <div class="window-body" style="padding: 0;">
+                    <div class="piano-container" id="piano-container"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Main content area -->
-        <div class="grid-3" style="flex: 1; min-height: 0;">
-            <!-- Left column -->
-            <div style="display: flex; flex-direction: column; gap: 10px; min-height: 0;">
-                <!-- Visualizer -->
-                <div class="window window-magenta" style="flex: 1; min-height: 0;">
-                    <div class="window-header">
-                        🌊 WAVEFORM VISUALIZER
-                        <select id="viz-mode" style="font-size: 0.6rem; padding: 2px 4px;">
-                            <option value="bars">BARS</option>
-                            <option value="wave">WAVE</option>
-                            <option value="particles">PARTICLES</option>
-                            <option value="oscilloscope">SCOPE</option>
-                        </select>
-                    </div>
-                    <div class="window-body" style="padding: 0; height: calc(100% - 40px);">
-                        <canvas id="visualizer-canvas"></canvas>
-                    </div>
-                </div>
-
-                <!-- Piano keyboard -->
-                <div class="window window-green" style="flex-shrink: 0;">
-                    <div class="window-header">🎹 VIRTUAL KEYBOARD</div>
-                    <div class="window-body" style="padding: 0;">
-                        <div class="piano-container" id="piano-container"></div>
+        <!-- Right column -->
+        <div style="display: flex; flex-direction: column; gap: 8px; min-height: 0;">
+            <!-- Info panel -->
+            <div class="window" style="flex-shrink: 0;">
+                <div class="window-header">📊 INFO</div>
+                <div class="window-body">
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <div class="info-label">BPM</div>
+                            <div class="info-value" id="info-tempo">120</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-label">TRACKS</div>
+                            <div class="info-value" id="info-tracks">0</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-label">NOTES</div>
+                            <div class="info-value" id="info-notes">0</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right column -->
-            <div style="display: flex; flex-direction: column; gap: 10px; min-height: 0;">
-                <!-- Info panel -->
-                <div class="window window-yellow" style="flex-shrink: 0;">
-                    <div class="window-header">📊 TRACK INFO</div>
-                    <div class="window-body">
-                        <div class="info-grid">
-                            <div class="info-box">
-                                <div class="info-label">TEMPO</div>
-                                <div class="info-value" id="info-tempo">120</div>
-                            </div>
-                            <div class="info-box">
-                                <div class="info-label">TRACKS</div>
-                                <div class="info-value" id="info-tracks">0</div>
-                            </div>
-                            <div class="info-box">
-                                <div class="info-label">NOTES</div>
-                                <div class="info-value" id="info-notes">0</div>
-                            </div>
-                        </div>
+            <!-- FX Panel -->
+            <div class="window" style="flex-shrink: 0;">
+                <div class="window-header">🎛️ INSTRUMENT</div>
+                <div class="window-body">
+                    <select id="instrument-select" style="width: 100%; margin-bottom: 6px;">
+                        <option value="piano">🎹 Piano</option>
+                        <option value="synth">🌌 Synth</option>
+                        <option value="electric">⚡ Electric</option>
+                        <option value="organ">🎺 Organ</option>
+                        <option value="guitar">🎸 Guitar</option>
+                        <option value="bass">🎵 Bass</option>
+                        <option value="strings">🎻 Strings</option>
+                        <option value="choir">👼 Choir</option>
+                    </select>
+                    <div class="fx-control">
+                        <span class="fx-label">REVERB:</span>
+                        <input type="range" id="fx-reverb" min="0" max="100" value="20">
                     </div>
                 </div>
+            </div>
 
-                <!-- FX Panel -->
-                <div class="window window-cyan" style="flex-shrink: 0;">
-                    <div class="window-header">🎛️ INSTRUMENT</div>
-                    <div class="window-body">
-                        <select id="instrument-select" style="width: 100%; margin-bottom: 8px;">
-                            <option value="piano">🎹 Grand Piano</option>
-                            <option value="synth">🌌 Synthwave</option>
-                            <option value="electric">⚡ Electric Piano</option>
-                            <option value="organ">🎺 Organ</option>
-                            <option value="guitar">🎸 Guitar</option>
-                            <option value="bass">🎵 Bass</option>
-                            <option value="strings">🎻 Strings</option>
-                            <option value="choir">👼 Choir</option>
-                        </select>
-                        <div class="fx-control">
-                            <span class="fx-label">REVERB:</span>
-                            <input type="range" id="fx-reverb" min="0" max="100" value="20">
-                        </div>
+            <!-- Lyrics -->
+            <div class="window mobile-hide" style="flex-shrink: 0;">
+                <div class="window-header">🎤 LYRICS</div>
+                <div class="window-body" style="padding: 0;">
+                    <div class="lyrics-display" id="lyrics-display">
+                        ♪ Load a MIDI file ♪
                     </div>
                 </div>
+            </div>
 
-                <!-- Lyrics -->
-                <div class="window window-magenta" style="flex-shrink: 0;">
-                    <div class="window-header">🎤 LYRICS</div>
-                    <div class="window-body" style="padding: 0;">
-                        <div class="lyrics-display" id="lyrics-display">
-                            ♪ Load a MIDI file ♪
-                        </div>
-                    </div>
+            <!-- Channel meters -->
+            <div class="window mobile-hide" style="flex: 1; min-height: 120px;">
+                <div class="window-header">🎚️ CHANNELS</div>
+                <div class="window-body" style="height: calc(100% - 35px);">
+                    <div class="channel-meters" id="channel-meters"></div>
                 </div>
+            </div>
 
-                <!-- Channel meters -->
-                <div class="window window-green" style="flex: 1; min-height: 0;">
-                    <div class="window-header">🎚️ CHANNELS</div>
-                    <div class="window-body" style="height: calc(100% - 40px);">
-                        <div class="channel-meters" id="channel-meters"></div>
-                    </div>
-                </div>
-
-                <!-- Playlist -->
-                <div class="window window-yellow" style="flex: 1; min-height: 0;">
-                    <div class="window-header">📜 PLAYLIST</div>
-                    <div class="window-body" style="padding: 0; height: calc(100% - 40px); overflow: hidden;">
-                        <div class="playlist" id="playlist">
-                            <div style="padding: 20px; text-align: center; color: #666;">
-                                No files loaded. Click "ADD MIDI" to begin.
-                            </div>
+            <!-- Playlist -->
+            <div class="window" style="flex: 1; min-height: 100px;">
+                <div class="window-header">📜 PLAYLIST</div>
+                <div class="window-body" style="padding: 0; height: calc(100% - 35px); overflow: hidden;">
+                    <div class="playlist" id="playlist">
+                        <div style="padding: 15px; text-align: center; color: #666; font-size: 0.9rem;">
+                            No files loaded.<br>Tap "ADD MIDI" to begin.
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+<script>
+    // ============================================================================
+    // THEME MANAGEMENT
+    // ============================================================================
+    function setTheme(theme) {
+        document.body.className = '';
+        
+        if (theme === 'light') {
+            document.body.classList.add('light-mode');
+        } else if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+        
+        // Update active theme button
+        document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('theme-' + theme).classList.add('active');
+        
+        localStorage.setItem('radwave-theme', theme);
+    }
 
-    <script>
-        // ============================================================================
-        // STATE MANAGEMENT
-        // ============================================================================
-        const state = {
-            synth: null,
-            reverb: null,
-            midiFiles: [],
-            currentIndex: 0,
-            isPlaying: false,
-            isPaused: false,
-            scheduledEvents: [],
-            activeNotes: new Set(),
-            channelVolumes: new Array(16).fill(0),
-            currentTime: 0,
-            duration: 0,
-            startTime: 0,
-            pauseTime: 0,
-            tempo: 120,
-            visualizerMode: 'bars',
-            animationFrame: null,
-            analyser: null,
-            currentInstrument: 'piano',
-        };
+    // Load saved theme
+    const savedTheme = localStorage.getItem('radwave-theme') || 'default';
+    setTheme(savedTheme);
 
-        // ============================================================================
-        // INSTRUMENT CONFIGURATIONS
-        // ============================================================================
-        const instruments = {
-            piano: () => new Tone.Sampler({
-                urls: {
-                    C4: "C4.mp3",
-                    "D#4": "Ds4.mp3",
-                    "F#4": "Fs4.mp3",
-                    A4: "A4.mp3",
-                },
-                baseUrl: "https://tonejs.github.io/audio/salamander/",
-            }),
-            synth: () => new Tone.PolySynth(Tone.Synth, {
-                oscillator: { type: "fatsawtooth" },
-                envelope: { attack: 0.01, decay: 0.1, sustain: 0.5, release: 0.4 }
-            }),
-            electric: () => new Tone.PolySynth(Tone.FMSynth, {
-                modulationIndex: 12,
-                harmonicity: 3,
-            }),
-            organ: () => new Tone.PolySynth(Tone.AMSynth, {
-                harmonicity: 3,
-                oscillator: { type: "sine" }
-            }),
-            guitar: () => new Tone.PolySynth(Tone.Synth, {
-                oscillator: { type: "triangle" },
-                envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 }
-            }),
-            bass: () => new Tone.PolySynth(Tone.Synth, {
-                oscillator: { type: "sawtooth" },
-                envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.1 }
-            }),
-            strings: () => new Tone.PolySynth(Tone.Synth, {
-                oscillator: { type: "sawtooth" },
-                envelope: { attack: 0.5, decay: 0.5, sustain: 0.8, release: 1.0 }
-            }),
-            choir: () => new Tone.PolySynth(Tone.Synth, {
-                oscillator: { type: "sine" },
-                envelope: { attack: 0.8, decay: 0.5, sustain: 0.9, release: 1.5 }
-            }),
-        };
+    // ============================================================================
+    // STATE MANAGEMENT
+    // ============================================================================
+    const state = {
+        synth: null,
+        reverb: null,
+        midiFiles: [],
+        currentIndex: 0,
+        isPlaying: false,
+        isPaused: false,
+        scheduledEvents: [],
+        activeNotes: new Set(),
+        channelVolumes: new Array(16).fill(0),
+        currentTime: 0,
+        duration: 0,
+        startTime: 0,
+        pauseTime: 0,
+        tempo: 120,
+        visualizerMode: 'bars',
+        animationFrame: null,
+        analyser: null,
+        currentInstrument: 'piano',
+    };
 
-        // ============================================================================
-        // AUDIO INITIALIZATION
-        // ============================================================================
-        async function initAudio() {
-            if (state.synth) return;
+    // ============================================================================
+    // INSTRUMENT CONFIGURATIONS
+    // ============================================================================
+    const instruments = {
+        piano: () => new Tone.Sampler({
+            urls: {
+                C4: "C4.mp3",
+                "D#4": "Ds4.mp3",
+                "F#4": "Fs4.mp3",
+                A4: "A4.mp3",
+            },
+            baseUrl: "https://tonejs.github.io/audio/salamander/",
+        }),
+        synth: () => new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "fatsawtooth" },
+            envelope: { attack: 0.01, decay: 0.1, sustain: 0.5, release: 0.4 }
+        }),
+        electric: () => new Tone.PolySynth(Tone.FMSynth, {
+            modulationIndex: 12,
+            harmonicity: 3,
+        }),
+        organ: () => new Tone.PolySynth(Tone.AMSynth, {
+            harmonicity: 3,
+            oscillator: { type: "sine" }
+        }),
+        guitar: () => new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 }
+        }),
+        bass: () => new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sawtooth" },
+            envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.1 }
+        }),
+        strings: () => new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sawtooth" },
+            envelope: { attack: 0.5, decay: 0.5, sustain: 0.8, release: 1.0 }
+        }),
+        choir: () => new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.8, decay: 0.5, sustain: 0.9, release: 1.5 }
+        }),
+    };
 
+    // ============================================================================
+    // AUDIO INITIALIZATION
+    // ============================================================================
+    async function initAudio() {
+        if (state.synth) return;
+
+        try {
             await Tone.start();
 
             // Create reverb
@@ -710,17 +1004,22 @@
             state.synth.connect(state.analyser);
 
             console.log('Audio initialized');
+        } catch (e) {
+            console.error('Audio init error:', e);
+            alert('Error initializing audio. Please try again.');
+        }
+    }
+
+    async function loadInstrument(type) {
+        state.currentInstrument = type;
+        
+        if (state.synth) {
+            state.synth.releaseAll();
+            state.synth.disconnect();
+            state.synth.dispose();
         }
 
-        async function loadInstrument(type) {
-            state.currentInstrument = type;
-            
-            if (state.synth) {
-                state.synth.releaseAll();
-                state.synth.disconnect();
-                state.synth.dispose();
-            }
-
+        try {
             state.synth = instruments[type]();
             
             if (state.synth.name === 'Sampler') {
@@ -735,23 +1034,25 @@
 
             state.synth.volume.value = -10;
             console.log('Loaded instrument:', type);
+        } catch (e) {
+            console.error('Instrument load error:', e);
+            // Fallback to basic synth
+            state.synth = new Tone.PolySynth(Tone.Synth).toDestination();
         }
+    }
 
-        // ============================================================================
-        // MIDI PARSING
-        // ============================================================================
-        function midiNoteToName(noteNumber) {
-            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-            const octave = Math.floor(noteNumber / 12) - 1;
-            const noteName = noteNames[noteNumber % 12];
-            return noteName + octave;
-        }
+    // ============================================================================
+    // MIDI PARSING
+    // ============================================================================
+    function midiNoteToName(noteNumber) {
+        const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const octave = Math.floor(noteNumber / 12) - 1;
+        const noteName = noteNames[noteNumber % 12];
+        return noteName + octave;
+    }
 
-        function parseMIDI(arrayBuffer) {
-            MidiParser.parse(new Uint8Array(arrayBuffer), function(obj) {
-                // This callback is for the parser
-            });
-            
+    function parseMIDI(arrayBuffer) {
+        try {
             const parsed = MidiParser.parse(new Uint8Array(arrayBuffer));
             
             // Extract notes with timing
@@ -780,7 +1081,7 @@
                                 note: midiNoteToName(note),
                                 midiNote: note,
                                 time: activeNotes[note].time,
-                                duration: duration,
+                                duration: Math.max(duration, 0.1),
                                 velocity: activeNotes[note].velocity,
                                 channel: event.channel || 0
                             });
@@ -789,8 +1090,12 @@
                     } else if (event.type === 255 && event.metaType === 81) { // Set Tempo
                         tempo = (event.data[0] << 16) | (event.data[1] << 8) | event.data[2];
                     } else if (event.type === 255 && (event.metaType === 1 || event.metaType === 5)) { // Lyrics
-                        const text = String.fromCharCode.apply(null, event.data);
-                        lyrics.push({ time: timeInSeconds, text });
+                        try {
+                            const text = String.fromCharCode.apply(null, event.data);
+                            lyrics.push({ time: timeInSeconds, text });
+                        } catch (e) {
+                            console.warn('Lyric parse error:', e);
+                        }
                     }
                 });
             });
@@ -806,48 +1111,56 @@
                 tempo: bpm,
                 tracks: parsed.track.length
             };
+        } catch (e) {
+            console.error('MIDI parse error:', e);
+            throw new Error('Failed to parse MIDI file: ' + e.message);
         }
+    }
 
-        // ============================================================================
-        // FILE HANDLING
-        // ============================================================================
-        document.getElementById('midi-upload').addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files);
-            
-            for (const file of files) {
-                try {
-                    const arrayBuffer = await file.arrayBuffer();
-                    const parsed = parseMIDI(arrayBuffer);
-                    
-                    state.midiFiles.push({
-                        name: file.name,
-                        ...parsed
-                    });
-                    
-                    document.getElementById('info-tempo').textContent = parsed.tempo;
-                    document.getElementById('info-tracks').textContent = parsed.tracks;
-                    document.getElementById('info-notes').textContent = parsed.notes.length;
-                    
-                } catch (err) {
-                    console.error('Error parsing MIDI:', err);
-                    alert('Error loading: ' + file.name);
-                }
+    // ============================================================================
+    // FILE HANDLING
+    // ============================================================================
+    document.getElementById('midi-upload').addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files);
+        
+        for (const file of files) {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const parsed = parseMIDI(arrayBuffer);
+                
+                state.midiFiles.push({
+                    name: file.name,
+                    ...parsed
+                });
+                
+                document.getElementById('info-tempo').textContent = parsed.tempo;
+                document.getElementById('info-tracks').textContent = parsed.tracks;
+                document.getElementById('info-notes').textContent = parsed.notes.length;
+                
+            } catch (err) {
+                console.error('Error loading MIDI:', err);
+                alert('Error loading ' + file.name + ': ' + err.message);
             }
-            
-            updatePlaylistUI();
-            updateUI();
-            
-            if (state.midiFiles.length === 1 && !state.isPlaying) {
-                setTimeout(() => play(), 500);
-            }
-        });
+        }
+        
+        updatePlaylistUI();
+        updateUI();
+        
+        if (state.midiFiles.length === 1 && !state.isPlaying) {
+            setTimeout(() => play(), 500);
+        }
+    });
 
-        // ============================================================================
-        // PLAYBACK
-        // ============================================================================
-        async function play() {
-            if (state.midiFiles.length === 0) return;
-            
+    // ============================================================================
+    // PLAYBACK
+    // ============================================================================
+    async function play() {
+        if (state.midiFiles.length === 0) {
+            alert('Please load a MIDI file first!');
+            return;
+        }
+        
+        try {
             await initAudio();
             
             const currentFile = state.midiFiles[state.currentIndex];
@@ -894,514 +1207,587 @@
             animate();
             
             console.log('Playing:', currentFile.name, 'Notes:', currentFile.notes.length);
-        }
-
-        function playNote(midiNote, noteName, duration, velocity, channel) {
-            if (!state.synth) return;
-            
-            try {
-                state.synth.triggerAttackRelease(noteName, duration, undefined, velocity);
-                state.activeNotes.add(midiNote);
-                
-                // Update channel meter
-                state.channelVolumes[channel % 16] = Math.max(state.channelVolumes[channel % 16], velocity);
-                
-                setTimeout(() => {
-                    state.activeNotes.delete(midiNote);
-                }, duration * 1000);
-            } catch (e) {
-                console.warn('Note play error:', e);
-            }
-        }
-
-        function pause() {
-            if (!state.isPlaying) return;
-            
-            state.isPaused = !state.isPaused;
-            
-            if (state.isPaused) {
-                Tone.Transport.pause();
-                state.pauseTime = Tone.now() - state.startTime;
-                state.synth?.releaseAll();
-            } else {
-                Tone.Transport.start();
-                state.startTime = Tone.now() - state.pauseTime;
-            }
-            
-            updateUI();
-        }
-
-        function stop() {
-            state.isPlaying = false;
-            state.isPaused = false;
-            state.currentTime = 0;
-            state.activeNotes.clear();
-            
-            // Clear all scheduled events
-            state.scheduledEvents.forEach(id => {
-                try {
-                    Tone.Transport.clear(id);
-                } catch(e) {}
-            });
-            state.scheduledEvents = [];
-            
-            Tone.Transport.stop();
-            Tone.Transport.cancel();
-            
-            if (state.synth) {
-                state.synth.releaseAll();
-            }
-            
-            if (state.animationFrame) {
-                cancelAnimationFrame(state.animationFrame);
-                state.animationFrame = null;
-            }
-            
-            document.getElementById('lyrics-display').textContent = '♪ Load a MIDI file ♪';
-            
-            updateUI();
-        }
-
-        function next() {
+        } catch (e) {
+            console.error('Playback error:', e);
+            alert('Playback error: ' + e.message);
             stop();
-            state.currentIndex = (state.currentIndex + 1) % state.midiFiles.length;
-            updatePlaylistUI();
-            setTimeout(() => play(), 100);
         }
+    }
 
-        function prev() {
-            stop();
-            state.currentIndex = (state.currentIndex - 1 + state.midiFiles.length) % state.midiFiles.length;
-            updatePlaylistUI();
-            setTimeout(() => play(), 100);
+    function playNote(midiNote, noteName, duration, velocity, channel) {
+        if (!state.synth) return;
+        
+        try {
+            state.synth.triggerAttackRelease(noteName, duration, undefined, velocity);
+            state.activeNotes.add(midiNote);
+            
+            // Update channel meter
+            state.channelVolumes[channel % 16] = Math.max(state.channelVolumes[channel % 16], velocity);
+            
+            setTimeout(() => {
+                state.activeNotes.delete(midiNote);
+            }, duration * 1000);
+        } catch (e) {
+            console.warn('Note play error:', e);
         }
+    }
 
-        // ============================================================================
-        // WAV EXPORT
-        // ============================================================================
-        document.getElementById('btn-download-wav').addEventListener('click', async () => {
-            if (state.midiFiles.length === 0) {
-                alert('Load a MIDI file first!');
-                return;
-            }
-            
-            const currentFile = state.midiFiles[state.currentIndex];
-            
+    function pause() {
+        if (!state.isPlaying) return;
+        
+        state.isPaused = !state.isPaused;
+        
+        if (state.isPaused) {
+            Tone.Transport.pause();
+            state.pauseTime = Tone.now() - state.startTime;
+            state.synth?.releaseAll();
+        } else {
+            Tone.Transport.start();
+            state.startTime = Tone.now() - state.pauseTime;
+        }
+        
+        updateUI();
+    }
+
+    function stop() {
+        state.isPlaying = false;
+        state.isPaused = false;
+        state.currentTime = 0;
+        state.activeNotes.clear();
+        
+        // Clear all scheduled events
+        state.scheduledEvents.forEach(id => {
             try {
-                document.getElementById('btn-download-wav').textContent = '⏳ RENDERING...';
-                document.getElementById('btn-download-wav').disabled = true;
-                
-                const buffer = await Tone.Offline(async ({ transport }) => {
-                    const offlineSynth = instruments[state.currentInstrument]();
-                    const offlineReverb = new Tone.Reverb({
-                        decay: 2,
-                        wet: parseFloat(document.getElementById('fx-reverb').value) / 100
-                    }).toDestination();
-                    
-                    if (offlineSynth.name === 'Sampler') {
-                        await Tone.loaded();
-                    }
-                    
-                    offlineSynth.connect(offlineReverb);
-                    offlineSynth.volume.value = -10;
-                    
-                    currentFile.notes.forEach(n => {
-                        offlineSynth.triggerAttackRelease(n.note, n.duration, n.time, n.velocity);
-                    });
-                    
-                }, currentFile.duration + 2);
-                
-                const wav = bufferToWave(buffer, 0, buffer.length);
-                const url = URL.createObjectURL(wav);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${currentFile.name.replace('.mid', '')}_${state.currentInstrument}.wav`;
-                a.click();
-                
-                document.getElementById('btn-download-wav').textContent = '💾 SAVE WAV';
-                document.getElementById('btn-download-wav').disabled = false;
-                
-            } catch (e) {
-                console.error('Export error:', e);
-                alert('Error exporting: ' + e.message);
-                document.getElementById('btn-download-wav').textContent = '💾 SAVE WAV';
-                document.getElementById('btn-download-wav').disabled = false;
-            }
+                Tone.Transport.clear(id);
+            } catch(e) {}
         });
+        state.scheduledEvents = [];
+        
+        Tone.Transport.stop();
+        Tone.Transport.cancel();
+        
+        if (state.synth) {
+            state.synth.releaseAll();
+        }
+        
+        if (state.animationFrame) {
+            cancelAnimationFrame(state.animationFrame);
+            state.animationFrame = null;
+        }
+        
+        document.getElementById('lyrics-display').textContent = '♪ Load a MIDI file ♪';
+        
+        updateUI();
+    }
 
-        function bufferToWave(abuffer, offset, len) {
-            let numOfChan = abuffer.numberOfChannels,
-                length = len * numOfChan * 2 + 44,
-                buffer = new ArrayBuffer(length),
-                view = new DataView(buffer),
-                channels = [], i, sample,
-                pos = 0;
+    function next() {
+        if (state.midiFiles.length === 0) return;
+        stop();
+        state.currentIndex = (state.currentIndex + 1) % state.midiFiles.length;
+        const file = state.midiFiles[state.currentIndex];
+        document.getElementById('info-tempo').textContent = file.tempo;
+        document.getElementById('info-tracks').textContent = file.tracks;
+        document.getElementById('info-notes').textContent = file.notes.length;
+        updatePlaylistUI();
+        setTimeout(() => play(), 100);
+    }
 
-            setUint32(0x46464952);
-            setUint32(length - 8);
-            setUint32(0x45564157);
-            setUint32(0x20746d66);
-            setUint32(16);
-            setUint16(1);
-            setUint16(numOfChan);
-            setUint32(abuffer.sampleRate);
-            setUint32(abuffer.sampleRate * 2 * numOfChan);
-            setUint16(numOfChan * 2);
-            setUint16(16);
-            setUint32(0x61746164);
-            setUint32(length - pos - 4);
+    function prev() {
+        if (state.midiFiles.length === 0) return;
+        stop();
+        state.currentIndex = (state.currentIndex - 1 + state.midiFiles.length) % state.midiFiles.length;
+        const file = state.midiFiles[state.currentIndex];
+        document.getElementById('info-tempo').textContent = file.tempo;
+        document.getElementById('info-tracks').textContent = file.tracks;
+        document.getElementById('info-notes').textContent = file.notes.length;
+        updatePlaylistUI();
+        setTimeout(() => play(), 100);
+    }
 
-            for(i = 0; i < abuffer.numberOfChannels; i++)
-                channels.push(abuffer.getChannelData(i));
-
-            while(pos < length) {
-                for(i = 0; i < numOfChan; i++) {
-                    sample = Math.max(-1, Math.min(1, channels[i][offset]));
-                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
-                    view.setInt16(pos, sample, true);
-                    pos += 2;
+    // ============================================================================
+    // WAV EXPORT
+    // ============================================================================
+    document.getElementById('btn-download-wav').addEventListener('click', async () => {
+        if (state.midiFiles.length === 0) {
+            alert('Load a MIDI file first!');
+            return;
+        }
+        
+        const currentFile = state.midiFiles[state.currentIndex];
+        const btn = document.getElementById('btn-download-wav');
+        
+        try {
+            btn.textContent = '⏳ RENDERING...';
+            btn.disabled = true;
+            
+            const buffer = await Tone.Offline(async ({ transport }) => {
+                const offlineSynth = instruments[state.currentInstrument]();
+                const offlineReverb = new Tone.Reverb({
+                    decay: 2,
+                    wet: parseFloat(document.getElementById('fx-reverb').value) / 100
+                }).toDestination();
+                
+                if (offlineSynth.name === 'Sampler') {
+                    await Tone.loaded();
                 }
-                offset++;
-            }
-
-            return new Blob([buffer], {type: "audio/wav"});
-
-            function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
-            function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
-        }
-
-        // ============================================================================
-        // UI
-        // ============================================================================
-        function updateUI() {
-            document.getElementById('btn-play').disabled = state.isPlaying && !state.isPaused;
-            document.getElementById('btn-pause').disabled = !state.isPlaying;
-            document.getElementById('btn-stop').disabled = !state.isPlaying;
-            document.getElementById('btn-next').disabled = state.midiFiles.length <= 1;
-            document.getElementById('btn-prev').disabled = state.midiFiles.length <= 1;
-        }
-
-        function updateProgress() {
-            if (!state.isPlaying || state.isPaused) return;
-            
-            state.currentTime = Tone.now() - state.startTime;
-            const progress = state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
-            
-            document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
-            document.getElementById('progress-time').textContent = 
-                formatTime(state.currentTime) + ' / ' + formatTime(state.duration);
-        }
-
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return mins + ':' + (secs < 10 ? '0' : '') + secs;
-        }
-
-        function updatePlaylistUI() {
-            const playlist = document.getElementById('playlist');
-            
-            if (state.midiFiles.length === 0) {
-                playlist.innerHTML = `
-                    <div style="padding: 20px; text-align: center; color: #666;">
-                        No files loaded. Click "ADD MIDI" to begin.
-                    </div>
-                `;
-                return;
-            }
-            
-            playlist.innerHTML = state.midiFiles.map((file, i) => `
-                <div class="playlist-item ${i === state.currentIndex ? 'active' : ''}" data-index="${i}">
-                    <span>${file.name}</span>
-                    <span style="color: #666;">${formatTime(file.duration)}</span>
-                </div>
-            `).join('');
-            
-            playlist.querySelectorAll('.playlist-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const index = parseInt(item.dataset.index);
-                    if (index !== state.currentIndex) {
-                        stop();
-                        state.currentIndex = index;
-                        const file = state.midiFiles[index];
-                        document.getElementById('info-tempo').textContent = file.tempo;
-                        document.getElementById('info-tracks').textContent = file.tracks;
-                        document.getElementById('info-notes').textContent = file.notes.length;
-                        updatePlaylistUI();
-                        setTimeout(() => play(), 100);
-                    }
+                
+                offlineSynth.connect(offlineReverb);
+                offlineSynth.volume.value = -10;
+                
+                currentFile.notes.forEach(n => {
+                    offlineSynth.triggerAttackRelease(n.note, n.duration, n.time, n.velocity);
                 });
+                
+            }, currentFile.duration + 2);
+            
+            const wav = bufferToWave(buffer, 0, buffer.length);
+            const url = URL.createObjectURL(wav);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentFile.name.replace('.mid', '').replace('.midi', '')}_${state.currentInstrument}.wav`;
+            a.click();
+            
+            btn.textContent = '💾 WAV';
+            btn.disabled = false;
+            
+        } catch (e) {
+            console.error('Export error:', e);
+            alert('Error exporting: ' + e.message);
+            btn.textContent = '💾 WAV';
+            btn.disabled = false;
+        }
+    });
+
+    function bufferToWave(abuffer, offset, len) {
+        let numOfChan = abuffer.numberOfChannels,
+            length = len * numOfChan * 2 + 44,
+            buffer = new ArrayBuffer(length),
+            view = new DataView(buffer),
+            channels = [], i, sample,
+            pos = 0;
+
+        setUint32(0x46464952);
+        setUint32(length - 8);
+        setUint32(0x45564157);
+        setUint32(0x20746d66);
+        setUint32(16);
+        setUint16(1);
+        setUint16(numOfChan);
+        setUint32(abuffer.sampleRate);
+        setUint32(abuffer.sampleRate * 2 * numOfChan);
+        setUint16(numOfChan * 2);
+        setUint16(16);
+        setUint32(0x61746164);
+        setUint32(length - pos - 4);
+
+        for(i = 0; i < abuffer.numberOfChannels; i++)
+            channels.push(abuffer.getChannelData(i));
+
+        while(pos < length) {
+            for(i = 0; i < numOfChan; i++) {
+                sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
+                view.setInt16(pos, sample, true);
+                pos += 2;
+            }
+            offset++;
+        }
+
+        return new Blob([buffer], {type: "audio/wav"});
+
+        function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+        function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+    }
+
+    // ============================================================================
+    // UI
+    // ============================================================================
+    function updateUI() {
+        document.getElementById('btn-play').disabled = state.isPlaying && !state.isPaused;
+        document.getElementById('btn-pause').disabled = !state.isPlaying;
+        document.getElementById('btn-stop').disabled = !state.isPlaying;
+        document.getElementById('btn-next').disabled = state.midiFiles.length <= 1;
+        document.getElementById('btn-prev').disabled = state.midiFiles.length <= 1;
+    }
+
+    function updateProgress() {
+        if (!state.isPlaying || state.isPaused) return;
+        
+        state.currentTime = Tone.now() - state.startTime;
+        const progress = state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
+        
+        document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
+        document.getElementById('progress-time').textContent = 
+            formatTime(state.currentTime) + ' / ' + formatTime(state.duration);
+    }
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return mins + ':' + (secs < 10 ? '0' : '') + secs;
+    }
+
+    function updatePlaylistUI() {
+        const playlist = document.getElementById('playlist');
+        
+        if (state.midiFiles.length === 0) {
+            playlist.innerHTML = `
+                <div style="padding: 15px; text-align: center; color: #666; font-size: 0.9rem;">
+                    No files loaded.<br>Tap "ADD MIDI" to begin.
+                </div>
+            `;
+            return;
+        }
+        
+        playlist.innerHTML = state.midiFiles.map((file, i) => `
+            <div class="playlist-item ${i === state.currentIndex ? 'active' : ''}" data-index="${i}">
+                <span style="overflow: hidden; text-overflow: ellipsis;">${file.name}</span>
+                <span style="color: #666; white-space: nowrap;">${formatTime(file.duration)}</span>
+            </div>
+        `).join('');
+        
+        playlist.querySelectorAll('.playlist-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const index = parseInt(item.dataset.index);
+                if (index !== state.currentIndex) {
+                    stop();
+                    state.currentIndex = index;
+                    const file = state.midiFiles[index];
+                    document.getElementById('info-tempo').textContent = file.tempo;
+                    document.getElementById('info-tracks').textContent = file.tracks;
+                    document.getElementById('info-notes').textContent = file.notes.length;
+                    updatePlaylistUI();
+                    setTimeout(() => play(), 100);
+                }
             });
+        });
+    }
+
+    // ============================================================================
+    // VISUALIZER
+    // ============================================================================
+    const canvas = document.getElementById('visualizer-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+    }
+
+    function drawVisualizer() {
+        const w = canvas.width;
+        const h = canvas.height;
+        
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.fillRect(0, 0, w, h);
+
+        if (!state.analyser) {
+            return;
         }
 
-        // ============================================================================
-        // VISUALIZER
-        // ============================================================================
-        const canvas = document.getElementById('visualizer-canvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
+        const values = state.analyser.getValue();
+        
+        switch (state.visualizerMode) {
+            case 'bars':
+                drawBars(values, w, h);
+                break;
+            case 'wave':
+                drawWave(values, w, h);
+                break;
+            case 'particles':
+                drawParticles(values, w, h);
+                break;
+            case 'oscilloscope':
+                drawOscilloscope(values, w, h);
+                break;
         }
+    }
 
-        function drawVisualizer() {
-            const w = canvas.width;
-            const h = canvas.height;
+    function drawBars(values, w, h) {
+        const barWidth = w / values.length * 2.5;
+        let x = 0;
+
+        for (let i = 0; i < values.length; i++) {
+            const normalized = (values[i] + 1) / 2;
+            const barHeight = normalized * h;
+            const hue = (i / values.length) * 360;
             
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-            ctx.fillRect(0, 0, w, h);
-
-            if (!state.analyser) {
-                return;
+            let colorStyle;
+            if (document.body.classList.contains('dark-mode')) {
+                // Cyberpunk gradient: cyan to purple
+                const progress = i / values.length;
+                const r = Math.floor(0 + (179 * progress));
+                const g = Math.floor(217 - (89 * progress));
+                const b = Math.floor(255);
+                colorStyle = `rgb(${r}, ${g}, ${b})`;
+            } else {
+                colorStyle = `hsl(${hue}, 100%, 50%)`;
             }
-
-            const values = state.analyser.getValue();
             
-            switch (state.visualizerMode) {
-                case 'bars':
-                    drawBars(values, w, h);
-                    break;
-                case 'wave':
-                    drawWave(values, w, h);
-                    break;
-                case 'particles':
-                    drawParticles(values, w, h);
-                    break;
-                case 'oscilloscope':
-                    drawOscilloscope(values, w, h);
-                    break;
-            }
-        }
-
-        function drawBars(values, w, h) {
-            const barWidth = w / values.length * 2.5;
-            let x = 0;
-
-            for (let i = 0; i < values.length; i++) {
-                const normalized = (values[i] + 1) / 2; // -1 to 1 → 0 to 1
-                const barHeight = normalized * h;
-                const hue = (i / values.length) * 360;
-                
-                ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = `hsl(${hue}, 100%, 50%)`;
-                ctx.fillRect(x, h - barHeight, barWidth - 2, barHeight);
-                
-                x += barWidth;
-            }
-            ctx.shadowBlur = 0;
-        }
-
-        function drawWave(values, w, h) {
-            ctx.strokeStyle = '#00ffff';
-            ctx.lineWidth = 3;
+            ctx.fillStyle = colorStyle;
             ctx.shadowBlur = 10;
-            ctx.shadowColor = '#00ffff';
-            ctx.beginPath();
+            ctx.shadowColor = colorStyle;
+            ctx.fillRect(x, h - barHeight, barWidth - 2, barHeight);
+            
+            x += barWidth;
+        }
+        ctx.shadowBlur = 0;
+    }
 
-            const sliceWidth = w / values.length;
-            let x = 0;
+    function drawWave(values, w, h) {
+        const color = document.body.classList.contains('dark-mode') ? '#00d9ff' : '#00ffff';
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = color;
+        ctx.beginPath();
 
-            for (let i = 0; i < values.length; i++) {
-                const y = ((values[i] + 1) / 2) * h;
+        const sliceWidth = w / values.length;
+        let x = 0;
 
-                if (i === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
+        for (let i = 0; i < values.length; i++) {
+            const y = ((values[i] + 1) / 2) * h;
 
-                x += sliceWidth;
+            if (i === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
             }
 
-            ctx.stroke();
-            ctx.shadowBlur = 0;
+            x += sliceWidth;
         }
 
-        function drawParticles(values, w, h) {
-            for (let i = 0; i < values.length; i += 4) {
-                const x = (i / values.length) * w;
-                const size = Math.abs(values[i]) * 10;
-                const y = h / 2 + values[i] * h * 0.4;
-                const hue = (i / values.length) * 360;
-                
-                ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = `hsl(${hue}, 100%, 50%)`;
-                ctx.beginPath();
-                ctx.arc(x, y, size, 0, Math.PI * 2);
-                ctx.fill();
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+    }
+
+    function drawParticles(values, w, h) {
+        for (let i = 0; i < values.length; i += 4) {
+            const x = (i / values.length) * w;
+            const size = Math.abs(values[i]) * 10;
+            const y = h / 2 + values[i] * h * 0.4;
+            const hue = (i / values.length) * 360;
+            
+            let colorStyle;
+            if (document.body.classList.contains('dark-mode')) {
+                const progress = i / values.length;
+                colorStyle = progress > 0.5 ? '#b388ff' : '#00d9ff';
+            } else {
+                colorStyle = `hsl(${hue}, 100%, 50%)`;
             }
-            ctx.shadowBlur = 0;
-        }
-
-        function drawOscilloscope(values, w, h) {
-            ctx.strokeStyle = '#ff00ff';
-            ctx.lineWidth = 2;
+            
+            ctx.fillStyle = colorStyle;
             ctx.shadowBlur = 15;
-            ctx.shadowColor = '#ff00ff';
+            ctx.shadowColor = colorStyle;
             ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+    }
 
-            const sliceWidth = w / values.length;
-            let x = 0;
+    function drawOscilloscope(values, w, h) {
+        const color = document.body.classList.contains('dark-mode') ? '#b388ff' : '#ff00ff';
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = color;
+        ctx.beginPath();
 
-            for (let i = 0; i < values.length; i++) {
-                const y = ((values[i] + 1) / 2) * h;
+        const sliceWidth = w / values.length;
+        let x = 0;
 
-                if (i === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
+        for (let i = 0; i < values.length; i++) {
+            const y = ((values[i] + 1) / 2) * h;
 
-                x += sliceWidth;
+            if (i === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
             }
 
-            ctx.stroke();
-            ctx.shadowBlur = 0;
+            x += sliceWidth;
         }
 
-        // ============================================================================
-        // PIANO
-        // ============================================================================
-        function createPiano() {
-            const container = document.getElementById('piano-container');
-            const width = container.clientWidth;
-            const whiteKeyWidth = width / 52;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+    }
+
+    // ============================================================================
+    // PIANO
+    // ============================================================================
+    function createPiano() {
+        const container = document.getElementById('piano-container');
+        const width = Math.max(container.clientWidth, 1000); // Min width for mobile scrolling
+        const whiteKeyWidth = width / 52;
+        
+        let whiteKeyIndex = 0;
+        
+        for (let note = 21; note <= 108; note++) {
+            const key = document.createElement('div');
+            key.className = 'piano-key';
+            key.dataset.note = note;
             
-            let whiteKeyIndex = 0;
+            const noteInOctave = note % 12;
+            const isBlack = [1, 3, 6, 8, 10].includes(noteInOctave);
             
-            for (let note = 21; note <= 108; note++) {
-                const key = document.createElement('div');
-                key.className = 'piano-key';
-                key.dataset.note = note;
-                
-                const noteInOctave = note % 12;
-                const isBlack = [1, 3, 6, 8, 10].includes(noteInOctave);
-                
-                if (isBlack) {
-                    key.classList.add('black');
-                    const prevWhiteX = (whiteKeyIndex - 1) * whiteKeyWidth;
-                    key.style.left = (prevWhiteX + whiteKeyWidth - whiteKeyWidth * 0.3) + 'px';
-                    key.style.width = (whiteKeyWidth * 0.6) + 'px';
-                } else {
-                    key.classList.add('white');
-                    key.style.left = (whiteKeyIndex * whiteKeyWidth) + 'px';
-                    key.style.width = whiteKeyWidth + 'px';
-                    whiteKeyIndex++;
-                }
-                
-                container.appendChild(key);
+            if (isBlack) {
+                key.classList.add('black');
+                const prevWhiteX = (whiteKeyIndex - 1) * whiteKeyWidth;
+                key.style.left = (prevWhiteX + whiteKeyWidth - whiteKeyWidth * 0.3) + 'px';
+                key.style.width = (whiteKeyWidth * 0.6) + 'px';
+            } else {
+                key.classList.add('white');
+                key.style.left = (whiteKeyIndex * whiteKeyWidth) + 'px';
+                key.style.width = whiteKeyWidth + 'px';
+                whiteKeyIndex++;
             }
-        }
-
-        function updatePiano() {
-            document.querySelectorAll('.piano-key').forEach(key => {
-                const note = parseInt(key.dataset.note);
-                if (state.activeNotes.has(note)) {
+            
+            // Touch support
+            key.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (state.synth) {
+                    const noteName = midiNoteToName(note);
+                    state.synth.triggerAttack(noteName);
                     key.classList.add('active');
-                } else {
+                }
+            });
+            
+            key.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                if (state.synth) {
+                    const noteName = midiNoteToName(note);
+                    state.synth.triggerRelease(noteName);
                     key.classList.remove('active');
                 }
             });
-        }
-
-        // ============================================================================
-        // CHANNEL METERS
-        // ============================================================================
-        function createChannelMeters() {
-            const container = document.getElementById('channel-meters');
-            container.innerHTML = '';
             
-            for (let i = 0; i < 16; i++) {
-                const meter = document.createElement('div');
-                meter.className = 'channel-meter';
-                meter.innerHTML = `
-                    <div class="channel-label">${i + 1}</div>
-                    <div class="meter-bar">
-                        <div class="meter-fill" id="meter-${i}"></div>
-                    </div>
-                `;
-                container.appendChild(meter);
-            }
+            container.appendChild(key);
         }
+    }
 
-        function updateChannelMeters() {
-            state.channelVolumes.forEach((volume, i) => {
-                const fill = document.getElementById(`meter-${i}`);
-                if (fill) {
-                    fill.style.height = (volume * 100) + '%';
+    function updatePiano() {
+        document.querySelectorAll('.piano-key').forEach(key => {
+            const note = parseInt(key.dataset.note);
+            if (state.activeNotes.has(note)) {
+                key.classList.add('active');
+            } else {
+                // Don't remove active if user is touching the key
+                if (!key.matches(':active')) {
+                    key.classList.remove('active');
                 }
-                state.channelVolumes[i] *= 0.95;
-            });
-        }
-
-        function animate() {
-            if (!state.isPlaying) return;
-            
-            updateProgress();
-            drawVisualizer();
-            updatePiano();
-            updateChannelMeters();
-            
-            state.animationFrame = requestAnimationFrame(animate);
-        }
-
-        // ============================================================================
-        // CONTROLS
-        // ============================================================================
-        document.getElementById('btn-play').addEventListener('click', play);
-        document.getElementById('btn-pause').addEventListener('click', pause);
-        document.getElementById('btn-stop').addEventListener('click', stop);
-        document.getElementById('btn-next').addEventListener('click', next);
-        document.getElementById('btn-prev').addEventListener('click', prev);
-
-        document.getElementById('volume-slider').addEventListener('input', (e) => {
-            const volume = parseInt(e.target.value);
-            document.getElementById('volume-display').textContent = volume + '%';
-            if (state.synth) {
-                state.synth.volume.value = (volume / 100) * 20 - 20;
             }
         });
+    }
 
-        document.getElementById('fx-reverb').addEventListener('input', (e) => {
-            const value = parseFloat(e.target.value) / 100;
-            if (state.reverb) {
-                state.reverb.wet.value = value;
+    // ============================================================================
+    // CHANNEL METERS
+    // ============================================================================
+    function createChannelMeters() {
+        const container = document.getElementById('channel-meters');
+        container.innerHTML = '';
+        
+        const numChannels = window.innerWidth < 768 ? 8 : 16;
+        
+        for (let i = 0; i < numChannels; i++) {
+            const meter = document.createElement('div');
+            meter.className = 'channel-meter';
+            meter.innerHTML = `
+                <div class="channel-label">${i + 1}</div>
+                <div class="meter-bar">
+                    <div class="meter-fill" id="meter-${i}"></div>
+                </div>
+            `;
+            container.appendChild(meter);
+        }
+    }
+
+    function updateChannelMeters() {
+        state.channelVolumes.forEach((volume, i) => {
+            const fill = document.getElementById(`meter-${i}`);
+            if (fill) {
+                fill.style.height = (volume * 100) + '%';
             }
+            state.channelVolumes[i] *= 0.95;
         });
+    }
 
-        document.getElementById('instrument-select').addEventListener('change', async (e) => {
-            await loadInstrument(e.target.value);
-        });
+    function animate() {
+        if (!state.isPlaying) return;
+        
+        updateProgress();
+        drawVisualizer();
+        updatePiano();
+        updateChannelMeters();
+        
+        state.animationFrame = requestAnimationFrame(animate);
+    }
 
-        document.getElementById('viz-mode').addEventListener('change', (e) => {
-            state.visualizerMode = e.target.value;
-        });
+    // ============================================================================
+    // CONTROLS
+    // ============================================================================
+    document.getElementById('btn-play').addEventListener('click', play);
+    document.getElementById('btn-pause').addEventListener('click', pause);
+    document.getElementById('btn-stop').addEventListener('click', stop);
+    document.getElementById('btn-next').addEventListener('click', next);
+    document.getElementById('btn-prev').addEventListener('click', prev);
 
-        document.getElementById('progress-container').addEventListener('click', (e) => {
-            // Seeking would require rescheduling all notes
-            // Simplified for this demo
-        });
+    document.getElementById('volume-slider').addEventListener('input', (e) => {
+        const volume = parseInt(e.target.value);
+        document.getElementById('volume-display').textContent = volume + '%';
+        if (state.synth) {
+            state.synth.volume.value = (volume / 100) * 20 - 20;
+        }
+    });
 
-        // ============================================================================
-        // INIT
-        // ============================================================================
-        window.addEventListener('resize', resizeCanvas);
+    document.getElementById('fx-reverb').addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value) / 100;
+        if (state.reverb) {
+            state.reverb.wet.value = value;
+        }
+    });
+
+    document.getElementById('instrument-select').addEventListener('change', async (e) => {
+        await loadInstrument(e.target.value);
+    });
+
+    document.getElementById('viz-mode').addEventListener('change', (e) => {
+        state.visualizerMode = e.target.value;
+    });
+
+    // ============================================================================
+    // INIT
+    // ============================================================================
+    window.addEventListener('resize', () => {
         resizeCanvas();
-        createPiano();
         createChannelMeters();
-        updateUI();
+    });
+    
+    resizeCanvas();
+    createPiano();
+    createChannelMeters();
+    updateUI();
 
-        function idleAnimate() {
-            if (!state.isPlaying) {
-                drawVisualizer();
-            }
-            requestAnimationFrame(idleAnimate);
+    function idleAnimate() {
+        if (!state.isPlaying) {
+            drawVisualizer();
         }
-        idleAnimate();
-    </script>
+        requestAnimationFrame(idleAnimate);
+    }
+    idleAnimate();
+
+    // Prevent zoom on double tap
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (e) => {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+</script>
+```
+
 </body>
 </html>
