@@ -3,21 +3,33 @@ import type { Metadata } from "next";
 
 // SEO
 export const metadata: Metadata = {
-  title: "PatternRipple Software - Free tools and prototypes",
+  title: "Free Software & Browser Tools - Pattern Creator, Audio Tools & More | PatternRipple",
   description:
-    "Free in-browser tools and prototypes. Seamless pattern creator, tile checker, audio tools, slideshow maker, and the cqs-rs browser demo. These will act as beta test for full software programs.",
+    "Free browser-based creative software and tools. Seamless pattern creator, pattern tile checker, audio looper, audio processor, property slideshow maker, video tools, and quantum circuit simulator. No installation required, works offline.",
+  keywords: "free software, browser tools, pattern creator, seamless patterns, audio looper, audio tools, video maker, creative tools, design software, free design tools, web-based tools, offline tools",
   alternates: { canonical: "https://www.patternripple.com/software" },
   openGraph: {
-    title: "PatternRipple Software - Free tools and prototypes",
+    title: "Free Creative Software & Browser Tools | PatternRipple",
     description:
-      "Try the seamless pattern creator, tile checker, audio tools, slideshow maker, and the cqs-rs browser demo.",
+      "Free pattern creator, audio tools, video maker, and more. Browser-based creative software. No installation, works offline.",
     url: "https://www.patternripple.com/software",
     type: "website",
+    siteName: "PatternRipple",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PatternRipple Software - Free tools and prototypes",
-    description: "Hands-on browser tools. No install.",
+    title: "Free Creative Software - Pattern, Audio, Video Tools",
+    description: "Browser-based creative tools. Pattern creator, audio looper, video maker. Free, no install.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
@@ -50,16 +62,17 @@ const tools: Tool[] = [
     secondaryHref: "/pattern-checker.html",
     secondaryLabel: "v0",
   },
-  {
-    slug: "panek-video-program",
-    title: "Panek Video Program",
-    href: "/panekvideo/",
-    summary:
-      "Desktop app (Linux/macOS) that turns one image and one audio file into a 1920×1080 MP4. Fast rendering, native dialogs, perfect for YouTube and social media.",
-    badge: "Video",
-    secondaryHref: "https://github.com/Nickpanek/panek-video-program",
-    secondaryLabel: "View on GitHub",
-  },
+  // Hidden - Panek Video Program
+  // {
+  //   slug: "panek-video-program",
+  //   title: "Panek Video Program",
+  //   href: "/panekvideo/",
+  //   summary:
+  //     "Desktop app (Linux/macOS) that turns one image and one audio file into a 1920×1080 MP4. Fast rendering, native dialogs, perfect for YouTube and social media.",
+  //   badge: "Video",
+  //   secondaryHref: "https://github.com/Nickpanek/panek-video-program",
+  //   secondaryLabel: "View on GitHub",
+  // },
   {
     slug: "audio-looper-panek",
     title: "Audio Looper - Desktop Edition",

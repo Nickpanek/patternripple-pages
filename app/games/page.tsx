@@ -3,19 +3,31 @@ import type { Metadata } from "next";
 
 // SEO
 export const metadata: Metadata = {
-  title: "Games | PatternRipple",
-  description: "Free HTML5 browser games. Play Bubble Pop, Dystopian Chess, and more instantly.",
+  title: "Free Browser Games - Bubble Pop, Dystopian Chess & More | PatternRipple",
+  description: "Play free HTML5 browser games online. Bubble Pop with combos and power-ups, Dystopian Chess, and more casual games. No download, no registration, instant play. Works on desktop and mobile.",
+  keywords: "free browser games, HTML5 games, online games, bubble pop game, chess game, casual games, no download games, instant play games, mobile games, free games",
   alternates: { canonical: "https://www.patternripple.com/games" },
   openGraph: {
-    title: "Games | PatternRipple",
-    description: "Free browser games built with HTML5. Play instantly, no downloads.",
+    title: "Free Browser Games - Bubble Pop, Chess & More | PatternRipple",
+    description: "Free HTML5 games. Play Bubble Pop with combos, Dystopian Chess, and more. Instant play, no downloads.",
     url: "https://www.patternripple.com/games",
     type: "website",
+    siteName: "PatternRipple",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Games | PatternRipple",
-    description: "Free HTML5 games. Play now in your browser.",
+    title: "Free HTML5 Browser Games - Instant Play",
+    description: "Bubble Pop, Dystopian Chess, and more. Free games, no download.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 

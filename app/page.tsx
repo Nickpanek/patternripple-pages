@@ -103,8 +103,8 @@ export default function HomePage() {
             <div>
               <h3 className="text-white font-medium mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/software" className="hover:text-accent">Software</Link></li>
                 <li><Link href="/lab" className="hover:text-accent">Research Lab</Link></li>
+                <li><Link href="/software" className="hover:text-accent">Software</Link></li>
                 <li><Link href="/games" className="hover:text-accent">Games</Link></li>
                 <li><Link href="/about" className="hover:text-accent">About</Link></li>
                 <li><a href="mailto:nick@patternripple.com" className="hover:text-accent">Contact</a></li>

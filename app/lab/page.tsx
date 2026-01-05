@@ -3,25 +3,66 @@ import Link from "next/link";
 
 // SEO
 export const metadata: Metadata = {
-  title: "Research Lab | PatternRipple",
-  description: "Public domain datasets and in silico discoveries from PatternRipple. Open research, freely available.",
+  title: "Research Lab - Public Domain Datasets & In Silico Discoveries | PatternRipple",
+  description: "Access free public domain datasets and computational biology discoveries. Open research data for scientists, researchers, and developers. In silico experiments and findings available for commercial and academic use.",
+  keywords: "public domain datasets, in silico research, computational biology, open data, research datasets, free datasets, scientific data, bioinformatics, computational discoveries, open research",
   alternates: { canonical: "https://www.patternripple.com/lab" },
   openGraph: {
-    title: "Research Lab | PatternRipple",
-    description: "Public domain datasets and computational discoveries. Free for research and commercial use.",
+    title: "Research Lab - Free Public Domain Datasets | PatternRipple",
+    description: "Public domain datasets and in silico discoveries. Free for research and commercial use. Computational biology findings and open data.",
     url: "https://www.patternripple.com/lab",
     type: "website",
+    siteName: "PatternRipple",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Research Lab | PatternRipple",
-    description: "Open datasets and in silico research findings.",
+    title: "Research Lab - Open Datasets & In Silico Research",
+    description: "Free public domain datasets and computational discoveries. Open research for scientists and developers.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
+
+const jsonLdWebsite = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "PatternRipple Research Lab",
+  url: "https://www.patternripple.com/lab",
+  description: "Public domain datasets and in silico discoveries",
+};
+
+const jsonLdOrganization = {
+  "@context": "https://schema.org",
+  "@type": "ResearchProject",
+  name: "PatternRipple Research Lab",
+  url: "https://www.patternripple.com/lab",
+  description: "Open research providing public domain datasets and computational discoveries",
+  provider: {
+    "@type": "Organization",
+    name: "PatternRipple",
+    url: "https://www.patternripple.com",
   },
 };
 
 export default function ResearchLabPage() {
   return (
     <div className="min-h-screen bg-[#111] text-gray-200">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
+      />
       {/* Hero */}
       <header className="bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-gray-700 py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
