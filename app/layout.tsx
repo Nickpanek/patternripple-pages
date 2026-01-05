@@ -46,12 +46,12 @@ export default function RootLayout({
             <Link href="/" className="text-xl font-bold text-accent">
               PatternRipple
             </Link>
-            <div className="flex gap-6 text-sm">
+            <div className="flex gap-4 md:gap-6 text-xs md:text-sm flex-wrap justify-end">
+              <Link href="/lab" className="hover:text-white transition-colors whitespace-nowrap">
+                Research Lab
+              </Link>
               <Link href="/software" className="hover:text-white transition-colors">
                 Software
-              </Link>
-              <Link href="/lab" className="hover:text-white transition-colors">
-                Research Lab
               </Link>
               <Link href="/games" className="hover:text-white transition-colors">
                 Games

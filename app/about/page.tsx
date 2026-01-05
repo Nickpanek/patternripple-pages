@@ -3,22 +3,34 @@ import type { Metadata } from "next";
 
 // SEO
 export const metadata: Metadata = {
-  title: "About PatternRipple | Nick Panek",
+  title: "About PatternRipple - Free Creative Software by Nick Panek | No Subscriptions",
   description:
-    "PatternRipple by Nick Panek – creative tools, free lab projects, and digital assets. No subscriptions ever. Build smarter, faster, and freely.",
+    "PatternRipple by Nick Panek offers free creative software, browser tools, research datasets, and HTML5 games. No subscriptions, no SaaS traps. One-time purchases only. Files stay local, privacy-focused tools for designers, developers, and creators.",
+  keywords: "Nick Panek, PatternRipple, about, creative software, no subscriptions, one-time purchase, privacy-focused tools, indie developer, free tools, research lab, browser games",
   alternates: { canonical: "https://www.patternripple.com/about" },
   openGraph: {
-    title: "About PatternRipple | Nick Panek",
+    title: "About PatternRipple | Free Creative Tools by Nick Panek",
     description:
-      "Learn about PatternRipple, created by Nick Panek. Free creative tools, pattern lab, and time-saving digital resources.",
+      "Free creative software, research data, and games. No subscriptions ever. Built by Nick Panek.",
     url: "https://www.patternripple.com/about",
     type: "website",
+    siteName: "PatternRipple",
   },
   twitter: {
     card: "summary_large_image",
-    title: "About PatternRipple | Nick Panek",
+    title: "About PatternRipple - No Subscriptions, Free Tools",
     description:
-      "Free creative tools built by Nick Panek. No subscriptions ever.",
+      "Free creative software and tools by Nick Panek. No subscriptions ever.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
