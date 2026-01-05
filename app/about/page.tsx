@@ -45,10 +45,10 @@ export default function AboutPage() {
               Back to Home
             </Link>
             <Link
-              href="/lab"
+              href="/software"
               className="inline-block bg-accent text-white px-5 py-3 rounded-lg hover:bg-accent/90 transition-colors"
             >
-              Visit the Lab
+              Visit Software
             </Link>
           </div>
         </div>
@@ -73,15 +73,14 @@ export default function AboutPage() {
           </p>
 
           <p>
-            All tools listed in the <strong>Lab section are free</strong> and will
-            always stay free. They’re prototypes and experiments designed to run
+            All tools listed in the <strong>Software section are free</strong> and will
+            always stay free. They're prototypes and experiments designed to run
             in your browser, no account needed.
           </p>
 
           <p>
-            Tools listed in the <strong>Tools section are paid</strong>—but they’ll
-            always be one-time purchases. No subscriptions, no hidden fees, no SaaS
-            traps. You buy it once, you own it forever.
+            The <strong>Research Lab</strong> hosts public domain datasets and in silico
+            discoveries—freely available for research and commercial use.
           </p>
 
           <p>

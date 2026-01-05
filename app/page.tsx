@@ -6,7 +6,7 @@ import Head from "next/head";
 export default function HomePage() {
   const siteTitle = "PatternRipple - Creative Tools and Utilities";
   const siteDescription =
-    "PatternRipple hosts browser-based creative tools and utilities. Visit the Lab to try free prototypes and apps.";
+    "PatternRipple hosts browser-based creative tools and utilities. Visit Software to try free prototypes and apps.";
 
   const jsonLdWebsite = {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-5xl font-thin tracking-wide text-gray-100 mb-4">PatternRipple</h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            Visit the Lab to try free tools and prototypes. Paid apps arrive as they are ready.
+            Visit Software to try free tools and prototypes. Research datasets and discoveries in the Lab.
           </p>
         </div>
       </header>
@@ -66,7 +66,7 @@ export default function HomePage() {
       {/* Highlight banner */}
       <div className="bg-accent text-black py-3">
         <div className="max-w-6xl mx-auto px-4 flex justify-center items-center gap-8 text-sm font-medium">
-          🧪 Visit the Lab for free tools and prototypes
+          🧪 Visit Software for free tools and prototypes
         </div>
       </div>
 
@@ -81,10 +81,10 @@ export default function HomePage() {
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
-              href="/lab"
+              href="/software"
               className="inline-block bg-accent text-white px-5 py-3 rounded-lg hover:bg-accent/90 transition-colors"
             >
-              Explore the Lab
+              Explore Software
             </Link>
           </div>
         </div>
@@ -103,7 +103,9 @@ export default function HomePage() {
             <div>
               <h3 className="text-white font-medium mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/lab" className="hover:text-accent">Lab</Link></li>
+                <li><Link href="/software" className="hover:text-accent">Software</Link></li>
+                <li><Link href="/lab" className="hover:text-accent">Research Lab</Link></li>
+                <li><Link href="/games" className="hover:text-accent">Games</Link></li>
                 <li><Link href="/about" className="hover:text-accent">About</Link></li>
                 <li><a href="mailto:nick@patternripple.com" className="hover:text-accent">Contact</a></li>
               </ul>

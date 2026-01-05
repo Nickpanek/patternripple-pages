@@ -1,6 +1,23 @@
-"use client";
-
 import Link from "next/link";
+import type { Metadata } from "next";
+
+// SEO
+export const metadata: Metadata = {
+  title: "Games | PatternRipple",
+  description: "Free HTML5 browser games. Play Bubble Pop, Dystopian Chess, and more instantly.",
+  alternates: { canonical: "https://www.patternripple.com/games" },
+  openGraph: {
+    title: "Games | PatternRipple",
+    description: "Free browser games built with HTML5. Play instantly, no downloads.",
+    url: "https://www.patternripple.com/games",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Games | PatternRipple",
+    description: "Free HTML5 games. Play now in your browser.",
+  },
+};
 
 type Game = {
   slug: string;
@@ -31,64 +48,76 @@ const games: Game[] = [
 
 export default function GamesPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 py-12">
+    <div className="min-h-screen bg-[#111] text-gray-200">
+      {/* Hero */}
+      <header className="bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-gray-700 py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h1 className="text-4xl font-thin tracking-wide text-gray-900 mb-3">
+          <h1 className="text-5xl font-thin tracking-wide text-gray-100 mb-3">
             Games
           </h1>
-          <p className="text-gray-600">
-            Quick, lightweight browser games hosted on PatternRipple.
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+            Free browser-based HTML5 games. Play instantly, no downloads or accounts needed.
           </p>
-          <div className="mt-4">
+          <div className="mt-5">
             <Link
               href="/"
-              className="text-sm text-gray-600 hover:text-purple-600 underline underline-offset-4"
+              className="inline-block border border-accent text-accent px-5 py-3 rounded-lg hover:bg-accent hover:text-white transition-colors"
             >
-              ← Back to Home
+              Back to Home
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {games.map((g) => (
+      {/* Games grid */}
+      <main className="max-w-6xl mx-auto px-4 py-10">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {games.map((game) => (
             <article
-              key={g.slug}
-              className="bg-white rounded-xl shadow-lg ring-4 ring-amber-400 overflow-hidden transition-all hover:shadow-2xl hover:-translate-y-1"
+              key={game.slug}
+              className="bg-[#1e1e1e] rounded-2xl shadow-md hover:shadow-xl transition-all ring-1 ring-gray-700"
             >
-              {g.badge && (
-                <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold py-2 text-center tracking-wider">
-                  {g.badge}
+              <div className="p-6 flex flex-col h-full">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-light text-gray-100">
+                    <Link href={game.href} className="hover:text-accent">
+                      {game.title}
+                    </Link>
+                  </h2>
+                  {game.badge ? (
+                    <span className="ml-3 text-xs font-semibold tracking-wide bg-accent/20 text-accent px-2.5 py-1 rounded-full">
+                      {game.badge}
+                    </span>
+                  ) : null}
                 </div>
-              )}
-              <div className="h-48 bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-                <span className="text-3xl">🎮</span>
-              </div>
-              <div className="p-6">
-                <h2 className="text-xl font-light text-gray-900 mb-2">{g.title}</h2>
-                <p className="text-gray-600 text-sm mb-4">{g.description}</p>
-                <Link
-                  href={g.href}
-                  prefetch={false}
-                  className="block w-full bg-gray-900 text-white text-center py-3 rounded-lg hover:bg-purple-600 transition-colors duration-300"
-                >
-                  Play
-                </Link>
+
+                <p className="mt-3 text-gray-400 text-sm flex-1">{game.description}</p>
+
+                <div className="mt-5">
+                  <Link
+                    href={game.href}
+                    className="inline-flex items-center justify-center w-full bg-accent text-white px-4 py-2.5 rounded-lg hover:bg-accent/90 transition-colors"
+                    prefetch={false}
+                    title={`Play ${game.title}`}
+                  >
+                    Play Game
+                  </Link>
+                </div>
               </div>
             </article>
           ))}
         </div>
 
-      
+        {/* Contact */}
+        <section className="mt-12 text-sm text-gray-500">
+          <p>
+            Have a game suggestion?{" "}
+            <a href="mailto:nick@patternripple.com" className="underline hover:text-accent">
+              nick@patternripple.com
+            </a>
+          </p>
+        </section>
       </main>
-
-      <footer className="bg-gray-900 text-gray-400 mt-20">
-        <div className="max-w-6xl mx-auto px-4 py-8 text-center text-sm">
-          <p>&copy; 2025 PatternRipple. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 }
