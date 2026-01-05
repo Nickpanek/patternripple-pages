@@ -47,11 +47,14 @@ export default function RootLayout({
               PatternRipple
             </Link>
             <div className="flex gap-6 text-sm">
-              <Link href="/lab" className="hover:text-white transition-colors">
-                Lab
+              <Link href="/software" className="hover:text-white transition-colors">
+                Software
               </Link>
-              <Link href="/tools" className="hover:text-white transition-colors">
-                Tools
+              <Link href="/lab" className="hover:text-white transition-colors">
+                Research Lab
+              </Link>
+              <Link href="/games" className="hover:text-white transition-colors">
+                Games
               </Link>
               <Link href="/about" className="hover:text-white transition-colors">
                 About
