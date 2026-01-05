@@ -62,16 +62,17 @@ const tools: Tool[] = [
     secondaryHref: "/pattern-checker.html",
     secondaryLabel: "v0",
   },
-  {
-    slug: "panek-video-program",
-    title: "Panek Video Program",
-    href: "/panekvideo/",
-    summary:
-      "Desktop app (Linux/macOS) that turns one image and one audio file into a 1920×1080 MP4. Fast rendering, native dialogs, perfect for YouTube and social media.",
-    badge: "Video",
-    secondaryHref: "https://github.com/Nickpanek/panek-video-program",
-    secondaryLabel: "View on GitHub",
-  },
+  // Hidden - Panek Video Program
+  // {
+  //   slug: "panek-video-program",
+  //   title: "Panek Video Program",
+  //   href: "/panekvideo/",
+  //   summary:
+  //     "Desktop app (Linux/macOS) that turns one image and one audio file into a 1920×1080 MP4. Fast rendering, native dialogs, perfect for YouTube and social media.",
+  //   badge: "Video",
+  //   secondaryHref: "https://github.com/Nickpanek/panek-video-program",
+  //   secondaryLabel: "View on GitHub",
+  // },
   {
     slug: "audio-looper-panek",
     title: "Audio Looper - Desktop Edition",
