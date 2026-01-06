@@ -1,0 +1,210 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_id: ${{ steps.create_release.outputs.id }}
+    steps:
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: build-${{ github.sha }}
+          release_name: Build ${{ github.sha }}
+          draft: true
+          prerelease: false
+
+  build-linux:
+    needs: create-release
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: public/handdraw/src-tauri
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install TypeScript
+        run: npm install -g typescript
+
+      - name: Compile TypeScript
+        run: |
+          cd public/handdraw/app
+          tsc --outDir ../src-tauri/dist --module es2020 --target es2020 --skipLibCheck --allowSyntheticDefaultImports app.ts
+
+      - name: Copy static assets
+        run: |
+          mkdir -p public/handdraw/src-tauri/dist
+          cp public/handdraw/app/index.html public/handdraw/src-tauri/dist/
+          cp public/handdraw/app/styles.css public/handdraw/src-tauri/dist/
+          cp -r public/handdraw/app/assets public/handdraw/src-tauri/dist/
+
+      - name: Download FFmpeg-kit LGPL
+        run: |
+          mkdir -p public/handdraw/src-tauri/libs
+          cd public/handdraw/src-tauri/libs
+          wget -q https://github.com/arthenica/ffmpeg-kit/releases/download/v6.0/ffmpeg-kit-linux-x86_64-6.0.tar.xz || true
+
+      - name: Build Tauri
+        run: |
+          cd public/handdraw/src-tauri
+          cargo install tauri-cli --version '^1.0'
+          cargo tauri build --bundles appimage,deb
+
+      - name: Upload AppImage to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: public/handdraw/src-tauri/target/release/bundle/appimage/handdraw_0.1.0_amd64.AppImage
+          asset_name: handdraw-linux.AppImage
+          asset_content_type: application/octet-stream
+
+      - name: Upload deb to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: public/handdraw/src-tauri/target/release/bundle/deb/handdraw_0.1.0_amd64.deb
+          asset_name: handdraw-linux.deb
+          asset_content_type: application/octet-stream
+
+  build-macos:
+    needs: create-release
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin,aarch64-apple-darwin
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: public/handdraw/src-tauri
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install TypeScript
+        run: npm install -g typescript
+
+      - name: Compile TypeScript
+        run: |
+          cd public/handdraw/app
+          tsc --outDir ../src-tauri/dist --module es2020 --target es2020 --skipLibCheck --allowSyntheticDefaultImports app.ts
+
+      - name: Copy static assets
+        run: |
+          mkdir -p public/handdraw/src-tauri/dist
+          cp public/handdraw/app/index.html public/handdraw/src-tauri/dist/
+          cp public/handdraw/app/styles.css public/handdraw/src-tauri/dist/
+          cp -r public/handdraw/app/assets public/handdraw/src-tauri/dist/
+
+      - name: Download FFmpeg-kit LGPL
+        run: |
+          mkdir -p public/handdraw/src-tauri/libs
+          cd public/handdraw/src-tauri/libs
+          curl -L -o ffmpeg-kit-macos.tar.xz https://github.com/arthenica/ffmpeg-kit/releases/download/v6.0/ffmpeg-kit-macos-universal-6.0.tar.xz || true
+
+      - name: Build Tauri
+        run: |
+          cd public/handdraw/src-tauri
+          cargo install tauri-cli --version '^1.0'
+          cargo tauri build --target universal-apple-darwin --bundles dmg
+
+      - name: Upload DMG to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: public/handdraw/src-tauri/target/universal-apple-darwin/release/bundle/dmg/HandDraw_0.1.0_universal.dmg
+          asset_name: handdraw-macos.dmg
+          asset_content_type: application/octet-stream
+
+  build-windows:
+    needs: create-release
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: public/handdraw/src-tauri
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install TypeScript
+        run: npm install -g typescript
+
+      - name: Compile TypeScript
+        run: |
+          cd public/handdraw/app
+          tsc --outDir ../src-tauri/dist --module es2020 --target es2020 --skipLibCheck --allowSyntheticDefaultImports app.ts
+
+      - name: Copy static assets
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path public/handdraw/src-tauri/dist
+          Copy-Item public/handdraw/app/index.html public/handdraw/src-tauri/dist/
+          Copy-Item public/handdraw/app/styles.css public/handdraw/src-tauri/dist/
+          Copy-Item -Recurse public/handdraw/app/assets public/handdraw/src-tauri/dist/
+
+      - name: Download FFmpeg-kit LGPL
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path public/handdraw/src-tauri/libs
+          cd public/handdraw/src-tauri/libs
+          Invoke-WebRequest -Uri "https://github.com/arthenica/ffmpeg-kit/releases/download/v6.0/ffmpeg-kit-windows-x86_64-6.0.zip" -OutFile "ffmpeg-kit-windows.zip" -ErrorAction SilentlyContinue
+
+      - name: Build Tauri
+        run: |
+          cd public/handdraw/src-tauri
+          cargo install tauri-cli --version "^1.0"
+          cargo tauri build --bundles nsis
+
+      - name: Upload NSIS to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: public/handdraw/src-tauri/target/release/bundle/nsis/HandDraw_0.1.0_x64-setup.exe
+          asset_name: handdraw-windows.exe
+          asset_content_type: application/octet-stream
