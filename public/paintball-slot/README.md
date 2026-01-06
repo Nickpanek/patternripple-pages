@@ -1,4 +1,4 @@
-# Tactical Patches Slot Machine
+# Tacticool Patches Slot Machine
 ## Airsoft & Milsim Edition
 
 This is a themed slot machine game featuring custom embroidered airsoft and milsim patch graphics.
