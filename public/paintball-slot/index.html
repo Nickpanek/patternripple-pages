@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tactical Patches Slot Machine - Play Free Online | PatternRipple</title>
+    <title>Tacticool Patches Slot Machine - Play Free Online | PatternRipple</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Play Tactical Patches slot machine game for free! Featuring custom embroidered airsoft and milsim patch designs. No download, no signup required.">
-    <meta name="keywords" content="slot machine game, free slots, airsoft patches, milsim patches, tactical patches, embroidered patches, casino game, online slots">
+    <meta name="description" content="Play Tacticool Patches slot machine game for free! Featuring custom embroidered airsoft and milsim patch designs. No download, no signup required.">
+    <meta name="keywords" content="slot machine game, free slots, airsoft patches, milsim patches, tacticool patches, tactical patches, embroidered patches, casino game, online slots">
     <meta name="author" content="Nick Panek">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.patternripple.com/paintball-slot/">
@@ -15,24 +15,24 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.patternripple.com/paintball-slot/">
-    <meta property="og:title" content="Tactical Patches Slot Machine - Play Free">
-    <meta property="og:description" content="Play Tactical Patches slot machine featuring custom embroidered airsoft and milsim patch designs!">
-    <meta property="og:image" content="https://www.patternripple.com/og-tactical-slot.png">
+    <meta property="og:title" content="Tacticool Patches Slot Machine - Play Free">
+    <meta property="og:description" content="Play Tacticool Patches slot machine featuring custom embroidered airsoft and milsim patch designs!">
+    <meta property="og:image" content="https://www.patternripple.com/og-tacticool-slot.png">
     <meta property="og:site_name" content="PatternRipple">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://www.patternripple.com/paintball-slot/">
-    <meta name="twitter:title" content="Tactical Patches Slot - Play Free">
-    <meta name="twitter:description" content="Play Tactical Patches slot machine with custom embroidered designs!">
-    <meta name="twitter:image" content="https://www.patternripple.com/og-tactical-slot.png">
+    <meta name="twitter:title" content="Tacticool Patches Slot - Play Free">
+    <meta name="twitter:description" content="Play Tacticool Patches slot machine with custom embroidered designs!">
+    <meta name="twitter:image" content="https://www.patternripple.com/og-tacticool-slot.png">
 
     <!-- Schema.org structured data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "VideoGame",
-      "name": "Tactical Patches: Airsoft & Milsim Edition",
+      "name": "Tacticool Patches: Airsoft & Milsim Edition",
       "description": "Free online slot machine game featuring custom embroidered airsoft and milsim patch designs with cascading reels",
       "url": "https://www.patternripple.com/paintball-slot/",
       "genre": "Casino Game",
@@ -200,42 +200,50 @@
             border: 2px solid rgba(197, 184, 150, 0.3);
         }
 
-        /* IMAGE-BASED SYMBOLS - Save your patch images with these names in the images/ folder:
-           - crossed-rifles.jpg (or .png) - Brown embroidered crossed rifles
-           - skull-helmet.jpg - Skull with helmet (blue background)
-           - pistol-green.jpg - Green camouflage pistol
-           - pistol-flower.jpg - Pistol with pink flower
+        /* IMAGE-BASED SYMBOLS
+           Save your patch images with these names in the images/ folder:
+           - morelo1.jpg = BONUS (Free Spins) - RAREST
+           - morelo2.jpg = WILD - Second rarest
+           - morelo3.jpg = High value symbol
+           - morelo4.jpg = Medium value symbol
+           - morelo5.jpg = Medium value symbol
+           - morelo6.jpg = Low value symbol
+           - morelo7.jpg = Low value symbol - MOST COMMON
         */
 
+        /* Symbol 0 - Most Common (Low Value) - morelo7.jpg */
         .sym-0 {
-            background-image: url('images/crossed-rifles.jpg');
+            background-image: url('images/morelo7.jpg');
             border-color: rgba(139, 90, 43, 0.6);
         }
 
+        /* Symbol 1 - Low Value - morelo6.jpg */
         .sym-1 {
-            background-image: url('images/skull-helmet.jpg');
+            background-image: url('images/morelo6.jpg');
             border-color: rgba(70, 130, 180, 0.6);
         }
 
+        /* Symbol 2 - Medium Value - morelo5.jpg */
         .sym-2 {
-            background-image: url('images/pistol-green.jpg');
+            background-image: url('images/morelo5.jpg');
             border-color: rgba(74, 92, 58, 0.6);
         }
 
+        /* Symbol 3 - Medium Value - morelo4.jpg */
         .sym-3 {
-            background-image: url('images/pistol-flower.jpg');
+            background-image: url('images/morelo4.jpg');
             border-color: rgba(212, 175, 55, 0.6);
         }
 
+        /* Symbol 4 - High Value - morelo3.jpg */
         .sym-4 {
-            background-image: url('images/crossed-rifles.jpg');
-            filter: hue-rotate(30deg) saturate(1.2);
+            background-image: url('images/morelo3.jpg');
             border-color: rgba(160, 82, 45, 0.6);
         }
 
-        /* WILD symbol - uses green pistol with special effects */
+        /* Symbol 5 - WILD (Second Rarest) - morelo2.jpg */
         .sym-5 {
-            background-image: url('images/pistol-green.jpg');
+            background-image: url('images/morelo2.jpg');
             border: 3px solid var(--gold);
             box-shadow:
                 inset 0 0 20px rgba(212, 175, 55, 0.4),
@@ -260,9 +268,9 @@
             font-family: 'Bebas Neue', cursive;
         }
 
-        /* BONUS symbol - uses skull with special effects */
+        /* Symbol 6 - BONUS / Free Spins (RAREST) - morelo1.jpg */
         .sym-6 {
-            background-image: url('images/skull-helmet.jpg');
+            background-image: url('images/morelo1.jpg');
             border: 3px solid #ff6b35;
             box-shadow:
                 inset 0 0 20px rgba(255, 107, 53, 0.4),
@@ -479,14 +487,14 @@
 
     <!-- AIRSOFT & MILSIM PATCH COLLECTION PROMO -->
     <div class="promo-banner">
-        <h3>TACTICAL EMBROIDERED PATCHES</h3>
+        <h3>TACTICOOL EMBROIDERED PATCHES</h3>
         <p>Custom airsoft & milsim patch designs available on Spoonflower!</p>
         <!-- TODO: Add your Spoonflower collection URL below -->
         <a href="#" class="promo-link" target="_blank" rel="noopener">VIEW COLLECTION</a>
     </div>
 
     <div class="title-container">
-        <h1 class="game-title">Tactical Patches</h1>
+        <h1 class="game-title">Tacticool Patches</h1>
         <div class="game-subtitle">Airsoft & Milsim Edition</div>
     </div>
 
