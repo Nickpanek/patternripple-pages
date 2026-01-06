@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tactical Patches Slot Machine - Play Free Online | PatternRipple</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Play Tactical Patches slot machine game for free! Featuring custom embroidered airsoft and milsim patch designs. No download, no signup required.">
+    <meta name="keywords" content="slot machine game, free slots, airsoft patches, milsim patches, tactical patches, embroidered patches, casino game, online slots">
+    <meta name="author" content="Nick Panek">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.patternripple.com/paintball-slot/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.patternripple.com/paintball-slot/">
+    <meta property="og:title" content="Tactical Patches Slot Machine - Play Free">
+    <meta property="og:description" content="Play Tactical Patches slot machine featuring custom embroidered airsoft and milsim patch designs!">
+    <meta property="og:image" content="https://www.patternripple.com/og-tactical-slot.png">
+    <meta property="og:site_name" content="PatternRipple">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.patternripple.com/paintball-slot/">
+    <meta name="twitter:title" content="Tactical Patches Slot - Play Free">
+    <meta name="twitter:description" content="Play Tactical Patches slot machine with custom embroidered designs!">
+    <meta name="twitter:image" content="https://www.patternripple.com/og-tactical-slot.png">
+
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "Tactical Patches: Airsoft & Milsim Edition",
+      "description": "Free online slot machine game featuring custom embroidered airsoft and milsim patch designs with cascading reels",
+      "url": "https://www.patternripple.com/paintball-slot/",
+      "genre": "Casino Game",
+      "gamePlatform": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "PatternRipple",
+        "url": "https://patternripple.com"
+      }
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Mono:wght@500;700&display=swap');
+
+        :root {
+            --bg-dark: #1a1f1a;
+            --gold: #d4af37;
+            --camo-green: #4a5c3a;
+            --tactical-tan: #c5b896;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--bg-dark);
+            color: #e6e6e6;
+            overflow-x: hidden;
+            touch-action: manipulation;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            /* Camo texture background */
+            background-image:
+                url('images/camo-background.jpg'),
+                radial-gradient(1200px 800px at 20% -10%, #2a3a2a 0%, rgba(26,31,26,0) 60%),
+                radial-gradient(900px 600px at 120% 120%, #1a2a1a 0%, rgba(16,24,16,0) 60%);
+            background-size: 300px, cover, cover;
+            background-blend-mode: overlay, normal, normal;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+            z-index: -1;
+        }
+
+        /* Promo Banner */
+        .promo-banner {
+            width: 100%;
+            max-width: 600px;
+            background: linear-gradient(135deg, #3a4a3a 0%, #2a3a2a 100%);
+            border: 2px solid var(--tactical-tan);
+            border-radius: 8px;
+            padding: 12px 20px;
+            margin-bottom: 16px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .promo-banner h3 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.2rem;
+            color: var(--tactical-tan);
+            margin-bottom: 4px;
+            letter-spacing: 2px;
+        }
+
+        .promo-banner p {
+            font-size: 0.85rem;
+            color: #a8b8a8;
+            margin-bottom: 8px;
+        }
+
+        .promo-link {
+            display: inline-block;
+            background: linear-gradient(to bottom, var(--gold), #b8941f);
+            color: #1a1f1a;
+            padding: 8px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 3px 0 #8a7a1a, 0 6px 8px rgba(0,0,0,0.3);
+        }
+
+        .promo-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #8a7a1a, 0 8px 12px rgba(0,0,0,0.4);
+        }
+
+        .promo-link:active {
+            transform: translateY(3px);
+            box-shadow: 0 0 0 #8a7a1a;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 5/3.5;
+            background: linear-gradient(135deg, #2a3a2a 0%, #1a2a1a 100%);
+            border: 3px solid #4a5a4a;
+            border-radius: 12px;
+            box-shadow: 0 0 0 2px #1a1f1a inset, 0 20px 40px rgba(0,0,0,0.8);
+            overflow: hidden;
+            transition: border-color 0.5s, box-shadow 0.5s;
+        }
+
+        #game-container.bonus-mode {
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        #reel-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 3px;
+            padding: 6px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .symbol-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: rgba(30,40,30,0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(74, 92, 58, 0.3);
+        }
+
+        .symbol {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            user-select: none;
+            will-change: transform;
+            transform: translateZ(0);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.5);
+            border: 2px solid rgba(197, 184, 150, 0.3);
+        }
+
+        /* IMAGE-BASED SYMBOLS - Save your patch images with these names in the images/ folder:
+           - crossed-rifles.jpg (or .png) - Brown embroidered crossed rifles
+           - skull-helmet.jpg - Skull with helmet (blue background)
+           - pistol-green.jpg - Green camouflage pistol
+           - pistol-flower.jpg - Pistol with pink flower
+        */
+
+        .sym-0 {
+            background-image: url('images/crossed-rifles.jpg');
+            border-color: rgba(139, 90, 43, 0.6);
+        }
+
+        .sym-1 {
+            background-image: url('images/skull-helmet.jpg');
+            border-color: rgba(70, 130, 180, 0.6);
+        }
+
+        .sym-2 {
+            background-image: url('images/pistol-green.jpg');
+            border-color: rgba(74, 92, 58, 0.6);
+        }
+
+        .sym-3 {
+            background-image: url('images/pistol-flower.jpg');
+            border-color: rgba(212, 175, 55, 0.6);
+        }
+
+        .sym-4 {
+            background-image: url('images/crossed-rifles.jpg');
+            filter: hue-rotate(30deg) saturate(1.2);
+            border-color: rgba(160, 82, 45, 0.6);
+        }
+
+        /* WILD symbol - uses green pistol with special effects */
+        .sym-5 {
+            background-image: url('images/pistol-green.jpg');
+            border: 3px solid var(--gold);
+            box-shadow:
+                inset 0 0 20px rgba(212, 175, 55, 0.4),
+                0 0 20px rgba(212, 175, 55, 0.5),
+                0 4px 8px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .sym-5::before {
+            content: "WILD";
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(212, 175, 55, 0.95);
+            color: #1a1f1a;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            font-family: 'Bebas Neue', cursive;
+        }
+
+        /* BONUS symbol - uses skull with special effects */
+        .sym-6 {
+            background-image: url('images/skull-helmet.jpg');
+            border: 3px solid #ff6b35;
+            box-shadow:
+                inset 0 0 20px rgba(255, 107, 53, 0.4),
+                0 0 20px rgba(255, 107, 53, 0.5),
+                0 4px 8px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .sym-6::before {
+            content: "BONUS";
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 107, 53, 0.95);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            font-family: 'Bebas Neue', cursive;
+        }
+
+        .win-flash {
+            animation: flash 0.6s ease-in-out infinite;
+            z-index: 10;
+            border-color: var(--gold);
+            box-shadow: 0 0 25px var(--gold);
+        }
+
+        @keyframes flash {
+            50% {
+                opacity: 0.8;
+                transform: scale(0.97);
+                filter: brightness(1.3);
+            }
+        }
+
+        .bonus-flash {
+            animation: spin-pulse 0.8s ease-in-out infinite;
+            z-index: 20;
+            border-color: #ff6b35;
+        }
+
+        @keyframes spin-pulse {
+            50% {
+                transform: scale(1.08) rotate(3deg);
+                box-shadow: 0 0 30px #ff6b35;
+                filter: brightness(1.4);
+            }
+        }
+
+        .vanishing {
+            animation: vanish 0.3s ease-out forwards;
+        }
+
+        @keyframes vanish {
+            100% {
+                transform: scale(0) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+        .panel {
+            width: 100%;
+            max-width: 600px;
+            background: linear-gradient(135deg, #2a3a2a 0%, #1a2a1a 100%);
+            border: 2px solid #4a5a4a;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .lcd {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #7ed321;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 2px solid #2a3a2a;
+            min-width: 100px;
+            text-align: right;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .spin-btn {
+            background: linear-gradient(to bottom, #d4af37, #b8941f);
+            color: #1a1f1a;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            box-shadow: 0 4px 0 #8a7a1a, 0 10px 10px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            text-transform: uppercase;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 2px;
+        }
+
+        .spin-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #8a7a1a;
+        }
+
+        .spin-btn:disabled {
+            background: #475569;
+            box-shadow: none;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: translateY(4px);
+        }
+
+        .auto-btn {
+            background: linear-gradient(to bottom, #4a5c3a, #3a4a2a);
+            color: var(--tactical-tan);
+            border: none;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            box-shadow: 0 4px 0 #2a3a1a, 0 10px 10px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            text-transform: uppercase;
+            margin-right: 8px;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 2px;
+        }
+
+        .auto-btn.active {
+            background: linear-gradient(to bottom, #c44536, #a03527);
+            color: white;
+            box-shadow: 0 4px 0 #7f1d1d, inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .auto-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #2a3a1a;
+        }
+
+        .float-text {
+            position: absolute;
+            color: var(--gold);
+            font-weight: 900;
+            font-size: 2.5rem;
+            text-shadow:
+                0 2px 0 #000,
+                0 0 20px rgba(212,175,55,0.8),
+                0 0 40px rgba(212,175,55,0.5);
+            pointer-events: none;
+            animation: floatUp 2s ease-out forwards;
+            z-index: 50;
+            width: 100%;
+            text-align: center;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 3px;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(-50%) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                transform: translateY(-50%) scale(1.3);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .game-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--tactical-tan) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.8));
+            margin: 0;
+        }
+
+        .game-subtitle {
+            font-size: 0.75rem;
+            color: var(--tactical-tan);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            font-family: 'Roboto Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AIRSOFT & MILSIM PATCH COLLECTION PROMO -->
+    <div class="promo-banner">
+        <h3>TACTICAL EMBROIDERED PATCHES</h3>
+        <p>Custom airsoft & milsim patch designs available on Spoonflower!</p>
+        <!-- TODO: Add your Spoonflower collection URL below -->
+        <a href="#" class="promo-link" target="_blank" rel="noopener">VIEW COLLECTION</a>
+    </div>
+
+    <div class="title-container">
+        <h1 class="game-title">Tactical Patches</h1>
+        <div class="game-subtitle">Airsoft & Milsim Edition</div>
+    </div>
+
+    <div id="game-container">
+        <div id="fs-banner" class="hidden absolute top-2 left-1/2 -translate-x-1/2 bg-orange-900/90 border-2 border-orange-400 text-orange-100 px-4 py-1 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(255,107,53,0.5)] z-20">
+            FREE SPINS: <span id="fs-count">0</span>
+        </div>
+
+        <div id="reel-grid"></div>
+
+        <div id="overlay" class="hidden absolute inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-[2px] transition-all">
+            <div id="overlay-text" class="text-5xl md:text-6xl font-black text-center animate-bounce drop-shadow-2xl">
+                BIG WIN!
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="flex gap-4 flex-1 justify-center md:justify-start">
+            <div>
+                <div class="text-[10px] text-gray-400 uppercase mb-1" style="color: var(--tactical-tan);">Balance</div>
+                <div id="balance-display" class="lcd">$1000.00</div>
+            </div>
+            <div>
+                <div class="text-[10px] text-gray-400 uppercase mb-1" style="color: var(--tactical-tan);">Win</div>
+                <div id="win-display" class="lcd text-yellow-400" style="color: var(--gold);">$0.00</div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <div class="flex flex-col items-end mr-2">
+                <label class="text-[10px] uppercase mb-1" style="color: var(--tactical-tan);">Bet</label>
+                <select id="bet-select" class="bg-gray-800 border border-gray-600 rounded p-1 text-sm outline-none focus:border-yellow-500" style="background: #1a2a1a; border-color: #4a5a4a; color: var(--tactical-tan);">
+                    <option value="1">$1</option>
+                    <option value="5" selected>$5</option>
+                    <option value="10">$10</option>
+                    <option value="25">$25</option>
+                </select>
+            </div>
+            <button id="auto-btn" class="auto-btn">AUTO</button>
+            <button id="spin-btn" class="spin-btn">SPIN</button>
+        </div>
+    </div>
+
+<script>
+const COLS = 5;
+const ROWS = 3;
+const SYMBOLS_COUNT = 7;
+const BONUS_ID = 6;
+const DROP_SPEED = 350;
+
+const LABELS = ["Rifles", "Skull", "Pistol", "Flower", "Tactical", "WILD", "BONUS"];
+
+const PAYOUTS = {
+    0: [0, 0, 0.5, 2, 10],
+    1: [0, 0, 0.5, 2, 10],
+    2: [0, 0, 1, 4, 15],
+    3: [0, 0, 1, 5, 20],
+    4: [0, 0, 2, 10, 50],
+    5: [0, 0, 5, 25, 200],
+    6: [0, 0, 0, 5, 20]
+};
+
+const PAYLINES = [
+    [[0,0],[0,1],[0,2],[0,3],[0,4]],
+    [[1,0],[1,1],[1,2],[1,3],[1,4]],
+    [[2,0],[2,1],[2,2],[2,3],[2,4]],
+    [[0,0],[1,1],[2,2],[1,3],[0,4]],
+    [[2,0],[1,1],[0,2],[1,3],[2,4]],
+    [[0,0],[0,1],[1,2],[0,3],[0,4]],
+    [[2,0],[2,1],[1,2],[2,3],[2,4]],
+    [[1,0],[0,1],[0,2],[0,3],[1,4]],
+    [[1,0],[2,1],[2,2],[2,3],[1,4]],
+    [[0,0],[1,1],[1,2],[1,3],[0,4]],
+    [[0,0],[1,1],[0,2],[1,3],[0,4]],
+    [[2,0],[1,1],[2,2],[1,3],[2,4]],
+    [[0,0],[1,1],[1,2],[1,3],[2,4]],
+    [[2,0],[1,1],[1,2],[1,3],[0,4]],
+    [[1,0],[0,1],[1,2],[2,3],[1,4]],
+    [[1,0],[2,1],[1,2],[0,3],[1,4]],
+    [[0,0],[0,1],[1,2],[2,3],[2,4]],
+    [[2,0],[2,1],[1,2],[0,3],[0,4]],
+    [[0,0],[1,1],[2,2],[1,3],[2,4]],
+    [[2,0],[1,1],[0,2],[1,3],[0,4]]
+];
+
+let grid = [];
+let balance = 1000;
+let currentBet = 5;
+let isSpinning = false;
+let autoEnabled = false;
+let totalWinThisSpin = 0;
+let freeSpins = 0;
+
+const gridEl = document.getElementById('reel-grid');
+const spinBtn = document.getElementById('spin-btn');
+const autoBtn = document.getElementById('auto-btn');
+const balanceEl = document.getElementById('balance-display');
+const winEl = document.getElementById('win-display');
+const betSelect = document.getElementById('bet-select');
+const overlay = document.getElementById('overlay');
+const overlayText = document.getElementById('overlay-text');
+const container = document.getElementById('game-container');
+const fsBanner = document.getElementById('fs-banner');
+const fsCount = document.getElementById('fs-count');
+
+function init() {
+    createGridStructure();
+    fillGridRandomly();
+    spinBtn.addEventListener('click', () => startSpin(false));
+    autoBtn.addEventListener('click', toggleAuto);
+    betSelect.addEventListener('change', (e) => currentBet = parseInt(e.target.value));
+    updateUI();
+}
+
+function createGridStructure() {
+    gridEl.innerHTML = '';
+    for (let r = 0; r < ROWS; r++) {
+        let row = [];
+        for (let c = 0; c < COLS; c++) {
+            let cell = document.createElement('div');
+            cell.className = 'symbol-wrapper';
+            cell.id = `cell-${r}-${c}`;
+            gridEl.appendChild(cell);
+            row.push(-1);
+        }
+        grid.push(row);
+    }
+}
+
+function fillGridRandomly() {
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            grid[r][c] = getRandomSymbol();
+            spawnSymbolInCell(r, c, grid[r][c]);
+        }
+    }
+}
+
+function getRandomSymbol() {
+    const rand = Math.random() * 100;
+    if (rand < 15.2) return 0;
+    if (rand < 30.4) return 1;
+    if (rand < 45.6) return 2;
+    if (rand < 60.8) return 3;
+    if (rand < 76.0) return 4;
+    if (rand < 88.0) return 5;
+    return 6;
+}
+
+function spawnSymbolInCell(r, c, id) {
+    const cell = document.getElementById(`cell-${r}-${c}`);
+    cell.innerHTML = '';
+    const sym = document.createElement('div');
+    sym.className = `symbol sym-${id}`;
+    cell.appendChild(sym);
+    return sym;
+}
+
+function toggleAuto() {
+    autoEnabled = !autoEnabled;
+    if (autoEnabled) {
+        autoBtn.textContent = "STOP";
+        autoBtn.classList.add('active');
+        if (!isSpinning) startSpin(true);
+    } else {
+        autoBtn.textContent = "AUTO";
+        autoBtn.classList.remove('active');
+    }
+}
+
+async function startSpin(isAuto = false) {
+    if (isSpinning) return;
+    if (freeSpins === 0 && balance < currentBet) {
+        if (autoEnabled) toggleAuto();
+        alert("Insufficient credits!");
+        return;
+    }
+
+    isSpinning = true;
+
+    if (freeSpins === 0) {
+        balance -= currentBet;
+        totalWinThisSpin = 0;
+    } else {
+        freeSpins--;
+        fsCount.textContent = freeSpins;
+    }
+
+    updateUI();
+    overlay.classList.add('hidden');
+    spinBtn.disabled = true;
+
+    for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) {
+            const cell = document.getElementById(`cell-${r}-${c}`);
+            cell.innerHTML = '';
+            grid[r][c] = -1;
+        }
+    }
+
+    await wait(150);
+    await dropAndFill();
+    await wait(200);
+    await processCascades();
+}
+
+async function processCascades() {
+    const results = checkWins();
+    const wins = results.wins;
+    const bonusTriggered = results.bonusTriggered;
+
+    if (wins.length > 0) {
+        let roundWin = 0;
+        wins.forEach(w => {
+            roundWin += w.payout;
+            highlightWin(w.coords, w.isBonus);
+        });
+
+        balance += roundWin;
+        totalWinThisSpin += roundWin;
+        updateUI();
+        if(roundWin > 0) showFloatText(roundWin);
+
+        if (bonusTriggered) {
+            await wait(500);
+            showOverlayMessage("FREE SPINS<br>TRIGGERED!", "text-orange-400");
+            freeSpins += 6;
+            fsCount.textContent = freeSpins;
+            toggleBonusMode(true);
+            await wait(2000);
+            overlay.classList.add('hidden');
+        } else {
+            await wait(800);
+        }
+
+        await removeWinningSymbols(wins);
+        await dropAndFill();
+        await processCascades();
+
+    } else {
+        if (freeSpins > 0) {
+            isSpinning = false;
+            setTimeout(() => startSpin(true), 800);
+        } else if (autoEnabled) {
+            isSpinning = false;
+            toggleBonusMode(false);
+
+            if (balance >= currentBet) {
+                setTimeout(() => startSpin(true), 800);
+            } else {
+                toggleAuto();
+            }
+        } else {
+            isSpinning = false;
+            spinBtn.disabled = false;
+            toggleBonusMode(false);
+
+            if (totalWinThisSpin > currentBet * 10) {
+                showOverlayMessage("BIG WIN!", "text-yellow-400");
+                setTimeout(() => overlay.classList.add('hidden'), 2500);
+            }
+        }
+    }
+}
+
+function checkWins() {
+    let foundWins = [];
+    let bonusTriggered = false;
+
+    // 1. Standard Payline Logic (ignoring Bonus symbol for line matches)
+    PAYLINES.forEach(line => {
+        let symbols = line.map(pos => grid[pos[0]][pos[1]]);
+
+        let firstNonWild = symbols.find(s => s !== 5 && s !== BONUS_ID);
+        let matchTarget = (firstNonWild === undefined) ? 5 : firstNonWild;
+
+        let count = 0;
+        // If matchTarget is Bonus, we skip this line (handled by scatter logic below)
+        if (matchTarget !== BONUS_ID) {
+            for (let s of symbols) {
+                if (s === matchTarget || s === 5) count++;
+                else break;
+            }
+        }
+
+        if (count >= 3) {
+            let multiplier = PAYOUTS[matchTarget][count-1];
+            let winAmount = currentBet * multiplier * 0.1;
+
+            if (winAmount > 0) {
+                foundWins.push({
+                    payout: winAmount,
+                    coords: line.slice(0, count),
+                    isBonus: false
+                });
+            }
+        }
+    });
+
+    // 2. Bonus Scatter Logic: Check for Bonus (ID 6) in Cols 0, 1, 2
+    let scatterCoords = [];
+    for(let c=0; c<3; c++) {
+        for(let r=0; r<ROWS; r++) {
+            if(grid[r][c] === BONUS_ID) {
+                scatterCoords.push([r,c]);
+            }
+        }
+    }
+
+    // Must have at least one bonus in Col 0, Col 1, and Col 2
+    const hasC0 = scatterCoords.some(p => p[1] === 0);
+    const hasC1 = scatterCoords.some(p => p[1] === 1);
+    const hasC2 = scatterCoords.some(p => p[1] === 2);
+
+    if (hasC0 && hasC1 && hasC2) {
+        bonusTriggered = true;
+        foundWins.push({
+            payout: 0, // Scatters trigger free spins, no immediate cash (or modify if needed)
+            coords: scatterCoords,
+            isBonus: true
+        });
+    }
+
+    return { wins: foundWins, bonusTriggered };
+}
+
+function highlightWin(coords, isBonus) {
+    coords.forEach(pos => {
+        const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+        const sym = cell.querySelector('.symbol');
+        if(sym) sym.classList.add(isBonus ? 'bonus-flash' : 'win-flash');
+    });
+}
+
+async function removeWinningSymbols(wins) {
+    let removed = new Set();
+    wins.forEach(w => {
+        w.coords.forEach(pos => {
+            let key = `${pos[0]}-${pos[1]}`;
+            if(!removed.has(key)) {
+                removed.add(key);
+                const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+                const sym = cell.querySelector('.symbol');
+                if(sym) {
+                    sym.classList.remove('win-flash', 'bonus-flash');
+                    sym.classList.add('vanishing');
+                }
+                grid[pos[0]][pos[1]] = -1;
+            }
+        });
+    });
+    await wait(350);
+    removed.forEach(key => {
+        let [r,c] = key.split('-');
+        const cell = document.getElementById(`cell-${r}-${c}`);
+        cell.innerHTML = '';
+    });
+}
+
+async function dropAndFill() {
+    const moves = [];
+    const newDrops = [];
+
+    for (let c = 0; c < COLS; c++) {
+        let nextWriteRow = ROWS - 1;
+        for (let r = ROWS - 1; r >= 0; r--) {
+            if (grid[r][c] !== -1) {
+                if (r !== nextWriteRow) {
+                    const cell = document.getElementById(`cell-${r}-${c}`);
+                    const sym = cell.querySelector('.symbol');
+                    if(sym) {
+                        moves.push({ dom: sym, fromR: r, toR: nextWriteRow, c: c });
+                        grid[nextWriteRow][c] = grid[r][c];
+                        grid[r][c] = -1;
+                    }
+                }
+                nextWriteRow--;
+            }
+        }
+        while (nextWriteRow >= 0) {
+            let newId = getRandomSymbol();
+            grid[nextWriteRow][c] = newId;
+            newDrops.push({ r: nextWriteRow, c: c, id: newId });
+            nextWriteRow--;
+        }
+    }
+
+    moves.forEach(m => {
+        const targetCell = document.getElementById(`cell-${m.toR}-${m.c}`);
+        targetCell.appendChild(m.dom);
+        const dist = m.toR - m.fromR;
+        m.dom.style.transition = 'none';
+        m.dom.style.transform = `translateY(-${dist * 100}%)`;
+    });
+
+    newDrops.forEach(d => {
+        const targetCell = document.getElementById(`cell-${d.r}-${d.c}`);
+        const sym = document.createElement('div');
+        sym.className = `symbol sym-${d.id}`;
+        targetCell.appendChild(sym);
+        const startOffset = (d.r + 1) * 100 + 20;
+        sym.style.transition = 'none';
+        sym.style.transform = `translateY(-${startOffset}%)`;
+        d.dom = sym;
+    });
+
+    gridEl.offsetHeight;
+
+    const allMoving = [...moves.map(m => m.dom), ...newDrops.map(d => d.dom)];
+    allMoving.forEach(el => {
+        if(el) {
+            el.style.transition = `transform ${DROP_SPEED}ms cubic-bezier(0.5, 0, 0.2, 1)`;
+            el.style.transform = 'translateY(0)';
+        }
+    });
+    await wait(DROP_SPEED + 50);
+}
+
+function updateUI() {
+    balanceEl.textContent = `$${balance.toFixed(2)}`;
+    winEl.textContent = `$${totalWinThisSpin.toFixed(2)}`;
+}
+
+function showFloatText(amount) {
+    const txt = document.createElement('div');
+    txt.className = 'float-text';
+    txt.textContent = `+$${amount.toFixed(2)}`;
+    txt.style.top = '50%';
+    container.appendChild(txt);
+    setTimeout(() => txt.remove(), 2000);
+}
+
+function showOverlayMessage(html, colorClass) {
+    overlayText.innerHTML = html;
+    overlayText.className = `text-5xl md:text-6xl font-black text-center animate-bounce drop-shadow-2xl ${colorClass}`;
+    overlay.classList.remove('hidden');
+}
+
+function toggleBonusMode(active) {
+    if (active) {
+        container.classList.add('bonus-mode');
+        fsBanner.classList.remove('hidden');
+    } else {
+        container.classList.remove('bonus-mode');
+        fsBanner.classList.add('hidden');
+    }
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+init();
+
+</script>
+</body>
+</html>
