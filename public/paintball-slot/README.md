@@ -7,27 +7,38 @@ This is a themed slot machine game featuring custom embroidered airsoft and mils
 
 ### Adding Your Patch Images
 
-Save your embroidered patch images to the `images/` folder with the following names:
+Save your embroidered patch images to the `images/` folder with the following names. **Lower numbers = rarer symbols!**
 
-1. **crossed-rifles.jpg** - Brown embroidered crossed rifles patch (used for Symbol 0 and 4)
-2. **skull-helmet.jpg** - Skull with helmet patch with blue background (used for Symbol 1 and Bonus)
-3. **pistol-green.jpg** - Green camouflage pistol patch (used for Symbol 2 and Wild)
-4. **pistol-flower.jpg** - Pistol with pink/red flower patch (used for Symbol 3)
-5. **camo-background.jpg** - Camouflage pattern texture (used as page background)
+**Required Images (7 total):**
+
+1. **morelo1.jpg** - BONUS (Free Spins) - **RAREST** - Gets orange border
+2. **morelo2.jpg** - WILD - Second rarest - Gets gold border
+3. **morelo3.jpg** - High value symbol
+4. **morelo4.jpg** - Medium value symbol
+5. **morelo5.jpg** - Medium value symbol
+6. **morelo6.jpg** - Low value symbol
+7. **morelo7.jpg** - Low value symbol - **MOST COMMON**
+8. **camo-background.jpg** - (Optional) Camouflage pattern texture for page background
 
 You can use either `.jpg` or `.png` format for all images.
 
+**Image Size Recommendations:**
+- Ideal: 400x400px to 500x500px
+- Minimum: 200x200px
+- Maximum: 1000x1000px
+- Square (1:1 ratio) works best
+
 ### Symbol Mapping
 
-The game has 7 symbol types that use your 5 patch images:
+The game has 7 symbol types, each with its own unique image:
 
-- **Symbol 0 (Low Value)**: Crossed Rifles - Direct use
-- **Symbol 1 (Low Value)**: Skull with Helmet - Direct use
-- **Symbol 2 (Medium Value)**: Green Pistol - Direct use
-- **Symbol 3 (Medium Value)**: Pistol with Flower - Direct use
-- **Symbol 4 (High Value)**: Crossed Rifles with color variation
-- **Symbol 5 (Wild)**: Green Pistol with gold border and "WILD" label
-- **Symbol 6 (Bonus)**: Skull with Helmet with orange border and "BONUS" label
+- **Symbol 6 (BONUS)**: morelo1.jpg - Triggers 6 Free Spins - Orange border + "BONUS" label
+- **Symbol 5 (WILD)**: morelo2.jpg - Substitutes for any symbol except Bonus - Gold border + "WILD" label
+- **Symbol 4 (High Value)**: morelo3.jpg - Best regular paying symbol
+- **Symbol 3 (Medium Value)**: morelo4.jpg
+- **Symbol 2 (Medium Value)**: morelo5.jpg
+- **Symbol 1 (Low Value)**: morelo6.jpg
+- **Symbol 0 (Low Value)**: morelo7.jpg - Most common symbol
 
 ### Updating the Spoonflower Link
 
