@@ -533,6 +533,114 @@
             object-fit: contain;
             filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.6));
         }
+
+        /* Game Controls (Music, Volume, Fullscreen) */
+        .game-controls {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 8px;
+            z-index: 25;
+        }
+
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(26, 31, 26, 0.9);
+            border: 1px solid rgba(197, 184, 150, 0.5);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--tactical-tan);
+            font-size: 1.1rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(42, 58, 42, 0.95);
+            border-color: var(--gold);
+            transform: scale(1.05);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn.active {
+            background: rgba(74, 92, 58, 0.9);
+            border-color: var(--gold);
+        }
+
+        .volume-control {
+            position: relative;
+        }
+
+        .volume-slider {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: rgba(26, 31, 26, 0.95);
+            border: 1px solid rgba(197, 184, 150, 0.5);
+            border-radius: 6px;
+            padding: 8px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .volume-slider.show {
+            display: flex;
+        }
+
+        .volume-slider input[type="range"] {
+            width: 100px;
+            height: 4px;
+            background: rgba(74, 92, 58, 0.5);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            writing-mode: bt-lr;
+            transform: rotate(270deg);
+            margin: 40px 0;
+        }
+
+        .volume-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .volume-slider input[type="range"]::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            background: var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .volume-percent {
+            font-size: 0.7rem;
+            color: var(--tactical-tan);
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        @media (max-width: 768px) {
+            .control-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -551,6 +659,18 @@
     </div>
 
     <div id="game-container">
+        <!-- Game Controls -->
+        <div class="game-controls">
+            <div class="control-btn" id="fullscreen-btn" title="Fullscreen">⛶</div>
+            <div class="volume-control">
+                <div class="control-btn active" id="music-btn" title="Toggle Music">🔊</div>
+                <div class="volume-slider" id="volume-slider">
+                    <div class="volume-percent" id="volume-percent">50%</div>
+                    <input type="range" id="volume-control" min="0" max="100" value="50">
+                </div>
+            </div>
+        </div>
+
         <div id="fs-banner" class="hidden absolute top-2 left-1/2 -translate-x-1/2 bg-orange-900/90 border-2 border-orange-400 text-orange-100 px-4 py-1 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(255,107,53,0.5)] z-20">
             FREE SPINS: <span id="fs-count">0</span>
         </div>
@@ -594,6 +714,11 @@
             <button id="spin-btn" class="spin-btn">SPIN</button>
         </div>
     </div>
+
+    <!-- Background Music -->
+    <audio id="background-music" loop>
+        <source src="miasgame.mp3" type="audio/mpeg">
+    </audio>
 
 <script>
 const COLS = 5;
@@ -657,6 +782,12 @@ const container = document.getElementById('game-container');
 const fsBanner = document.getElementById('fs-banner');
 const fsCount = document.getElementById('fs-count');
 const gifOverlay = document.getElementById('gif-overlay');
+const bgMusic = document.getElementById('background-music');
+const musicBtn = document.getElementById('music-btn');
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+const volumeControl = document.getElementById('volume-control');
+const volumeSlider = document.getElementById('volume-slider');
+const volumePercent = document.getElementById('volume-percent');
 
 function init() {
     createGridStructure();
@@ -664,7 +795,32 @@ function init() {
     spinBtn.addEventListener('click', () => startSpin(false));
     autoBtn.addEventListener('click', toggleAuto);
     betSelect.addEventListener('change', (e) => currentBet = parseInt(e.target.value));
+
+    // Music and controls
+    bgMusic.volume = 0.5;
+    musicBtn.addEventListener('click', toggleMusic);
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    volumeControl.addEventListener('input', updateVolume);
+    musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        volumeSlider.classList.toggle('show');
+    });
+
+    // Close volume slider when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.volume-control')) {
+            volumeSlider.classList.remove('show');
+        }
+    });
+
+    // Try to start music on first user interaction
+    document.addEventListener('click', startMusicOnInteraction, { once: true });
+
     updateUI();
+}
+
+function startMusicOnInteraction() {
+    bgMusic.play().catch(err => console.log('Music autoplay prevented:', err));
 }
 
 function createGridStructure() {
@@ -1021,6 +1177,45 @@ function toggleBonusMode(active) {
         fsBanner.classList.add('hidden');
     }
 }
+
+function toggleMusic() {
+    if (bgMusic.paused) {
+        bgMusic.play().catch(err => console.log('Could not play music:', err));
+        musicBtn.classList.add('active');
+        musicBtn.textContent = '🔊';
+    } else {
+        bgMusic.pause();
+        musicBtn.classList.remove('active');
+        musicBtn.textContent = '🔇';
+    }
+}
+
+function updateVolume() {
+    const volume = volumeControl.value / 100;
+    bgMusic.volume = volume;
+    volumePercent.textContent = `${volumeControl.value}%`;
+}
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        container.requestFullscreen().then(() => {
+            fullscreenBtn.classList.add('active');
+        }).catch(err => {
+            console.log('Fullscreen error:', err);
+        });
+    } else {
+        document.exitFullscreen().then(() => {
+            fullscreenBtn.classList.remove('active');
+        });
+    }
+}
+
+// Listen for fullscreen changes
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+        fullscreenBtn.classList.remove('active');
+    }
+});
 
 function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
