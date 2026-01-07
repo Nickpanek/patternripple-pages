@@ -648,6 +648,28 @@
                 font-size: 1rem;
             }
         }
+
+        /* Fullscreen mode adjustments */
+        #game-container:fullscreen .game-controls,
+        #game-container:-webkit-full-screen .game-controls,
+        #game-container:-moz-full-screen .game-controls,
+        #game-container:-ms-fullscreen .game-controls {
+            z-index: 999999;
+        }
+
+        #game-container:fullscreen .fullscreen-control,
+        #game-container:-webkit-full-screen .fullscreen-control,
+        #game-container:-moz-full-screen .fullscreen-control,
+        #game-container:-ms-fullscreen .fullscreen-control {
+            z-index: 999999;
+        }
+
+        #game-container:fullscreen .volume-slider,
+        #game-container:-webkit-full-screen .volume-slider,
+        #game-container:-moz-full-screen .volume-slider,
+        #game-container:-ms-fullscreen .volume-slider {
+            z-index: 999999;
+        }
     </style>
 </head>
 <body>
