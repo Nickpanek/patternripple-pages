@@ -538,9 +538,16 @@
         .game-controls {
             position: absolute;
             top: 8px;
-            right: 8px;
+            left: 8px;
             display: flex;
             gap: 8px;
+            z-index: 25;
+        }
+
+        .fullscreen-control {
+            position: absolute;
+            top: 8px;
+            right: 8px;
             z-index: 25;
         }
 
@@ -581,7 +588,7 @@
         .volume-slider {
             position: absolute;
             top: 100%;
-            right: 0;
+            left: 0;
             margin-top: 4px;
             background: rgba(26, 31, 26, 0.95);
             border: 1px solid rgba(197, 184, 150, 0.5);
@@ -659,9 +666,8 @@
     </div>
 
     <div id="game-container">
-        <!-- Game Controls -->
+        <!-- Volume Control - Top Left -->
         <div class="game-controls">
-            <div class="control-btn" id="fullscreen-btn" title="Fullscreen">⛶</div>
             <div class="volume-control">
                 <div class="control-btn active" id="music-btn" title="Toggle Music">🔊</div>
                 <div class="volume-slider" id="volume-slider">
@@ -669,6 +675,11 @@
                     <input type="range" id="volume-control" min="0" max="100" value="50">
                 </div>
             </div>
+        </div>
+
+        <!-- Fullscreen Control - Top Right -->
+        <div class="fullscreen-control">
+            <div class="control-btn" id="fullscreen-btn" title="Fullscreen">⛶</div>
         </div>
 
         <div id="fs-banner" class="hidden absolute top-2 left-1/2 -translate-x-1/2 bg-orange-900/90 border-2 border-orange-400 text-orange-100 px-4 py-1 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(255,107,53,0.5)] z-20">
