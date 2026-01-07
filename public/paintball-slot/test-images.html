@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Test - Tacticool Patches</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1f1a;
+            color: #e6e6e6;
+        }
+        .test-box {
+            border: 2px solid #4a5a4a;
+            padding: 20px;
+            margin: 20px 0;
+            background: #2a3a2a;
+        }
+        .image-test {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #d4af37;
+            margin: 10px;
+            display: inline-block;
+            background-size: cover;
+            background-position: center;
+            background-color: #ff0000;
+        }
+        .label {
+            color: #d4af37;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        img {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #4a5a4a;
+            margin: 10px;
+            background: #333;
+        }
+        .error {
+            color: #ff6b35;
+            padding: 10px;
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid #ff6b35;
+            margin: 10px 0;
+        }
+        .success {
+            color: #7ed321;
+            padding: 10px;
+            background: rgba(126, 211, 33, 0.1);
+            border: 1px solid #7ed321;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Tacticool Patches - Image Diagnostic Test</h1>
+
+    <div class="test-box">
+        <h2>Test 1: Direct IMG Tags</h2>
+        <p>If you see images below, files are in correct location. If you see broken image icons, check file names.</p>
+
+        <div>
+            <div class="label">morelo1.jpg (BONUS)</div>
+            <img src="images/morelo1.jpg" onerror="this.style.border='3px solid red'; this.alt='❌ morelo1.jpg NOT FOUND';" onload="this.style.border='3px solid lime';" alt="morelo1">
+        </div>
+
+        <div>
+            <div class="label">morelo2.jpg (WILD)</div>
+            <img src="images/morelo2.jpg" onerror="this.style.border='3px solid red'; this.alt='❌ morelo2.jpg NOT FOUND';" onload="this.style.border='3px solid lime';" alt="morelo2">
+        </div>
+
+        <div>
+            <div class="label">morelo3.jpg</div>
+            <img src="images/morelo3.jpg" onerror="this.style.border='3px solid red'; this.alt='❌ morelo3.jpg NOT FOUND';" onload="this.style.border='3px solid lime';" alt="morelo3">
+        </div>
+
+        <div>
+            <div class="label">morelo4.jpg</div>
+            <img src="images/morelo4.jpg" onerror="this.style.border='3px solid red'; this.alt='❌ morelo4.jpg NOT FOUND';" onload="this.style.border='3px solid lime';" alt="morelo4">
+        </div>
+
+        <div>
+            <div class="label">morelo5.jpg</div>
+            <img src="images/morelo5.jpg" onerror="this.style.border='3px solid red'; this.alt='❌ morelo5.jpg NOT FOUND';" onload="this.style.border='3px solid lime';" alt="morelo5">
+        </div>
+
+        <div>
+            <div class="label">morelo6.jpg</div>
+            <img src="images/morelo6.jpg" onerror="this.style.border='3px solid red'; this.alt='❌ morelo6.jpg NOT FOUND';" onload="this.style.border='3px solid lime';" alt="morelo6">
+        </div>
+
+        <div>
+            <div class="label">morelo7.jpg</div>
+            <img src="images/morelo7.jpg" onerror="this.style.border='3px solid red'; this.alt='❌ morelo7.jpg NOT FOUND';" onload="this.style.border='3px solid lime';" alt="morelo7">
+        </div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 2: CSS Background Images (How Slot Uses Them)</h2>
+        <p>These use background-image like the slot game. Should look identical to above.</p>
+
+        <div class="image-test" style="background-image: url('images/morelo1.jpg');"></div>
+        <div class="image-test" style="background-image: url('images/morelo2.jpg');"></div>
+        <div class="image-test" style="background-image: url('images/morelo3.jpg');"></div>
+        <div class="image-test" style="background-image: url('images/morelo4.jpg');"></div>
+        <div class="image-test" style="background-image: url('images/morelo5.jpg');"></div>
+        <div class="image-test" style="background-image: url('images/morelo6.jpg');"></div>
+        <div class="image-test" style="background-image: url('images/morelo7.jpg');"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>Common Issues & Solutions</h2>
+
+        <div class="error">
+            <strong>❌ PROBLEM: Opening HTML file directly (file:/// in URL bar)</strong><br>
+            Solution: You MUST use a local web server. Files opened directly have security restrictions.
+        </div>
+
+        <div class="success">
+            <strong>✅ SOLUTION 1: Use Python web server (Easiest)</strong><br>
+            1. Open terminal/command prompt<br>
+            2. Navigate to: <code>public/paintball-slot/</code><br>
+            3. Run: <code>python -m http.server 8000</code> (or <code>python3 -m http.server 8000</code>)<br>
+            4. Open browser to: <code>http://localhost:8000/index.html</code>
+        </div>
+
+        <div class="success">
+            <strong>✅ SOLUTION 2: Use VS Code Live Server</strong><br>
+            1. Install "Live Server" extension in VS Code<br>
+            2. Right-click index.html<br>
+            3. Select "Open with Live Server"
+        </div>
+
+        <div class="success">
+            <strong>✅ SOLUTION 3: Use npx http-server</strong><br>
+            1. In terminal at <code>public/paintball-slot/</code><br>
+            2. Run: <code>npx http-server -p 8000</code><br>
+            3. Open: <code>http://localhost:8000/index.html</code>
+        </div>
+
+        <div class="error">
+            <strong>❌ PROBLEM: File names don't match exactly</strong><br>
+            Files MUST be named exactly (case-sensitive on Linux/Mac):<br>
+            <code>morelo1.jpg morelo2.jpg morelo3.jpg morelo4.jpg morelo5.jpg morelo6.jpg morelo7.jpg</code><br>
+            NOT: Morelo1.jpg, morelo1.JPG, morelo-1.jpg, morelo_1.jpg, etc.
+        </div>
+
+        <div class="error">
+            <strong>❌ PROBLEM: Files in wrong folder</strong><br>
+            Files must be in: <code>public/paintball-slot/images/</code><br>
+            NOT in: public/images/ or paintball-slot/ or anywhere else
+        </div>
+    </div>
+
+    <div class="test-box">
+        <h2>JavaScript Diagnostics</h2>
+        <div id="diagnostics"></div>
+    </div>
+
+    <script>
+        const diagnostics = document.getElementById('diagnostics');
+
+        // Check current URL protocol
+        const protocol = window.location.protocol;
+        let output = `<p><strong>Current Protocol:</strong> ${protocol}</p>`;
+
+        if (protocol === 'file:') {
+            output += `<div class="error">⚠️ WARNING: You're using file:// protocol. Images will NOT work. Use a web server!</div>`;
+        } else {
+            output += `<div class="success">✅ Good! Using ${protocol} - web server is running.</div>`;
+        }
+
+        output += `<p><strong>Current URL:</strong> ${window.location.href}</p>`;
+        output += `<p><strong>Base Path:</strong> ${window.location.pathname}</p>`;
+
+        diagnostics.innerHTML = output;
+
+        // Test image loading
+        setTimeout(() => {
+            const testImages = ['morelo1', 'morelo2', 'morelo3', 'morelo4', 'morelo5', 'morelo6', 'morelo7'];
+            let results = '<h3>Image Load Test Results:</h3>';
+
+            testImages.forEach(name => {
+                const imgs = document.querySelectorAll(`img[alt="${name}"]`);
+                imgs.forEach(img => {
+                    if (img.complete && img.naturalHeight > 0) {
+                        results += `<div class="success">✅ ${name}.jpg loaded successfully (${img.naturalWidth}x${img.naturalHeight})</div>`;
+                    } else {
+                        results += `<div class="error">❌ ${name}.jpg FAILED to load - check file name and location</div>`;
+                    }
+                });
+            });
+
+            diagnostics.innerHTML += results;
+        }, 2000);
+    </script>
+</body>
+</html>
