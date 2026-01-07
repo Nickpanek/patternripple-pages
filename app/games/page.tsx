@@ -45,7 +45,7 @@ const games: Game[] = [
     title: "Tacticool Patches Slot Machine",
     description:
       "FREE slot machine featuring custom embroidered airsoft & milsim patch designs! Cascading reels, free spins bonus, background music, and fullscreen mode. Play instantly in your browser.",
-    href: "/paintball-slot/",
+    href: "/paintball-slot/index.html",
     badge: "Featured",
   },
   {
