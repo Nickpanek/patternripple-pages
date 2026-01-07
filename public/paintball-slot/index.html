@@ -508,6 +508,31 @@
             margin-top: 2px;
             font-family: 'Roboto Mono', monospace;
         }
+
+        /* Free Spins GIF Overlay */
+        #gif-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.85);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        #gif-overlay.show {
+            opacity: 1;
+        }
+
+        #gif-overlay img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.6));
+        }
     </style>
 </head>
 <body>
@@ -536,6 +561,10 @@
             <div id="overlay-text" class="text-5xl md:text-6xl font-black text-center animate-bounce drop-shadow-2xl">
                 BIG WIN!
             </div>
+        </div>
+
+        <div id="gif-overlay">
+            <img src="IMG_8666.gif" alt="Free Spins Triggered">
         </div>
     </div>
 
@@ -627,6 +656,7 @@ const overlayText = document.getElementById('overlay-text');
 const container = document.getElementById('game-container');
 const fsBanner = document.getElementById('fs-banner');
 const fsCount = document.getElementById('fs-count');
+const gifOverlay = document.getElementById('gif-overlay');
 
 function init() {
     createGridStructure();
@@ -748,12 +778,13 @@ async function processCascades() {
 
         if (bonusTriggered) {
             await wait(500);
-            showOverlayMessage("FREE SPINS<br>TRIGGERED!", "text-orange-400");
+
+            // Show GIF animation
+            await showBonusGif();
+
             freeSpins += 6;
             fsCount.textContent = freeSpins;
             toggleBonusMode(true);
-            await wait(2000);
-            overlay.classList.add('hidden');
         } else {
             await wait(800);
         }
@@ -959,6 +990,26 @@ function showOverlayMessage(html, colorClass) {
     overlayText.innerHTML = html;
     overlayText.className = `text-5xl md:text-6xl font-black text-center animate-bounce drop-shadow-2xl ${colorClass}`;
     overlay.classList.remove('hidden');
+}
+
+async function showBonusGif() {
+    // Reload GIF to restart animation
+    const img = gifOverlay.querySelector('img');
+    const src = img.src;
+    img.src = '';
+    img.src = src;
+
+    // Fade in
+    gifOverlay.classList.add('show');
+
+    // Play for 3 seconds (adjust based on your GIF length)
+    await wait(3000);
+
+    // Fade out
+    gifOverlay.classList.remove('show');
+
+    // Wait for fade out transition to complete
+    await wait(400);
 }
 
 function toggleBonusMode(active) {
