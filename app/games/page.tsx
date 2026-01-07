@@ -3,21 +3,21 @@ import type { Metadata } from "next";
 
 // SEO
 export const metadata: Metadata = {
-  title: "Free Browser Games - Bubble Pop, Dystopian Chess & More | PatternRipple",
-  description: "Play free HTML5 browser games online. Bubble Pop with combos and power-ups, Dystopian Chess, and more casual games. No download, no registration, instant play. Works on desktop and mobile.",
-  keywords: "free browser games, HTML5 games, online games, bubble pop game, chess game, casual games, no download games, instant play games, mobile games, free games",
+  title: "Free Games - Slot Machines, Bubble Pop, Chess & More | PatternRipple",
+  description: "Play FREE browser games online! Tacticool Patches Slot Machine with airsoft theme, Bubble Pop, Dystopian Chess, and more. No download, no signup, instant play on desktop and mobile.",
+  keywords: "free slot machine, free browser games, HTML5 games, online games, slot machine game, bubble pop game, chess game, airsoft games, casual games, no download games, instant play games, mobile games, free games",
   alternates: { canonical: "https://www.patternripple.com/games" },
   openGraph: {
-    title: "Free Browser Games - Bubble Pop, Chess & More | PatternRipple",
-    description: "Free HTML5 games. Play Bubble Pop with combos, Dystopian Chess, and more. Instant play, no downloads.",
+    title: "Free Games - Slot Machines & More | PatternRipple",
+    description: "FREE slot machines, Bubble Pop, Chess, and more. Instant play, no downloads or signups.",
     url: "https://www.patternripple.com/games",
     type: "website",
     siteName: "PatternRipple",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free HTML5 Browser Games - Instant Play",
-    description: "Bubble Pop, Dystopian Chess, and more. Free games, no download.",
+    title: "Free Browser Games - Slot Machines & More",
+    description: "Tacticool Patches Slot, Bubble Pop, Dystopian Chess. Free games, no download.",
   },
   robots: {
     index: true,
@@ -40,6 +40,14 @@ type Game = {
 };
 
 const games: Game[] = [
+  {
+    slug: "tacticool-patches-slot",
+    title: "Tacticool Patches Slot Machine",
+    description:
+      "FREE slot machine featuring custom embroidered airsoft & milsim patch designs! Cascading reels, free spins bonus, background music, and fullscreen mode. Play instantly in your browser.",
+    href: "/paintball-slot/",
+    badge: "Featured",
+  },
   {
     slug: "bubble",
     title: "Bubble Pop",
