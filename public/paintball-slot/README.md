@@ -7,7 +7,7 @@ This is a themed slot machine game featuring custom embroidered airsoft and mils
 
 ### Adding Your Patch Images
 
-Save your embroidered patch images to the `images/` folder with the following names. **Lower numbers = rarer symbols!**
+Save your embroidered patch images to the `public/paintball-slot/` folder (same location as index.html) with the following names. **Lower numbers = rarer symbols!**
 
 **Required Images (7 total):**
 
