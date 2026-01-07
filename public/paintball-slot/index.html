@@ -655,6 +655,7 @@
         #game-container:-moz-full-screen .game-controls,
         #game-container:-ms-fullscreen .game-controls {
             z-index: 999999;
+            pointer-events: auto;
         }
 
         #game-container:fullscreen .fullscreen-control,
@@ -662,6 +663,7 @@
         #game-container:-moz-full-screen .fullscreen-control,
         #game-container:-ms-fullscreen .fullscreen-control {
             z-index: 999999;
+            pointer-events: auto;
         }
 
         #game-container:fullscreen .volume-slider,
@@ -669,6 +671,22 @@
         #game-container:-moz-full-screen .volume-slider,
         #game-container:-ms-fullscreen .volume-slider {
             z-index: 999999;
+            pointer-events: auto;
+        }
+
+        #game-container:fullscreen .control-btn,
+        #game-container:-webkit-full-screen .control-btn,
+        #game-container:-moz-full-screen .control-btn,
+        #game-container:-ms-fullscreen .control-btn {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        #game-container:fullscreen .volume-control,
+        #game-container:-webkit-full-screen .volume-control,
+        #game-container:-moz-full-screen .volume-control,
+        #game-container:-ms-fullscreen .volume-control {
+            pointer-events: auto;
         }
     </style>
 </head>
