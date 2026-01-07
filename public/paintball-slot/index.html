@@ -145,7 +145,7 @@
             position: relative;
             width: 100%;
             max-width: 600px;
-            aspect-ratio: 5/3.5;
+            aspect-ratio: 5/3;
             background: linear-gradient(135deg, #2a3a2a 0%, #1a2a1a 100%);
             border: 3px solid #4a5a4a;
             border-radius: 12px;
@@ -213,37 +213,43 @@
 
         /* Symbol 0 - Most Common (Low Value) - morelo7.jpg */
         .sym-0 {
-            background-image: url('images/morelo7.jpg');
+            background-image: url('images/morelo7.jpg'), url('images/morelo7.png');
+            background-color: #4a3a2a;
             border-color: rgba(139, 90, 43, 0.6);
         }
 
         /* Symbol 1 - Low Value - morelo6.jpg */
         .sym-1 {
-            background-image: url('images/morelo6.jpg');
+            background-image: url('images/morelo6.jpg'), url('images/morelo6.png');
+            background-color: #2a3a4a;
             border-color: rgba(70, 130, 180, 0.6);
         }
 
         /* Symbol 2 - Medium Value - morelo5.jpg */
         .sym-2 {
-            background-image: url('images/morelo5.jpg');
+            background-image: url('images/morelo5.jpg'), url('images/morelo5.png');
+            background-color: #3a4a3a;
             border-color: rgba(74, 92, 58, 0.6);
         }
 
         /* Symbol 3 - Medium Value - morelo4.jpg */
         .sym-3 {
-            background-image: url('images/morelo4.jpg');
+            background-image: url('images/morelo4.jpg'), url('images/morelo4.png');
+            background-color: #4a4a3a;
             border-color: rgba(212, 175, 55, 0.6);
         }
 
         /* Symbol 4 - High Value - morelo3.jpg */
         .sym-4 {
-            background-image: url('images/morelo3.jpg');
+            background-image: url('images/morelo3.jpg'), url('images/morelo3.png');
+            background-color: #4a3a2a;
             border-color: rgba(160, 82, 45, 0.6);
         }
 
         /* Symbol 5 - WILD (Second Rarest) - morelo2.jpg */
         .sym-5 {
-            background-image: url('images/morelo2.jpg');
+            background-image: url('images/morelo2.jpg'), url('images/morelo2.png');
+            background-color: #3a4a2a;
             border: 3px solid var(--gold);
             box-shadow:
                 inset 0 0 20px rgba(212, 175, 55, 0.4),
@@ -266,11 +272,13 @@
             font-weight: 900;
             letter-spacing: 1px;
             font-family: 'Bebas Neue', cursive;
+            z-index: 10;
         }
 
         /* Symbol 6 - BONUS / Free Spins (RAREST) - morelo1.jpg */
         .sym-6 {
-            background-image: url('images/morelo1.jpg');
+            background-image: url('images/morelo1.jpg'), url('images/morelo1.png');
+            background-color: #3a2a2a;
             border: 3px solid #ff6b35;
             box-shadow:
                 inset 0 0 20px rgba(255, 107, 53, 0.4),
@@ -293,6 +301,7 @@
             font-weight: 900;
             letter-spacing: 1px;
             font-family: 'Bebas Neue', cursive;
+            z-index: 10;
         }
 
         .win-flash {
