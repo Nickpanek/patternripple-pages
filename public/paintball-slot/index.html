@@ -1208,25 +1208,70 @@ function updateVolume() {
 }
 
 function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        container.requestFullscreen().then(() => {
+    const elem = container;
+
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+        // Enter fullscreen
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen().then(() => {
+                fullscreenBtn.classList.add('active');
+            }).catch(err => console.log('Fullscreen error:', err));
+        } else if (elem.webkitRequestFullscreen) { // Safari
+            elem.webkitRequestFullscreen();
             fullscreenBtn.classList.add('active');
-        }).catch(err => {
-            console.log('Fullscreen error:', err);
-        });
+        } else if (elem.mozRequestFullScreen) { // Firefox
+            elem.mozRequestFullScreen();
+            fullscreenBtn.classList.add('active');
+        } else if (elem.msRequestFullscreen) { // IE/Edge
+            elem.msRequestFullscreen();
+            fullscreenBtn.classList.add('active');
+        }
     } else {
-        document.exitFullscreen().then(() => {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen().then(() => {
+                fullscreenBtn.classList.remove('active');
+            });
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
             fullscreenBtn.classList.remove('active');
-        });
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+            fullscreenBtn.classList.remove('active');
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+            fullscreenBtn.classList.remove('active');
+        }
     }
 }
 
-// Listen for fullscreen changes
-document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement) {
+// Listen for fullscreen changes (all vendor prefixes)
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+function handleFullscreenChange() {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
         fullscreenBtn.classList.remove('active');
     }
-});
+}
+
+// Hide fullscreen button if not supported (particularly on iOS)
+function checkFullscreenSupport() {
+    const isFullscreenSupported =
+        document.fullscreenEnabled ||
+        document.webkitFullscreenEnabled ||
+        document.mozFullScreenEnabled ||
+        document.msFullscreenEnabled;
+
+    if (!isFullscreenSupported) {
+        fullscreenBtn.style.display = 'none';
+    }
+}
+
+// Check support on load
+checkFullscreenSupport();
 
 function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
