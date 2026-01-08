@@ -1,0 +1,38 @@
+# OFFICIAL DISCLOSURE: THE LAZ-SERIES ANTIMICROBIAL LEADS
+AUTHOR: Nicholas Panek
+PUBLICATION DATE: January 7, 2026
+PRIMARY SOURCE: patternripple.com
+LEGAL STATUS: Public Domain (CC0 1.0 Universal)
+
+1. DISCLOSURE
+I am not a medical expert; I am a researcher who wanted to help tackle the problem of antibiotic resistance. If medical professionals or drug developers find this data useful, I hope they use it to create safe, effective, and affordable treatments for those who need them most.
+
+2. TECHNICAL METHODOLOGY
+These leads were discovered and validated using a suite of open-source computational tools:
+* ChEMBL: For initial fragment retrieval and QS target data.
+* BRICS: For fragment-based decomposition and recombination.
+* RDKit: For molecular informatics, canonicalization, and property calculation.
+* Smina: For molecular docking and binding affinity estimation.
+* OpenBabel: For chemical format interconversion and structure preparation.
+* Pandas & Google Colab: For data management and workflow execution.
+
+3. THE LEADS: LAZ-1011 & LAZ-1123
+These molecules feature a central imidazole core with bis-dioxolane "wings," providing a high Fraction Csp3 (0.80) to facilitate evasion of the AcrAB-TolC efflux pump system.
+
+* LAZ-1011 (SMILES): CC1(C)OCC(c2cn(C3COC(C)(C)OC3)cn2)CO1
+  - Original discovery; Best-in-class QED (0.84); Strong LasR/QscR binding.
+* LAZ-1123 (SMILES): COC1(C)OCC(n2cnc(C3COC(C)(C)OC3)c2)CO1
+  - Optimized for aqueous solubility (LogS -0.94) and improved TPSA (63.97).
+
+4. THE "TROLL SHIELD": DEFENSIVE DISCLOSURE
+To prevent this chemical space from being locked away by patent trolls, Nicholas Panek establishes comprehensive Prior Art for the following Markush family (I):
+
+Formula (I): Core — (X) — (Y)
+* Core: A 5-membered aromatic nitrogen heterocycle (Imidazole or Triazole).
+* X and Y: Independent 1,3-dioxolane rings.
+* Substitution: At least one ring comprises an R group where R is H, C1-C6 alkyl, or C1-C6 alkoxy.
+
+This disclosure asserts that any future claim regarding 3D-globular (Fsp3 > 0.75) scaffolds for MetAP or Quorum Sensing inhibition based on this genus is anticipated by this document.
+
+5. PUBLIC DOMAIN DEDICATION (CC0 1.0)
+Nicholas Panek has dedicated this work to the public domain by waiving all rights worldwide under copyright law. You are free to copy, modify, and distribute this work, even for commercial purposes, without asking permission. I hope real experts use this to make good, safe medicine that is cheap for the end user.
