@@ -85,23 +85,46 @@ export default function ResearchLabPage() {
 
       {/* Content grid */}
       <main className="max-w-6xl mx-auto px-4 py-14">
-        <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Placeholder for datasets */}
-          <div className="bg-[#1e1e1e] ring-1 ring-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all">
-            <h2 className="text-xl font-light text-gray-100">Datasets</h2>
-            <p className="mt-2 text-sm text-gray-400">
-              Public domain datasets coming soon
-            </p>
-            <div className="mt-4 text-accent font-semibold">Coming Soon</div>
+        <section>
+          <h2 className="text-2xl font-light text-gray-100 mb-6">In Silico Discoveries</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {/* LAZ-1011 & LAZ-1123 Discovery */}
+            <Link href="/lab/lazarus-001" className="bg-[#1e1e1e] ring-1 ring-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl hover:ring-accent transition-all group">
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="text-xl font-light text-gray-100 group-hover:text-accent transition-colors">
+                  Lazarus-001
+                </h3>
+                <span className="bg-green-500/10 border border-green-500/30 rounded px-2 py-1 text-xs text-green-400">
+                  PUBLIC DOMAIN
+                </span>
+              </div>
+              <p className="text-sm text-gray-400 mb-3">
+                LAZ-1011 & LAZ-1123: High-Fsp3 antimicrobial scaffolds for MDR pathogen treatment
+              </p>
+              <div className="space-y-1 text-xs text-gray-500 mb-4">
+                <p>• Efflux pump evasion (Fsp3 0.80)</p>
+                <p>• Quorum sensing inhibition</p>
+                <p>• 2 lead compounds + Markush family</p>
+              </div>
+              <div className="flex items-center text-accent text-sm font-semibold">
+                View Discovery
+                <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </Link>
           </div>
 
-          {/* Placeholder for in silico discoveries */}
-          <div className="bg-[#1e1e1e] ring-1 ring-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all">
-            <h2 className="text-xl font-light text-gray-100">In Silico Research</h2>
-            <p className="mt-2 text-sm text-gray-400">
-              Computational discoveries and findings
-            </p>
-            <div className="mt-4 text-accent font-semibold">Coming Soon</div>
+          <h2 className="text-2xl font-light text-gray-100 mb-6">Datasets</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Placeholder for future datasets */}
+            <div className="bg-[#1e1e1e] ring-1 ring-gray-700 rounded-2xl p-6 shadow-md">
+              <h3 className="text-xl font-light text-gray-100">Datasets</h3>
+              <p className="mt-2 text-sm text-gray-400">
+                Public domain datasets coming soon
+              </p>
+              <div className="mt-4 text-gray-500 font-semibold">Coming Soon</div>
+            </div>
           </div>
         </section>
 
