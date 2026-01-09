@@ -690,6 +690,46 @@
         #game-container:-ms-fullscreen .volume-control {
             pointer-events: auto;
         }
+
+        /* Fullscreen mode - Bottom control panel */
+        #game-container:fullscreen ~ .panel,
+        #game-container:-webkit-full-screen ~ .panel,
+        #game-container:-moz-full-screen ~ .panel,
+        #game-container:-ms-fullscreen ~ .panel {
+            z-index: 999999;
+            pointer-events: auto;
+        }
+
+        #game-container:fullscreen ~ .panel .spin-btn,
+        #game-container:-webkit-full-screen ~ .panel .spin-btn,
+        #game-container:-moz-full-screen ~ .panel .spin-btn,
+        #game-container:-ms-fullscreen ~ .panel .spin-btn {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        #game-container:fullscreen ~ .panel .auto-btn,
+        #game-container:-webkit-full-screen ~ .panel .auto-btn,
+        #game-container:-moz-full-screen ~ .panel .auto-btn,
+        #game-container:-ms-fullscreen ~ .panel .auto-btn {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        #game-container:fullscreen ~ .panel #bet-select,
+        #game-container:-webkit-full-screen ~ .panel #bet-select,
+        #game-container:-moz-full-screen ~ .panel #bet-select,
+        #game-container:-ms-fullscreen ~ .panel #bet-select {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        #game-container:fullscreen ~ .panel .lcd,
+        #game-container:-webkit-full-screen ~ .panel .lcd,
+        #game-container:-moz-full-screen ~ .panel .lcd,
+        #game-container:-ms-fullscreen ~ .panel .lcd {
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body>
