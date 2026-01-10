@@ -143,18 +143,25 @@
             box-shadow: 0 0 0 #8a7a1a;
         }
 
+        #fullscreen-wrapper {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
         #game-container {
             position: relative;
             width: 100%;
-            max-width: 600px;
+            aspect-ratio: 5/3;
             background: linear-gradient(135deg, #2a3a2a 0%, #1a2a1a 100%);
             border: 3px solid #4a5a4a;
             border-radius: 12px;
             box-shadow: 0 0 0 2px #1a1f1a inset, 0 20px 40px rgba(0,0,0,0.8);
             overflow: hidden;
             transition: border-color 0.5s, box-shadow 0.5s;
-            display: flex;
-            flex-direction: column;
         }
 
         #game-container.bonus-mode {
@@ -169,8 +176,7 @@
             gap: 3px;
             padding: 6px;
             width: 100%;
-            aspect-ratio: 5/3;
-            flex: 0 0 auto;
+            height: 100%;
         }
 
         .symbol-wrapper {
@@ -369,15 +375,15 @@
         .panel {
             width: 100%;
             background: linear-gradient(135deg, #2a3a2a 0%, #1a2a1a 100%);
-            border-top: 2px solid #4a5a4a;
+            border: 2px solid #4a5a4a;
             padding: 12px;
+            border-radius: 12px;
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            flex: 0 0 auto;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
         .lcd {
@@ -652,100 +658,66 @@
         }
 
         /* Fullscreen mode adjustments */
-        #game-container:fullscreen,
-        #game-container:-webkit-full-screen,
-        #game-container:-moz-full-screen,
-        #game-container:-ms-fullscreen {
+        #fullscreen-wrapper:fullscreen,
+        #fullscreen-wrapper:-webkit-full-screen,
+        #fullscreen-wrapper:-moz-full-screen,
+        #fullscreen-wrapper:-ms-fullscreen {
             max-width: 100%;
+            width: 100%;
             height: 100vh;
-            border-radius: 0;
+            background-color: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            gap: 20px;
         }
 
-        #game-container:fullscreen #reel-grid,
-        #game-container:-webkit-full-screen #reel-grid,
-        #game-container:-moz-full-screen #reel-grid,
-        #game-container:-ms-fullscreen #reel-grid {
-            flex: 1 1 auto;
-            aspect-ratio: auto;
-            height: auto;
+        #fullscreen-wrapper:fullscreen #game-container,
+        #fullscreen-wrapper:-webkit-full-screen #game-container,
+        #fullscreen-wrapper:-moz-full-screen #game-container,
+        #fullscreen-wrapper:-ms-fullscreen #game-container {
+            max-width: 90vw;
+            max-height: 70vh;
         }
 
-        #game-container:fullscreen .game-controls,
-        #game-container:-webkit-full-screen .game-controls,
-        #game-container:-moz-full-screen .game-controls,
-        #game-container:-ms-fullscreen .game-controls {
-            z-index: 999999;
+        #fullscreen-wrapper:fullscreen .panel,
+        #fullscreen-wrapper:-webkit-full-screen .panel,
+        #fullscreen-wrapper:-moz-full-screen .panel,
+        #fullscreen-wrapper:-ms-fullscreen .panel {
+            max-width: 90vw;
+            position: relative;
+            z-index: 10;
             pointer-events: auto;
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
-        #game-container:fullscreen .fullscreen-control,
-        #game-container:-webkit-full-screen .fullscreen-control,
-        #game-container:-moz-full-screen .fullscreen-control,
-        #game-container:-ms-fullscreen .fullscreen-control {
-            z-index: 999999;
-            pointer-events: auto;
+        #fullscreen-wrapper:fullscreen .panel button,
+        #fullscreen-wrapper:-webkit-full-screen .panel button,
+        #fullscreen-wrapper:-moz-full-screen .panel button,
+        #fullscreen-wrapper:-ms-fullscreen .panel button {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            position: relative;
+            z-index: 11;
         }
 
-        #game-container:fullscreen .volume-slider,
-        #game-container:-webkit-full-screen .volume-slider,
-        #game-container:-moz-full-screen .volume-slider,
-        #game-container:-ms-fullscreen .volume-slider {
-            z-index: 999999;
-            pointer-events: auto;
+        #fullscreen-wrapper:fullscreen .panel select,
+        #fullscreen-wrapper:-webkit-full-screen .panel select,
+        #fullscreen-wrapper:-moz-full-screen .panel select,
+        #fullscreen-wrapper:-ms-fullscreen .panel select {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            z-index: 11;
         }
 
-        #game-container:fullscreen .control-btn,
-        #game-container:-webkit-full-screen .control-btn,
-        #game-container:-moz-full-screen .control-btn,
-        #game-container:-ms-fullscreen .control-btn {
-            pointer-events: auto;
-            cursor: pointer;
-        }
-
-        #game-container:fullscreen .volume-control,
-        #game-container:-webkit-full-screen .volume-control,
-        #game-container:-moz-full-screen .volume-control,
-        #game-container:-ms-fullscreen .volume-control {
-            pointer-events: auto;
-        }
-
-        /* Fullscreen mode - Bottom control panel */
-        #game-container:fullscreen .panel,
-        #game-container:-webkit-full-screen .panel,
-        #game-container:-moz-full-screen .panel,
-        #game-container:-ms-fullscreen .panel {
-            z-index: 999999;
-            pointer-events: auto;
-        }
-
-        #game-container:fullscreen .panel .spin-btn,
-        #game-container:-webkit-full-screen .panel .spin-btn,
-        #game-container:-moz-full-screen .panel .spin-btn,
-        #game-container:-ms-fullscreen .panel .spin-btn {
-            pointer-events: auto;
-            cursor: pointer;
-        }
-
-        #game-container:fullscreen .panel .auto-btn,
-        #game-container:-webkit-full-screen .panel .auto-btn,
-        #game-container:-moz-full-screen .panel .auto-btn,
-        #game-container:-ms-fullscreen .panel .auto-btn {
-            pointer-events: auto;
-            cursor: pointer;
-        }
-
-        #game-container:fullscreen .panel #bet-select,
-        #game-container:-webkit-full-screen .panel #bet-select,
-        #game-container:-moz-full-screen .panel #bet-select,
-        #game-container:-ms-fullscreen .panel #bet-select {
-            pointer-events: auto;
-            cursor: pointer;
-        }
-
-        #game-container:fullscreen .panel .lcd,
-        #game-container:-webkit-full-screen .panel .lcd,
-        #game-container:-moz-full-screen .panel .lcd,
-        #game-container:-ms-fullscreen .panel .lcd {
+        #fullscreen-wrapper:fullscreen .panel *,
+        #fullscreen-wrapper:-webkit-full-screen .panel *,
+        #fullscreen-wrapper:-moz-full-screen .panel *,
+        #fullscreen-wrapper:-ms-fullscreen .panel * {
             pointer-events: auto;
         }
     </style>
@@ -765,6 +737,7 @@
         <div class="game-subtitle">Airsoft & Milsim Edition</div>
     </div>
 
+    <div id="fullscreen-wrapper">
     <div id="game-container">
         <!-- Volume Control - Top Left -->
         <div class="game-controls">
@@ -797,8 +770,9 @@
         <div id="gif-overlay">
             <img src="IMG_8666.gif" alt="Free Spins Triggered">
         </div>
+    </div>
 
-        <div class="panel">
+    <div class="panel">
         <div class="flex gap-4 flex-1 justify-center md:justify-start">
             <div>
                 <div class="text-[10px] text-gray-400 uppercase mb-1" style="color: var(--tactical-tan);">Balance</div>
@@ -890,6 +864,7 @@ const betSelect = document.getElementById('bet-select');
 const overlay = document.getElementById('overlay');
 const overlayText = document.getElementById('overlay-text');
 const container = document.getElementById('game-container');
+const fullscreenWrapper = document.getElementById('fullscreen-wrapper');
 const fsBanner = document.getElementById('fs-banner');
 const fsCount = document.getElementById('fs-count');
 const gifOverlay = document.getElementById('gif-overlay');
@@ -1308,7 +1283,7 @@ function updateVolume() {
 }
 
 function toggleFullscreen() {
-    const elem = container;
+    const elem = fullscreenWrapper;
 
     if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
         // Enter fullscreen
