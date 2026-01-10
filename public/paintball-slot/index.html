@@ -401,10 +401,8 @@
             padding: 12px;
             border-radius: 12px;
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
@@ -838,7 +836,7 @@
     </div>
 
     <div class="panel">
-        <div class="flex gap-4 flex-1 justify-center md:justify-start">
+        <div class="flex gap-2 flex-wrap items-center justify-center w-full">
             <div>
                 <div class="text-[10px] text-gray-400 uppercase mb-1" style="color: var(--tactical-tan);">Balance</div>
                 <div id="balance-display" class="lcd">$1000.00</div>
@@ -847,10 +845,7 @@
                 <div class="text-[10px] text-gray-400 uppercase mb-1" style="color: var(--tactical-tan);">Win</div>
                 <div id="win-display" class="lcd text-yellow-400" style="color: var(--gold);">$0.00</div>
             </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <div class="flex flex-col items-end mr-2">
+            <div class="flex flex-col items-end">
                 <label class="text-[10px] uppercase mb-1" style="color: var(--tactical-tan);">Bet</label>
                 <select id="bet-select" class="bg-gray-800 border border-gray-600 rounded p-1 text-sm outline-none focus:border-yellow-500" style="background: #1a2a1a; border-color: #4a5a4a; color: var(--tactical-tan);">
                     <option value="1">$1</option>
@@ -859,7 +854,12 @@
                     <option value="25">$25</option>
                 </select>
             </div>
-            <!-- Music/Volume Control -->
+            <button id="auto-btn" class="auto-btn">AUTO</button>
+            <button id="spin-btn" class="spin-btn">SPIN</button>
+        </div>
+
+        <!-- Music/Volume Control - Second Row -->
+        <div class="flex justify-center w-full mt-2">
             <div class="volume-control">
                 <div class="control-btn active" id="music-btn" title="Toggle Music">🔊</div>
                 <div class="volume-slider" id="volume-slider">
@@ -867,8 +867,6 @@
                     <input type="range" id="volume-control" min="0" max="100" value="50">
                 </div>
             </div>
-            <button id="auto-btn" class="auto-btn">AUTO</button>
-            <button id="spin-btn" class="spin-btn">SPIN</button>
         </div>
     </div>
     </div>
