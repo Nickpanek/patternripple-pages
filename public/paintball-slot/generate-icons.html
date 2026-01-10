@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate PWA Icons - Tacticool Slots</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1f1a;
+            color: #e6e6e6;
+        }
+        .icon-preview {
+            display: inline-block;
+            margin: 20px;
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid #4a5a4a;
+            border-radius: 8px;
+            display: block;
+            margin: 10px auto;
+        }
+        button {
+            background: #d4af37;
+            color: #1a1f1a;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #c5b896;
+        }
+        h1 {
+            color: #d4af37;
+        }
+        .instructions {
+            background: #2a3a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generate PWA Icons</h1>
+
+    <div class="instructions">
+        <p><strong>Instructions:</strong></p>
+        <ol>
+            <li>Click the buttons below to download the icon files</li>
+            <li>Save them as <code>icon-192.png</code> and <code>icon-512.png</code></li>
+            <li>Place them in the <code>/public/paintball-slot/</code> folder</li>
+        </ol>
+    </div>
+
+    <div class="icon-preview">
+        <h3>192x192 Icon</h3>
+        <canvas id="icon192" width="192" height="192"></canvas>
+        <button onclick="downloadIcon('icon192', 'icon-192.png')">Download 192x192</button>
+    </div>
+
+    <div class="icon-preview">
+        <h3>512x512 Icon</h3>
+        <canvas id="icon512" width="512" height="512"></canvas>
+        <button onclick="downloadIcon('icon512', 'icon-512.png')">Download 512x512</button>
+    </div>
+
+    <script>
+        function createIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+
+            // Background - Camo green
+            ctx.fillStyle = '#4a5c3a';
+            ctx.fillRect(0, 0, size, size);
+
+            // Add tactical pattern
+            ctx.fillStyle = '#3a4a2a';
+            ctx.fillRect(0, 0, size/2, size/2);
+            ctx.fillRect(size/2, size/2, size/2, size/2);
+
+            // Gold circle
+            ctx.fillStyle = '#d4af37';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Text "TS"
+            ctx.fillStyle = '#1a1f1a';
+            ctx.font = `bold ${size/3}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('TS', size/2, size/2);
+
+            // Border
+            ctx.strokeStyle = '#c5b896';
+            ctx.lineWidth = size/32;
+            ctx.strokeRect(0, 0, size, size);
+        }
+
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const url = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = url;
+            link.click();
+        }
+
+        // Generate icons on page load
+        createIcon('icon192', 192);
+        createIcon('icon512', 512);
+    </script>
+</body>
+</html>
