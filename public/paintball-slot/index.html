@@ -710,6 +710,16 @@
                 font-size: 1rem;
                 min-height: 48px;
             }
+
+            /* Compact volume slider on mobile */
+            .volume-slider input[type="range"] {
+                width: 60px;
+                margin: 25px 0;
+            }
+
+            .volume-slider {
+                padding: 6px;
+            }
         }
 
         /* PWA Standalone Mode Styles */
@@ -1407,15 +1417,21 @@ function handleFullscreenChange() {
     }
 }
 
-// Hide fullscreen button if not supported (particularly on iOS)
+// Hide fullscreen button if not supported or on iOS
 function checkFullscreenSupport() {
+    // Detect iOS devices (iPhone, iPad, iPod)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
     const isFullscreenSupported =
         document.fullscreenEnabled ||
         document.webkitFullscreenEnabled ||
         document.mozFullScreenEnabled ||
         document.msFullscreenEnabled;
 
-    if (!isFullscreenSupported) {
+    // Hide fullscreen button on iOS (doesn't support Fullscreen API)
+    // iOS users should use "Add to Home Screen" for fullscreen experience
+    if (!isFullscreenSupported || isIOS) {
         fullscreenBtn.style.display = 'none';
     }
 }
