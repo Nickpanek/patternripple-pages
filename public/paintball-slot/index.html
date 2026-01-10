@@ -935,12 +935,12 @@ function fillGridRandomly() {
 
 function getRandomSymbol() {
     const rand = Math.random() * 100;
-    if (rand < 15.2) return 0;
-    if (rand < 30.4) return 1;
-    if (rand < 45.6) return 2;
-    if (rand < 60.8) return 3;
-    if (rand < 76.0) return 4;
-    if (rand < 88.0) return 5;
+    if (rand < 18) return 0;
+    if (rand < 36) return 1;
+    if (rand < 54) return 2;
+    if (rand < 70) return 3;
+    if (rand < 84) return 4;
+    if (rand < 92) return 5;
     return 6;
 }
 
@@ -1024,7 +1024,7 @@ async function processCascades() {
             // Show GIF animation
             await showBonusGif();
 
-            freeSpins += 6;
+            freeSpins += 3;
             fsCount.textContent = freeSpins;
             toggleBonusMode(true);
         } else {
@@ -1083,7 +1083,7 @@ function checkWins() {
 
         if (count >= 3) {
             let multiplier = PAYOUTS[matchTarget][count-1];
-            let winAmount = currentBet * multiplier * 0.1;
+            let winAmount = currentBet * multiplier * 0.108;
 
             if (winAmount > 0) {
                 foundWins.push({
