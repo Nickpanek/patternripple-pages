@@ -935,13 +935,13 @@ function fillGridRandomly() {
 
 function getRandomSymbol() {
     const rand = Math.random() * 100;
-    if (rand < 18) return 0;
-    if (rand < 36) return 1;
-    if (rand < 54) return 2;
-    if (rand < 70) return 3;
-    if (rand < 84) return 4;
-    if (rand < 92) return 5;
-    return 6;
+    if (rand < 17.0) return 0;
+    if (rand < 34.0) return 1;
+    if (rand < 51.0) return 2;
+    if (rand < 67.0) return 3;
+    if (rand < 82.0) return 4;
+    if (rand < 92.0) return 5;  // 10% WILD
+    return 6;  // 8% BONUS
 }
 
 function spawnSymbolInCell(r, c, id) {
@@ -1024,7 +1024,7 @@ async function processCascades() {
             // Show GIF animation
             await showBonusGif();
 
-            freeSpins += 3;
+            freeSpins += 4;
             fsCount.textContent = freeSpins;
             toggleBonusMode(true);
         } else {
@@ -1083,7 +1083,7 @@ function checkWins() {
 
         if (count >= 3) {
             let multiplier = PAYOUTS[matchTarget][count-1];
-            let winAmount = currentBet * multiplier * 0.108;
+            let winAmount = currentBet * multiplier * 0.112;
 
             if (winAmount > 0) {
                 foundWins.push({
