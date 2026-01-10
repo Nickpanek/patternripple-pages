@@ -147,13 +147,14 @@
             position: relative;
             width: 100%;
             max-width: 600px;
-            aspect-ratio: 5/3;
             background: linear-gradient(135deg, #2a3a2a 0%, #1a2a1a 100%);
             border: 3px solid #4a5a4a;
             border-radius: 12px;
             box-shadow: 0 0 0 2px #1a1f1a inset, 0 20px 40px rgba(0,0,0,0.8);
             overflow: hidden;
             transition: border-color 0.5s, box-shadow 0.5s;
+            display: flex;
+            flex-direction: column;
         }
 
         #game-container.bonus-mode {
@@ -168,7 +169,8 @@
             gap: 3px;
             padding: 6px;
             width: 100%;
-            height: 100%;
+            aspect-ratio: 5/3;
+            flex: 0 0 auto;
         }
 
         .symbol-wrapper {
@@ -366,18 +368,16 @@
 
         .panel {
             width: 100%;
-            max-width: 600px;
             background: linear-gradient(135deg, #2a3a2a 0%, #1a2a1a 100%);
-            border: 2px solid #4a5a4a;
+            border-top: 2px solid #4a5a4a;
             padding: 12px;
-            border-radius: 12px;
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            margin-top: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            flex: 0 0 auto;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.5);
         }
 
         .lcd {
@@ -652,6 +652,24 @@
         }
 
         /* Fullscreen mode adjustments */
+        #game-container:fullscreen,
+        #game-container:-webkit-full-screen,
+        #game-container:-moz-full-screen,
+        #game-container:-ms-fullscreen {
+            max-width: 100%;
+            height: 100vh;
+            border-radius: 0;
+        }
+
+        #game-container:fullscreen #reel-grid,
+        #game-container:-webkit-full-screen #reel-grid,
+        #game-container:-moz-full-screen #reel-grid,
+        #game-container:-ms-fullscreen #reel-grid {
+            flex: 1 1 auto;
+            aspect-ratio: auto;
+            height: auto;
+        }
+
         #game-container:fullscreen .game-controls,
         #game-container:-webkit-full-screen .game-controls,
         #game-container:-moz-full-screen .game-controls,
@@ -692,42 +710,42 @@
         }
 
         /* Fullscreen mode - Bottom control panel */
-        #game-container:fullscreen ~ .panel,
-        #game-container:-webkit-full-screen ~ .panel,
-        #game-container:-moz-full-screen ~ .panel,
-        #game-container:-ms-fullscreen ~ .panel {
+        #game-container:fullscreen .panel,
+        #game-container:-webkit-full-screen .panel,
+        #game-container:-moz-full-screen .panel,
+        #game-container:-ms-fullscreen .panel {
             z-index: 999999;
             pointer-events: auto;
         }
 
-        #game-container:fullscreen ~ .panel .spin-btn,
-        #game-container:-webkit-full-screen ~ .panel .spin-btn,
-        #game-container:-moz-full-screen ~ .panel .spin-btn,
-        #game-container:-ms-fullscreen ~ .panel .spin-btn {
+        #game-container:fullscreen .panel .spin-btn,
+        #game-container:-webkit-full-screen .panel .spin-btn,
+        #game-container:-moz-full-screen .panel .spin-btn,
+        #game-container:-ms-fullscreen .panel .spin-btn {
             pointer-events: auto;
             cursor: pointer;
         }
 
-        #game-container:fullscreen ~ .panel .auto-btn,
-        #game-container:-webkit-full-screen ~ .panel .auto-btn,
-        #game-container:-moz-full-screen ~ .panel .auto-btn,
-        #game-container:-ms-fullscreen ~ .panel .auto-btn {
+        #game-container:fullscreen .panel .auto-btn,
+        #game-container:-webkit-full-screen .panel .auto-btn,
+        #game-container:-moz-full-screen .panel .auto-btn,
+        #game-container:-ms-fullscreen .panel .auto-btn {
             pointer-events: auto;
             cursor: pointer;
         }
 
-        #game-container:fullscreen ~ .panel #bet-select,
-        #game-container:-webkit-full-screen ~ .panel #bet-select,
-        #game-container:-moz-full-screen ~ .panel #bet-select,
-        #game-container:-ms-fullscreen ~ .panel #bet-select {
+        #game-container:fullscreen .panel #bet-select,
+        #game-container:-webkit-full-screen .panel #bet-select,
+        #game-container:-moz-full-screen .panel #bet-select,
+        #game-container:-ms-fullscreen .panel #bet-select {
             pointer-events: auto;
             cursor: pointer;
         }
 
-        #game-container:fullscreen ~ .panel .lcd,
-        #game-container:-webkit-full-screen ~ .panel .lcd,
-        #game-container:-moz-full-screen ~ .panel .lcd,
-        #game-container:-ms-fullscreen ~ .panel .lcd {
+        #game-container:fullscreen .panel .lcd,
+        #game-container:-webkit-full-screen .panel .lcd,
+        #game-container:-moz-full-screen .panel .lcd,
+        #game-container:-ms-fullscreen .panel .lcd {
             pointer-events: auto;
         }
     </style>
@@ -779,9 +797,8 @@
         <div id="gif-overlay">
             <img src="IMG_8666.gif" alt="Free Spins Triggered">
         </div>
-    </div>
 
-    <div class="panel">
+        <div class="panel">
         <div class="flex gap-4 flex-1 justify-center md:justify-start">
             <div>
                 <div class="text-[10px] text-gray-400 uppercase mb-1" style="color: var(--tactical-tan);">Balance</div>
@@ -806,6 +823,7 @@
             <button id="auto-btn" class="auto-btn">AUTO</button>
             <button id="spin-btn" class="spin-btn">SPIN</button>
         </div>
+    </div>
     </div>
 
     <!-- Background Music -->
