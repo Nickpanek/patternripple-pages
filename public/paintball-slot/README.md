@@ -95,9 +95,57 @@ The game uses a tactical/military color scheme with:
 
 All visual styling can be customized in the `<style>` section of the HTML file.
 
+## Progressive Web App (PWA) Installation
+
+This game is a fully functional Progressive Web App that can be installed on mobile devices for an app-like experience!
+
+### Installing on iOS (iPhone/iPad)
+
+1. Open the game in Safari
+2. Tap the Share button (square with arrow pointing up)
+3. Scroll down and tap "Add to Home Screen"
+4. Tap "Add" in the top right corner
+5. The app icon will appear on your home screen
+6. When launched from home screen, it runs in **fullscreen standalone mode** with all controls fully functional!
+
+### Installing on Android
+
+1. Open the game in Chrome
+2. Tap the menu (three dots)
+3. Tap "Install app" or "Add to Home Screen"
+4. Tap "Install"
+5. The app will be installed and can be launched from your app drawer
+
+### Installing on Desktop (Chrome, Edge)
+
+1. Open the game in a supported browser
+2. Look for the install icon in the address bar (usually a + or download icon)
+3. Click "Install"
+4. The game opens in its own window like a native app
+
+### PWA Features
+
+- **Works Offline**: Play anytime, even without internet connection
+- **Fast Loading**: Assets are cached for instant loading
+- **App-like Experience**: Fullscreen mode on mobile, especially iOS
+- **No App Store**: Install directly from the web
+- **Always Updated**: Automatically gets latest version when online
+- **Mobile Optimized**: Larger touch targets (56px minimum) for easy gameplay on mobile
+
+### Creating App Icons
+
+Before installing as PWA, you should add custom icons:
+
+1. Open `generate-icons.html` in a browser
+2. Download both icon files (192x192 and 512x512)
+3. Save them in the `/public/paintball-slot/` folder
+4. Or use your own custom icons (see `ICON-INSTRUCTIONS.md`)
+
 ## Testing
 
 Open `index.html` in a web browser to play the game. Make sure all image files are in the correct location for the graphics to display properly.
+
+For PWA testing, you'll need to serve the files over HTTPS (localhost works for testing).
 
 ## Technical Notes
 

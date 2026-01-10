@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Play FREE Tacticool Patches Slot Machine Online - No Download | PatternRipple</title>
 
     <!-- SEO Meta Tags -->
@@ -26,6 +26,26 @@
     <meta name="twitter:title" content="FREE Tacticool Patches Slot - Play Now">
     <meta name="twitter:description" content="Play FREE slot machine with custom embroidered designs! No cost, no download.">
     <meta name="twitter:image" content="https://www.patternripple.com/og-tacticool-slot.png">
+
+    <!-- PWA / Mobile App Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tacticool Slots">
+    <meta name="application-name" content="Tacticool Slots">
+    <meta name="theme-color" content="#4a5c3a">
+    <meta name="msapplication-TileColor" content="#4a5c3a">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- App Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
 
     <!-- Schema.org structured data -->
     <script type="application/ld+json">
@@ -69,11 +89,13 @@
             overflow-x: hidden;
             touch-action: manipulation;
             min-height: 100vh;
+            min-height: -webkit-fill-available;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 10px;
+            padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
             /* Camo texture background */
             background-image:
                 url('camo-background.jpg'),
@@ -651,9 +673,62 @@
 
         @media (max-width: 768px) {
             .control-btn {
-                width: 32px;
-                height: 32px;
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+
+            .spin-btn {
+                padding: 16px 40px;
+                font-size: 1.3rem;
+                min-height: 56px;
+            }
+
+            .auto-btn {
+                padding: 16px 24px;
+                font-size: 1.1rem;
+                min-height: 56px;
+            }
+
+            .panel {
+                padding: 16px;
+                gap: 12px;
+            }
+
+            #bet-select {
+                padding: 8px 12px;
                 font-size: 1rem;
+                min-height: 48px;
+            }
+
+            .promo-banner {
+                padding: 16px;
+            }
+
+            .promo-link {
+                padding: 12px 28px;
+                font-size: 1rem;
+                min-height: 48px;
+            }
+        }
+
+        /* PWA Standalone Mode Styles */
+        @media all and (display-mode: standalone) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+
+            /* Hide fullscreen button in PWA mode since it's already fullscreen */
+            .fullscreen-control {
+                display: none;
+            }
+        }
+
+        /* iOS-specific styles */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                min-height: -webkit-fill-available;
             }
         }
 
@@ -1351,6 +1426,29 @@ checkFullscreenSupport();
 function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 init();
+
+// PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+                console.log('ServiceWorker registered:', registration.scope);
+            })
+            .catch(err => {
+                console.log('ServiceWorker registration failed:', err);
+            });
+    });
+}
+
+// Detect if running in standalone mode (PWA installed)
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone
+    || document.referrer.includes('android-app://');
+
+if (isStandalone) {
+    console.log('Running as PWA');
+    // Add any PWA-specific behaviors here
+}
 
 </script>
 </body>
