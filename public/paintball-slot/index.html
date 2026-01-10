@@ -564,16 +564,7 @@
             filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.6));
         }
 
-        /* Game Controls (Music, Volume, Fullscreen) */
-        .game-controls {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            display: flex;
-            gap: 8px;
-            z-index: 25;
-        }
-
+        /* Fullscreen Control - Top Right */
         .fullscreen-control {
             position: absolute;
             top: 8px;
@@ -617,9 +608,9 @@
 
         .volume-slider {
             position: absolute;
-            top: 100%;
+            bottom: 100%;
             left: 0;
-            margin-top: 4px;
+            margin-bottom: 4px;
             background: rgba(26, 31, 26, 0.95);
             border: 1px solid rgba(197, 184, 150, 0.5);
             border-radius: 6px;
@@ -673,9 +664,9 @@
 
         @media (max-width: 768px) {
             .control-btn {
-                width: 44px;
-                height: 44px;
-                font-size: 1.2rem;
+                width: 56px;
+                height: 56px;
+                font-size: 1.4rem;
             }
 
             .spin-btn {
@@ -824,17 +815,6 @@
 
     <div id="fullscreen-wrapper">
     <div id="game-container">
-        <!-- Volume Control - Top Left -->
-        <div class="game-controls">
-            <div class="volume-control">
-                <div class="control-btn active" id="music-btn" title="Toggle Music">🔊</div>
-                <div class="volume-slider" id="volume-slider">
-                    <div class="volume-percent" id="volume-percent">50%</div>
-                    <input type="range" id="volume-control" min="0" max="100" value="50">
-                </div>
-            </div>
-        </div>
-
         <!-- Fullscreen Control - Top Right -->
         <div class="fullscreen-control">
             <div class="control-btn" id="fullscreen-btn" title="Fullscreen">⛶</div>
@@ -878,6 +858,14 @@
                     <option value="10">$10</option>
                     <option value="25">$25</option>
                 </select>
+            </div>
+            <!-- Music/Volume Control -->
+            <div class="volume-control">
+                <div class="control-btn active" id="music-btn" title="Toggle Music">🔊</div>
+                <div class="volume-slider" id="volume-slider">
+                    <div class="volume-percent" id="volume-percent">50%</div>
+                    <input type="range" id="volume-control" min="0" max="100" value="50">
+                </div>
             </div>
             <button id="auto-btn" class="auto-btn">AUTO</button>
             <button id="spin-btn" class="spin-btn">SPIN</button>
