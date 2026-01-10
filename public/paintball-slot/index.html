@@ -687,6 +687,38 @@
         #fullscreen-wrapper:-moz-full-screen .panel,
         #fullscreen-wrapper:-ms-fullscreen .panel {
             max-width: 90vw;
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        #fullscreen-wrapper:fullscreen .panel button,
+        #fullscreen-wrapper:-webkit-full-screen .panel button,
+        #fullscreen-wrapper:-moz-full-screen .panel button,
+        #fullscreen-wrapper:-ms-fullscreen .panel button {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            position: relative;
+            z-index: 11;
+        }
+
+        #fullscreen-wrapper:fullscreen .panel select,
+        #fullscreen-wrapper:-webkit-full-screen .panel select,
+        #fullscreen-wrapper:-moz-full-screen .panel select,
+        #fullscreen-wrapper:-ms-fullscreen .panel select {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            z-index: 11;
+        }
+
+        #fullscreen-wrapper:fullscreen .panel *,
+        #fullscreen-wrapper:-webkit-full-screen .panel *,
+        #fullscreen-wrapper:-moz-full-screen .panel *,
+        #fullscreen-wrapper:-ms-fullscreen .panel * {
+            pointer-events: auto;
         }
     </style>
 </head>
