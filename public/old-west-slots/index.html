@@ -819,6 +819,8 @@ let isSpinning = false;
 let autoEnabled = false;
 let totalWinThisSpin = 0;
 let freeSpins = 0;
+let skipAnimation = false;
+let isWaitingForAnimation = false;
 
 // Free spin win multiplier - boosts wins during free spins
 const FREE_SPIN_MULTIPLIER = 1.2;
@@ -941,6 +943,12 @@ function toggleAuto() {
 }
 
 async function startSpin(isAuto = false) {
+    // If waiting for animation, skip it instead of starting new spin
+    if (isWaitingForAnimation) {
+        skipAnimation = true;
+        return;
+    }
+
     if (isSpinning) return;
     if (freeSpins === 0 && balance < currentBet) {
         if (autoEnabled) toggleAuto();
@@ -996,15 +1004,15 @@ async function processCascades() {
         if (bonusTriggered) {
             await wait(500);
 
-            // Show GIF animation for 5 seconds (full duration)
+            // Show GIF animation for 5 seconds (full duration, skippable)
             await showBonusGif();
 
             freeSpins += 8;  // Optimized for ~93% RTP
             fsCount.textContent = freeSpins;
             toggleBonusMode(true);
         } else {
-            // Wait 5 seconds to show GIF animations in full
-            await wait(5000);
+            // Wait 5 seconds to show GIF animations in full (skippable by clicking SPIN)
+            await waitSkippable(5000);
         }
 
         await removeWinningSymbols(wins);
@@ -1253,8 +1261,8 @@ async function showBonusGif() {
     // Fade in
     gifOverlay.classList.add('show');
 
-    // Play for 5 seconds (full duration)
-    await wait(5000);
+    // Play for 5 seconds (full duration, skippable by clicking SPIN)
+    await waitSkippable(5000);
 
     // Fade out
     gifOverlay.classList.remove('show');
@@ -1358,6 +1366,32 @@ function checkFullscreenSupport() {
 checkFullscreenSupport();
 
 function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// Skippable wait for animations - can be interrupted by clicking spin
+function waitSkippable(ms) {
+    return new Promise(resolve => {
+        isWaitingForAnimation = true;
+        spinBtn.disabled = false;
+        spinBtn.textContent = 'SKIP';
+
+        const checkInterval = setInterval(() => {
+            if (skipAnimation) {
+                clearInterval(checkInterval);
+                skipAnimation = false;
+                isWaitingForAnimation = false;
+                spinBtn.textContent = 'SPIN';
+                resolve();
+            }
+        }, 50);
+
+        setTimeout(() => {
+            clearInterval(checkInterval);
+            isWaitingForAnimation = false;
+            spinBtn.textContent = 'SPIN';
+            resolve();
+        }, ms);
+    });
+}
 
 init();
 
