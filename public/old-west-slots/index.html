@@ -921,8 +921,9 @@ function spawnSymbolInCell(r, c, id) {
     sym.className = `symbol sym-${id}`;
 
     // Create img element for the symbol
+    // Map: Symbol 6→oldwest1.jpg(BONUS), Symbol 5→oldwest2.jpg(WILD), ..., Symbol 0→oldwest7.jpg(common)
     const img = document.createElement('img');
-    img.src = `oldwest${id + 1}.jpg`;  // oldwest1.jpg through oldwest7.jpg
+    img.src = `oldwest${7 - id}.jpg`;
     img.alt = `Symbol ${id}`;
     sym.appendChild(img);
 
@@ -1120,11 +1121,11 @@ function highlightWin(coords, isBonus) {
                 const symbolId = grid[pos[0]][pos[1]];
                 // Only animate symbols 1-5 (oldwest2.gif through oldwest6.gif)
                 // Symbol 0 (oldwest7) doesn't get GIF animation - it's most common
-                // Symbol 6 (bonus) uses the full-screen overlay instead
+                // Symbol 6 (oldwest1) bonus uses the full-screen overlay instead
                 if(symbolId >= 1 && symbolId <= 5) {
                     const img = sym.querySelector('img');
                     if(img) {
-                        img.src = `oldwest${symbolId + 1}.gif`;
+                        img.src = `oldwest${7 - symbolId}.gif`;
                     }
                 }
             }
@@ -1148,7 +1149,7 @@ async function removeWinningSymbols(wins) {
                     const symbolId = grid[pos[0]][pos[1]];
                     const img = sym.querySelector('img');
                     if(img && symbolId >= 1 && symbolId <= 5) {
-                        img.src = `oldwest${symbolId + 1}.jpg`;
+                        img.src = `oldwest${7 - symbolId}.jpg`;
                     }
 
                     sym.classList.add('vanishing');
@@ -1208,7 +1209,7 @@ async function dropAndFill() {
 
         // Create img for new symbol
         const img = document.createElement('img');
-        img.src = `oldwest${d.id + 1}.jpg`;
+        img.src = `oldwest${7 - d.id}.jpg`;
         img.alt = `Symbol ${d.id}`;
         sym.appendChild(img);
 
