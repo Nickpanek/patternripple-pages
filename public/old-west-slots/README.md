@@ -64,8 +64,10 @@ The game has 7 symbol types, each with its own static image. Symbols 2-6 also ha
 - During normal gameplay, all symbols display as static JPG images
 - When a winning line is formed, symbols in the winning line switch from JPG to GIF
 - **GIF animations play for 5 seconds in full** before symbols disappear
+- **Players can skip animations by clicking the SPIN button** (changes to "SKIP" during animation)
 - After the win is collected, symbols reset to static JPG before disappearing
 - Bonus symbol triggers use a full-screen overlay animation instead of inline GIF
+- Both win animations and bonus animations are skippable for fast-paced gameplay
 
 ## Updating the Spoonflower Link
 
@@ -82,6 +84,7 @@ Replace the # with your Spoonflower collection URL.
 - **Free Spins:** Land Bonus symbols in the first 3 columns to trigger 8 free spins with 1.2x win multiplier
 - **Wild Symbols:** Wild symbols substitute for any symbol except Bonus
 - **Animated Wins:** Winning symbols animate with custom GIFs for 5 seconds (symbols 2-6)
+- **Skip Animations:** Click SPIN during animations to skip and play faster
 - **Auto Play:** Auto spin feature for continuous play
 - **Background Music:** Looping western-themed music (nicksgame.mp3)
 - **Volume Control:** Adjustable music volume with on-screen controls
