@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 
 // SEO
@@ -37,6 +38,7 @@ type Game = {
   description: string;
   href: string;
   badge?: string;
+  previewImage?: string;
 };
 
 const games: Game[] = [
@@ -47,6 +49,7 @@ const games: Game[] = [
       "FREE slot machine featuring custom embroidered airsoft & milsim patch designs! Cascading reels, free spins bonus, background music, and fullscreen mode. Play instantly in your browser.",
     href: "/paintball-slot/index.html",
     badge: "Featured",
+    previewImage: "/paintball-slot/tacticalgif.gif",
   },
   {
     slug: "bubble",
@@ -98,6 +101,18 @@ export default function GamesPage() {
               className="bg-[#1e1e1e] rounded-2xl shadow-md hover:shadow-xl transition-all ring-1 ring-gray-700"
             >
               <div className="p-6 flex flex-col h-full">
+                {game.previewImage && (
+                  <div className="mb-4 rounded-lg overflow-hidden bg-black">
+                    <Image
+                      src={game.previewImage}
+                      alt={`${game.title} preview`}
+                      width={640}
+                      height={360}
+                      className="w-full h-auto"
+                      unoptimized
+                    />
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-light text-gray-100">
                     <Link href={game.href} className="hover:text-accent">
