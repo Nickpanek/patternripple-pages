@@ -58,7 +58,7 @@ const games: Game[] = [
       "Step into the Wild West with this classic slot machine! Features authentic Old West imagery, exciting bonus rounds, background music, and smooth animations. Can you strike gold?",
     href: "/old-west-slots/index.html",
     badge: "New",
-    previewImage: "/old-west-slots/preview.gif",
+    previewImage: "/old-west-slots/bonus-trigger.gif",
   },
   {
     slug: "bubble",
