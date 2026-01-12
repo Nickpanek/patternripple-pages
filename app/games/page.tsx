@@ -4,21 +4,21 @@ import type { Metadata } from "next";
 
 // SEO
 export const metadata: Metadata = {
-  title: "Free Games - Slot Machines, Bubble Pop, Chess & More | PatternRipple",
-  description: "Play FREE browser games online! Tacticool Patches Slot Machine, Old West Slots, Bubble Pop, Dystopian Chess, and more. No download, no signup, instant play on desktop and mobile.",
-  keywords: "free slot machine, old west slots, free browser games, HTML5 games, online games, slot machine game, bubble pop game, chess game, airsoft games, casual games, no download games, instant play games, mobile games, free games, wild west games",
+  title: "Free Slot Machine Games - Tacticool Patches & Old West | PatternRipple",
+  description: "Play FREE slot machine games online! Tacticool Patches Slot Machine and Old West Slots. No download, no signup, instant play on desktop and mobile.",
+  keywords: "free slot machine, old west slots, tacticool patches, free browser games, HTML5 games, online games, slot machine game, airsoft games, wild west games, casual games, no download games, instant play games, mobile games, free games",
   alternates: { canonical: "https://www.patternripple.com/games" },
   openGraph: {
-    title: "Free Games - Slot Machines & More | PatternRipple",
-    description: "FREE slot machines, Bubble Pop, Chess, and more. Instant play, no downloads or signups.",
+    title: "Free Slot Machine Games | PatternRipple",
+    description: "FREE slot machines: Tacticool Patches and Old West Slots. Instant play, no downloads or signups.",
     url: "https://www.patternripple.com/games",
     type: "website",
     siteName: "PatternRipple",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free Browser Games - Slot Machines & More",
-    description: "Tacticool Patches Slot, Old West Slots, Bubble Pop, Dystopian Chess. Free games, no download.",
+    title: "Free Slot Machine Games",
+    description: "Tacticool Patches Slot and Old West Slots. Free games, no download.",
   },
   robots: {
     index: true,
@@ -59,21 +59,6 @@ const games: Game[] = [
     href: "/old-west-slots/index.html",
     badge: "New",
     previewImage: "/old-west-slots/bonus-trigger.gif",
-  },
-  {
-    slug: "bubble",
-    title: "Bubble Pop",
-    description:
-      "Pop as many bubbles as you can in 30 seconds. Smaller bubbles pay more.",
-    href: "/bubble.html",
-  },
-  {
-    slug: "dystopian-chess",
-    title: "Dystopian Chess",
-    description:
-      "A bleak experiment in self-conflict. Designed to be played against yourself — the next stage of dystopia. Even if you win, the game does not end, because bureaucracy never dies, not because I'm too lazy to fix the code.",
-    href: "/dystopian-chess.html",
-    badge: "Experimental",
   },
 ];
 
