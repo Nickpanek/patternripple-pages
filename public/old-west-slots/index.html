@@ -899,13 +899,13 @@ function fillGridRandomly() {
  */
 function getRandomSymbol() {
     const rand = Math.random() * 100;
-    if (rand < 25.0) return 0; // 25% Low
-    if (rand < 50.0) return 1; // 25% Low
-    if (rand < 68.0) return 2; // 18% Mid
-    if (rand < 83.0) return 3; // 15% Mid
-    if (rand < 92.0) return 4; // 9% High
-    if (rand < 97.0) return 5; // 5% WILD
-    return 6;                  // 3% BONUS
+    if (rand < 23.0) return 0; // 23%
+    if (rand < 46.0) return 1; // 23%
+    if (rand < 65.0) return 2; // 19%
+    if (rand < 80.0) return 3; // 15%
+    if (rand < 87.5) return 4; // 7.5%
+    if (rand < 94.5) return 5; // 7% - WILD (Up from 5)
+    return 6;                  // 5.5% - BONUS (Up from 3)
 }
 
 function spawnSymbolInCell(r, c, id) {
