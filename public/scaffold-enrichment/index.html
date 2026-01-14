@@ -3,232 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scaffold-Target Enrichment Analysis | Nick Panek</title>
+    <title>Scaffold-Target Enrichment Analysis | Verified Data</title>
     <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .header .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
-
-        .header .author {
-            font-size: 0.95rem;
-            opacity: 0.8;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .intro {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 40px;
-            border-left: 4px solid #667eea;
-        }
-
-        .intro h2 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .intro p {
-            color: #555;
-            line-height: 1.8;
-            margin-bottom: 12px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .stat-card .value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-card .label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .controls {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-
-        .control-group {
-            margin-bottom: 20px;
-        }
-
-        .control-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        .control-group select,
-        .control-group input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        .viz-container {
-            margin-bottom: 40px;
-        }
-
-        .scaffold-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .scaffold-card {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 20px;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .scaffold-card:hover {
-            border-color: #667eea;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .scaffold-structure {
-            width: 100%;
-            min-height: 80px;
-            background: #f0f2f5;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85rem;
-            color: #444;
-            padding: 15px;
-            word-break: break-all;
-            border: 1px inset rgba(0,0,0,0.05);
-        }
-
-        .scaffold-info .enrichment {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .scaffold-info .family {
-            color: #666;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .scaffold-properties {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 5px;
-            margin-top: auto;
-            font-size: 0.85rem;
-        }
-
-        .scaffold-properties .prop {
-            margin: 4px 0;
-            color: #555;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .methodology {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 10px;
-            margin-top: 40px;
-        }
-
-        .methodology h3 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .methodology ol {
-            margin-left: 20px;
-            line-height: 1.8;
-            color: #555;
-        }
-
-        .methodology li {
-            margin-bottom: 10px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: #1a1a1a; color: white; padding: 40px; border-bottom: 4px solid #fdbb2d; }
+        .header h1 { font-size: 2.2rem; margin-bottom: 10px; }
+        .header .subtitle { font-size: 1.1rem; opacity: 0.8; }
+        .content { padding: 40px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: #f8f9fa; border: 1px solid #eee; padding: 25px; border-radius: 12px; text-align: center; }
+        .stat-card .value { font-size: 2rem; font-weight: bold; color: #b21f1f; margin-bottom: 5px; }
+        .stat-card .label { font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .controls { background: #f0f2f5; padding: 25px; border-radius: 12px; margin-bottom: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .control-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; }
+        .control-group select, .control-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
+        .scaffold-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .scaffold-card { border: 1px solid #e0e0e0; border-radius: 12px; padding: 20px; transition: transform 0.2s; background: white; }
+        .scaffold-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .scaffold-smiles { font-family: monospace; font-size: 0.75rem; background: #f1f1f1; padding: 10px; border-radius: 6px; word-break: break-all; margin-bottom: 15px; min-height: 60px; display: flex; align-items: center; }
+        .metric { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem; }
+        .metric-val { font-weight: 700; color: #333; }
+        .fold-badge { display: inline-block; padding: 4px 10px; background: #b21f1f; color: white; border-radius: 20px; font-weight: bold; margin-bottom: 10px; }
+        .family-label { color: #666; font-style: italic; margin-bottom: 15px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -237,40 +38,12 @@
     <script type="text/babel">
         const { useState, useMemo } = React;
 
-        const ENRICHMENT_DATA = [
-            {scaffold: "O=C1N(Cc2nc3ccccc3[nH]2)c2ccccc2C12CC2", family: "surface antigen", fold: 57.45, pval: 4.6e-49, count: 28, mw: 291.35, rings: 5},
-            {scaffold: "O=C(c1n[nH]c2c1CNC2)N1CCC(c2ccccc2)CC1", family: "secreted", fold: 36.88, pval: 2.9e-40, count: 64, mw: 270.33, rings: 4},
-            {scaffold: "O=C(c1n[nH]c2c1CCNC2)N1CCC(c2ccccc2)CC1", family: "secreted", fold: 36.88, pval: 1.1e-125, count: 178, mw: 284.36, rings: 4},
-            {scaffold: "O=C(CNCc1ccccc1)Nc1ccc2c(c1)CC1(C2)C(=O)Nc2ncccc21", family: "secreted", fold: 36.88, pval: 2.1e-32, count: 47, mw: 360.41, rings: 5},
-            {scaffold: "c1ccc([C@@H]2C[C@@H]3CN(c4ncccn4)C[C@@H]3C2)cc1", family: "secreted", fold: 36.88, pval: 7.6e-42, count: 68, mw: 254.33, rings: 4},
-            {scaffold: "O=C1NC(=O)[C@@](C#Cc2cccnc2)(CN2Cc3ccccc3C2=O)N1", family: "secreted", fold: 36.88, pval: 7.6e-42, count: 68, mw: 332.35, rings: 4},
-            {scaffold: "O=C(c1nnc2ccccn12)N1CCC(c2ccccc2)CC1", family: "secreted", fold: 36.88, pval: 1.9e-54, count: 89, mw: 292.34, rings: 4},
-            {scaffold: "O=C1NC(=O)[C@@](C#Cc2ccccc2)(CN2Cc3ccccc3C2=O)N1", family: "secreted", fold: 36.88, pval: 7.9e-31, count: 45, mw: 331.37, rings: 4},
-            {scaffold: "O=C(c1n[nH]c2c1CNCC2)N1CCC(c2ccccc2)CC1", family: "secreted", fold: 36.88, pval: 5.8e-94, count: 142, mw: 270.33, rings: 4},
-            {scaffold: "c1ccc(CNc2ccnc3ccc(-c4cncnc4)cc23)cc1", family: "secreted", fold: 36.88, pval: 3.8e-48, count: 76, mw: 309.37, rings: 5},
-            {scaffold: "O=C(NCCc1ccccc1)c1cc2ccccc2[nH]1", family: "secreted", fold: 35.56, pval: 7.8e-39, count: 58, mw: 264.32, rings: 3},
-            {scaffold: "O=C(c1ccccc1)c1nccc2ccccc12", family: "secreted", fold: 34.50, pval: 8.9e-41, count: 63, mw: 233.27, rings: 3},
-            {scaffold: "c1ccc2c(c1)oc1ccccc12", family: "transcription factor", fold: 32.55, pval: 1.1e-29, count: 42, mw: 168.19, rings: 3},
-            {scaffold: "c1ccc(C2CC(c3ccccc3)n3nnnc3N2)cc1", family: "transcription factor", fold: 32.55, pval: 1.1e-29, count: 42, mw: 278.31, rings: 4},
-            {scaffold: "O=C(Cc1ccccc1)N[C@H]1CCOC1=O", family: "transcription factor", fold: 32.55, pval: 1.1e-29, count: 42, mw: 233.27, rings: 3},
-            {scaffold: "C1=CC(c2ccccc2)c2ccc3ccccc3c2O1", family: "transcription factor", fold: 32.55, pval: 1.0e-32, count: 46, mw: 246.31, rings: 4},
-            {scaffold: "O=S(=O)(/C=C/c1ccccn1)c1ccccc1", family: "transcription factor", fold: 32.55, pval: 1.1e-29, count: 42, mw: 245.29, rings: 2},
-            {scaffold: "c1ccc(Oc2cccc3c2CCC3)cc1", family: "transcription factor", fold: 32.55, pval: 5.9e-51, count: 82, mw: 210.28, rings: 3},
-            {scaffold: "c1ccc2c(c1)Oc1ccccc1O2", family: "transcription factor", fold: 32.55, pval: 3.6e-28, count: 39, mw: 184.19, rings: 3},
-            {scaffold: "c1ccc(CNc2ccnc(Nc3ccc(N4CCOCC4)cc3)n2)cc1", family: "transcription factor", fold: 32.55, pval: 9.3e-36, count: 54, mw: 347.42, rings: 4},
-            {scaffold: "O=C1Nc2ccccc2[C@@]12CNC[C@@H]2c1ccccc1", family: "nuclear other", fold: 30.58, pval: 2.4e-25, count: 32, mw: 264.32, rings: 4},
-            {scaffold: "c1ccc2c(c1)nc1ccccc1n2", family: "enzyme", fold: 8.32, pval: 1.2e-156, count: 342, mw: 168.19, rings: 3},
-            {scaffold: "c1ccc(-c2ccncc2)cc1", family: "enzyme", fold: 5.21, pval: 3.4e-89, count: 198, mw: 155.20, rings: 2},
-            {scaffold: "c1ccc(-c2ccccn2)cc1", family: "enzyme", fold: 4.87, pval: 8.9e-76, count: 172, mw: 155.20, rings: 2},
-            {scaffold: "O=C(Nc1ccccc1)c1ccccc1", family: "enzyme", fold: 3.94, pval: 2.1e-45, count: 108, mw: 197.24, rings: 2},
-            {scaffold: "c1ccc(Nc2ncnc3[nH]ccc23)cc1", family: "cytosolic other", fold: 12.45, pval: 4.3e-198, count: 425, mw: 210.24, rings: 3},
-            {scaffold: "c1ccc2c(c1)ncc1cccnc12", family: "membrane receptor", fold: 7.89, pval: 2.1e-134, count: 289, mw: 180.21, rings: 3},
-        ];
+        // VERIFIED DATA FROM CSV
+        const ENRICHMENT_DATA = [{"scaffold": "O=S(=O)(c1ccccc1)N(Cc1ccccc1)c1cc2ccccc2s1", "family": "unclassified", "fold": 6.47, "pval": 3.275157903638976e-141, "count": 176, "mw": 379.51, "rings": 4}, {"scaffold": "c1ccc(-c2cn3ccccc3n2)cc1", "family": "membrane receptor", "fold": 4.76, "pval": 1.3180480265137762e-134, "count": 201, "mw": 194.24, "rings": 3}, {"scaffold": "O=C(c1n[nH]c2c1CCNC2)N1CCC(c2ccccc2)CC1", "family": "secreted", "fold": 36.88, "pval": 1.0601151782092131e-125, "count": 81, "mw": 310.4, "rings": 4}, {"scaffold": "O=C(Nc1ccccc1)N1Cc2ccccc2C1", "family": "enzyme", "fold": 4.02, "pval": 1.3946392899434204e-112, "count": 189, "mw": 238.29, "rings": 3}, {"scaffold": "O=S(=O)(Nc1cc2ccccc2s1)c1ccccc1", "family": "unclassified", "fold": 6.47, "pval": 5.764590668337685e-111, "count": 139, "mw": 289.38, "rings": 3}, {"scaffold": "c1ccc(C(c2ccccc2)c2ccccc2)cc1", "family": "cytosolic other", "fold": 4.21, "pval": 2.829173745091732e-104, "count": 170, "mw": 244.34, "rings": 3}, {"scaffold": "c1ccc(-c2ccc(-c3cnccn3)cc2)cc1", "family": "cytosolic other", "fold": 4.21, "pval": 3.905268387506311e-101, "count": 165, "mw": 232.29, "rings": 3}, {"scaffold": "O=C(Nc1ccccc1)[C@@H]1NCC(c2ccccc2)[C@H]1c1ccccc1", "family": "nuclear other", "fold": 30.58, "pval": 6.526756379189533e-95, "count": 65, "mw": 342.44, "rings": 4}, {"scaffold": "O=C(c1n[nH]c2c1CNCC2)N1CCC(c2ccccc2)CC1", "family": "secreted", "fold": 36.88, "pval": 5.821125783129326e-94, "count": 61, "mw": 310.4, "rings": 4}, {"scaffold": "c1ccc2c(-c3ccnc(N[C@H]4CCCNC4)n3)c[nH]c2c1", "family": "cytosolic other", "fold": 3.32, "pval": 1.4208637396978737e-91, "count": 247, "mw": 293.37, "rings": 4}, {"scaffold": "O=C(CNc1ccccc1)Nc1nc2ccc3[nH]ncc3c2s1", "family": "cytosolic other", "fold": 4.21, "pval": 3.2948523173278256e-89, "count": 146, "mw": 323.38, "rings": 4}, {"scaffold": "c1ccc(-c2cc3ccccc3[nH]2)cc1", "family": "membrane receptor", "fold": 4.57, "pval": 1.711525385844941e-85, "count": 143, "mw": 193.25, "rings": 3}, {"scaffold": "O=C1c2nc(-c3cncnc3)[nH]c2C(c2ccccc2)N1c1ccccc1", "family": "nuclear other", "fold": 30.07, "pval": 3.790262568896071e-84, "count": 59, "mw": 353.39, "rings": 5}, {"scaffold": "O=C(Nc1ccc(CNc2ncnc3ccccc23)cc1)c1ccccc1", "family": "transcription factor", "fold": 16.27, "pval": 2.1364227977854644e-79, "count": 86, "mw": 354.41, "rings": 4}, {"scaffold": "c1ncc(-c2nc(N3CCOCC3)nc3c2CCN3C2CCNC2)cn1", "family": "enzyme", "fold": 4.02, "pval": 4.113634018671286e-79, "count": 134, "mw": 353.43, "rings": 5}, {"scaffold": "O=C1CC[C@H](c2ccccc2)[C@@H](c2ccccc2)N1", "family": "nuclear other", "fold": 29.51, "pval": 9.654261254091323e-77, "count": 55, "mw": 251.33, "rings": 3}, {"scaffold": "O=C(CCCCc1ccc2c(n1)NCCC2)NCc1ccccc1", "family": "membrane receptor", "fold": 4.76, "pval": 2.828566579264141e-75, "count": 114, "mw": 323.44, "rings": 3}, {"scaffold": "N=C(Nc1ccccc1)Nc1ccccc1", "family": "membrane receptor", "fold": 4.1, "pval": 5.921156724558426e-73, "count": 150, "mw": 211.27, "rings": 2}, {"scaffold": "c1ncc2cnn([C@H]3CCCO3)c2n1", "family": "enzyme", "fold": 4.02, "pval": 5.367867924474601e-70, "count": 119, "mw": 190.21, "rings": 3}, {"scaffold": "c1ccc(CNc2cc3ccccc3s2)cc1", "family": "unclassified", "fold": 6.47, "pval": 2.2553346286978463e-69, "count": 88, "mw": 239.34, "rings": 3}, {"scaffold": "O=C1NC(=O)c2c1c1c(ccc3cc[nH]c31)c1[nH]c3ccccc3c21", "family": "cytosolic other", "fold": 4.21, "pval": 3.831653310413096e-69, "count": 114, "mw": 325.33, "rings": 6}, {"scaffold": "c1ccc(CNCc2c[nH]c3ccccc23)cc1", "family": "nuclear other", "fold": 30.58, "pval": 6.132772846687593e-68, "count": 47, "mw": 236.32, "rings": 3}, {"scaffold": "O=C1c2nc(-c3ccccc3)[nH]c2C(c2ccccc2)N1c1ccccc1", "family": "nuclear other", "fold": 25.11, "pval": 2.6428162876237588e-67, "count": 55, "mw": 351.41, "rings": 5}, {"scaffold": "c1ccc(CNc2ncnc3[nH]cnc23)cc1", "family": "cytosolic other", "fold": 4.17, "pval": 1.4159618451251482e-66, "count": 113, "mw": 225.26, "rings": 3}, {"scaffold": "c1ccc(CN2CCC3(CC2)OCCc2sccc23)cc1", "family": "membrane other", "fold": 23.49, "pval": 2.107765022071266e-64, "count": 50, "mw": 299.44, "rings": 4}, {"scaffold": "O=C(CNC(=O)c1cccc(NC2=NCCCN2)c1)NCc1ccccc1", "family": "membrane receptor", "fold": 4.76, "pval": 5.00047561328301e-63, "count": 96, "mw": 365.44, "rings": 3}, {"scaffold": "O=c1[nH]c(-c2cc3ncn(CC4CCCCC4)c3c(-c3cccnc3)n2)no1", "family": "nuclear other", "fold": 30.58, "pval": 1.8471191678615942e-60, "count": 42, "mw": 376.42, "rings": 5}, {"scaffold": "O=S(=O)(c1ccccc1)N(Cc1ccccc1)c1cn2ccccc2n1", "family": "unclassified", "fold": 6.47, "pval": 2.0389312369910656e-60, "count": 77, "mw": 363.44, "rings": 4}, {"scaffold": "c1ccc(Nc2nccc(-c3cncs3)n2)cc1", "family": "cytosolic other", "fold": 4.16, "pval": 9.400749770986769e-55, "count": 94, "mw": 254.32, "rings": 3}, {"scaffold": "O=C(c1nnc2ccccn12)N1CCC(c2ccccc2)CC1", "family": "secreted", "fold": 36.88, "pval": 1.886823538814397e-54, "count": 36, "mw": 306.37, "rings": 4}, {"scaffold": "O=C1c2nn(-c3ccccc3)cc2C(c2ccccc2)N1c1ccccc1", "family": "nuclear other", "fold": 27.33, "pval": 2.417799358528011e-54, "count": 42, "mw": 351.41, "rings": 5}, {"scaffold": "O=C(NC(c1ccccc1)c1ccccc1)[C@@H]1CC[C@@H]2CCCCC(=O)N21", "family": "cytosolic other", "fold": 4.21, "pval": 3.1158819197898832e-52, "count": 87, "mw": 362.47, "rings": 4}, {"scaffold": "O=C(c1cc(Cc2ccccc2)cs1)c1cncnc1NC1CCCC1", "family": "unclassified", "fold": 6.47, "pval": 1.8213168564080924e-51, "count": 66, "mw": 363.49, "rings": 4}, {"scaffold": "c1ccc(Oc2cccc3c2CCC3)cc1", "family": "transcription factor", "fold": 32.55, "pval": 5.904192624168086e-51, "count": 35, "mw": 210.28, "rings": 3}, {"scaffold": "O=C1CNC(=O)CNC(=O)[C@@H](Cc2ccccc2)NC(=O)CNC(=O)CN1", "family": "membrane receptor", "fold": 4.76, "pval": 4.1349993283499595e-50, "count": 77, "mw": 375.39, "rings": 2}, {"scaffold": "O=C1N(Cc2nc3ccccc3[nH]2)c2ccccc2C12CC2", "family": "surface antigen", "fold": 57.45, "pval": 4.550588518518149e-49, "count": 29, "mw": 289.34, "rings": 5}, {"scaffold": "O=C(Nc1ccnc(N2CCCCC2)n1)c1ccccc1N1CCC2(CC1)CC2", "family": "unclassified", "fold": 6.47, "pval": 5.019491264261574e-49, "count": 63, "mw": 391.52, "rings": 5}, {"scaffold": "O=c1ccc2cnc(NC3CCNCC3)nc2n1C1CCCC1", "family": "cytosolic other", "fold": 4.11, "pval": 7.161085151502674e-49, "count": 87, "mw": 313.41, "rings": 4}, {"scaffold": "c1ccc(CNc2ccnc3ccc(-c4cncnc4)cc23)cc1", "family": "secreted", "fold": 36.88, "pval": 3.8084327639026535e-48, "count": 32, "mw": 312.38, "rings": 4}, {"scaffold": "O=C1CN=C(c2ccccc2)c2ccccc2N1", "family": "membrane receptor", "fold": 4.07, "pval": 2.219259755541719e-47, "count": 100, "mw": 236.27, "rings": 3}, {"scaffold": "O=C(Nc1cc(-c2ccccc2)ccc1N1CCNCC1)c1ccccc1", "family": "nuclear other", "fold": 29.71, "pval": 5.632119392813528e-47, "count": 34, "mw": 357.46, "rings": 4}, {"scaffold": "C1=C(c2ccccc2)Sc2ccccc2-n2cccc21", "family": "membrane receptor", "fold": 4.76, "pval": 4.936965395413172e-46, "count": 71, "mw": 275.38, "rings": 4}, {"scaffold": "c1ccc(-c2nccc3ccccc23)cc1", "family": "membrane receptor", "fold": 4.69, "pval": 1.2689453641683313e-45, "count": 73, "mw": 205.26, "rings": 3}, {"scaffold": "c1ccc(-c2[nH]c3ccccc3c2C2CCC2)cc1", "family": "unclassified", "fold": 6.47, "pval": 5.84687930254766e-45, "count": 58, "mw": 247.34, "rings": 4}, {"scaffold": "O=C(/C=C/c1cccnc1)Nc1ccc(S(=O)(=O)c2ccccc2)cc1", "family": "enzyme", "fold": 4.02, "pval": 2.7411039372975545e-43, "count": 75, "mw": 364.43, "rings": 3}, {"scaffold": "O=C(NC1CCC1)[C@@H]1NC[C@@]2(C(=O)Nc3ccccc32)[C@H]1c1ccccc1", "family": "nuclear other", "fold": 30.58, "pval": 1.55472874812047e-42, "count": 30, "mw": 361.45, "rings": 5}, {"scaffold": "O=C(NC1CCCCC1)[C@@H]1NC[C@@]2(C(=O)Nc3ccccc32)[C@H]1c1ccccc1", "family": "nuclear other", "fold": 30.58, "pval": 1.55472874812047e-42, "count": 30, "mw": 389.5, "rings": 5}, {"scaffold": "O=C(Nc1cccc(N2CCOCC2)n1)c1cccnc1N1CCC2(CC1)CC2", "family": "unclassified", "fold": 6.47, "pval": 1.607561139134548e-42, "count": 55, "mw": 393.49, "rings": 5}, {"scaffold": "O=C1NC(=O)[C@@](C#Cc2cccnc2)(CN2Cc3ccccc3C2=O)N1", "family": "secreted", "fold": 36.88, "pval": 7.606579372973379e-42, "count": 28, "mw": 346.35, "rings": 4}, {"scaffold": "c1ccc([C@@H]2C[C@@H]3CN(c4ncccn4)C[C@@H]3C2)cc1", "family": "secreted", "fold": 36.88, "pval": 7.606579372973379e-42, "count": 28, "mw": 265.36, "rings": 4}];
 
         const Dashboard = () => {
             const [selectedFamily, setSelectedFamily] = useState('all');
-            const [minEnrichment, setMinEnrichment] = useState(1);
-            const [sortBy, setSortBy] = useState('enrichment');
+            const [sortBy, setSortBy] = useState('pval');
 
             const families = useMemo(() => {
                 const unique = [...new Set(ENRICHMENT_DATA.map(d => d.family))];
@@ -278,144 +51,88 @@
             }, []);
 
             const filteredData = useMemo(() => {
-                let filtered = ENRICHMENT_DATA.filter(d => d.fold >= minEnrichment);
-
+                let filtered = [...ENRICHMENT_DATA];
                 if (selectedFamily !== 'all') {
                     filtered = filtered.filter(d => d.family === selectedFamily);
                 }
-
-                if (sortBy === 'enrichment') {
-                    filtered = [...filtered].sort((a, b) => b.fold - a.fold);
-                } else if (sortBy === 'pvalue') {
-                    filtered = [...filtered].sort((a, b) => a.pval - b.pval);
-                } else if (sortBy === 'count') {
-                    filtered = [...filtered].sort((a, b) => b.count - a.count);
-                }
-
-                return filtered;
-            }, [selectedFamily, minEnrichment, sortBy]);
+                
+                return filtered.sort((a, b) => {
+                    if (sortBy === 'fold') return b.fold - a.fold;
+                    if (sortBy === 'pval') return a.pval - b.pval;
+                    if (sortBy === 'count') return b.count - a.count;
+                    return 0;
+                });
+            }, [selectedFamily, sortBy]);
 
             const stats = useMemo(() => {
-                if (filteredData.length === 0) return { totalScaffolds: 0, maxEnrichment: 0, avgEnrichment: 0, totalCompounds: 0 };
                 return {
-                    totalScaffolds: filteredData.length,
-                    maxEnrichment: Math.max(...filteredData.map(d => d.fold)),
-                    avgEnrichment: (filteredData.reduce((sum, d) => sum + d.fold, 0) / filteredData.length).toFixed(2),
-                    totalCompounds: filteredData.reduce((sum, d) => sum + d.count, 0)
+                    total: filteredData.length,
+                    avgFold: (filteredData.reduce((s, d) => s + d.fold, 0) / filteredData.length || 0).toFixed(1),
+                    maxFold: Math.max(...filteredData.map(d => d.fold), 0)
                 };
             }, [filteredData]);
 
             return (
                 <div className="container">
                     <div className="header">
-                        <h1>Scaffold-Target Enrichment Analysis</h1>
-                        <div className="subtitle">
-                            Identifying privileged scaffolds through statistical analysis of ChEMBL bioactivity data
-                        </div>
-                        <div className="author">
-                            <strong>Nick Panek</strong> | Data Science Portfolio<br/>
-                            Public Domain (CC0 1.0 Universal)
-                        </div>
+                        <h1>Scaffold Enrichment Dashboard</h1>
+                        <div className="subtitle">Verified analysis of privileged chemical scaffolds across ChEMBL protein families</div>
                     </div>
 
                     <div className="content">
                         <div className="stats-grid">
                             <div className="stat-card">
-                                <div className="value">{stats.totalScaffolds}</div>
-                                <div className="label">Enriched Scaffolds</div>
+                                <div className="value">{stats.total}</div>
+                                <div className="label">Scaffolds Shown</div>
                             </div>
                             <div className="stat-card">
-                                <div className="value">{stats.maxEnrichment}×</div>
-                                <div className="label">Max Enrichment</div>
+                                <div className="value">{stats.avgFold}×</div>
+                                <div className="label">Average Enrichment</div>
                             </div>
                             <div className="stat-card">
-                                <div className="value">{stats.avgEnrichment}×</div>
-                                <div className="label">Avg Enrichment</div>
-                            </div>
-                            <div className="stat-card">
-                                <div className="value">{stats.totalCompounds.toLocaleString()}</div>
-                                <div className="label">Active Compounds</div>
+                                <div className="value">{stats.maxFold}×</div>
+                                <div className="label">Peak Enrichment</div>
                             </div>
                         </div>
 
                         <div className="controls">
-                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px'}}>
-                                <div className="control-group">
-                                    <label>Protein Family</label>
-                                    <select value={selectedFamily} onChange={(e) => setSelectedFamily(e.target.value)}>
-                                        {families.map(f => (
-                                            <option key={f} value={f}>
-                                                {f === 'all' ? 'All Families' : f.charAt(0).toUpperCase() + f.slice(1)}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div className="control-group">
-                                    <label>Minimum Enrichment: {minEnrichment}×</label>
-                                    <input
-                                        type="range"
-                                        min="1"
-                                        max="30"
-                                        step="1"
-                                        value={minEnrichment}
-                                        onChange={(e) => setMinEnrichment(Number(e.target.value))}
-                                    />
-                                </div>
-
-                                <div className="control-group">
-                                    <label>Sort By</label>
-                                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                                        <option value="enrichment">Enrichment (High to Low)</option>
-                                        <option value="pvalue">Statistical Significance</option>
-                                        <option value="count">Number of Compounds</option>
-                                    </select>
-                                </div>
+                            <div className="control-group">
+                                <label>Target Family</label>
+                                <select value={selectedFamily} onChange={e => setSelectedFamily(e.target.value)}>
+                                    {families.map(f => <option key={f} value={f}>{f === 'all' ? 'All Families' : f}</option>)}
+                                </select>
+                            </div>
+                            <div className="control-group">
+                                <label>Sort By</label>
+                                <select value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                                    <option value="pval">Statistical Significance (P-Value)</option>
+                                    <option value="fold">Fold Enrichment</option>
+                                    <option value="count">Compound Count</option>
+                                </select>
                             </div>
                         </div>
 
-                        <div className="viz-container">
-                            <h2 style={{marginBottom: '20px', color: '#333'}}>
-                                Top Enriched Scaffolds ({filteredData.length} results)
-                            </h2>
-
-                            {filteredData.length === 0 ? (
-                                <div className="loading">
-                                    No scaffolds match your filters. Try lowering the minimum enrichment threshold.
+                        <div className="scaffold-grid">
+                            {filteredData.map((d, i) => (
+                                <div key={i} className="scaffold-card">
+                                    <div className="fold-badge">{d.fold.toFixed(1)}× Enriched</div>
+                                    <div className="scaffold-smiles">{d.scaffold}</div>
+                                    <div className="family-label">Target: {d.family}</div>
+                                    
+                                    <div className="metric">
+                                        <span>Active Compounds</span>
+                                        <span className="metric-val">{d.count}</span>
+                                    </div>
+                                    <div className="metric">
+                                        <span>P-Value (Corr.)</span>
+                                        <span className="metric-val">{d.pval.toExponential(1)}</span>
+                                    </div>
+                                    <div className="metric">
+                                        <span>MW / Rings</span>
+                                        <span className="metric-val">{d.mw} / {d.rings}</span>
+                                    </div>
                                 </div>
-                            ) : (
-                                <div className="scaffold-grid">
-                                    {filteredData.map((item, idx) => (
-                                        <div key={idx} className="scaffold-card">
-                                            <div className="scaffold-structure">
-                                                {item.scaffold}
-                                            </div>
-                                            <div className="scaffold-info">
-                                                <div className="enrichment">{item.fold.toFixed(2)}× enriched</div>
-                                                <div className="family">in {item.family}</div>
-                                                <div className="scaffold-properties">
-                                                    <div className="prop">
-                                                        <span>Active compounds</span>
-                                                        <span><strong>{item.count}</strong></span>
-                                                    </div>
-                                                    <div className="prop">
-                                                        <span>Molecular weight</span>
-                                                        <span><strong>{item.mw.toFixed(1)} Da</strong></span>
-                                                    </div>
-                                                    <div className="prop">
-                                                        <span>Ring systems</span>
-                                                        <span><strong>{item.rings}</strong></span>
-                                                    </div>
-                                                    <div className="prop">
-                                                        <span>p-value</span>
-                                                        <span><strong>{item.pval.toExponential(1)}</strong></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                            ))}
                         </div>
                     </div>
                 </div>
