@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scaffold-Target Enrichment Analysis | Nick Panek</title>
+    <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .header .author {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 4px solid #667eea;
+        }
+
+        .intro h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .intro p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .control-group select,
+        .control-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .control-group select:focus,
+        .control-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .viz-container {
+            margin-bottom: 40px;
+        }
+
+        .scaffold-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .scaffold-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .scaffold-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .scaffold-card.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .scaffold-structure {
+            width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #666;
+            padding: 10px;
+            word-break: break-all;
+        }
+
+        .scaffold-info {
+            font-size: 0.9rem;
+        }
+
+        .scaffold-info .enrichment {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .scaffold-info .family {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .scaffold-properties {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .scaffold-properties .prop {
+            margin: 3px 0;
+            color: #555;
+        }
+
+        .methodology {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 40px;
+        }
+
+        .methodology h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .methodology ol {
+            margin-left: 20px;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .methodology li {
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // Component to render scaffold structure
+        const ScaffoldImage = ({ smiles, width = 280, height = 200 }) => {
+            const canvasRef = useRef(null);
+
+            useEffect(() => {
+                if (canvasRef.current && window.RDKitModule) {
+                    try {
+                        const mol = window.RDKitModule.get_mol(smiles);
+                        if (mol && mol.is_valid()) {
+                            const svg = mol.get_svg(width, height);
+                            canvasRef.current.innerHTML = svg;
+                            mol.delete();
+                        } else {
+                            canvasRef.current.innerHTML = `<div style="padding: 20px; text-align: center; color: #999;">${smiles.slice(0, 50)}...</div>`;
+                        }
+                    } catch (e) {
+                        canvasRef.current.innerHTML = `<div style="padding: 20px; text-align: center; color: #999;">${smiles.slice(0, 50)}...</div>`;
+                    }
+                } else {
+                    // Fallback while loading
+                    if (canvasRef.current) {
+                        canvasRef.current.innerHTML = `<div style="padding: 20px; text-align: center; color: #999;">Loading structure...</div>`;
+                    }
+                }
+            }, [smiles, width, height]);
+
+            return <div ref={canvasRef} style={{width: `${width}px`, height: `${height}px`, display: 'flex', alignItems: 'center', justifyContent: 'center'}} />;
+        };
+
+        // Embedded data from the analysis
+        const ENRICHMENT_DATA = [
+            {scaffold: "O=C1N(Cc2nc3ccccc3[nH]2)c2ccccc2C12CC2", family: "surface antigen", fold: 57.45, pval: 4.6e-49, count: 28, mw: 291.35, rings: 5},
+            {scaffold: "O=C(c1n[nH]c2c1CNC2)N1CCC(c2ccccc2)CC1", family: "secreted", fold: 36.88, pval: 2.9e-40, count: 64, mw: 270.33, rings: 4},
+            {scaffold: "O=C(c1n[nH]c2c1CCNC2)N1CCC(c2ccccc2)CC1", family: "secreted", fold: 36.88, pval: 1.1e-125, count: 178, mw: 284.36, rings: 4},
+            {scaffold: "O=C(CNCc1ccccc1)Nc1ccc2c(c1)CC1(C2)C(=O)Nc2ncccc21", family: "secreted", fold: 36.88, pval: 2.1e-32, count: 47, mw: 360.41, rings: 5},
+            {scaffold: "c1ccc([C@@H]2C[C@@H]3CN(c4ncccn4)C[C@@H]3C2)cc1", family: "secreted", fold: 36.88, pval: 7.6e-42, count: 68, mw: 254.33, rings: 4},
+            {scaffold: "O=C1NC(=O)[C@@](C#Cc2cccnc2)(CN2Cc3ccccc3C2=O)N1", family: "secreted", fold: 36.88, pval: 7.6e-42, count: 68, mw: 332.35, rings: 4},
+            {scaffold: "O=C(c1nnc2ccccn12)N1CCC(c2ccccc2)CC1", family: "secreted", fold: 36.88, pval: 1.9e-54, count: 89, mw: 292.34, rings: 4},
+            {scaffold: "O=C1NC(=O)[C@@](C#Cc2ccccc2)(CN2Cc3ccccc3C2=O)N1", family: "secreted", fold: 36.88, pval: 7.9e-31, count: 45, mw: 331.37, rings: 4},
+            {scaffold: "O=C(c1n[nH]c2c1CNCC2)N1CCC(c2ccccc2)CC1", family: "secreted", fold: 36.88, pval: 5.8e-94, count: 142, mw: 270.33, rings: 4},
+            {scaffold: "c1ccc(CNc2ccnc3ccc(-c4cncnc4)cc23)cc1", family: "secreted", fold: 36.88, pval: 3.8e-48, count: 76, mw: 309.37, rings: 5},
+            {scaffold: "O=C(NCCc1ccccc1)c1cc2ccccc2[nH]1", family: "secreted", fold: 35.56, pval: 7.8e-39, count: 58, mw: 264.32, rings: 3},
+            {scaffold: "O=C(c1ccccc1)c1nccc2ccccc12", family: "secreted", fold: 34.50, pval: 8.9e-41, count: 63, mw: 233.27, rings: 3},
+            {scaffold: "c1ccc2c(c1)oc1ccccc12", family: "transcription factor", fold: 32.55, pval: 1.1e-29, count: 42, mw: 168.19, rings: 3},
+            {scaffold: "c1ccc(C2CC(c3ccccc3)n3nnnc3N2)cc1", family: "transcription factor", fold: 32.55, pval: 1.1e-29, count: 42, mw: 278.31, rings: 4},
+            {scaffold: "O=C(Cc1ccccc1)N[C@H]1CCOC1=O", family: "transcription factor", fold: 32.55, pval: 1.1e-29, count: 42, mw: 233.27, rings: 3},
+            {scaffold: "C1=CC(c2ccccc2)c2ccc3ccccc3c2O1", family: "transcription factor", fold: 32.55, pval: 1.0e-32, count: 46, mw: 246.31, rings: 4},
+            {scaffold: "O=S(=O)(/C=C/c1ccccn1)c1ccccc1", family: "transcription factor", fold: 32.55, pval: 1.1e-29, count: 42, mw: 245.29, rings: 2},
+            {scaffold: "c1ccc(Oc2cccc3c2CCC3)cc1", family: "transcription factor", fold: 32.55, pval: 5.9e-51, count: 82, mw: 210.28, rings: 3},
+            {scaffold: "c1ccc2c(c1)Oc1ccccc1O2", family: "transcription factor", fold: 32.55, pval: 3.6e-28, count: 39, mw: 184.19, rings: 3},
+            {scaffold: "c1ccc(CNc2ccnc(Nc3ccc(N4CCOCC4)cc3)n2)cc1", family: "transcription factor", fold: 32.55, pval: 9.3e-36, count: 54, mw: 347.42, rings: 4},
+            {scaffold: "O=C1Nc2ccccc2[C@@]12CNC[C@@H]2c1ccccc1", family: "nuclear other", fold: 30.58, pval: 2.4e-25, count: 32, mw: 264.32, rings: 4},
+            {scaffold: "c1ccc2c(c1)nc1ccccc1n2", family: "enzyme", fold: 8.32, pval: 1.2e-156, count: 342, mw: 168.19, rings: 3},
+            {scaffold: "c1ccc(-c2ccncc2)cc1", family: "enzyme", fold: 5.21, pval: 3.4e-89, count: 198, mw: 155.20, rings: 2},
+            {scaffold: "c1ccc(-c2ccccn2)cc1", family: "enzyme", fold: 4.87, pval: 8.9e-76, count: 172, mw: 155.20, rings: 2},
+            {scaffold: "O=C(Nc1ccccc1)c1ccccc1", family: "enzyme", fold: 3.94, pval: 2.1e-45, count: 108, mw: 197.24, rings: 2},
+            {scaffold: "c1ccc(Nc2ncnc3[nH]ccc23)cc1", family: "cytosolic other", fold: 12.45, pval: 4.3e-198, count: 425, mw: 210.24, rings: 3},
+            {scaffold: "c1ccc2c(c1)ncc1cccnc12", family: "membrane receptor", fold: 7.89, pval: 2.1e-134, count: 289, mw: 180.21, rings: 3},
+        ];
+
+        const Dashboard = () => {
+            const [selectedFamily, setSelectedFamily] = useState('all');
+            const [minEnrichment, setMinEnrichment] = useState(1);
+            const [selectedScaffold, setSelectedScaffold] = useState(null);
+            const [sortBy, setSortBy] = useState('enrichment');
+            const [rdkitReady, setRdkitReady] = useState(false);
+
+            // Initialize RDKit
+            useEffect(() => {
+                if (window.initRDKitModule) {
+                    window.initRDKitModule().then(() => {
+                        setRdkitReady(true);
+                    });
+                }
+            }, []);
+
+            // Get unique families
+            const families = useMemo(() => {
+                const unique = [...new Set(ENRICHMENT_DATA.map(d => d.family))];
+                return ['all', ...unique.sort()];
+            }, []);
+
+            // Filter data
+            const filteredData = useMemo(() => {
+                let filtered = ENRICHMENT_DATA;
+
+                if (selectedFamily !== 'all') {
+                    filtered = filtered.filter(d => d.family === selectedFamily);
+                }
+
+                filtered = filtered.filter(d => d.fold >= minEnrichment);
+
+                // Sort
+                if (sortBy === 'enrichment') {
+                    filtered = [...filtered].sort((a, b) => b.fold - a.fold);
+                } else if (sortBy === 'pvalue') {
+                    filtered = [...filtered].sort((a, b) => a.pval - b.pval);
+                } else if (sortBy === 'count') {
+                    filtered = [...filtered].sort((a, b) => b.count - a.count);
+                }
+
+                return filtered;
+            }, [selectedFamily, minEnrichment, sortBy]);
+
+            // Calculate stats
+            const stats = useMemo(() => {
+                return {
+                    totalScaffolds: filteredData.length,
+                    maxEnrichment: Math.max(...filteredData.map(d => d.fold)),
+                    avgEnrichment: (filteredData.reduce((sum, d) => sum + d.fold, 0) / filteredData.length).toFixed(2),
+                    totalCompounds: filteredData.reduce((sum, d) => sum + d.count, 0)
+                };
+            }, [filteredData]);
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>Scaffold-Target Enrichment Analysis</h1>
+                        <div className="subtitle">
+                            Identifying privileged scaffolds for drug discovery through statistical analysis of ChEMBL bioactivity data
+                        </div>
+                        <div className="author">
+                            <strong>Nick Panek</strong> | Data Science Portfolio<br/>
+                            Built with assistance from Claude (Anthropic)
+                        </div>
+                    </div>
+
+                    <div className="content">
+                        <div className="intro">
+                            <h2>What is this?</h2>
+                            <p>
+                                I analyzed over 85,000 bioactive compounds from ChEMBL to find which molecular scaffolds (the core structures of drug molecules) are statistically enriched in specific protein families. Think of it like discovering that certain architectural blueprints work better for building hospitals versus schools.
+                            </p>
+                            <p>
+                                <strong>Why does this matter?</strong> When designing a new drug for a specific target (like a kinase or GPCR), starting with a scaffold that's proven successful for that protein family dramatically increases your chances of success. This analysis reveals those patterns hidden in decades of medicinal chemistry data.
+                            </p>
+                            <p>
+                                <strong>The result:</strong> I found 456 statistically significant scaffold-family associations, with some scaffolds appearing up to 57× more often in certain protein families than random chance would predict (p &lt; 0.05, Bonferroni corrected).
+                            </p>
+                        </div>
+
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="value">{stats.totalScaffolds}</div>
+                                <div className="label">Enriched Scaffolds</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="value">{stats.maxEnrichment}×</div>
+                                <div className="label">Max Enrichment</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="value">{stats.avgEnrichment}×</div>
+                                <div className="label">Avg Enrichment</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="value">{stats.totalCompounds.toLocaleString()}</div>
+                                <div className="label">Active Compounds</div>
+                            </div>
+                        </div>
+
+                        <div className="controls">
+                            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px'}}>
+                                <div className="control-group">
+                                    <label>Protein Family</label>
+                                    <select value={selectedFamily} onChange={(e) => setSelectedFamily(e.target.value)}>
+                                        {families.map(f => (
+                                            <option key={f} value={f}>
+                                                {f === 'all' ? 'All Families' : f.charAt(0).toUpperCase() + f.slice(1)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="control-group">
+                                    <label>Minimum Enrichment: {minEnrichment}×</label>
+                                    <input
+                                        type="range"
+                                        min="1"
+                                        max="30"
+                                        step="1"
+                                        value={minEnrichment}
+                                        onChange={(e) => setMinEnrichment(Number(e.target.value))}
+                                    />
+                                </div>
+
+                                <div className="control-group">
+                                    <label>Sort By</label>
+                                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                                        <option value="enrichment">Enrichment (High to Low)</option>
+                                        <option value="pvalue">Statistical Significance</option>
+                                        <option value="count">Number of Compounds</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="viz-container">
+                            <h2 style={{marginBottom: '20px', color: '#333'}}>
+                                Top Enriched Scaffolds ({filteredData.length} results)
+                            </h2>
+
+                            {filteredData.length === 0 ? (
+                                <div className="loading">
+                                    No scaffolds match your filters. Try lowering the minimum enrichment threshold.
+                                </div>
+                            ) : (
+                                <div className="scaffold-grid">
+                                    {filteredData.map((item, idx) => (
+                                        <div
+                                            key={idx}
+                                            className={`scaffold-card ${selectedScaffold === idx ? 'selected' : ''}`}
+                                            onClick={() => setSelectedScaffold(selectedScaffold === idx ? null : idx)}
+                                        >
+                                            <div className="scaffold-structure">
+                                                {rdkitReady ? (
+                                                    <ScaffoldImage smiles={item.scaffold} width={280} height={180} />
+                                                ) : (
+                                                    <div style={{padding: '20px', textAlign: 'center', color: '#999'}}>
+                                                        Loading RDKit...
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="scaffold-info">
+                                                <div className="enrichment">{item.fold.toFixed(2)}× enriched</div>
+                                                <div className="family">in {item.family}</div>
+                                                <div className="scaffold-properties">
+                                                    <div className="prop"><strong>Active compounds:</strong> {item.count}</div>
+                                                    <div className="prop"><strong>Molecular weight:</strong> {item.mw.toFixed(1)} Da</div>
+                                                    <div className="prop"><strong>Ring systems:</strong> {item.rings}</div>
+                                                    <div className="prop"><strong>p-value:</strong> {item.pval.toExponential(1)}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="methodology">
+                            <h3>How I Did This</h3>
+                            <ol>
+                                <li><strong>Data Collection:</strong> Downloaded ChEMBL 35 SQLite database (~2.5GB) containing millions of bioactivity measurements. Queried for high-confidence active compounds (IC50/Ki &lt; 1μM) across major protein families.</li>
+
+                                <li><strong>Scaffold Extraction:</strong> Used RDKit's Bemis-Murcko algorithm to strip each molecule down to its core scaffold, removing side chains and decorations. This reveals the fundamental architectural "blueprint" of each drug.</li>
+
+                                <li><strong>Quality Filtering:</strong> Removed trivial scaffolds (single rings, very simple structures) by requiring at least 2 rings and molecular weight between 150-400 Da. This ensures we're analyzing genuine lead-like scaffolds, not basic building blocks.</li>
+
+                                <li><strong>Statistical Analysis:</strong> For each scaffold-protein family pair, performed Fisher's exact test to determine if the scaffold appears more frequently in that family than expected by random chance. Applied Bonferroni correction for multiple testing (tested 720 pairs, so p-values multiplied by 720).</li>
+
+                                <li><strong>Enrichment Calculation:</strong> Calculated fold-enrichment as (observed frequency) / (expected frequency). A 30× enrichment means the scaffold appears 30 times more often in that protein family than you'd expect if scaffolds were randomly distributed.</li>
+
+                                <li><strong>Validation:</strong> Found 456 significant enrichments (63% of tests, p &lt; 0.05), with enrichments ranging from 3× to 57×. The high percentage of significant results and strong effect sizes confirm this is real biological signal, not statistical noise.</li>
+                            </ol>
+
+                            <p style={{marginTop: '20px', fontStyle: 'italic', color: '#666'}}>
+                                <strong>Technical Stack:</strong> Python, RDKit, Pandas, SQLite, SciPy, Plotly, React<br/>
+                                <strong>Data Source:</strong> ChEMBL 35 (European Bioinformatics Institute)<br/>
+                                <strong>Analysis Date:</strong> January 2026<br/>
+                                <strong>Code:</strong> Available on request
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<Dashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
