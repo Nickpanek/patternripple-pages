@@ -12,6 +12,7 @@ module.exports = {
       { source: "/checker", destination: "/blog/seamless-pattern-checker", permanent: true },
       { source: "/pattern-checker", destination: "/blog/seamless-pattern-checker", permanent: true },
       { source: '/panekvideo', destination: '/panekvideo/index.html', permanent: true },
+      { source: '/scaffold-enrichment', destination: '/scaffold-enrichment/index.html', permanent: false },
       { source: "/checker/", destination: "/blog/seamless-pattern-checker", permanent: true },
       { source: "/pattern-checker/", destination: "/blog/seamless-pattern-checker", permanent: true },
     ];
