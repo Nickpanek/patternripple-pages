@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -116,10 +115,6 @@
             margin-bottom: 20px;
         }
 
-        .control-group:last-child {
-            margin-bottom: 0;
-        }
-
         .control-group label {
             display: block;
             font-weight: 600;
@@ -136,19 +131,13 @@
             font-size: 1rem;
         }
 
-        .control-group select:focus,
-        .control-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
         .viz-container {
             margin-bottom: 40px;
         }
 
         .scaffold-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -158,43 +147,35 @@
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             padding: 20px;
-            cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
         }
 
         .scaffold-card:hover {
             border-color: #667eea;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .scaffold-card.selected {
-            border-color: #667eea;
-            background: #f0f4ff;
         }
 
         .scaffold-structure {
             width: 100%;
-            height: 200px;
-            background: #f8f9fa;
+            min-height: 80px;
+            background: #f0f2f5;
             border-radius: 5px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: monospace;
-            font-size: 0.75rem;
-            color: #666;
-            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            color: #444;
+            padding: 15px;
             word-break: break-all;
-        }
-
-        .scaffold-info {
-            font-size: 0.9rem;
+            border: 1px inset rgba(0,0,0,0.05);
         }
 
         .scaffold-info .enrichment {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: bold;
             color: #667eea;
             margin-bottom: 5px;
@@ -203,19 +184,22 @@
         .scaffold-info .family {
             color: #666;
             margin-bottom: 10px;
+            font-weight: 500;
         }
 
         .scaffold-properties {
             background: #f8f9fa;
-            padding: 10px;
+            padding: 12px;
             border-radius: 5px;
-            margin-top: 10px;
+            margin-top: auto;
             font-size: 0.85rem;
         }
 
         .scaffold-properties .prop {
-            margin: 3px 0;
+            margin: 4px 0;
             color: #555;
+            display: flex;
+            justify-content: space-between;
         }
 
         .methodology {
@@ -251,38 +235,8 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo, useRef } = React;
+        const { useState, useMemo } = React;
 
-        // Component to render scaffold structure
-        const ScaffoldImage = ({ smiles, width = 280, height = 200 }) => {
-            const canvasRef = useRef(null);
-
-            useEffect(() => {
-                if (canvasRef.current && window.RDKitModule) {
-                    try {
-                        const mol = window.RDKitModule.get_mol(smiles);
-                        if (mol && mol.is_valid()) {
-                            const svg = mol.get_svg(width, height);
-                            canvasRef.current.innerHTML = svg;
-                            mol.delete();
-                        } else {
-                            canvasRef.current.innerHTML = `<div style="padding: 20px; text-align: center; color: #999;">${smiles.slice(0, 50)}...</div>`;
-                        }
-                    } catch (e) {
-                        canvasRef.current.innerHTML = `<div style="padding: 20px; text-align: center; color: #999;">${smiles.slice(0, 50)}...</div>`;
-                    }
-                } else {
-                    // Fallback while loading
-                    if (canvasRef.current) {
-                        canvasRef.current.innerHTML = `<div style="padding: 20px; text-align: center; color: #999;">Loading structure...</div>`;
-                    }
-                }
-            }, [smiles, width, height]);
-
-            return <div ref={canvasRef} style={{width: `${width}px`, height: `${height}px`, display: 'flex', alignItems: 'center', justifyContent: 'center'}} />;
-        };
-
-        // Embedded data from the analysis
         const ENRICHMENT_DATA = [
             {scaffold: "O=C1N(Cc2nc3ccccc3[nH]2)c2ccccc2C12CC2", family: "surface antigen", fold: 57.45, pval: 4.6e-49, count: 28, mw: 291.35, rings: 5},
             {scaffold: "O=C(c1n[nH]c2c1CNC2)N1CCC(c2ccccc2)CC1", family: "secreted", fold: 36.88, pval: 2.9e-40, count: 64, mw: 270.33, rings: 4},
@@ -316,36 +270,20 @@
         const Dashboard = () => {
             const [selectedFamily, setSelectedFamily] = useState('all');
             const [minEnrichment, setMinEnrichment] = useState(1);
-            const [selectedScaffold, setSelectedScaffold] = useState(null);
             const [sortBy, setSortBy] = useState('enrichment');
-            const [rdkitReady, setRdkitReady] = useState(false);
 
-            // Initialize RDKit
-            useEffect(() => {
-                if (window.initRDKitModule) {
-                    window.initRDKitModule().then(() => {
-                        setRdkitReady(true);
-                    });
-                }
-            }, []);
-
-            // Get unique families
             const families = useMemo(() => {
                 const unique = [...new Set(ENRICHMENT_DATA.map(d => d.family))];
                 return ['all', ...unique.sort()];
             }, []);
 
-            // Filter data
             const filteredData = useMemo(() => {
-                let filtered = ENRICHMENT_DATA;
+                let filtered = ENRICHMENT_DATA.filter(d => d.fold >= minEnrichment);
 
                 if (selectedFamily !== 'all') {
                     filtered = filtered.filter(d => d.family === selectedFamily);
                 }
 
-                filtered = filtered.filter(d => d.fold >= minEnrichment);
-
-                // Sort
                 if (sortBy === 'enrichment') {
                     filtered = [...filtered].sort((a, b) => b.fold - a.fold);
                 } else if (sortBy === 'pvalue') {
@@ -357,8 +295,8 @@
                 return filtered;
             }, [selectedFamily, minEnrichment, sortBy]);
 
-            // Calculate stats
             const stats = useMemo(() => {
+                if (filteredData.length === 0) return { totalScaffolds: 0, maxEnrichment: 0, avgEnrichment: 0, totalCompounds: 0 };
                 return {
                     totalScaffolds: filteredData.length,
                     maxEnrichment: Math.max(...filteredData.map(d => d.fold)),
@@ -372,32 +310,15 @@
                     <div className="header">
                         <h1>Scaffold-Target Enrichment Analysis</h1>
                         <div className="subtitle">
-                            Identifying privileged scaffolds for drug discovery through statistical analysis of ChEMBL bioactivity data
+                            Identifying privileged scaffolds through statistical analysis of ChEMBL bioactivity data
                         </div>
                         <div className="author">
                             <strong>Nick Panek</strong> | Data Science Portfolio<br/>
-                            Built with assistance from Claude (Anthropic)<br/>
-                            <br/>
-                            <strong>Public Domain:</strong> This work is dedicated to the public domain under CC0 1.0 Universal.
-                            While I don't know if anyone has previously discovered these findings, I hold no copyright over this work
-                            and freely dedicate all results to the public domain for use by anyone, anywhere, for any purpose.
+                            Public Domain (CC0 1.0 Universal)
                         </div>
                     </div>
 
                     <div className="content">
-                        <div className="intro">
-                            <h2>What is this?</h2>
-                            <p>
-                                I analyzed over 85,000 bioactive compounds from ChEMBL to find which molecular scaffolds (the core structures of drug molecules) are statistically enriched in specific protein families. Think of it like discovering that certain architectural blueprints work better for building hospitals versus schools.
-                            </p>
-                            <p>
-                                <strong>Why does this matter?</strong> When designing a new drug for a specific target (like a kinase or GPCR), starting with a scaffold that's proven successful for that protein family dramatically increases your chances of success. This analysis reveals those patterns hidden in decades of medicinal chemistry data.
-                            </p>
-                            <p>
-                                <strong>The result:</strong> I found 456 statistically significant scaffold-family associations, with some scaffolds appearing up to 57× more often in certain protein families than random chance would predict (p &lt; 0.05, Bonferroni corrected).
-                            </p>
-                        </div>
-
                         <div className="stats-grid">
                             <div className="stat-card">
                                 <div className="value">{stats.totalScaffolds}</div>
@@ -418,7 +339,7 @@
                         </div>
 
                         <div className="controls">
-                            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px'}}>
+                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px'}}>
                                 <div className="control-group">
                                     <label>Protein Family</label>
                                     <select value={selectedFamily} onChange={(e) => setSelectedFamily(e.target.value)}>
@@ -465,28 +386,30 @@
                             ) : (
                                 <div className="scaffold-grid">
                                     {filteredData.map((item, idx) => (
-                                        <div
-                                            key={idx}
-                                            className={`scaffold-card ${selectedScaffold === idx ? 'selected' : ''}`}
-                                            onClick={() => setSelectedScaffold(selectedScaffold === idx ? null : idx)}
-                                        >
+                                        <div key={idx} className="scaffold-card">
                                             <div className="scaffold-structure">
-                                                {rdkitReady ? (
-                                                    <ScaffoldImage smiles={item.scaffold} width={280} height={180} />
-                                                ) : (
-                                                    <div style={{padding: '20px', textAlign: 'center', color: '#999'}}>
-                                                        Loading RDKit...
-                                                    </div>
-                                                )}
+                                                {item.scaffold}
                                             </div>
                                             <div className="scaffold-info">
                                                 <div className="enrichment">{item.fold.toFixed(2)}× enriched</div>
                                                 <div className="family">in {item.family}</div>
                                                 <div className="scaffold-properties">
-                                                    <div className="prop"><strong>Active compounds:</strong> {item.count}</div>
-                                                    <div className="prop"><strong>Molecular weight:</strong> {item.mw.toFixed(1)} Da</div>
-                                                    <div className="prop"><strong>Ring systems:</strong> {item.rings}</div>
-                                                    <div className="prop"><strong>p-value:</strong> {item.pval.toExponential(1)}</div>
+                                                    <div className="prop">
+                                                        <span>Active compounds</span>
+                                                        <span><strong>{item.count}</strong></span>
+                                                    </div>
+                                                    <div className="prop">
+                                                        <span>Molecular weight</span>
+                                                        <span><strong>{item.mw.toFixed(1)} Da</strong></span>
+                                                    </div>
+                                                    <div className="prop">
+                                                        <span>Ring systems</span>
+                                                        <span><strong>{item.rings}</strong></span>
+                                                    </div>
+                                                    <div className="prop">
+                                                        <span>p-value</span>
+                                                        <span><strong>{item.pval.toExponential(1)}</strong></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -494,37 +417,13 @@
                                 </div>
                             )}
                         </div>
-
-                        <div className="methodology">
-                            <h3>How I Did This</h3>
-                            <ol>
-                                <li><strong>Data Collection:</strong> Downloaded ChEMBL 35 SQLite database (~2.5GB) containing millions of bioactivity measurements. Queried for high-confidence active compounds (IC50/Ki &lt; 1μM) across major protein families.</li>
-
-                                <li><strong>Scaffold Extraction:</strong> Used RDKit's Bemis-Murcko algorithm to strip each molecule down to its core scaffold, removing side chains and decorations. This reveals the fundamental architectural "blueprint" of each drug.</li>
-
-                                <li><strong>Quality Filtering:</strong> Removed trivial scaffolds (single rings, very simple structures) by requiring at least 2 rings and molecular weight between 150-400 Da. This ensures we're analyzing genuine lead-like scaffolds, not basic building blocks.</li>
-
-                                <li><strong>Statistical Analysis:</strong> For each scaffold-protein family pair, performed Fisher's exact test to determine if the scaffold appears more frequently in that family than expected by random chance. Applied Bonferroni correction for multiple testing (tested 720 pairs, so p-values multiplied by 720).</li>
-
-                                <li><strong>Enrichment Calculation:</strong> Calculated fold-enrichment as (observed frequency) / (expected frequency). A 30× enrichment means the scaffold appears 30 times more often in that protein family than you'd expect if scaffolds were randomly distributed.</li>
-
-                                <li><strong>Validation:</strong> Found 456 significant enrichments (63% of tests, p &lt; 0.05), with enrichments ranging from 3× to 57×. The high percentage of significant results and strong effect sizes confirm this is real biological signal, not statistical noise.</li>
-                            </ol>
-
-                            <p style={{marginTop: '20px', fontStyle: 'italic', color: '#666'}}>
-                                <strong>Technical Stack:</strong> Python, RDKit, Pandas, SQLite, SciPy, Plotly, React<br/>
-                                <strong>Data Source:</strong> ChEMBL 35 (European Bioinformatics Institute)<br/>
-                                <strong>Analysis Date:</strong> January 2026<br/>
-                                <strong>Code:</strong> Available on request<br/>
-                                <strong>License:</strong> CC0 1.0 Universal - Public Domain Dedication
-                            </p>
-                        </div>
                     </div>
                 </div>
             );
         };
 
-        ReactDOM.render(<Dashboard />, document.getElementById('root'));
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Dashboard />);
     </script>
 </body>
 </html>
