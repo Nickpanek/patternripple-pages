@@ -145,7 +145,7 @@ Open index.html in a web browser to play the game. Make sure all image files, GI
 
 ## Current Configuration
 
-- RTP: ~93%
+- RTP: ~70-75%
 - Free Spins: 8 (with 1.2x multiplier)
 - Bonus Trigger: ~0.33% (once per ~300 spins)
 - Win Animation Duration: 5 seconds
