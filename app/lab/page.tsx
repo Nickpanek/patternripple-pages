@@ -118,7 +118,7 @@ export default function ResearchLabPage() {
           <h2 className="text-2xl font-light text-gray-100 mb-6">Datasets</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Scaffold-Target Enrichment Analysis */}
-            <a href="/lab/scaffold-enrichment/" className="bg-[#1e1e1e] ring-1 ring-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl hover:ring-accent transition-all group">
+            <a href="/scaffold-enrichment/" className="bg-[#1e1e1e] ring-1 ring-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl hover:ring-accent transition-all group">
               <div className="flex items-start justify-between mb-3">
                 <h3 className="text-xl font-light text-gray-100 group-hover:text-accent transition-colors">
                   Scaffold-Target Enrichment Analysis
@@ -135,7 +135,7 @@ export default function ResearchLabPage() {
                   Cheminformatics
                 </span>
                 <span className="bg-green-500/10 border border-green-500/30 rounded px-2 py-1 text-xs text-green-400">
-                  Drug Discovery
+                  Public Domain
                 </span>
                 <span className="bg-pink-500/10 border border-pink-500/30 rounded px-2 py-1 text-xs text-pink-400">
                   Statistical Analysis
