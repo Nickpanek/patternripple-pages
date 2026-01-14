@@ -117,14 +117,37 @@ export default function ResearchLabPage() {
 
           <h2 className="text-2xl font-light text-gray-100 mb-6">Datasets</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Placeholder for future datasets */}
-            <div className="bg-[#1e1e1e] ring-1 ring-gray-700 rounded-2xl p-6 shadow-md">
-              <h3 className="text-xl font-light text-gray-100">Datasets</h3>
-              <p className="mt-2 text-sm text-gray-400">
-                Public domain datasets coming soon
+            {/* Scaffold-Target Enrichment Analysis */}
+            <a href="/lab/scaffold-enrichment/" className="bg-[#1e1e1e] ring-1 ring-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl hover:ring-accent transition-all group">
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="text-xl font-light text-gray-100 group-hover:text-accent transition-colors">
+                  Scaffold-Target Enrichment Analysis
+                </h3>
+              </div>
+              <p className="text-sm text-gray-400 mb-3">
+                Statistical analysis of 85,000+ ChEMBL compounds revealing which molecular scaffolds are enriched in specific protein families. Found 456 significant associations with enrichments up to 57×.
               </p>
-              <div className="mt-4 text-gray-500 font-semibold">Coming Soon</div>
-            </div>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="bg-blue-500/10 border border-blue-500/30 rounded px-2 py-1 text-xs text-blue-400">
+                  Data Science
+                </span>
+                <span className="bg-purple-500/10 border border-purple-500/30 rounded px-2 py-1 text-xs text-purple-400">
+                  Cheminformatics
+                </span>
+                <span className="bg-green-500/10 border border-green-500/30 rounded px-2 py-1 text-xs text-green-400">
+                  Drug Discovery
+                </span>
+                <span className="bg-pink-500/10 border border-pink-500/30 rounded px-2 py-1 text-xs text-pink-400">
+                  Statistical Analysis
+                </span>
+              </div>
+              <div className="flex items-center text-accent text-sm font-semibold">
+                View Dashboard
+                <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </a>
           </div>
         </section>
 
