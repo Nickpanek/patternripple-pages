@@ -1,3 +1,116 @@
-````
-# PatternRipple – Next.js Product Pages This repository contains the codebase for **PatternRipple's** product pages, built with **Next.js**. Each product is generated from metadata and exported as a static page under `app/p/{slug}/page.tsx`. --- ## 🚀 Features - **Next.js 13+ (App Router)** - Fully static product pages (`force-static`) - Dynamic Buy button (Stripe checkout) - SEO optimized (Open Graph, Twitter, JSON-LD) - Auto-generated image galleries & thumbnails - Support for exclusive and non-exclusive licenses - Structured product data in `app/data/products.json` --- ## 📂 Project Structure app/ p/ {slug}/page.tsx # Individual product page data/ products.json # Product listing index data/ {slug}.json # Minimal per-product JSON summary - **`app/p/{slug}/page.tsx`** – Full product detail page. - **`app/data/products.json`** – Index array for all products (used for listing pages). - **`data/{slug}.json`** – Lightweight product metadata for tooling or automation. --- ## 🛠️ Tech Stack - [Next.js](https://nextjs.org/) 13+ - [React](https://react.dev/) - [Stripe](https://stripe.com/) Checkout Integration - [Tailwind CSS](https://tailwindcss.com/) - Dynamic imports for client-only components --- ## ⚡ Adding a New Product 1. Prepare metadata: - `title`, `slug`, `sku`, `price` - `category` + `subcategory` (see `collections.ts`) - `description`, `altText`, `tags` - `stripePriceId` 2. Generate: - Product page: `app/p/{slug}/page.tsx` - JSON summary: `data/{slug}.json` - Index entry: append to `app/data/products.json` 3. Upload product assets to: `https://files.patternripple.com/{slug}-preview.jpg` `https://files.patternripple.com/{slug}-mockup1.jpg` … `mockup11.jpg` `https://files.patternripple.com/{slug}-thumb.jpg` 4. Commit changes and deploy. --- ## 🏷️ Categories Defined in `collections.ts`: - abstract - camo - faux-embroidery - geometric - horror - seasonal - impasto - ufo-cryptids - patchwork-quilt - preppy-posh - old-west - groovy-psychedelic - architecture - cute-animals - usa-patriotic --- ## 📦 Stripe Integration Each product requires a `stripePriceId`. The `BuyButton` dynamically loads and handles checkout: ```tsx const BuyButton = dynamic(() => import("@/components/BuyButton"), { ssr: false }); <BuyButton priceId={stripePriceId} sku={product.sku} /> ``` 🔒 Licensing Products can be: Exclusive (one-time buyer, removed from marketplace) Non-exclusive (multiple licenses sold) Exclusive products generate a certificate of authenticity. 🤝 Contributing Pull requests are welcome. Please ensure: Slugs are lowercase and hyphenated. Product entries are validated against products.json. Images follow the naming convention. 📄 License This repository is proprietary and maintained by PatternRipple™. Code may be reused internally for PatternRipple projects only.
-````
+# PatternRipple - Free Creative Software & Browser Tools
+
+This repository contains the codebase for **PatternRipple**, a collection of free browser-based creative tools built with **Next.js**. All tools run entirely client-side with no server uploads required.
+
+---
+
+## 🚀 Features
+
+- **Next.js 14+ (App Router)** - Modern React framework
+- **Fully static export** - No backend required
+- **Client-side processing** - Privacy-first, no data uploads
+- **SEO optimized** - Open Graph, Twitter cards, JSON-LD structured data
+- **Mobile responsive** - Works on desktop and mobile devices
+- **Zero installation** - All tools run directly in the browser
+
+---
+
+## 🛠️ Available Tools
+
+### Design Tools
+- **Seamless Pattern Creator** - Create repeating tile patterns with offset/wrap controls
+- **PNG2SVG Fabric Design Vectorizer** - Convert PNG designs to vector SVG for fabric printing
+- **Seamless Pattern Checker (SmoothSnap)** - Preview and validate seamless patterns
+
+### Audio Tools
+- **Audio Looper (Desktop Edition)** - Loop audio with adjustable controls and tempo
+- **Audio Processor** - Add fades and normalize audio levels
+
+### Video Tools
+- **Property Slideshow Maker** - Create listing videos with custom branding
+
+### Experimental
+- **cqs-rs Browser Demo** - Quantum circuit simulator running in WebAssembly
+
+---
+
+## 📂 Project Structure
+
+```
+app/
+  software/page.tsx      # Main software listing page
+  layout.tsx             # Root layout
+  page.tsx               # Homepage
+public/
+  seamless-pattern-creator.html
+  png2svg.html
+  pattern-checker-smoothsnap.html
+  audio-looper-panek.html
+  audio-processor.html
+  property-slideshow-maker.html
+  cqs_rs_docs.html
+```
+
+---
+
+## 🧰 Tech Stack
+
+- [Next.js](https://nextjs.org/) 14+
+- [React](https://react.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- WebAssembly (for vector tracing and quantum simulation)
+
+---
+
+## 🔧 Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Export static site
+npm run export
+```
+
+---
+
+## ✨ Adding a New Tool
+
+1. Create the tool as a standalone HTML file in `public/`
+2. Add entry to `app/software/page.tsx`:
+   ```typescript
+   {
+     slug: "tool-name",
+     title: "Tool Name",
+     href: "/tool-name.html",
+     summary: "Brief description of the tool",
+     badge: "Design" | "Audio" | "Video" | "Experimental",
+   }
+   ```
+3. Update the `order` object with the display order
+4. Test locally and commit
+
+---
+
+## 📄 License
+
+This repository is maintained by PatternRipple. All tools are free to use.
+
+**Contact:** nick@patternripple.com
+
+---
+
+## 🎨 Design Philosophy
+
+All tools prioritize:
+- **Privacy** - No server uploads, all processing happens locally
+- **Simplicity** - Clean interfaces, minimal learning curve
+- **Accessibility** - Works offline, no registration required
+- **Performance** - Fast, lightweight, browser-native when possible
