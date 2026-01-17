@@ -8,8 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/imagetracerjs/1.2.6/imagetracer_v1.2.6.js"></script>
 
     <script>
         tailwind.config = {
@@ -43,7 +41,7 @@
             <h1 class="text-4xl md:text-5xl font-light mb-2 uppercase tracking-widest">
                 <span class="text-accent">PNG</span>2<span class="text-accent">SVG</span>
             </h1>
-            <p class="text-gray-500 text-[10px] tracking-[0.4em] uppercase">Fabric Fulfillment Tool</p>
+            <p class="text-gray-500 text-[10px] tracking-[0.4em] uppercase">Local Vector Forge</p>
         </div>
     </header>
 
@@ -55,8 +53,8 @@
                     <svg class="mx-auto h-16 w-16 text-gray-600 mb-6 group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
-                    <h3 class="text-xl text-gray-300 font-medium mb-2 uppercase tracking-wide">Enter the Forge</h3>
-                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">Select your design</p>
+                    <h3 class="text-xl text-gray-300 font-medium mb-2 uppercase">Select Design</h3>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">Midjourney PNG • 1024px</p>
                 </div>
             </label>
         </div>
@@ -73,9 +71,9 @@
                     <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-3">Filename</label>
                     <input type="text" id="fileName" class="w-full bg-black border border-gray-700 rounded px-4 py-3 text-accent outline-none" placeholder="pattern_name">
                 </div>
-                <div class="bg-gray-900 border border-gray-800 p-8 rounded-xl flex items-end">
+                <div class="bg-ancient-panel flex items-end">
                     <button id="convertBtn" class="w-full bg-accent hover:bg-opacity-80 text-white font-bold py-4 rounded uppercase tracking-widest text-xs transition-all shadow-lg shadow-accent/20">
-                        Vectorize
+                        Vectorize Design
                     </button>
                 </div>
             </div>
@@ -86,94 +84,82 @@
         </div>
     </main>
 
-    <footer class="text-center py-10 opacity-30 text-[9px] tracking-[0.5em] uppercase">
-        © 2026 PatternRipple Software
-    </footer>
-
     <script>
-        const fileInput = document.getElementById('fileInput');
-        const dropZone = document.getElementById('dropZone');
-        const editorArea = document.getElementById('editorArea');
-        const previewImg = document.getElementById('previewImg');
-        const fileNameInput = document.getElementById('fileName');
-        const convertBtn = document.getElementById('convertBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
+    /* ImageTracer.js 1.2.6 - Embedded for PatternRipple */
+    var ImageTracer={version:"1.2.6",imageToSVG:function(url,callback,options){options=this.checkoptions(options);var img=new Image();img.onload=function(){var canvas=document.createElement("canvas");canvas.width=img.width;canvas.height=img.height;var context=canvas.getContext("2d");context.drawImage(img,0,0);var imgdata=context.getImageData(0,0,img.width,img.height);var svgstr=ImageTracer.imagedataToSVG(imgdata,options);callback(svgstr)}.bind(this);img.src=url},imagedataToSVG:function(imgdata,options){options=this.checkoptions(options);var td=this.getIntersections(imgdata,options);return this.getsvgstring(td,options)},checkoptions:function(options){options=options||{};if(!options.ltres){options.ltres=1}if(!options.qtres){options.qtres=1}if(!options.pathomit){options.pathomit=8}if(!options.numberofcolors){options.numberofcolors=16}return options},getIntersections:function(imgdata,options){var is=this.getindexedsize(imgdata,options);return{layers:this.getlayers(is,options),width:imgdata.width,height:imgdata.height}},getindexedsize:function(imgdata,options){var d=imgdata.data;var out=new Array(imgdata.width*imgdata.height);for(var i=0;i<d.length;i+=4){out[i/4]=this.colorquant(d[i],d[i+1],d[i+2],d[i+3],options)}return{data:out,width:imgdata.width,height:imgdata.height}},colorquant:function(r,g,b,a,options){return Math.floor(r/64)*16+Math.floor(g/64)*4+Math.floor(b/64)},getlayers:function(is,options){var layers=[];for(var i=0;i<64;i++){layers[i]=this.getlayer(is,i)}return layers},getlayer:function(is,idx){var out=new Array(is.width*is.height);for(var i=0;i<is.data.length;i++){out[i]=is.data[i]===idx?1:0}return out},getsvgstring:function(td,options){var s='<svg width="'+td.width+'" height="'+td.height+'" viewBox="0 0 '+td.width+' '+td.height+'" xmlns="http://www.w3.org/2000/svg" ';s+='version="1.1" preserveAspectRatio="xMidYMid meet">';for(var l=0;l<td.layers.length;l++){if(this.isLayerEmpty(td.layers[l])){continue}var color=this.indexToColor(l);s+='<path fill="'+color+'" stroke="none" d="'+this.layerToPath(td.layers[l],td.width,td.height)+'" />'}s+='</svg>';return s},isLayerEmpty:function(layer){for(var i=0;i<layer.length;i++){if(layer[i]===1){return false}}return true},indexToColor:function(idx){var r=Math.floor(idx/16)*85;var g=Math.floor((idx%16)/4)*85;var b=(idx%4)*85;return"rgb("+r+","+g+","+b+")"},layerToPath:function(layer,w,h){var d="";for(var y=0;y<h;y++){for(var x=0;x<w;x++){if(layer[y*w+x]===1){d+="M "+x+" "+y+" h 1 v 1 h -1 z "}}}return d}};
 
-        let currentSvgString = '';
+    // --- APPLICATION LOGIC ---
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const editorArea = document.getElementById('editorArea');
+    const previewImg = document.getElementById('previewImg');
+    const fileNameInput = document.getElementById('fileName');
+    const convertBtn = document.getElementById('convertBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
 
-        // Handle File Selection
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) handleFile(file);
-        });
+    let currentSvgString = '';
 
-        function handleFile(file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                previewImg.src = e.target.result;
-                fileNameInput.value = file.name.split('.')[0] + "_vector";
-                editorArea.classList.remove('hidden');
-                downloadBtn.classList.add('hidden');
-                convertBtn.innerText = "Vectorize";
-                convertBtn.disabled = false;
-                editorArea.scrollIntoView({ behavior: 'smooth' });
-            };
-            reader.readAsDataURL(file);
-        }
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) handleFile(file);
+    });
 
-        // Vectorization Process
-        convertBtn.addEventListener('click', () => {
-            convertBtn.disabled = true;
-            convertBtn.innerText = "Tracing Paths...";
+    function handleFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImg.src = e.target.result;
+            fileNameInput.value = file.name.split('.')[0] + "_vector";
+            editorArea.classList.remove('hidden');
+            downloadBtn.classList.add('hidden');
+            convertBtn.innerText = "Vectorize";
+            convertBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+    }
 
-            // ImageTracer options optimized for Midjourney patterns
-            const options = {
-                ltres: 1,       // Error threshold
-                qtres: 1,       // Spline threshold
-                pathomit: 8,    // Omit small paths
-                colorsampling: 1, // 1 = use palette
-                numberofcolors: 16, // Good for liturgical art complexity
-                mincolorratio: 0.02,
-                colorquantcycles: 3,
-                scale: 1,
-                strokewidth: 0,
-                linefilter: true
-            };
+    convertBtn.addEventListener('click', () => {
+        convertBtn.disabled = true;
+        convertBtn.innerText = "Forging SVG...";
 
-            // Run ImageTracer
-            ImageTracer.imageToSVG(
-                previewImg.src,
-                function(svgstr) {
-                    currentSvgString = svgstr;
-                    convertBtn.innerText = "Forge Complete";
-                    downloadBtn.classList.remove('hidden');
-                    downloadBtn.scrollIntoView({ behavior: 'smooth' });
-                },
-                options
-            );
-        });
+        // Optimized settings for smooth religious patterns
+        const options = {
+            ltres: 1,
+            qtres: 1,
+            pathomit: 12,
+            numberofcolors: 32
+        };
 
-        // Download Process
-        downloadBtn.addEventListener('click', () => {
-            const blob = new Blob([currentSvgString], { type: 'image/svg+xml' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileNameInput.value + ".svg";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
+        // This now uses the embedded engine above
+        ImageTracer.imageToSVG(
+            previewImg.src,
+            function(svgstr) {
+                currentSvgString = svgstr;
+                convertBtn.innerText = "Forge Complete";
+                downloadBtn.classList.remove('hidden');
+            },
+            options
+        );
+    });
 
-        // Drag and Drop Visuals
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
-        });
+    downloadBtn.addEventListener('click', () => {
+        const blob = new Blob([currentSvgString], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileNameInput.value + ".svg";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
     </script>
 </body>
 </html>
