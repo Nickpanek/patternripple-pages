@@ -256,323 +256,386 @@
     </footer>
 
     <!-- VTracer WASM Library -->
-    <script type="module">
-        // Import vectortracer from CDN
-        import init, { BinaryImageConverter } from 'https://cdn.jsdelivr.net/npm/vectortracer@0.5.1/vectortracer.js';
+    <script type="module" id="mainScript">
+        (async function() {
+            console.log('[PNG2SVG] Script starting...');
 
-        // Initialize WASM
-        let wasmInitialized = false;
+            // Import vectortracer from CDN
+            let BinaryImageConverter = null;
+            let wasmInit = null;
+            let wasmInitialized = false;
 
-        async function initializeWasm() {
-            if (!wasmInitialized) {
-                try {
-                    await init();
-                    wasmInitialized = true;
-                    console.log('VTracer WASM initialized');
-                } catch (err) {
-                    console.error('Failed to initialize WASM:', err);
-                    alert('Failed to load vector conversion engine. Please refresh the page.');
-                }
-            }
-        }
-
-        function initializeApp() {
-            console.log('Initializing app...');
-
-            // DOM Elements
-            const fileInput = document.getElementById('fileInput');
-            const dropZone = document.getElementById('dropZone');
-            const previewSection = document.getElementById('previewSection');
-            const previewCanvas = document.getElementById('previewCanvas');
-            const processingCanvas = document.getElementById('processingCanvas');
-            const imageInfo = document.getElementById('imageInfo');
-            const fileName = document.getElementById('fileName');
-            const convertBtn = document.getElementById('convertBtn');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            const progressPercent = document.getElementById('progressPercent');
-            const svgPreviewSection = document.getElementById('svgPreviewSection');
-            const svgPreview = document.getElementById('svgPreview');
-
-            // Check if elements exist
-            if (!fileInput || !dropZone) {
-                console.error('Required DOM elements not found!');
-                console.log('fileInput:', fileInput);
-                console.log('dropZone:', dropZone);
-                return;
+            try {
+                console.log('[PNG2SVG] Importing vectortracer module...');
+                const module = await import('https://cdn.jsdelivr.net/npm/vectortracer@0.5.1/vectortracer.js');
+                BinaryImageConverter = module.BinaryImageConverter;
+                wasmInit = module.default;
+                console.log('[PNG2SVG] Module imported successfully');
+            } catch (err) {
+                console.error('[PNG2SVG] Failed to import module:', err);
             }
 
-            console.log('All DOM elements found successfully');
-
-            let currentImage = null;
-            let currentImageData = null;
-            let currentSvgString = null;
-
-            // Initialize WASM when page loads
-            initializeWasm();
-
-            // File Upload Handlers
-            dropZone.addEventListener('click', (e) => {
-                console.log('Drop zone clicked', e);
-                fileInput.click();
-            });
-
-            fileInput.addEventListener('change', handleFileSelect);
-            console.log('Event listeners attached');
-
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('dragover');
-            });
-
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.classList.remove('dragover');
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    handleFile(files[0]);
-                }
-            });
-
-            function handleFileSelect(e) {
-                console.log('File input changed', e);
-                const file = e.target.files[0];
-                console.log('Selected file:', file);
-                if (file) {
-                    handleFile(file);
+            async function initializeWasm() {
+                if (!wasmInitialized && wasmInit) {
+                    try {
+                        console.log('[PNG2SVG] Initializing WASM...');
+                        await wasmInit();
+                        wasmInitialized = true;
+                        console.log('[PNG2SVG] WASM initialized successfully');
+                    } catch (err) {
+                        console.error('[PNG2SVG] WASM initialization failed:', err);
+                    }
                 }
             }
 
-            function handleFile(file) {
-                if (!file.type.startsWith('image/png')) {
-                    alert('Please upload a PNG file.');
+            function initializeApp() {
+                console.log('[PNG2SVG] Initializing app...');
+
+                // DOM Elements
+                const fileInput = document.getElementById('fileInput');
+                const dropZone = document.getElementById('dropZone');
+                const previewSection = document.getElementById('previewSection');
+                const previewCanvas = document.getElementById('previewCanvas');
+                const processingCanvas = document.getElementById('processingCanvas');
+                const imageInfo = document.getElementById('imageInfo');
+                const fileName = document.getElementById('fileName');
+                const convertBtn = document.getElementById('convertBtn');
+                const downloadBtn = document.getElementById('downloadBtn');
+                const progressContainer = document.getElementById('progressContainer');
+                const progressBar = document.getElementById('progressBar');
+                const progressText = document.getElementById('progressText');
+                const progressPercent = document.getElementById('progressPercent');
+                const svgPreviewSection = document.getElementById('svgPreviewSection');
+                const svgPreview = document.getElementById('svgPreview');
+
+                // Check if elements exist
+                if (!fileInput) {
+                    console.error('[PNG2SVG] fileInput not found!');
+                    return;
+                }
+                if (!dropZone) {
+                    console.error('[PNG2SVG] dropZone not found!');
                     return;
                 }
 
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        currentImage = img;
-                        displayPreview(img);
+                console.log('[PNG2SVG] All DOM elements found');
 
-                        // Set default filename from original file
-                        const baseName = file.name.replace(/\.[^/.]+$/, '');
-                        fileName.value = baseName + '-vector';
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
+                let currentImage = null;
+                let currentImageData = null;
+                let currentSvgString = null;
 
-            function displayPreview(img) {
-                // Show preview section
-                previewSection.classList.remove('hidden');
+                // Start WASM initialization in background
+                initializeWasm().catch(err => {
+                    console.error('[PNG2SVG] WASM init error:', err);
+                });
 
-                // Set canvas size
-                const maxSize = 512;
-                let width = img.width;
-                let height = img.height;
+                // File Upload Handlers
+                console.log('[PNG2SVG] Attaching click handler to dropZone');
+                dropZone.addEventListener('click', function(e) {
+                    console.log('[PNG2SVG] Drop zone clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                        fileInput.click();
+                        console.log('[PNG2SVG] File input triggered');
+                    } catch (err) {
+                        console.error('[PNG2SVG] Error clicking file input:', err);
+                    }
+                }, false);
 
-                if (width > maxSize || height > maxSize) {
-                    const scale = Math.min(maxSize / width, maxSize / height);
-                    width *= scale;
-                    height *= scale;
+                fileInput.addEventListener('change', handleFileSelect, false);
+                console.log('[PNG2SVG] Event listeners attached');
+
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('dragover');
+                }, false);
+
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('dragover');
+                }, false);
+
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleFile(files[0]);
+                    }
+                }, false);
+
+                function handleFileSelect(e) {
+                    console.log('[PNG2SVG] File input changed!');
+                    const file = e.target.files[0];
+                    console.log('[PNG2SVG] Selected file:', file);
+                    if (file) {
+                        handleFile(file);
+                    } else {
+                        console.log('[PNG2SVG] No file selected');
+                    }
                 }
 
-                previewCanvas.width = width;
-                previewCanvas.height = height;
+                function handleFile(file) {
+                    console.log('[PNG2SVG] Handling file:', file.name, file.type);
 
-                // Draw preview
-                const ctx = previewCanvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-
-                // Update info
-                imageInfo.textContent = `${img.width} × ${img.height}px`;
-
-                // Reset conversion state
-                downloadBtn.classList.add('hidden');
-                svgPreviewSection.classList.add('hidden');
-                currentSvgString = null;
-
-                // Scroll to preview
-                previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-
-            // Conversion Handler
-            convertBtn.addEventListener('click', async () => {
-                if (!currentImage) return;
-
-                try {
-                    // Ensure WASM is initialized
-                    if (!wasmInitialized) {
-                        await initializeWasm();
+                    if (!file.type.startsWith('image/png')) {
+                        alert('Please upload a PNG file.');
+                        return;
                     }
 
-                    // Disable button
-                    convertBtn.disabled = true;
-                    convertBtn.textContent = 'Converting...';
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        console.log('[PNG2SVG] File loaded, creating image...');
+                        const img = new Image();
+                        img.onload = () => {
+                            console.log('[PNG2SVG] Image loaded:', img.width, 'x', img.height);
+                            currentImage = img;
+                            displayPreview(img);
 
-                    // Show progress
-                    progressContainer.classList.remove('hidden');
-                    updateProgress(0, 'Preparing image data...');
-
-                    // Get image data
-                    const imageData = await getImageData(currentImage);
-                    currentImageData = imageData;
-
-                    updateProgress(10, 'Initializing vectorization...');
-
-                    // Configure vtracer options for artistic patterns
-                    const options = {
-                        color_mode: 'color',
-                        mode: 'spline',  // Best for smooth artistic curves
-                        filter_speckle: 4,  // Remove small noise
-                        color_precision: 6,  // Good color accuracy
-                        layer_difference: 16,  // Moderate color layer separation
-                        corner_threshold: 60,  // Smoother corners
-                        length_threshold: 4.0,  // Balance detail vs simplification
-                        splice_threshold: 45,  // Smooth curve splicing
-                        path_precision: 8  // High path precision
+                            // Set default filename from original file
+                            const baseName = file.name.replace(/\.[^/.]+$/, '');
+                            fileName.value = baseName + '-vector';
+                        };
+                        img.onerror = (err) => {
+                            console.error('[PNG2SVG] Image load error:', err);
+                            alert('Failed to load image');
+                        };
+                        img.src = e.target.result;
                     };
-
-                    updateProgress(20, 'Creating converter...');
-
-                    // Create converter
-                    const converter = new BinaryImageConverter(
-                        new Uint8ClampedArray(imageData.data),
-                        imageData.width,
-                        imageData.height,
-                        options
-                    );
-
-                    updateProgress(30, 'Processing vectors...');
-
-                    // Process with progress updates
-                    await processWithProgress(converter);
-
-                    updateProgress(90, 'Generating SVG...');
-
-                    // Get SVG result
-                    const svgString = converter.get_svg();
-                    currentSvgString = svgString;
-
-                    updateProgress(100, 'Complete!');
-
-                    // Show download button
-                    downloadBtn.classList.remove('hidden');
-
-                    // Show SVG preview
-                    displaySvgPreview(svgString);
-
-                    // Reset button
-                    convertBtn.disabled = false;
-                    convertBtn.textContent = 'Convert to SVG';
-
-                    // Scroll to download
-                    downloadBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                } catch (error) {
-                    console.error('Conversion error:', error);
-                    alert('Conversion failed: ' + error.message);
-
-                    // Reset UI
-                    convertBtn.disabled = false;
-                    convertBtn.textContent = 'Convert to SVG';
-                    progressContainer.classList.add('hidden');
+                    reader.onerror = (err) => {
+                        console.error('[PNG2SVG] FileReader error:', err);
+                        alert('Failed to read file');
+                    };
+                    reader.readAsDataURL(file);
                 }
-            });
 
-            async function processWithProgress(converter) {
-                return new Promise((resolve) => {
-                    let progress = 30;
-                    const step = () => {
-                        const done = converter.tick();
+                function displayPreview(img) {
+                    console.log('[PNG2SVG] Displaying preview...');
+                    // Show preview section
+                    previewSection.classList.remove('hidden');
 
-                        progress = Math.min(85, progress + 1);
-                        updateProgress(progress, 'Processing vectors...');
+                    // Set canvas size
+                    const maxSize = 512;
+                    let width = img.width;
+                    let height = img.height;
 
-                        if (done) {
-                            resolve();
-                        } else {
-                            setTimeout(step, 0);
+                    if (width > maxSize || height > maxSize) {
+                        const scale = Math.min(maxSize / width, maxSize / height);
+                        width *= scale;
+                        height *= scale;
+                    }
+
+                    previewCanvas.width = width;
+                    previewCanvas.height = height;
+
+                    // Draw preview
+                    const ctx = previewCanvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Update info
+                    imageInfo.textContent = `${img.width} × ${img.height}px`;
+
+                    // Reset conversion state
+                    downloadBtn.classList.add('hidden');
+                    svgPreviewSection.classList.add('hidden');
+                    currentSvgString = null;
+
+                    // Scroll to preview
+                    previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    console.log('[PNG2SVG] Preview displayed');
+                }
+
+                // Conversion Handler
+                convertBtn.addEventListener('click', async () => {
+                    console.log('[PNG2SVG] Convert button clicked');
+
+                    if (!currentImage) {
+                        alert('Please upload an image first');
+                        return;
+                    }
+
+                    if (!BinaryImageConverter) {
+                        alert('Vector conversion library not loaded. Please refresh the page.');
+                        return;
+                    }
+
+                    try {
+                        // Ensure WASM is initialized
+                        if (!wasmInitialized) {
+                            console.log('[PNG2SVG] WASM not initialized, initializing now...');
+                            await initializeWasm();
                         }
-                    };
-                    step();
-                });
-            }
 
-            function getImageData(img) {
-                return new Promise((resolve) => {
-                    processingCanvas.width = img.width;
-                    processingCanvas.height = img.height;
+                        if (!wasmInitialized) {
+                            throw new Error('Failed to initialize vector conversion engine');
+                        }
 
-                    const ctx = processingCanvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
+                        // Disable button
+                        convertBtn.disabled = true;
+                        convertBtn.textContent = 'Converting...';
 
-                    const imageData = ctx.getImageData(0, 0, img.width, img.height);
-                    resolve(imageData);
-                });
-            }
+                        // Show progress
+                        progressContainer.classList.remove('hidden');
+                        updateProgress(0, 'Preparing image data...');
 
-            function updateProgress(percent, text) {
-                progressBar.style.width = percent + '%';
-                progressPercent.textContent = Math.round(percent) + '%';
-                progressText.textContent = text;
-            }
+                        // Get image data
+                        const imageData = await getImageData(currentImage);
+                        currentImageData = imageData;
 
-            function displaySvgPreview(svgString) {
-                svgPreview.innerHTML = svgString;
-                svgPreviewSection.classList.remove('hidden');
+                        updateProgress(10, 'Initializing vectorization...');
 
-                // Scale SVG to fit preview
-                const svgElement = svgPreview.querySelector('svg');
-                if (svgElement) {
-                    svgElement.style.maxWidth = '100%';
-                    svgElement.style.height = 'auto';
+                        // Configure vtracer options for artistic patterns
+                        const options = {
+                            color_mode: 'color',
+                            mode: 'spline',  // Best for smooth artistic curves
+                            filter_speckle: 4,  // Remove small noise
+                            color_precision: 6,  // Good color accuracy
+                            layer_difference: 16,  // Moderate color layer separation
+                            corner_threshold: 60,  // Smoother corners
+                            length_threshold: 4.0,  // Balance detail vs simplification
+                            splice_threshold: 45,  // Smooth curve splicing
+                            path_precision: 8  // High path precision
+                        };
+
+                        updateProgress(20, 'Creating converter...');
+
+                        // Create converter
+                        const converter = new BinaryImageConverter(
+                            new Uint8ClampedArray(imageData.data),
+                            imageData.width,
+                            imageData.height,
+                            options
+                        );
+
+                        updateProgress(30, 'Processing vectors...');
+
+                        // Process with progress updates
+                        await processWithProgress(converter);
+
+                        updateProgress(90, 'Generating SVG...');
+
+                        // Get SVG result
+                        const svgString = converter.get_svg();
+                        currentSvgString = svgString;
+
+                        updateProgress(100, 'Complete!');
+
+                        // Show download button
+                        downloadBtn.classList.remove('hidden');
+
+                        // Show SVG preview
+                        displaySvgPreview(svgString);
+
+                        // Reset button
+                        convertBtn.disabled = false;
+                        convertBtn.textContent = 'Convert to SVG';
+
+                        // Scroll to download
+                        downloadBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    } catch (error) {
+                        console.error('[PNG2SVG] Conversion error:', error);
+                        alert('Conversion failed: ' + error.message);
+
+                        // Reset UI
+                        convertBtn.disabled = false;
+                        convertBtn.textContent = 'Convert to SVG';
+                        progressContainer.classList.add('hidden');
+                    }
+                }, false);
+
+                async function processWithProgress(converter) {
+                    return new Promise((resolve) => {
+                        let progress = 30;
+                        const step = () => {
+                            const done = converter.tick();
+
+                            progress = Math.min(85, progress + 1);
+                            updateProgress(progress, 'Processing vectors...');
+
+                            if (done) {
+                                resolve();
+                            } else {
+                                setTimeout(step, 0);
+                            }
+                        };
+                        step();
+                    });
                 }
+
+                function getImageData(img) {
+                    return new Promise((resolve) => {
+                        processingCanvas.width = img.width;
+                        processingCanvas.height = img.height;
+
+                        const ctx = processingCanvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+
+                        const imageData = ctx.getImageData(0, 0, img.width, img.height);
+                        resolve(imageData);
+                    });
+                }
+
+                function updateProgress(percent, text) {
+                    progressBar.style.width = percent + '%';
+                    progressPercent.textContent = Math.round(percent) + '%';
+                    progressText.textContent = text;
+                }
+
+                function displaySvgPreview(svgString) {
+                    svgPreview.innerHTML = svgString;
+                    svgPreviewSection.classList.remove('hidden');
+
+                    // Scale SVG to fit preview
+                    const svgElement = svgPreview.querySelector('svg');
+                    if (svgElement) {
+                        svgElement.style.maxWidth = '100%';
+                        svgElement.style.height = 'auto';
+                    }
+                }
+
+                // Download Handler
+                downloadBtn.addEventListener('click', () => {
+                    console.log('[PNG2SVG] Download button clicked');
+                    if (!currentSvgString) return;
+
+                    const filename = (fileName.value.trim() || 'pattern-vector') + '.svg';
+
+                    const blob = new Blob([currentSvgString], { type: 'image/svg+xml' });
+                    const url = URL.createObjectURL(blob);
+
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    URL.revokeObjectURL(url);
+
+                    // Visual feedback
+                    const originalText = downloadBtn.textContent;
+                    downloadBtn.textContent = '✓ Downloaded!';
+                    setTimeout(() => {
+                        downloadBtn.textContent = originalText;
+                    }, 2000);
+                }, false);
+
+                console.log('[PNG2SVG] App initialized successfully!');
             }
 
-            // Download Handler
-            downloadBtn.addEventListener('click', () => {
-                if (!currentSvgString) return;
-
-                const filename = (fileName.value.trim() || 'pattern-vector') + '.svg';
-
-                const blob = new Blob([currentSvgString], { type: 'image/svg+xml' });
-                const url = URL.createObjectURL(blob);
-
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-
-                URL.revokeObjectURL(url);
-
-                // Visual feedback
-                const originalText = downloadBtn.textContent;
-                downloadBtn.textContent = '✓ Downloaded!';
-                setTimeout(() => {
-                    downloadBtn.textContent = originalText;
-                }, 2000);
-            });
-        }
-
-        // Initialize when DOM is ready (works for modules which are deferred by default)
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeApp);
-        } else {
-            // DOM is already loaded (module scripts are deferred, so this is common)
-            initializeApp();
-        }
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                console.log('[PNG2SVG] Waiting for DOMContentLoaded...');
+                document.addEventListener('DOMContentLoaded', initializeApp);
+            } else {
+                console.log('[PNG2SVG] DOM already loaded, initializing now');
+                initializeApp();
+            }
+        })().catch(err => {
+            console.error('[PNG2SVG] Fatal error:', err);
+            alert('Failed to initialize PNG2SVG tool. Please refresh the page. Error: ' + err.message);
+        });
     </script>
 </body>
 </html>
