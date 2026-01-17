@@ -6,9 +6,7 @@
     <title>PNG2SVG - Convert PNG to Vector SVG for Fabric Printing | PatternRipple</title>
 
     <meta name="description" content="Free PNG to SVG converter tool for fabric designs. Convert 1024x1024px PNG patterns to vector graphics for professional fabric printing. Browser-based, no upload to servers.">
-    <meta name="keywords" content="png to svg, vector converter, fabric design tool, pattern vectorization, vtracer, wasm converter, image tracing, vector graphics, fabric printing prep, textile design converter">
     <meta name="author" content="Nick Panek">
-    <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.patternripple.com/png2svg.html">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -48,11 +46,11 @@
 <body class="bg-ancient-dark text-gray-100 min-h-screen">
 
     <header class="bg-ancient-darker border-b border-gray-700 py-8">
-        <div class="max-w-4xl mx-auto px-4">
-            <h1 class="text-4xl md:text-5xl font-light text-center mb-3">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-light mb-3">
                 <span class="text-accent">PNG</span>2<span class="text-accent">SVG</span>
             </h1>
-            <p class="text-center text-gray-400 text-sm md:text-base">
+            <p class="text-gray-400 text-sm md:text-base tracking-widest uppercase">
                 Vectorize Your Fabric Designs for Professional Printing
             </p>
         </div>
@@ -63,87 +61,81 @@
         <div class="bg-gray-900 rounded-lg p-6 mb-8 border border-gray-700">
             <h2 class="text-xl font-semibold mb-3 text-accent">How It Works</h2>
             <ol class="text-gray-300 space-y-2 text-sm">
-                <li class="flex items-start"><span class="text-accent font-bold mr-2">1.</span><span>Upload your 1024×1024px PNG design</span></li>
-                <li class="flex items-start"><span class="text-accent font-bold mr-2">2.</span><span>Preview your design and optionally rename the output file</span></li>
-                <li class="flex items-start"><span class="text-accent font-bold mr-2">3.</span><span>Click "Convert to SVG" to vectorize using optimized settings</span></li>
-                <li class="flex items-start"><span class="text-accent font-bold mr-2">4.</span><span>Download your SVG file for professional fabric printing</span></li>
+                <li><span class="text-accent font-bold mr-2">1.</span> Upload your 1024×1024px PNG design</li>
+                <li><span class="text-accent font-bold mr-2">2.</span> Preview and optionally rename the output</li>
+                <li><span class="text-accent font-bold mr-2">3.</span> Convert to vector SVG (Private, Browser-based)</li>
             </ol>
-            <p class="text-xs text-gray-500 mt-4 italic">✦ All processing happens in your browser. No uploads to servers. Complete privacy.</p>
         </div>
 
-        <div class="mb-8">
-            <label for="fileInput" class="block text-sm font-medium text-gray-300 mb-2">Select PNG Image</label>
-            <input type="file" id="fileInput" accept="image/png" class="hidden">
+        <div class="mb-8 relative">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Select PNG Image</label>
+            
+            <input type="file" id="fileInput" accept="image/png" style="opacity: 0; position: absolute; z-index: -1; width: 1px; height: 1px;">
+            
             <div id="dropZone" class="upload-zone border-2 border-dashed border-gray-600 rounded-lg p-12 text-center cursor-pointer">
                 <svg class="mx-auto h-12 w-12 text-gray-400 mb-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                 </svg>
                 <div class="pointer-events-none">
-                    <p class="text-gray-400 mb-2">Click to upload or drag and drop</p>
-                    <p class="text-xs text-gray-500">PNG files only • Recommended: 1024×1024px</p>
+                    <p class="text-gray-400 mb-2 font-semibold">Click to upload or drag and drop</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-tighter">PNG designs • 1024×1024px</p>
                 </div>
             </div>
         </div>
 
-        <div id="previewSection" class="hidden">
-            <div class="bg-gray-900 rounded-lg p-6 mb-6 border border-gray-700">
-                <h3 class="text-lg font-semibold mb-4 text-accent">Preview</h3>
-                <div class="flex justify-center mb-4">
-                    <canvas id="previewCanvas" class="max-w-full h-auto rounded border-2 border-gray-600"></canvas>
+        <div id="previewSection" class="hidden space-y-8 animate-in fade-in duration-500">
+            <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
+                <h3 class="text-lg font-semibold mb-4 text-accent uppercase tracking-widest text-sm">Preview</h3>
+                <div class="flex justify-center mb-4 bg-black/30 p-4 rounded">
+                    <canvas id="previewCanvas" class="max-w-full h-auto rounded border border-gray-600 shadow-2xl"></canvas>
                 </div>
-                <p id="imageInfo" class="text-sm text-gray-400 text-center"></p>
+                <p id="imageInfo" class="text-xs text-gray-500 text-center font-mono"></p>
             </div>
 
-            <div class="bg-gray-900 rounded-lg p-6 mb-6 border border-gray-700">
-                <label for="fileName" class="block text-sm font-medium text-gray-300 mb-2">Output Filename</label>
-                <div class="flex items-center gap-2">
-                    <input type="text" id="fileName" class="flex-1 bg-gray-800 border border-gray-600 rounded px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="my-fabric-design">
-                    <span class="text-gray-400">.svg</span>
-                </div>
-            </div>
-
-            <div class="bg-gray-900 rounded-lg p-6 mb-6 border border-gray-700">
-                <button id="convertBtn" class="w-full bg-accent hover:bg-[#4588a4] text-white font-semibold py-3 px-6 rounded transition-colors duration-200">
-                    Convert to SVG
-                </button>
-
-                <div id="progressContainer" class="hidden mt-4">
-                    <div class="flex justify-between text-sm text-gray-400 mb-2">
-                        <span id="progressText">Processing...</span>
-                        <span id="progressPercent">0%</span>
-                    </div>
-                    <div class="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
-                        <div id="progressBar" class="progress-bar bg-accent h-full rounded-full" style="width: 0%"></div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
+                    <label class="block text-xs text-gray-500 mb-2 uppercase tracking-widest">Output Filename</label>
+                    <div class="flex">
+                        <input type="text" id="fileName" class="flex-1 bg-gray-800 border border-gray-700 rounded-l px-4 py-2 text-white focus:outline-none focus:border-accent" placeholder="my-pattern">
+                        <span class="bg-gray-700 border border-gray-700 border-l-0 rounded-r px-3 py-2 text-gray-400 text-sm">.svg</span>
                     </div>
                 </div>
 
-                <button id="downloadBtn" class="hidden w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded transition-colors duration-200 mt-4">
-                    Download SVG
-                </button>
+                <div class="bg-gray-900 rounded-lg p-6 border border-gray-700 flex items-end">
+                    <button id="convertBtn" class="w-full bg-accent hover:bg-[#4588a4] text-white font-bold py-3 rounded transition-all uppercase tracking-widest text-sm">
+                        Convert to SVG
+                    </button>
+                </div>
             </div>
 
-            <div id="svgPreviewSection" class="hidden bg-gray-900 rounded-lg p-6 border border-gray-700">
-                <h3 class="text-lg font-semibold mb-4 text-accent">SVG Output Preview</h3>
-                <div class="bg-white rounded p-4 flex justify-center items-center min-h-[300px]">
-                    <div id="svgPreview" class="max-w-full max-h-[500px]"></div>
+            <div id="progressContainer" class="hidden">
+                <div class="w-full bg-gray-800 h-1 rounded-full overflow-hidden">
+                    <div id="progressBar" class="bg-accent h-full transition-all duration-300" style="width: 0%"></div>
                 </div>
+                <p id="progressText" class="text-[10px] text-gray-500 mt-2 text-center uppercase tracking-widest">Processing Geometry...</p>
+            </div>
+
+            <button id="downloadBtn" class="hidden w-full bg-white text-black font-bold py-4 rounded uppercase tracking-widest shadow-xl transition-transform hover:scale-[1.01]">
+                Download Final SVG
+            </button>
+            
+            <div id="svgPreviewSection" class="hidden bg-white rounded-lg p-8 border border-gray-700">
+                <h3 class="text-black font-bold mb-4 uppercase tracking-widest text-sm text-center italic underline">Vector Output Preview</h3>
+                <div id="svgPreview" class="flex justify-center"></div>
             </div>
         </div>
 
         <canvas id="processingCanvas" class="hidden"></canvas>
     </main>
 
-    <footer class="border-t border-gray-700 mt-16 py-8">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <p class="text-gray-500 text-sm mb-2">Part of the <a href="/" class="text-accent hover:underline">PatternRipple</a> suite of design tools</p>
-            <p class="text-gray-600 text-xs">Built by Nick Panek for fabric artists</p>
-        </div>
+    <footer class="text-center py-12 border-t border-gray-800 opacity-40 text-[10px] tracking-[0.4em] uppercase">
+        © 2026 PatternRipple • Developed by Nick Panek
     </footer>
 
-    <script type="module" id="mainScript">
+    <script type="module">
         import init, { convert_pixels_to_svg } from 'https://cdn.jsdelivr.net/npm/vtracer@0.3.1/vtracer.js';
 
-        // --- DOM Elements ---
+        let wasmReady = false;
         const elements = {
             dropZone: document.getElementById('dropZone'),
             fileInput: document.getElementById('fileInput'),
@@ -157,36 +149,24 @@
             progressContainer: document.getElementById('progressContainer'),
             progressBar: document.getElementById('progressBar'),
             progressText: document.getElementById('progressText'),
-            progressPercent: document.getElementById('progressPercent'),
             svgPreviewSection: document.getElementById('svgPreviewSection'),
             svgPreview: document.getElementById('svgPreview')
         };
 
-        let state = {
-            wasmReady: false,
-            currentImage: null,
-            currentImageData: null,
-            currentSvgString: null
-        };
+        let state = { imageData: null, svgString: null };
 
-        // --- Initialization ---
-        async function initializeApp() {
-            try {
-                console.log('[PNG2SVG] Loading Engine...');
-                await init();
-                state.wasmReady = true;
-                console.log('[PNG2SVG] Engine Ready');
-            } catch (err) {
-                console.error('[PNG2SVG] WASM Load Error:', err);
-                alert('Error loading vector engine. Please try using a local server (localhost) instead of double-clicking the file.');
-            }
-        }
-        initializeApp();
+        // 1. Initialize Vector Engine
+        init().then(() => { wasmReady = true; console.log("Engine Ready"); });
 
-        // --- Event Listeners ---
-        
-        // 1. Upload Interactions
-        elements.dropZone.addEventListener('click', () => elements.fileInput.click());
+        // 2. Upload Logic (Verified Fix)
+        elements.dropZone.addEventListener('click', (e) => {
+            e.preventDefault();
+            elements.fileInput.click();
+        });
+
+        elements.fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFile(e.target.files[0]);
+        });
 
         elements.dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -201,140 +181,80 @@
             if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
         });
 
-        elements.fileInput.addEventListener('change', (e) => {
-            if (e.target.files[0]) handleFile(e.target.files[0]);
-        });
-
-        // 2. Conversion Interactions
-        elements.convertBtn.addEventListener('click', runConversion);
-
-        // 3. Download Interactions
-        elements.downloadBtn.addEventListener('click', downloadSVG);
-
-
-        // --- Functions ---
-
         function handleFile(file) {
-            if (!file.type.startsWith('image/png')) return alert('Please upload a PNG file.');
-
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
-                    state.currentImage = img;
-                    
-                    // Display Visual Preview (Scaled)
                     const ctx = elements.previewCanvas.getContext('2d');
-                    const scale = Math.min(512 / img.width, 512 / img.height, 1);
-                    elements.previewCanvas.width = img.width * scale;
-                    elements.previewCanvas.height = img.height * scale;
-                    ctx.drawImage(img, 0, 0, elements.previewCanvas.width, elements.previewCanvas.height);
+                    elements.previewCanvas.width = 512;
+                    elements.previewCanvas.height = 512;
+                    ctx.drawImage(img, 0, 0, 512, 512);
 
-                    // Prepare Processing Data (Full Res)
                     elements.processingCanvas.width = img.width;
                     elements.processingCanvas.height = img.height;
                     const pCtx = elements.processingCanvas.getContext('2d');
                     pCtx.drawImage(img, 0, 0);
-                    state.currentImageData = pCtx.getImageData(0, 0, img.width, img.height);
+                    state.imageData = pCtx.getImageData(0, 0, img.width, img.height);
 
-                    // Update UI
-                    elements.imageInfo.textContent = `${img.width} × ${img.height}px`;
-                    elements.fileName.value = file.name.replace(/\.[^/.]+$/, "") + '-vector';
+                    elements.fileName.value = file.name.split('.')[0] + "_vector";
+                    elements.imageInfo.innerText = `${img.width}x${img.height}px Source`;
                     elements.previewSection.classList.remove('hidden');
                     elements.previewSection.scrollIntoView({ behavior: 'smooth' });
-
-                    // Reset State
-                    elements.downloadBtn.classList.add('hidden');
-                    elements.svgPreviewSection.classList.add('hidden');
-                    elements.progressContainer.classList.add('hidden');
-                    elements.convertBtn.disabled = false;
-                    elements.convertBtn.textContent = 'Convert to SVG';
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        async function runConversion() {
-            if (!state.wasmReady) return alert('Engine is still loading, please wait...');
-            if (!state.currentImageData) return alert('No image data found.');
-
-            // UI Loading State
-            elements.convertBtn.disabled = true;
-            elements.convertBtn.textContent = 'Vectorizing...';
-            elements.progressContainer.classList.remove('hidden');
+        // 3. Conversion Logic
+        elements.convertBtn.addEventListener('click', () => {
+            if (!wasmReady) return alert("Engine loading...");
             
-            // Fake progress start
-            updateProgress(30, 'Analyzing geometry...');
+            elements.convertBtn.disabled = true;
+            elements.convertBtn.innerText = "Vectorizing...";
+            elements.progressContainer.classList.remove('hidden');
+            elements.progressBar.style.width = "40%";
 
-            // Use setTimeout to allow UI to render the progress bar before the heavy WASM operation freezes the thread
             setTimeout(() => {
                 try {
-                    // Liturgical/Artistic Settings
                     const options = {
                         mode: 'spline',
                         corner_threshold: 60,
-                        path_precision: 4,
-                        splice_threshold: 45,
+                        path_precision: 3,
                         filter_speckle: 4,
                         color_precision: 6,
                         layer_difference: 16
                     };
 
-                    updateProgress(60, 'Tracing paths...');
-
-                    // Run Sync Conversion
-                    state.currentSvgString = convert_pixels_to_svg(state.currentImageData, options);
-
-                    // Success
-                    updateProgress(100, 'Done!');
+                    state.svgString = convert_pixels_to_svg(state.imageData, options);
+                    
+                    elements.progressBar.style.width = "100%";
+                    elements.progressText.innerText = "Conversion Complete";
                     elements.downloadBtn.classList.remove('hidden');
-                    elements.svgPreview.innerHTML = state.currentSvgString;
-                    
-                    // Fix SVG Preview scaling
-                    const svgEl = elements.svgPreview.querySelector('svg');
-                    if (svgEl) {
-                        svgEl.style.width = '100%';
-                        svgEl.style.height = 'auto';
-                    }
-                    
+                    elements.svgPreview.innerHTML = state.svgString;
                     elements.svgPreviewSection.classList.remove('hidden');
-                    elements.convertBtn.textContent = 'Conversion Complete';
-                    elements.downloadBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
+                    
+                    const svgEl = elements.svgPreview.querySelector('svg');
+                    if (svgEl) { svgEl.style.width = '100%'; svgEl.style.height = 'auto'; }
+                    
                 } catch (err) {
-                    console.error(err);
-                    alert('Conversion failed. Image might be too large.');
+                    alert("Conversion error. Use a smaller or simpler PNG.");
                     elements.convertBtn.disabled = false;
-                    elements.convertBtn.textContent = 'Try Again';
-                    elements.progressContainer.classList.add('hidden');
                 }
             }, 100);
-        }
+        });
 
-        function updateProgress(percent, text) {
-            elements.progressBar.style.width = percent + '%';
-            elements.progressPercent.textContent = percent + '%';
-            elements.progressText.textContent = text;
-        }
-
-        function downloadSVG() {
-            if (!state.currentSvgString) return;
-            const blob = new Blob([state.currentSvgString], { type: 'image/svg+xml' });
+        // 4. Download Logic
+        elements.downloadBtn.addEventListener('click', () => {
+            const blob = new Blob([state.svgString], { type: 'image/svg+xml' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = (elements.fileName.value || 'pattern') + '.svg';
-            document.body.appendChild(a);
+            a.download = `${elements.fileName.value || 'vector'}.svg`;
             a.click();
-            document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            
-            // Button Feedback
-            const originalText = elements.downloadBtn.textContent;
-            elements.downloadBtn.textContent = '✓ Saved!';
-            setTimeout(() => elements.downloadBtn.textContent = originalText, 2000);
-        }
+        });
     </script>
 </body>
 </html>
