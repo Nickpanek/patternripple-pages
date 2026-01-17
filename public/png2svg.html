@@ -260,11 +260,6 @@
         // Import vectortracer from CDN
         import init, { BinaryImageConverter } from 'https://cdn.jsdelivr.net/npm/vectortracer@0.5.1/vectortracer.js';
 
-        // Wait for DOM to be ready
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-        });
-
         // Initialize WASM
         let wasmInitialized = false;
 
@@ -282,6 +277,8 @@
         }
 
         function initializeApp() {
+            console.log('Initializing app...');
+
             // DOM Elements
             const fileInput = document.getElementById('fileInput');
             const dropZone = document.getElementById('dropZone');
@@ -299,6 +296,16 @@
             const svgPreviewSection = document.getElementById('svgPreviewSection');
             const svgPreview = document.getElementById('svgPreview');
 
+            // Check if elements exist
+            if (!fileInput || !dropZone) {
+                console.error('Required DOM elements not found!');
+                console.log('fileInput:', fileInput);
+                console.log('dropZone:', dropZone);
+                return;
+            }
+
+            console.log('All DOM elements found successfully');
+
             let currentImage = null;
             let currentImageData = null;
             let currentSvgString = null;
@@ -307,12 +314,13 @@
             initializeWasm();
 
             // File Upload Handlers
-            dropZone.addEventListener('click', () => {
-                console.log('Drop zone clicked');
+            dropZone.addEventListener('click', (e) => {
+                console.log('Drop zone clicked', e);
                 fileInput.click();
             });
 
             fileInput.addEventListener('change', handleFileSelect);
+            console.log('Event listeners attached');
 
             dropZone.addEventListener('dragover', (e) => {
                 e.preventDefault();
@@ -333,7 +341,9 @@
             });
 
             function handleFileSelect(e) {
+                console.log('File input changed', e);
                 const file = e.target.files[0];
+                console.log('Selected file:', file);
                 if (file) {
                     handleFile(file);
                 }
@@ -554,6 +564,14 @@
                     downloadBtn.textContent = originalText;
                 }, 2000);
             });
+        }
+
+        // Initialize when DOM is ready (works for modules which are deferred by default)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            // DOM is already loaded (module scripts are deferred, so this is common)
+            initializeApp();
         }
     </script>
 </body>
