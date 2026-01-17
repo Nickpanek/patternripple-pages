@@ -16,10 +16,6 @@
                         'accent': '#5399B5',
                         'ancient-dark': '#111111',
                         'ancient-darker': '#0a0a0a',
-                        'lit-purple': '#4B0082',
-                        'lit-green': '#006400',
-                        'lit-gold': '#D4AF37',
-                        'lit-rose': '#E0115F'
                     },
                     fontFamily: { 'ancient': ['Cinzel', 'serif'] }
                 }
@@ -35,8 +31,6 @@
             background-color: rgba(83, 153, 181, 0.1); 
             transform: scale(1.01);
         }
-        .color-card { transition: transform 0.2s; cursor: pointer; }
-        .color-card:hover { transform: translateY(-5px); }
     </style>
 </head>
 <body class="bg-ancient-dark text-gray-100 min-h-screen">
@@ -46,7 +40,7 @@
             <h1 class="text-4xl md:text-5xl font-light mb-2 uppercase tracking-widest">
                 <span class="text-accent">PNG</span>2<span class="text-accent">SVG</span>
             </h1>
-            <p class="text-gray-500 text-[10px] tracking-[0.4em] uppercase font-bold">Liturgical Design Forge</p>
+            <p class="text-gray-500 text-[10px] tracking-[0.4em] uppercase font-bold">Local High-Fidelity Forge</p>
         </div>
     </header>
 
@@ -67,18 +61,8 @@
             <div class="bg-gray-900 border border-gray-800 rounded-xl p-8">
                 <div class="flex justify-center bg-black/40 p-6 rounded-lg overflow-hidden">
                     <div id="svgPreview" class="max-w-full h-auto shadow-2xl">
-                         <img id="previewImg" class="max-w-full h-auto opacity-50" src="" />
+                         <img id="previewImg" class="max-w-full h-auto" src="" />
                     </div>
-                </div>
-            </div>
-
-            <div id="colorwaySection" class="hidden animate-fade-in">
-                <h3 class="text-center text-xs uppercase tracking-[0.3em] mb-6 text-gray-500 font-bold underline">Apply Liturgical Colorway</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div onclick="applyColorway('lent')" class="color-card bg-lit-purple p-4 rounded-lg text-center text-[10px] font-bold uppercase tracking-widest">Lent / Advent</div>
-                    <div onclick="applyColorway('ordinary')" class="color-card bg-lit-green p-4 rounded-lg text-center text-[10px] font-bold uppercase tracking-widest">Ordinary Time</div>
-                    <div onclick="applyColorway('feast')" class="color-card bg-white text-black p-4 rounded-lg text-center text-[10px] font-bold uppercase tracking-widest">Feast / Solemnity</div>
-                    <div onclick="applyColorway('martyr')" class="color-card bg-red-800 p-4 rounded-lg text-center text-[10px] font-bold uppercase tracking-widest">Martyr / Pentecost</div>
                 </div>
             </div>
 
@@ -112,33 +96,8 @@
     const convertBtn = document.getElementById('convertBtn');
     const downloadBtn = document.getElementById('downloadBtn');
     const svgPreview = document.getElementById('svgPreview');
-    const colorwaySection = document.getElementById('colorwaySection');
 
     let currentSvgString = '';
-
-    // Liturgical Color Palette Logic
-    const liturgicalPalettes = {
-        lent: ['#310062', '#4B0082', '#6A0DAD', '#1A0033'],
-        ordinary: ['#004d00', '#006400', '#228B22', '#002600'],
-        feast: ['#FFFFFF', '#F5F5DC', '#FFFDD0', '#D4AF37'],
-        martyr: ['#800000', '#A52A2A', '#DC143C', '#4A0000']
-    };
-
-    function applyColorway(season) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(currentSvgString, "image/svg+xml");
-        const paths = doc.querySelectorAll('path');
-        const palette = liturgicalPalettes[season];
-
-        paths.forEach((path, index) => {
-            // Assign colors from the liturgical palette based on path order
-            path.setAttribute('fill', palette[index % palette.length]);
-        });
-
-        currentSvgString = new XMLSerializer().serializeToString(doc);
-        svgPreview.innerHTML = currentSvgString;
-        fileNameInput.value = fileNameInput.value.split('_')[0] + "_" + season;
-    }
 
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -152,7 +111,6 @@
             previewImg.classList.remove('hidden');
             fileNameInput.value = file.name.split('.')[0] + "_vector";
             editorArea.classList.remove('hidden');
-            colorwaySection.classList.add('hidden');
             downloadBtn.classList.add('hidden');
             convertBtn.innerText = "Vectorize";
             convertBtn.disabled = false;
@@ -164,22 +122,20 @@
         convertBtn.disabled = true;
         convertBtn.innerText = "Forging High-Fidelity SVG...";
 
-        // HIGH FIDELITY SETTINGS
         const options = {
-            ltres: 0.1,        // Very tight lines
-            qtres: 0.1,        // Smooth curves
-            pathomit: 2,       // Keeps tiny liturgical details
-            numberofcolors: 48 // Enough color for complex AI textures
+            ltres: 0.1,        // Tight lines for detail
+            qtres: 0.1,        // True curves
+            pathomit: 2,       // Keep small details
+            numberofcolors: 64 // High color fidelity
         };
 
         ImageTracer.imageToSVG(
             previewImg.src,
             function(svgstr) {
                 currentSvgString = svgstr;
-                svgPreview.innerHTML = svgstr; // Swap image for real SVG
+                svgPreview.innerHTML = svgstr; 
                 convertBtn.innerText = "Vectorize Complete";
                 downloadBtn.classList.remove('hidden');
-                colorwaySection.classList.remove('hidden');
             },
             options
         );
@@ -197,7 +153,6 @@
         URL.revokeObjectURL(url);
     });
 
-    // Drag and Drop
     dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
     dropZone.addEventListener('drop', (e) => {
