@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PNG2SVG - Liturgical Pattern Vectorizer | PatternRipple</title>
+    <title>PNG2SVG - Convert PNG to Vector SVG for Fabric Printing | PatternRipple</title>
+
+    <meta name="description" content="Free PNG to SVG converter tool for fabric designs. Convert 1024x1024px PNG patterns to vector graphics for professional fabric printing. Browser-based, no upload to servers.">
+    <meta name="keywords" content="png to svg, vector converter, fabric design tool, pattern vectorization, vtracer, wasm converter, image tracing, vector graphics, fabric printing prep, textile design converter">
+    <meta name="author" content="Nick Panek">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.patternripple.com/png2svg.html">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -11,271 +17,260 @@
             theme: {
                 extend: {
                     colors: {
-                        'accent': '#5399B5',         /* Muted Blue */
-                        'ancient-dark': '#111111',   /* Deep Black/Grey */
-                        'ancient-panel': '#1a1a1a',  /* Lighter Panel */
-                        'gold': '#C5A059'            /* Accent Gold */
+                        'accent': '#5399B5',
+                        'ancient-dark': '#111111',
+                        'ancient-darker': '#0a0a0a',
+                        'parchment': '#f4ead5'
                     },
                     fontFamily: {
-                        'ancient': ['Cinzel', 'serif'],
-                        'sans': ['Inter', 'sans-serif']
+                        'serif': ['Georgia', 'Garamond', 'serif'],
+                        'ancient': ['Cinzel', 'Georgia', 'serif']
                     }
                 }
             }
         }
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Cinzel', serif; }
-        .font-body { font-family: 'Inter', sans-serif; }
-        
-        /* Smooth transitions for the upload box */
+        body { font-family: 'Cinzel', Georgia, serif; }
+        .ancient-border { border-image: linear-gradient(135deg, #5399B5, #2d5a6e) 1; }
+        .progress-bar { transition: width 0.3s ease-in-out; }
+        .accent-glow { box-shadow: 0 0 20px rgba(83, 153, 181, 0.3); }
         .upload-zone { transition: all 0.3s ease; }
-        .upload-zone.dragover { 
-            border-color: #5399B5; 
-            background-color: rgba(83, 153, 181, 0.1); 
-            transform: scale(1.01);
-            box-shadow: 0 0 20px rgba(83, 153, 181, 0.2);
-        }
-
-        /* Loading Spinner */
-        .loader {
-            border: 2px solid rgba(83, 153, 181, 0.1);
-            border-left-color: #5399B5;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .upload-zone:hover { border-color: #5399B5; background-color: rgba(83, 153, 181, 0.05); }
+        .upload-zone.dragover { border-color: #5399B5; background-color: rgba(83, 153, 181, 0.1); transform: scale(1.02); }
     </style>
 </head>
-<body class="bg-ancient-dark text-gray-200 min-h-screen flex flex-col selection:bg-accent selection:text-white">
+<body class="bg-ancient-dark text-gray-100 min-h-screen">
 
-    <header class="bg-black/50 border-b border-gray-800 py-10 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-white mb-2">
+    <header class="bg-ancient-darker border-b border-gray-700 py-8">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-4xl md:text-5xl font-light text-center mb-3">
                 <span class="text-accent">PNG</span>2<span class="text-accent">SVG</span>
             </h1>
-            <p class="text-gray-500 text-xs md:text-sm tracking-[0.3em] uppercase">
-                Liturgical Fabric Vectorizer
+            <p class="text-center text-gray-400 text-sm md:text-base">
+                Vectorize Your Fabric Designs for Professional Printing
             </p>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-12 flex-grow w-full">
+    <main class="max-w-4xl mx-auto px-4 py-12">
 
-        <div id="statusMessage" class="hidden max-w-md mx-auto mb-8 bg-blue-900/20 border border-blue-500/30 text-blue-200 px-4 py-3 rounded text-center text-sm font-body">
-            <span class="loader align-middle mr-2"></span> Initializing vector engine...
+        <div class="bg-gray-900 rounded-lg p-6 mb-8 border border-gray-700">
+            <h2 class="text-xl font-semibold mb-3 text-accent">How It Works</h2>
+            <ol class="text-gray-300 space-y-2 text-sm">
+                <li class="flex items-start"><span class="text-accent font-bold mr-2">1.</span><span>Upload your 1024×1024px PNG design</span></li>
+                <li class="flex items-start"><span class="text-accent font-bold mr-2">2.</span><span>Preview your design and optionally rename the output file</span></li>
+                <li class="flex items-start"><span class="text-accent font-bold mr-2">3.</span><span>Click "Convert to SVG" to vectorize using optimized settings</span></li>
+                <li class="flex items-start"><span class="text-accent font-bold mr-2">4.</span><span>Download your SVG file for professional fabric printing</span></li>
+            </ol>
+            <p class="text-xs text-gray-500 mt-4 italic">✦ All processing happens in your browser. No uploads to servers. Complete privacy.</p>
         </div>
 
-        <div class="mb-12">
+        <div class="mb-8">
+            <label for="fileInput" class="block text-sm font-medium text-gray-300 mb-2">Select PNG Image</label>
             <input type="file" id="fileInput" accept="image/png" class="hidden">
-            
-            <div id="dropZone" class="upload-zone group relative border-2 border-dashed border-gray-700 rounded-xl bg-ancient-panel p-16 text-center cursor-pointer hover:border-accent hover:bg-gray-800 transition-all duration-300">
-                
-                <div class="pointer-events-none relative z-10">
-                    <svg class="mx-auto h-16 w-16 text-gray-600 mb-6 group-hover:text-accent transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    <h3 class="text-xl text-gray-300 font-medium mb-2">Upload Pattern</h3>
-                    <p class="text-gray-500 text-xs uppercase tracking-widest font-body">1024×1024px PNG Recommended</p>
+            <div id="dropZone" class="upload-zone border-2 border-dashed border-gray-600 rounded-lg p-12 text-center cursor-pointer">
+                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+                <div class="pointer-events-none">
+                    <p class="text-gray-400 mb-2">Click to upload or drag and drop</p>
+                    <p class="text-xs text-gray-500">PNG files only • Recommended: 1024×1024px</p>
                 </div>
             </div>
         </div>
 
-        <div id="editorSection" class="hidden space-y-8 animate-fade-in">
-            
-            <div class="grid md:grid-cols-2 gap-8">
-                
-                <div class="bg-ancient-panel border border-gray-800 rounded-xl p-6 shadow-xl">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-accent text-xs uppercase tracking-widest font-bold">Preview</h3>
-                        <span id="dims" class="text-gray-600 text-xs font-mono"></span>
-                    </div>
-                    <div class="bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] bg-black/50 rounded-lg p-4 flex justify-center items-center min-h-[300px]">
-                        <canvas id="previewCanvas" class="max-w-full h-auto shadow-2xl border border-gray-700/50"></canvas>
-                    </div>
+        <div id="previewSection" class="hidden">
+            <div class="bg-gray-900 rounded-lg p-6 mb-6 border border-gray-700">
+                <h3 class="text-lg font-semibold mb-4 text-accent">Preview</h3>
+                <div class="flex justify-center mb-4">
+                    <canvas id="previewCanvas" class="max-w-full h-auto rounded border-2 border-gray-600"></canvas>
                 </div>
+                <p id="imageInfo" class="text-sm text-gray-400 text-center"></p>
+            </div>
 
-                <div class="flex flex-col justify-end space-y-6">
-                    
-                    <div class="bg-ancient-panel border border-gray-800 rounded-xl p-6">
-                        <label class="block text-gray-400 text-xs uppercase tracking-widest mb-3">Pattern Name</label>
-                        <div class="flex group">
-                            <input type="text" id="fileName" class="flex-1 bg-black/50 border border-gray-700 border-r-0 rounded-l-lg px-4 py-3 text-white font-body focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" placeholder="holy_spirit_design">
-                            <span class="bg-gray-800 border border-gray-700 rounded-r-lg px-4 py-3 text-gray-500 text-sm font-mono flex items-center">.svg</span>
-                        </div>
-                    </div>
-
-                    <button id="convertBtn" class="w-full bg-accent hover:bg-[#6baec9] text-white font-bold py-4 rounded-xl shadow-lg shadow-accent/10 transition-all duration-200 uppercase tracking-widest text-sm relative overflow-hidden group">
-                        <span class="relative z-10">Vectorize Pattern</span>
-                        <div class="absolute inset-0 h-full w-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                    </button>
-
+            <div class="bg-gray-900 rounded-lg p-6 mb-6 border border-gray-700">
+                <label for="fileName" class="block text-sm font-medium text-gray-300 mb-2">Output Filename</label>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="fileName" class="flex-1 bg-gray-800 border border-gray-600 rounded px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="my-fabric-design">
+                    <span class="text-gray-400">.svg</span>
                 </div>
             </div>
 
-            <div id="progressContainer" class="hidden bg-ancient-panel border border-gray-800 rounded-xl p-6">
-                <div class="flex justify-between text-xs text-accent mb-2 font-mono">
-                    <span id="progressText">Processing Geometry...</span>
-                    <span id="progressPercent">0%</span>
+            <div class="bg-gray-900 rounded-lg p-6 mb-6 border border-gray-700">
+                <button id="convertBtn" class="w-full bg-accent hover:bg-[#4588a4] text-white font-semibold py-3 px-6 rounded transition-colors duration-200">
+                    Convert to SVG
+                </button>
+
+                <div id="progressContainer" class="hidden mt-4">
+                    <div class="flex justify-between text-sm text-gray-400 mb-2">
+                        <span id="progressText">Processing...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+                        <div id="progressBar" class="progress-bar bg-accent h-full rounded-full" style="width: 0%"></div>
+                    </div>
                 </div>
-                <div class="w-full bg-black rounded-full h-2 overflow-hidden">
-                    <div id="progressBar" class="bg-accent h-full w-0 transition-all duration-300 shadow-[0_0_10px_#5399B5]"></div>
-                </div>
+
+                <button id="downloadBtn" class="hidden w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded transition-colors duration-200 mt-4">
+                    Download SVG
+                </button>
             </div>
 
-            <button id="downloadBtn" class="hidden w-full bg-white text-black hover:bg-gray-200 font-bold py-5 rounded-xl uppercase tracking-[0.2em] shadow-2xl transition-all transform hover:scale-[1.01] animate-bounce-subtle">
-                Download Final SVG
-            </button>
-
+            <div id="svgPreviewSection" class="hidden bg-gray-900 rounded-lg p-6 border border-gray-700">
+                <h3 class="text-lg font-semibold mb-4 text-accent">SVG Output Preview</h3>
+                <div class="bg-white rounded p-4 flex justify-center items-center min-h-[300px]">
+                    <div id="svgPreview" class="max-w-full max-h-[500px]"></div>
+                </div>
+            </div>
         </div>
 
         <canvas id="processingCanvas" class="hidden"></canvas>
-
     </main>
 
-    <footer class="border-t border-gray-800 py-8 mt-auto">
+    <footer class="border-t border-gray-700 mt-16 py-8">
         <div class="max-w-4xl mx-auto px-4 text-center">
-            <p class="text-gray-600 text-[10px] uppercase tracking-[0.3em]">
-                PatternRipple Software • 2026
-            </p>
+            <p class="text-gray-500 text-sm mb-2">Part of the <a href="/" class="text-accent hover:underline">PatternRipple</a> suite of design tools</p>
+            <p class="text-gray-600 text-xs">Built by Nick Panek for fabric artists</p>
         </div>
     </footer>
 
-    <script type="module">
-        // Import stable library
+    <script type="module" id="mainScript">
         import init, { convert_pixels_to_svg } from 'https://cdn.jsdelivr.net/npm/vtracer@0.3.1/vtracer.js';
 
-        // DOM Element References
+        // --- DOM Elements ---
         const elements = {
             dropZone: document.getElementById('dropZone'),
             fileInput: document.getElementById('fileInput'),
-            editorSection: document.getElementById('editorSection'),
+            previewSection: document.getElementById('previewSection'),
             previewCanvas: document.getElementById('previewCanvas'),
             processingCanvas: document.getElementById('processingCanvas'),
+            imageInfo: document.getElementById('imageInfo'),
             fileName: document.getElementById('fileName'),
             convertBtn: document.getElementById('convertBtn'),
             downloadBtn: document.getElementById('downloadBtn'),
-            progressBar: document.getElementById('progressBar'),
             progressContainer: document.getElementById('progressContainer'),
-            statusMessage: document.getElementById('statusMessage'),
-            dims: document.getElementById('dims')
+            progressBar: document.getElementById('progressBar'),
+            progressText: document.getElementById('progressText'),
+            progressPercent: document.getElementById('progressPercent'),
+            svgPreviewSection: document.getElementById('svgPreviewSection'),
+            svgPreview: document.getElementById('svgPreview')
         };
 
         let state = {
             wasmReady: false,
-            imageData: null,
-            svgOutput: null
+            currentImage: null,
+            currentImageData: null,
+            currentSvgString: null
         };
 
-        // --- 1. Initialization ---
-        async function initApp() {
+        // --- Initialization ---
+        async function initializeApp() {
             try {
-                elements.statusMessage.classList.remove('hidden');
-                await init(); // Initialize WASM
+                console.log('[PNG2SVG] Loading Engine...');
+                await init();
                 state.wasmReady = true;
-                
-                // UI Feedback
-                elements.statusMessage.innerHTML = '✓ Engine Ready';
-                elements.statusMessage.classList.replace('text-blue-200', 'text-green-400');
-                elements.statusMessage.classList.replace('border-blue-500/30', 'border-green-500/30');
-                setTimeout(() => elements.statusMessage.classList.add('hidden'), 2000);
+                console.log('[PNG2SVG] Engine Ready');
             } catch (err) {
-                console.error(err);
-                elements.statusMessage.innerHTML = '❌ Engine Failed. Please reload.';
-                elements.statusMessage.classList.replace('text-blue-200', 'text-red-400');
+                console.error('[PNG2SVG] WASM Load Error:', err);
+                alert('Error loading vector engine. Please try using a local server (localhost) instead of double-clicking the file.');
             }
         }
+        initializeApp();
 
-        // Start immediately
-        initApp();
-
-
-        // --- 2. Upload Logic (Fixed) ---
+        // --- Event Listeners ---
         
-        // This is the fix: Explicit click handler on the DIV triggers the hidden INPUT
-        elements.dropZone.addEventListener('click', (e) => {
-            elements.fileInput.click();
-        });
+        // 1. Upload Interactions
+        elements.dropZone.addEventListener('click', () => elements.fileInput.click());
 
-        elements.fileInput.addEventListener('change', (e) => {
-            if (e.target.files[0]) handleFile(e.target.files[0]);
-        });
-
-        // Drag & Drop Visuals
         elements.dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             elements.dropZone.classList.add('dragover');
         });
+        
         elements.dropZone.addEventListener('dragleave', () => elements.dropZone.classList.remove('dragover'));
+        
         elements.dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             elements.dropZone.classList.remove('dragover');
             if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
         });
 
+        elements.fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFile(e.target.files[0]);
+        });
 
-        // --- 3. File Processing ---
+        // 2. Conversion Interactions
+        elements.convertBtn.addEventListener('click', runConversion);
+
+        // 3. Download Interactions
+        elements.downloadBtn.addEventListener('click', downloadSVG);
+
+
+        // --- Functions ---
+
         function handleFile(file) {
-            if (!file.type.includes('png')) return alert("Please upload a PNG file.");
+            if (!file.type.startsWith('image/png')) return alert('Please upload a PNG file.');
 
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
-                    // 1. Draw Visual Preview (Scaled)
+                    state.currentImage = img;
+                    
+                    // Display Visual Preview (Scaled)
                     const ctx = elements.previewCanvas.getContext('2d');
-                    const scale = Math.min(600 / img.width, 1);
+                    const scale = Math.min(512 / img.width, 512 / img.height, 1);
                     elements.previewCanvas.width = img.width * scale;
                     elements.previewCanvas.height = img.height * scale;
                     ctx.drawImage(img, 0, 0, elements.previewCanvas.width, elements.previewCanvas.height);
 
-                    // 2. Prepare Raw Data (Full Res)
+                    // Prepare Processing Data (Full Res)
                     elements.processingCanvas.width = img.width;
                     elements.processingCanvas.height = img.height;
                     const pCtx = elements.processingCanvas.getContext('2d');
                     pCtx.drawImage(img, 0, 0);
-                    state.imageData = pCtx.getImageData(0, 0, img.width, img.height);
+                    state.currentImageData = pCtx.getImageData(0, 0, img.width, img.height);
 
-                    // 3. Update UI
-                    elements.fileName.value = file.name.split('.')[0] + "_vector";
-                    elements.dims.innerText = `${img.width} × ${img.height}px`;
-                    elements.editorSection.classList.remove('hidden');
-                    
+                    // Update UI
+                    elements.imageInfo.textContent = `${img.width} × ${img.height}px`;
+                    elements.fileName.value = file.name.replace(/\.[^/.]+$/, "") + '-vector';
+                    elements.previewSection.classList.remove('hidden');
+                    elements.previewSection.scrollIntoView({ behavior: 'smooth' });
+
                     // Reset State
                     elements.downloadBtn.classList.add('hidden');
-                    elements.convertBtn.disabled = false;
-                    elements.convertBtn.innerHTML = '<span class="relative z-10">Vectorize Pattern</span>';
+                    elements.svgPreviewSection.classList.add('hidden');
                     elements.progressContainer.classList.add('hidden');
-                    
-                    // Smooth Scroll
-                    elements.editorSection.scrollIntoView({ behavior: 'smooth' });
+                    elements.convertBtn.disabled = false;
+                    elements.convertBtn.textContent = 'Convert to SVG';
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
+        async function runConversion() {
+            if (!state.wasmReady) return alert('Engine is still loading, please wait...');
+            if (!state.currentImageData) return alert('No image data found.');
 
-        // --- 4. Vectorization Logic ---
-        elements.convertBtn.addEventListener('click', () => {
-            if (!state.wasmReady) return alert("Engine loading...");
-            
-            // Lock UI
+            // UI Loading State
             elements.convertBtn.disabled = true;
-            elements.convertBtn.innerText = "Calculations in progress...";
+            elements.convertBtn.textContent = 'Vectorizing...';
             elements.progressContainer.classList.remove('hidden');
-            elements.progressBar.style.width = "40%";
+            
+            // Fake progress start
+            updateProgress(30, 'Analyzing geometry...');
 
-            // Timeout allows UI to repaint before heavy WASM task
+            // Use setTimeout to allow UI to render the progress bar before the heavy WASM operation freezes the thread
             setTimeout(() => {
                 try {
-                    // Settings optimized for Liturgical Art (Smooth Splines)
+                    // Liturgical/Artistic Settings
                     const options = {
                         mode: 'spline',
                         corner_threshold: 60,
@@ -286,38 +281,60 @@
                         layer_difference: 16
                     };
 
-                    // Run Conversion
-                    state.svgOutput = convert_pixels_to_svg(state.imageData, options);
+                    updateProgress(60, 'Tracing paths...');
 
-                    // Success UI
-                    elements.progressBar.style.width = "100%";
-                    document.getElementById('progressPercent').innerText = "100%";
-                    elements.convertBtn.innerText = "Complete";
+                    // Run Sync Conversion
+                    state.currentSvgString = convert_pixels_to_svg(state.currentImageData, options);
+
+                    // Success
+                    updateProgress(100, 'Done!');
                     elements.downloadBtn.classList.remove('hidden');
+                    elements.svgPreview.innerHTML = state.currentSvgString;
+                    
+                    // Fix SVG Preview scaling
+                    const svgEl = elements.svgPreview.querySelector('svg');
+                    if (svgEl) {
+                        svgEl.style.width = '100%';
+                        svgEl.style.height = 'auto';
+                    }
+                    
+                    elements.svgPreviewSection.classList.remove('hidden');
+                    elements.convertBtn.textContent = 'Conversion Complete';
+                    elements.downloadBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
                 } catch (err) {
                     console.error(err);
-                    alert("Error converting image. Try a smaller file.");
+                    alert('Conversion failed. Image might be too large.');
                     elements.convertBtn.disabled = false;
+                    elements.convertBtn.textContent = 'Try Again';
+                    elements.progressContainer.classList.add('hidden');
                 }
             }, 100);
-        });
+        }
 
+        function updateProgress(percent, text) {
+            elements.progressBar.style.width = percent + '%';
+            elements.progressPercent.textContent = percent + '%';
+            elements.progressText.textContent = text;
+        }
 
-        // --- 5. Download Logic ---
-        elements.downloadBtn.addEventListener('click', () => {
-            if (!state.svgOutput) return;
-            const blob = new Blob([state.svgOutput], { type: 'image/svg+xml' });
+        function downloadSVG() {
+            if (!state.currentSvgString) return;
+            const blob = new Blob([state.currentSvgString], { type: 'image/svg+xml' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = (elements.fileName.value || "pattern") + ".svg";
+            a.download = (elements.fileName.value || 'pattern') + '.svg';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-        });
-
+            
+            // Button Feedback
+            const originalText = elements.downloadBtn.textContent;
+            elements.downloadBtn.textContent = '✓ Saved!';
+            setTimeout(() => elements.downloadBtn.textContent = originalText, 2000);
+        }
     </script>
 </body>
 </html>
