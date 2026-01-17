@@ -5,8 +5,8 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Free Software & Browser Tools - Pattern Creator, Audio Tools & More | PatternRipple",
   description:
-    "Free browser-based creative software and tools. Seamless pattern creator, pattern tile checker, audio looper, audio processor, property slideshow maker, video tools, and quantum circuit simulator. No installation required, works offline.",
-  keywords: "free software, browser tools, pattern creator, seamless patterns, audio looper, audio tools, video maker, creative tools, design software, free design tools, web-based tools, offline tools",
+    "Free browser-based creative software and tools. Seamless pattern creator, PNG2SVG converter, pattern tile checker, audio looper, audio processor, property slideshow maker, video tools, and quantum circuit simulator. No installation required, works offline.",
+  keywords: "free software, browser tools, pattern creator, png to svg, vector converter, seamless patterns, audio looper, audio tools, video maker, creative tools, design software, free design tools, web-based tools, offline tools",
   alternates: { canonical: "https://www.patternripple.com/software" },
   openGraph: {
     title: "Free Creative Software & Browser Tools | PatternRipple",
@@ -50,6 +50,14 @@ const tools: Tool[] = [
     href: "/seamless-pattern-creator.html",
     summary:
       "Build seamless tiles in your browser. Offset and wrap artwork, preview as repeating tiles, and export the final image.",
+    badge: "Design",
+  },
+  {
+    slug: "png2svg",
+    title: "PNG2SVG - Fabric Design Vectorizer",
+    href: "/png2svg.html",
+    summary:
+      "Convert 1024×1024px PNG designs to vector SVG for professional fabric printing. Optimized for liturgical patterns. All processing happens in your browser.",
     badge: "Design",
   },
   {
@@ -111,6 +119,7 @@ const tools: Tool[] = [
 
 const order: Record<string, number> = {
   "seamless-pattern-creator": 10,
+  "png2svg": 15,
   "seamless-pattern-checker": 20,
   "audio-looper-panek": 30,
   "audio-processor": 40,
