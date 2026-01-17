@@ -57,7 +57,7 @@ const tools: Tool[] = [
     title: "PNG2SVG - Fabric Design Vectorizer",
     href: "/png2svg.html",
     summary:
-      "Convert 1024×1024px PNG designs to vector SVG for professional fabric printing. Optimized for liturgical patterns. All processing happens in your browser.",
+      "Convert 1024×1024px PNG designs to vector SVG for professional fabric printing. Optimized for artistic patterns. All processing happens in your browser.",
     badge: "Design",
   },
   {
