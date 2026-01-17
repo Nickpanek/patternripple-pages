@@ -25,7 +25,6 @@
     <style>
         body { font-family: 'Cinzel', serif; }
         .upload-zone { transition: all 0.3s ease; }
-        /* When dragging a file over the box */
         .upload-zone.dragover { 
             border-color: #5399B5; 
             background-color: rgba(83, 153, 181, 0.1); 
@@ -40,17 +39,14 @@
             <h1 class="text-4xl md:text-5xl font-light mb-2 uppercase tracking-widest">
                 <span class="text-accent">PNG</span>2<span class="text-accent">SVG</span>
             </h1>
-            <p class="text-gray-500 text-[10px] tracking-[0.4em] uppercase">Pre-Print Fulfillment Tool</p>
+            <p id="engineStatus" class="text-gray-500 text-[10px] tracking-[0.4em] uppercase italic">Loading Engine...</p>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto px-4 py-12">
-
         <div class="mb-12">
             <label for="fileInput" id="dropZone" class="upload-zone block border-2 border-dashed border-gray-700 rounded-xl p-20 text-center cursor-pointer bg-gray-900/40 hover:border-accent hover:bg-gray-800/50 group">
-                
                 <input type="file" id="fileInput" accept="image/png" class="hidden">
-
                 <div class="pointer-events-none">
                     <svg class="mx-auto h-16 w-16 text-gray-600 mb-6 group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -63,7 +59,6 @@
 
         <div id="previewSection" class="hidden space-y-10">
             <div class="bg-gray-900 border border-gray-800 rounded-xl p-8">
-                <h3 class="text-accent text-[10px] uppercase tracking-[0.3em] mb-6">Visual Preview</h3>
                 <div class="flex justify-center bg-black/40 p-6 rounded-lg">
                     <canvas id="previewCanvas" class="max-w-full h-auto shadow-2xl border border-gray-800"></canvas>
                 </div>
@@ -72,7 +67,7 @@
             <div class="grid md:grid-cols-2 gap-6">
                 <div class="bg-gray-900 border border-gray-800 p-8 rounded-xl">
                     <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-3">Vector Filename</label>
-                    <input type="text" id="fileName" class="w-full bg-black border border-gray-700 rounded px-4 py-3 text-accent outline-none focus:border-accent" placeholder="holy_spirit_pattern">
+                    <input type="text" id="fileName" class="w-full bg-black border border-gray-700 rounded px-4 py-3 text-accent outline-none focus:border-accent" placeholder="filename">
                 </div>
                 <div class="bg-gray-900 border border-gray-800 p-8 rounded-xl flex items-end">
                     <button id="convertBtn" class="w-full bg-accent hover:bg-opacity-80 text-white font-bold py-4 rounded uppercase tracking-widest text-xs transition-all">
@@ -96,12 +91,9 @@
         <canvas id="processingCanvas" class="hidden"></canvas>
     </main>
 
-    <footer class="text-center py-10 opacity-30 text-[9px] tracking-[0.5em] uppercase">
-        © 2026 PatternRipple Software
-    </footer>
-
     <script type="module">
-        import init, { convert_pixels_to_svg } from 'https://cdn.jsdelivr.net/npm/vtracer@0.3.1/vtracer.js';
+        // Fixed: Using vectortracer which is a more stable CDN endpoint for vtracer
+        import { BinaryImageConverter, default as initWasm } from 'https://cdn.jsdelivr.net/npm/vectortracer@0.5.1/vectortracer.js';
 
         let wasmReady = false;
         const elements = {
@@ -114,25 +106,36 @@
             convertBtn: document.getElementById('convertBtn'),
             downloadBtn: document.getElementById('downloadBtn'),
             progressBar: document.getElementById('progressBar'),
-            progressContainer: document.getElementById('progressContainer')
+            progressContainer: document.getElementById('progressContainer'),
+            status: document.getElementById('engineStatus')
         };
 
         let state = { imageData: null, svgOutput: null };
 
-        // Init Engine
-        init().then(() => { wasmReady = true; });
+        // Initialize Engine
+        async function loadEngine() {
+            try {
+                await initWasm();
+                wasmReady = true;
+                elements.status.innerText = "Engine Ready";
+                elements.status.classList.replace('text-gray-500', 'text-accent');
+            } catch (err) {
+                elements.status.innerText = "Engine Error - Try localhost/Live Server";
+                console.error("WASM failed to load. Make sure you are using a local server.", err);
+            }
+        }
+        loadEngine();
 
-        // Drag and Drop (Click is handled by the Label for="fileInput" automatically)
+        elements.fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFile(e.target.files[0]);
+        });
+
         elements.dropZone.addEventListener('dragover', (e) => { e.preventDefault(); elements.dropZone.classList.add('dragover'); });
         elements.dropZone.addEventListener('dragleave', () => elements.dropZone.classList.remove('dragover'));
         elements.dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             elements.dropZone.classList.remove('dragover');
             if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
-        });
-
-        elements.fileInput.addEventListener('change', (e) => {
-            if (e.target.files[0]) handleFile(e.target.files[0]);
         });
 
         function handleFile(file) {
@@ -154,7 +157,6 @@
 
                     elements.fileName.value = file.name.split('.')[0] + "_vector";
                     elements.previewSection.classList.remove('hidden');
-                    elements.previewSection.scrollIntoView({ behavior: 'smooth' });
                 };
                 img.src = e.target.result;
             };
@@ -162,27 +164,45 @@
         }
 
         elements.convertBtn.addEventListener('click', () => {
-            if (!wasmReady) return alert("Engine loading...");
+            if (!wasmReady) return alert("Vector engine is still loading. Please wait.");
+            
             elements.convertBtn.disabled = true;
-            elements.convertBtn.innerText = "Vectorizing...";
+            elements.convertBtn.innerText = "Processing...";
             elements.progressContainer.classList.remove('hidden');
             elements.progressBar.style.width = "40%";
 
             setTimeout(() => {
                 try {
+                    // Modern vtracer configuration
                     const options = {
+                        color_mode: 'color',
                         mode: 'spline',
-                        corner_threshold: 60,
-                        path_precision: 3,
                         filter_speckle: 4,
-                        color_precision: 6
+                        color_precision: 6,
+                        layer_difference: 16,
+                        corner_threshold: 60,
+                        length_threshold: 4.0,
+                        splice_threshold: 45,
+                        path_precision: 4
                     };
-                    state.svgOutput = convert_pixels_to_svg(state.imageData, options);
+
+                    const converter = new BinaryImageConverter(
+                        new Uint8ClampedArray(state.imageData.data),
+                        state.imageData.width,
+                        state.imageData.height,
+                        options
+                    );
+
+                    // Process synchronously
+                    while(!converter.tick()){}
+                    
+                    state.svgOutput = converter.get_svg();
                     elements.progressBar.style.width = "100%";
                     elements.downloadBtn.classList.remove('hidden');
-                    elements.convertBtn.innerText = "Done";
+                    elements.convertBtn.innerText = "Complete";
                 } catch (err) {
-                    alert("Conversion failed.");
+                    console.error(err);
+                    alert("Conversion error. Use a smaller PNG.");
                     elements.convertBtn.disabled = false;
                 }
             }, 50);
