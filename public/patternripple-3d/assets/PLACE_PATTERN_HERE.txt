@@ -1,0 +1,26 @@
+📁 Add Your Pattern Image Here
+
+Required:
+- Filename: pattern1.jpg (or update CONFIG.patternPath in main.js)
+- Format: JPG or PNG
+- Size: 1024x1024 pixels recommended (must be square)
+- Keep file size under 2MB for best performance
+
+Where to get pattern images:
+1. Export from your Spoonflower design dashboard
+2. Create a square crop of your pattern in Photoshop/GIMP
+3. Use any square fabric pattern image you own
+
+Once you add your pattern image:
+1. Delete this text file
+2. The game will automatically load your pattern
+3. Test locally before deploying
+
+Example filename:
+✅ pattern1.jpg
+✅ floral-design.jpg (remember to update main.js)
+✅ geometric-pattern.png
+
+Need help?
+- Check the README.md in the parent folder
+- Email: nick@patternripple.com
