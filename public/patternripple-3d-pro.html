@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatternRipple 3D - Wild West Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #87CEEB 0%, #FFE4B5 100%);
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.92);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            max-width: 300px;
+        }
+
+        #info h1 {
+            font-size: 22px;
+            color: #8B4513;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        #info .collection-name {
+            font-size: 14px;
+            color: #D2691E;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+
+        #info p {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+
+        #moves-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #8B4513;
+            z-index: 10;
+        }
+
+        #pattern-selector {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 200;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        #pattern-selector.hidden {
+            display: none;
+        }
+
+        #pattern-selector h2 {
+            font-size: 32px;
+            color: #8B4513;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        #pattern-selector .subtitle {
+            text-align: center;
+            color: #D2691E;
+            font-size: 16px;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .pattern-card {
+            cursor: pointer;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: #f5f5f5;
+        }
+
+        .pattern-card:hover {
+            border-color: #D2691E;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(210, 105, 30, 0.3);
+        }
+
+        .pattern-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .pattern-card .name {
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #8B4513;
+            font-weight: 600;
+        }
+
+        .pattern-card.placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            border: 2px dashed #ccc;
+        }
+
+        .pattern-card.placeholder:hover {
+            border-color: #D2691E;
+            background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+        }
+
+        #victory-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            z-index: 100;
+        }
+
+        #victory-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #victory-message {
+            background: white;
+            padding: 50px 70px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.4);
+            max-width: 500px;
+        }
+
+        #victory-message h2 {
+            font-size: 48px;
+            color: #8B4513;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        #victory-message p {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        #victory-message .pattern-info {
+            font-size: 16px;
+            color: #999;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        #victory-message .pattern-link {
+            color: #D2691E;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        #victory-message .pattern-link:hover {
+            color: #8B4513;
+            text-decoration: underline;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            z-index: 10;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.95);
+            color: #8B4513;
+            padding: 12px 30px;
+            border: 2px solid #D2691E;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #D2691E;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #8B4513;
+            font-size: 24px;
+            text-align: center;
+            z-index: 5;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 50px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading p {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #D2691E;
+        }
+
+        .upload-custom {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        #pattern-upload {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <div id="info">
+        <h1>PatternRipple 3D</h1>
+        <div class="collection-name"></div>
+        <p>Click tiles next to the empty space</p>
+    </div>
+
+    <div id="moves-counter">Moves: <span id="move-count">0</span></div>
+
+    <div id="pattern-selector">
+        <h2>Choose Your Pattern</h2>
+        <div class="subtitle">Wild West Collection</div>
+        <div class="pattern-grid" id="pattern-grid"></div>
+    </div>
+
+    <div id="controls">
+        <button id="change-pattern-btn">Change Pattern</button>
+        <button id="shuffle-btn">Shuffle</button>
+        <label for="pattern-upload">
+            <button type="button" class="upload-custom" onclick="document.getElementById('pattern-upload').click()">
+                Upload Custom
+            </button>
+        </label>
+        <input type="file" id="pattern-upload" accept="image/*">
+    </div>
+
+    <div id="victory-overlay">
+        <div id="victory-message">
+            <h2>🤠 Solved!</h2>
+            <p id="victory-text">You've completed the puzzle!</p>
+            <div class="pattern-info">
+                Pattern: <span id="pattern-name"></span><br>
+                <a href="#" target="_blank" class="pattern-link" id="pattern-shop-link">View on Spoonflower →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading" id="loading">
+        <div>Loading Wild West Collection...</div>
+        <p>Get ready for some western patterns!</p>
+    </div>
+
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        // Game configuration
+        const CONFIG = {
+            gridSize: 3,
+            tileSize: 1,
+            tileThickness: 0.2,
+            tileGap: 0.05,
+            patternPacksUrl: '/patternripple-data/pattern-packs.json'
+        };
+
+        // Game state
+        let scene, camera, renderer, controls;
+        let tiles = [];
+        let emptySlot = { x: 2, y: 2 };
+        let raycaster, mouse;
+        let isAnimating = false;
+        let moveCount = 0;
+        let textureLoader, gltfLoader;
+        let currentPack = null;
+        let currentPattern = null;
+        let decorations = [];
+
+        // Initialize
+        initScene();
+        loadPatternPacks();
+
+        function initScene() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB);
+
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 6, 9);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            setupLighting();
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 5;
+            controls.maxDistance = 15;
+            controls.maxPolarAngle = Math.PI / 2.2;
+
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            textureLoader = new THREE.TextureLoader();
+            gltfLoader = new GLTFLoader();
+
+            window.addEventListener('resize', onWindowResize);
+            renderer.domElement.addEventListener('click', onTileClick);
+            document.getElementById('shuffle-btn').addEventListener('click', shufflePuzzle);
+            document.getElementById('change-pattern-btn').addEventListener('click', showPatternSelector);
+            document.getElementById('pattern-upload').addEventListener('change', handleCustomUpload);
+
+            animate();
+        }
+
+        function setupLighting() {
+            const ambientLight = new THREE.AmbientLight(0xFFE4B5, 0.5);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xFFF5E6, 1.0);
+            directionalLight.position.set(5, 10, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 50;
+            directionalLight.shadow.camera.left = -10;
+            directionalLight.shadow.camera.right = 10;
+            directionalLight.shadow.camera.top = 10;
+            directionalLight.shadow.camera.bottom = -10;
+            scene.add(directionalLight);
+
+            const rimLight = new THREE.PointLight(0xFFD700, 0.6, 20);
+            rimLight.position.set(-5, 3, -5);
+            scene.add(rimLight);
+
+            const fillLight = new THREE.DirectionalLight(0xFFF5E6, 0.3);
+            fillLight.position.set(-5, 5, -5);
+            scene.add(fillLight);
+
+            const groundGeometry = new THREE.PlaneGeometry(30, 30);
+            const groundMaterial = new THREE.MeshStandardMaterial({
+                color: 0xD2B48C,
+                roughness: 0.9,
+                metalness: 0.1
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -CONFIG.tileThickness / 2 - 0.01;
+            ground.receiveShadow = true;
+            scene.add(ground);
+        }
+
+        async function loadPatternPacks() {
+            try {
+                const response = await fetch(CONFIG.patternPacksUrl);
+                const data = await response.json();
+
+                if (data.packs && data.packs.length > 0) {
+                    currentPack = data.packs[0]; // Load first pack (cowboy)
+                    applyPackTheme(currentPack);
+                    displayPatternSelector(currentPack);
+                    loadDecorations(currentPack);
+                }
+            } catch (error) {
+                console.error('Error loading pattern packs:', error);
+                document.getElementById('loading').innerHTML =
+                    '<div>Unable to load pattern packs</div><p>Using custom upload mode</p>';
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        function applyPackTheme(pack) {
+            if (pack.environment) {
+                if (pack.environment.skyColor) {
+                    scene.background = new THREE.Color(pack.environment.skyColor);
+                }
+                document.querySelector('.collection-name').textContent = pack.name;
+                document.querySelector('.subtitle').textContent = pack.name;
+            }
+        }
+
+        function displayPatternSelector(pack) {
+            const grid = document.getElementById('pattern-grid');
+            grid.innerHTML = '';
+
+            pack.patterns.forEach((pattern, index) => {
+                const card = document.createElement('div');
+                card.className = 'pattern-card placeholder';
+                card.innerHTML = `
+                    <div class="name">${pattern.name}</div>
+                `;
+                card.onclick = () => selectPattern(pattern);
+                grid.appendChild(card);
+
+                // Try to load pattern image
+                const img = new Image();
+                img.onload = () => {
+                    card.className = 'pattern-card';
+                    card.innerHTML = `
+                        <img src="${pattern.imageUrl}" alt="${pattern.name}">
+                        <div class="name">${pattern.name}</div>
+                    `;
+                };
+                img.onerror = () => {
+                    // Keep placeholder style if image fails to load
+                };
+                img.src = pattern.imageUrl;
+            });
+
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function selectPattern(pattern) {
+            currentPattern = pattern;
+            document.getElementById('pattern-selector').classList.add('hidden');
+
+            textureLoader.load(
+                pattern.imageUrl,
+                (texture) => {
+                    clearPuzzle();
+                    createPuzzle(texture);
+                    shufflePuzzle();
+                },
+                undefined,
+                (error) => {
+                    console.error('Error loading pattern:', error);
+                    alert('Failed to load pattern image. Please try another pattern.');
+                    showPatternSelector();
+                }
+            );
+        }
+
+        function loadDecorations(pack) {
+            if (!pack.decorations) return;
+
+            pack.decorations.forEach(dec => {
+                if (dec.type === 'model') {
+                    // For now, create placeholder geometric shapes
+                    // In production, you'd load actual GLB/GLTF files
+                    createPlaceholderDecoration(dec);
+                }
+            });
+        }
+
+        function createPlaceholderDecoration(dec) {
+            // Create themed geometric placeholders until you upload actual 3D models
+            let geometry, material;
+
+            if (dec.url.includes('hat')) {
+                geometry = new THREE.CylinderGeometry(0.5, 0.7, 0.3, 32);
+                material = new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.8 });
+            } else if (dec.url.includes('cactus')) {
+                geometry = new THREE.CylinderGeometry(0.2, 0.25, 1, 16);
+                material = new THREE.MeshStandardMaterial({ color: 0x228B22, roughness: 0.9 });
+            } else if (dec.url.includes('horseshoe')) {
+                geometry = new THREE.TorusGeometry(0.3, 0.08, 16, 32, Math.PI);
+                material = new THREE.MeshStandardMaterial({ color: 0xC0C0C0, metalness: 0.8, roughness: 0.3 });
+            } else {
+                geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+                material = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+            }
+
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(dec.position[0], dec.position[1], dec.position[2]);
+            mesh.rotation.set(dec.rotation[0], dec.rotation[1], dec.rotation[2]);
+            mesh.scale.setScalar(dec.scale);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+
+            scene.add(mesh);
+            decorations.push(mesh);
+        }
+
+        function showPatternSelector() {
+            document.getElementById('pattern-selector').classList.remove('hidden');
+        }
+
+        function handleCustomUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                textureLoader.load(e.target.result, (texture) => {
+                    currentPattern = {
+                        name: file.name.replace(/\.[^/.]+$/, ""),
+                        shopUrl: null
+                    };
+                    clearPuzzle();
+                    createPuzzle(texture);
+                    shufflePuzzle();
+                    document.getElementById('pattern-selector').classList.add('hidden');
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearPuzzle() {
+            tiles.flat().filter(t => t !== null).forEach(tile => {
+                scene.remove(tile);
+                if (tile.geometry) tile.geometry.dispose();
+                if (tile.material) {
+                    if (tile.material.map) tile.material.map.dispose();
+                    if (tile.material.bumpMap) tile.material.bumpMap.dispose();
+                    tile.material.dispose();
+                }
+            });
+            tiles = [];
+            emptySlot = { x: 2, y: 2 };
+            moveCount = 0;
+            document.getElementById('move-count').textContent = moveCount;
+            document.getElementById('victory-overlay').classList.remove('show');
+        }
+
+        function createPuzzle(texture) {
+            const totalSize = CONFIG.gridSize * CONFIG.tileSize + (CONFIG.gridSize - 1) * CONFIG.tileGap;
+            const startOffset = -totalSize / 2 + CONFIG.tileSize / 2;
+
+            const bumpMap = texture.clone();
+            bumpMap.needsUpdate = true;
+
+            for (let y = 0; y < CONFIG.gridSize; y++) {
+                tiles[y] = [];
+                for (let x = 0; x < CONFIG.gridSize; x++) {
+                    if (x === emptySlot.x && y === emptySlot.y) {
+                        tiles[y][x] = null;
+                        continue;
+                    }
+
+                    const geometry = new THREE.BoxGeometry(CONFIG.tileSize, CONFIG.tileThickness, CONFIG.tileSize);
+                    const tileTexture = texture.clone();
+                    tileTexture.needsUpdate = true;
+
+                    const uvOffsetX = x / CONFIG.gridSize;
+                    const uvOffsetY = 1 - (y + 1) / CONFIG.gridSize;
+                    const uvScaleX = 1 / CONFIG.gridSize;
+                    const uvScaleY = 1 / CONFIG.gridSize;
+
+                    tileTexture.offset.set(uvOffsetX, uvOffsetY);
+                    tileTexture.repeat.set(uvScaleX, uvScaleY);
+                    tileTexture.wrapS = THREE.ClampToEdgeWrapping;
+                    tileTexture.wrapT = THREE.ClampToEdgeWrapping;
+
+                    const material = new THREE.MeshPhysicalMaterial({
+                        map: tileTexture,
+                        bumpMap: bumpMap.clone(),
+                        bumpScale: 0.02,
+                        roughness: 0.7,
+                        metalness: 0.0,
+                        sheen: 1.0,
+                        sheenRoughness: 0.5,
+                        sheenColor: new THREE.Color(0xffffff),
+                        clearcoat: 0.1,
+                        clearcoatRoughness: 0.8
+                    });
+
+                    material.bumpMap.offset.set(uvOffsetX, uvOffsetY);
+                    material.bumpMap.repeat.set(uvScaleX, uvScaleY);
+
+                    const tile = new THREE.Mesh(geometry, material);
+                    const posX = startOffset + x * (CONFIG.tileSize + CONFIG.tileGap);
+                    const posZ = startOffset + y * (CONFIG.tileSize + CONFIG.tileGap);
+                    tile.position.set(posX, 0, posZ);
+                    tile.castShadow = true;
+                    tile.receiveShadow = true;
+                    tile.userData = { gridX: x, gridY: y };
+
+                    scene.add(tile);
+                    tiles[y][x] = tile;
+                }
+            }
+        }
+
+        function onTileClick(event) {
+            if (isAnimating || tiles.length === 0) return;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const allTiles = tiles.flat().filter(t => t !== null);
+            const intersects = raycaster.intersectObjects(allTiles);
+
+            if (intersects.length > 0) {
+                const clickedTile = intersects[0].object;
+                const { gridX, gridY } = clickedTile.userData;
+
+                if (isAdjacentToEmpty(gridX, gridY)) {
+                    moveTile(clickedTile, gridX, gridY);
+                }
+            }
+        }
+
+        function isAdjacentToEmpty(x, y) {
+            const dx = Math.abs(x - emptySlot.x);
+            const dy = Math.abs(y - emptySlot.y);
+            return (dx === 1 && dy === 0) || (dx === 0 && dy === 1);
+        }
+
+        function moveTile(tile, fromX, fromY) {
+            isAnimating = true;
+            moveCount++;
+            document.getElementById('move-count').textContent = moveCount;
+
+            const totalSize = CONFIG.gridSize * CONFIG.tileSize + (CONFIG.gridSize - 1) * CONFIG.tileGap;
+            const startOffset = -totalSize / 2 + CONFIG.tileSize / 2;
+            const targetX = startOffset + emptySlot.x * (CONFIG.tileSize + CONFIG.tileGap);
+            const targetZ = startOffset + emptySlot.y * (CONFIG.tileSize + CONFIG.tileGap);
+
+            gsap.to(tile.position, {
+                x: targetX,
+                z: targetZ,
+                duration: 0.6,
+                ease: "back.out(1.7)",
+                onUpdate: function() {
+                    const progress = this.progress();
+                    tile.position.y = Math.sin(progress * Math.PI) * 0.2;
+                },
+                onComplete: () => {
+                    tile.position.y = 0;
+                    tiles[emptySlot.y][emptySlot.x] = tile;
+                    tiles[fromY][fromX] = null;
+                    tile.userData.gridX = emptySlot.x;
+                    tile.userData.gridY = emptySlot.y;
+                    emptySlot.x = fromX;
+                    emptySlot.y = fromY;
+                    isAnimating = false;
+
+                    if (checkVictory()) {
+                        onVictory();
+                    }
+                }
+            });
+        }
+
+        function checkVictory() {
+            if (emptySlot.x !== CONFIG.gridSize - 1 || emptySlot.y !== CONFIG.gridSize - 1) {
+                return false;
+            }
+
+            for (let y = 0; y < CONFIG.gridSize; y++) {
+                for (let x = 0; x < CONFIG.gridSize; x++) {
+                    if (x === CONFIG.gridSize - 1 && y === CONFIG.gridSize - 1) continue;
+                    const tile = tiles[y][x];
+                    if (!tile || tile.userData.gridX !== x || tile.userData.gridY !== y) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function onVictory() {
+            const totalSize = CONFIG.gridSize * CONFIG.tileSize;
+            const startOffset = -totalSize / 2 + CONFIG.tileSize / 2;
+
+            tiles.flat().filter(t => t !== null).forEach(tile => {
+                const { gridX, gridY } = tile.userData;
+                const posX = startOffset + gridX * CONFIG.tileSize;
+                const posZ = startOffset + gridY * CONFIG.tileSize;
+
+                gsap.to(tile.position, {
+                    x: posX,
+                    z: posZ,
+                    duration: 0.8,
+                    ease: "power2.inOut"
+                });
+            });
+
+            setTimeout(() => {
+                if (currentPattern && currentPattern.shopUrl) {
+                    document.getElementById('pattern-name').textContent = currentPattern.name;
+                    document.getElementById('pattern-shop-link').href = currentPattern.shopUrl;
+                    document.getElementById('pattern-shop-link').style.display = 'inline';
+                } else {
+                    document.getElementById('pattern-name').textContent = currentPattern ? currentPattern.name : 'Custom Pattern';
+                    document.getElementById('pattern-shop-link').style.display = 'none';
+                }
+                document.getElementById('victory-overlay').classList.add('show');
+            }, 1000);
+        }
+
+        function shufflePuzzle() {
+            if (isAnimating || tiles.length === 0) return;
+
+            document.getElementById('victory-overlay').classList.remove('show');
+            moveCount = 0;
+            document.getElementById('move-count').textContent = moveCount;
+
+            const numMoves = 50 + Math.floor(Math.random() * 50);
+            for (let i = 0; i < numMoves; i++) {
+                const adjacentTiles = getAdjacentTiles();
+                if (adjacentTiles.length > 0) {
+                    const randomTile = adjacentTiles[Math.floor(Math.random() * adjacentTiles.length)];
+                    swapWithEmpty(randomTile.x, randomTile.y);
+                }
+            }
+
+            animateTilesToCurrentPositions();
+        }
+
+        function getAdjacentTiles() {
+            const adjacent = [];
+            const directions = [
+                { x: -1, y: 0 }, { x: 1, y: 0 },
+                { x: 0, y: -1 }, { x: 0, y: 1 }
+            ];
+
+            directions.forEach(dir => {
+                const x = emptySlot.x + dir.x;
+                const y = emptySlot.y + dir.y;
+                if (x >= 0 && x < CONFIG.gridSize && y >= 0 && y < CONFIG.gridSize) {
+                    adjacent.push({ x, y });
+                }
+            });
+
+            return adjacent;
+        }
+
+        function swapWithEmpty(tileX, tileY) {
+            const tile = tiles[tileY][tileX];
+            if (!tile) return;
+
+            tiles[emptySlot.y][emptySlot.x] = tile;
+            tiles[tileY][tileX] = null;
+            tile.userData.gridX = emptySlot.x;
+            tile.userData.gridY = emptySlot.y;
+            emptySlot.x = tileX;
+            emptySlot.y = tileY;
+        }
+
+        function animateTilesToCurrentPositions() {
+            const totalSize = CONFIG.gridSize * CONFIG.tileSize + (CONFIG.gridSize - 1) * CONFIG.tileGap;
+            const startOffset = -totalSize / 2 + CONFIG.tileSize / 2;
+
+            tiles.flat().filter(t => t !== null).forEach(tile => {
+                const { gridX, gridY } = tile.userData;
+                const posX = startOffset + gridX * (CONFIG.tileSize + CONFIG.tileGap);
+                const posZ = startOffset + gridY * (CONFIG.tileSize + CONFIG.tileGap);
+
+                gsap.to(tile.position, {
+                    x: posX,
+                    z: posZ,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            });
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (controls) controls.update();
+            if (renderer && scene && camera) renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>

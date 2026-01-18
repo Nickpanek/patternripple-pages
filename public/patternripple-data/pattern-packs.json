@@ -1,0 +1,83 @@
+{
+  "version": "1.0",
+  "packs": [
+    {
+      "id": "cowboy-collection",
+      "name": "Wild West Collection",
+      "theme": "cowboy",
+      "description": "Authentic western patterns featuring cowboy and cowgirl designs",
+      "environment": {
+        "skyColor": "#87CEEB",
+        "groundColor": "#D2B48C",
+        "ambientColor": "#FFE4B5"
+      },
+      "decorations": [
+        {
+          "type": "model",
+          "url": "/patternripple-data/assets/cowboy-hat.glb",
+          "position": [-3, 0.5, 2],
+          "scale": 0.5,
+          "rotation": [0, 0.5, 0]
+        },
+        {
+          "type": "model",
+          "url": "/patternripple-data/assets/cactus.glb",
+          "position": [3, 0, 3],
+          "scale": 0.4,
+          "rotation": [0, -0.3, 0]
+        },
+        {
+          "type": "model",
+          "url": "/patternripple-data/assets/horseshoe.glb",
+          "position": [-2.5, 0.2, -2],
+          "scale": 0.3,
+          "rotation": [0, 1.2, 0]
+        }
+      ],
+      "patterns": [
+        {
+          "id": "western-bandana",
+          "name": "Classic Bandana",
+          "imageUrl": "/patternripple-data/cowboy-pack/western-bandana.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/western-bandana",
+          "description": "Traditional western bandana pattern"
+        },
+        {
+          "id": "cowboy-boots",
+          "name": "Vintage Boots",
+          "imageUrl": "/patternripple-data/cowboy-pack/cowboy-boots.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/cowboy-boots",
+          "description": "Classic cowboy boot motif"
+        },
+        {
+          "id": "rodeo-rope",
+          "name": "Rodeo Lasso",
+          "imageUrl": "/patternripple-data/cowboy-pack/rodeo-rope.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/rodeo-rope",
+          "description": "Western rope and lasso design"
+        },
+        {
+          "id": "cowgirl-hat",
+          "name": "Cowgirl Charm",
+          "imageUrl": "/patternripple-data/cowboy-pack/cowgirl-hat.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/cowgirl-hat",
+          "description": "Stylish cowgirl hat pattern"
+        },
+        {
+          "id": "western-stars",
+          "name": "Desert Stars",
+          "imageUrl": "/patternripple-data/cowboy-pack/western-stars.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/western-stars",
+          "description": "Starry western night sky"
+        },
+        {
+          "id": "horseshoe-lucky",
+          "name": "Lucky Horseshoe",
+          "imageUrl": "/patternripple-data/cowboy-pack/horseshoe-lucky.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/horseshoe-lucky",
+          "description": "Good luck horseshoe pattern"
+        }
+      ]
+    }
+  ]
+}
