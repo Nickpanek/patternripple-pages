@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatternRipple 3D - Pattern Pack Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 36px;
+        }
+
+        .subtitle {
+            color: #999;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2::before {
+            content: '→';
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 20px;
+            background: white;
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            background: #f0f0ff;
+            border-color: #5568d3;
+        }
+
+        .file-upload-label .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .pattern-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .pattern-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .pattern-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .pattern-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .pattern-item .info {
+            padding: 15px;
+        }
+
+        .pattern-item .name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .pattern-item .url {
+            font-size: 12px;
+            color: #999;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .pattern-item button {
+            width: 100%;
+            margin: 10px 0 0 0;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .preview-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .preview-box pre {
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .color-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-input input[type="color"] {
+            width: 60px;
+            height: 40px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .color-input input[type="text"] {
+            flex: 1;
+        }
+
+        .success-message {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+            margin-bottom: 30px;
+        }
+
+        .instructions h3 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-box .number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-box .label {
+            color: #999;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤠 PatternRipple 3D - Pattern Pack Manager</h1>
+        <p class="subtitle">Manage your pattern collections and theme settings</p>
+
+        <div class="instructions">
+            <h3>How to Use This Admin Panel</h3>
+            <ul>
+                <li>Upload pattern images (square format recommended, 1024x1024px)</li>
+                <li>Set pattern names and Spoonflower shop URLs</li>
+                <li>Customize theme colors for your collection</li>
+                <li>Export the JSON configuration file</li>
+                <li>Upload the pattern-packs.json file to: <code>/public/patternripple-data/</code></li>
+                <li>Upload pattern images to: <code>/public/patternripple-data/cowboy-pack/</code></li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Collection Settings</h2>
+
+            <div class="form-group">
+                <label for="pack-id">Collection ID</label>
+                <input type="text" id="pack-id" value="cowboy-collection" placeholder="e.g., cowboy-collection">
+            </div>
+
+            <div class="form-group">
+                <label for="pack-name">Collection Name</label>
+                <input type="text" id="pack-name" value="Wild West Collection" placeholder="e.g., Wild West Collection">
+            </div>
+
+            <div class="form-group">
+                <label for="pack-description">Description</label>
+                <textarea id="pack-description" placeholder="Describe your pattern collection...">Authentic western patterns featuring cowboy and cowgirl designs</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Theme Colors</label>
+                <div class="color-grid">
+                    <div class="color-input">
+                        <input type="color" id="sky-color" value="#87CEEB">
+                        <input type="text" placeholder="Sky" value="#87CEEB" id="sky-color-text">
+                    </div>
+                    <div class="color-input">
+                        <input type="color" id="ground-color" value="#D2B48C">
+                        <input type="text" placeholder="Ground" value="#D2B48C" id="ground-color-text">
+                    </div>
+                    <div class="color-input">
+                        <input type="color" id="ambient-color" value="#FFE4B5">
+                        <input type="text" placeholder="Ambient" value="#FFE4B5" id="ambient-color-text">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Add Pattern</h2>
+
+            <div class="form-group">
+                <label>Pattern Image (Square recommended)</label>
+                <div class="file-upload">
+                    <input type="file" id="pattern-upload" accept="image/*">
+                    <label class="file-upload-label" for="pattern-upload">
+                        <div class="icon">📸</div>
+                        <div>Click to upload pattern image</div>
+                        <div style="font-size: 12px; color: #999; margin-top: 5px;">JPG, PNG (1024x1024px recommended)</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="pattern-name">Pattern Name</label>
+                <input type="text" id="pattern-name" placeholder="e.g., Classic Bandana">
+            </div>
+
+            <div class="form-group">
+                <label for="pattern-id">Pattern ID (auto-generated from name)</label>
+                <input type="text" id="pattern-id" placeholder="e.g., classic-bandana" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="pattern-shop-url">Spoonflower Shop URL</label>
+                <input type="url" id="pattern-shop-url" placeholder="https://www.spoonflower.com/profiles/yourshop/pattern-name">
+            </div>
+
+            <div class="form-group">
+                <label for="pattern-desc">Pattern Description</label>
+                <input type="text" id="pattern-desc" placeholder="e.g., Traditional western bandana pattern">
+            </div>
+
+            <button onclick="addPattern()">➕ Add Pattern to Collection</button>
+            <div class="success-message" id="add-success">Pattern added successfully!</div>
+        </div>
+
+        <div class="section">
+            <h2>Current Patterns</h2>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="number" id="pattern-count">0</div>
+                    <div class="label">Patterns</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="total-size">0 KB</div>
+                    <div class="label">Total Size</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="linked-count">0</div>
+                    <div class="label">Shop Links</div>
+                </div>
+            </div>
+
+            <div class="pattern-list" id="pattern-list"></div>
+        </div>
+
+        <div class="section">
+            <h2>Export Configuration</h2>
+
+            <p style="margin-bottom: 20px; color: #666;">
+                Download this JSON file and upload it to <code>/public/patternripple-data/pattern-packs.json</code>
+            </p>
+
+            <div class="preview-box">
+                <pre id="json-preview">{}</pre>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button onclick="downloadJSON()">💾 Download pattern-packs.json</button>
+                <button class="secondary" onclick="copyJSON()">📋 Copy to Clipboard</button>
+            </div>
+
+            <div class="success-message" id="export-success">Configuration copied to clipboard!</div>
+        </div>
+
+        <div class="section">
+            <h2>File Upload Checklist</h2>
+
+            <div style="background: white; padding: 20px; border-radius: 8px;">
+                <h4 style="margin-bottom: 15px;">After exporting, upload these files via your git repository:</h4>
+                <ol style="line-height: 2; color: #555;">
+                    <li>Upload <code>pattern-packs.json</code> to <code>/public/patternripple-data/</code></li>
+                    <li>Create folder <code>/public/patternripple-data/cowboy-pack/</code></li>
+                    <li>Upload all pattern images to <code>/public/patternripple-data/cowboy-pack/</code></li>
+                    <li>Make sure filenames match the IDs in your JSON</li>
+                    <li>Commit and push to deploy</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let patterns = [];
+        let patternImages = {};
+        let totalImageSize = 0;
+
+        // Auto-generate ID from name
+        document.getElementById('pattern-name').addEventListener('input', function() {
+            const name = this.value;
+            const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            document.getElementById('pattern-id').value = id;
+        });
+
+        // Sync color inputs
+        ['sky', 'ground', 'ambient'].forEach(type => {
+            document.getElementById(`${type}-color`).addEventListener('input', function() {
+                document.getElementById(`${type}-color-text`).value = this.value;
+            });
+            document.getElementById(`${type}-color-text`).addEventListener('input', function() {
+                document.getElementById(`${type}-color`).value = this.value;
+            });
+        });
+
+        // Handle image upload
+        document.getElementById('pattern-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    patternImages[file.name] = {
+                        data: event.target.result,
+                        size: file.size,
+                        file: file
+                    };
+                    totalImageSize += file.size;
+                    document.querySelector('.file-upload-label').style.borderColor = '#4CAF50';
+                    document.querySelector('.file-upload-label .icon').textContent = '✅';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function addPattern() {
+            const name = document.getElementById('pattern-name').value.trim();
+            const id = document.getElementById('pattern-id').value.trim();
+            const shopUrl = document.getElementById('pattern-shop-url').value.trim();
+            const desc = document.getElementById('pattern-desc').value.trim();
+            const upload = document.getElementById('pattern-upload');
+
+            if (!name || !id || !upload.files[0]) {
+                alert('Please fill in pattern name and upload an image!');
+                return;
+            }
+
+            const fileName = upload.files[0].name;
+            const imageUrl = `/patternripple-data/cowboy-pack/${id}.jpg`;
+
+            const pattern = {
+                id: id,
+                name: name,
+                imageUrl: imageUrl,
+                shopUrl: shopUrl || `https://www.spoonflower.com/profiles/yourshop/${id}`,
+                description: desc || name,
+                _localImage: patternImages[fileName].data,
+                _fileName: `${id}.jpg`
+            };
+
+            patterns.push(pattern);
+            renderPatternList();
+            updatePreview();
+            updateStats();
+
+            // Clear form
+            document.getElementById('pattern-name').value = '';
+            document.getElementById('pattern-id').value = '';
+            document.getElementById('pattern-shop-url').value = '';
+            document.getElementById('pattern-desc').value = '';
+            document.getElementById('pattern-upload').value = '';
+            document.querySelector('.file-upload-label .icon').textContent = '📸';
+            document.querySelector('.file-upload-label').style.borderColor = '#667eea';
+
+            // Show success message
+            const success = document.getElementById('add-success');
+            success.classList.add('show');
+            setTimeout(() => success.classList.remove('show'), 3000);
+        }
+
+        function removePattern(index) {
+            if (confirm('Remove this pattern from the collection?')) {
+                patterns.splice(index, 1);
+                renderPatternList();
+                updatePreview();
+                updateStats();
+            }
+        }
+
+        function renderPatternList() {
+            const list = document.getElementById('pattern-list');
+            list.innerHTML = '';
+
+            patterns.forEach((pattern, index) => {
+                const item = document.createElement('div');
+                item.className = 'pattern-item';
+                item.innerHTML = `
+                    <img src="${pattern._localImage}" alt="${pattern.name}">
+                    <div class="info">
+                        <div class="name">${pattern.name}</div>
+                        <div class="url">${pattern._fileName}</div>
+                        <button onclick="removePattern(${index})">🗑️ Remove</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('pattern-count').textContent = patterns.length;
+            document.getElementById('total-size').textContent = Math.round(totalImageSize / 1024) + ' KB';
+            document.getElementById('linked-count').textContent =
+                patterns.filter(p => p.shopUrl && !p.shopUrl.includes('yourshop')).length;
+        }
+
+        function updatePreview() {
+            const config = {
+                version: "1.0",
+                packs: [
+                    {
+                        id: document.getElementById('pack-id').value,
+                        name: document.getElementById('pack-name').value,
+                        theme: "cowboy",
+                        description: document.getElementById('pack-description').value,
+                        environment: {
+                            skyColor: document.getElementById('sky-color').value,
+                            groundColor: document.getElementById('ground-color').value,
+                            ambientColor: document.getElementById('ambient-color').value
+                        },
+                        decorations: [
+                            {
+                                type: "model",
+                                url: "/patternripple-data/assets/cowboy-hat.glb",
+                                position: [-3, 0.5, 2],
+                                scale: 0.5,
+                                rotation: [0, 0.5, 0]
+                            },
+                            {
+                                type: "model",
+                                url: "/patternripple-data/assets/cactus.glb",
+                                position: [3, 0, 3],
+                                scale: 0.4,
+                                rotation: [0, -0.3, 0]
+                            },
+                            {
+                                type: "model",
+                                url: "/patternripple-data/assets/horseshoe.glb",
+                                position: [-2.5, 0.2, -2],
+                                scale: 0.3,
+                                rotation: [0, 1.2, 0]
+                            }
+                        ],
+                        patterns: patterns.map(p => ({
+                            id: p.id,
+                            name: p.name,
+                            imageUrl: p.imageUrl,
+                            shopUrl: p.shopUrl,
+                            description: p.description
+                        }))
+                    }
+                ]
+            };
+
+            document.getElementById('json-preview').textContent = JSON.stringify(config, null, 2);
+        }
+
+        function downloadJSON() {
+            updatePreview();
+            const json = document.getElementById('json-preview').textContent;
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pattern-packs.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyJSON() {
+            updatePreview();
+            const json = document.getElementById('json-preview').textContent;
+            navigator.clipboard.writeText(json).then(() => {
+                const success = document.getElementById('export-success');
+                success.classList.add('show');
+                setTimeout(() => success.classList.remove('show'), 3000);
+            });
+        }
+
+        // Initialize
+        updatePreview();
+        updateStats();
+    </script>
+</body>
+</html>
