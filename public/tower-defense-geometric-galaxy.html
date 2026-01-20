@@ -762,80 +762,58 @@
             }
 
             createBasicTesseract(towerColor, emissiveColor, level) {
-                // Basic nested cubes representing 4D projection
-                const scale = 0.3 + (level * 0.05);
+                // Orbiting octahedrons around center
+                this.orbitingCubes = [];
+                const count = 3 + level;
+                const radius = 0.35;
+                const cubeSize = 0.12;
 
-                // Outer cube
-                const outerSize = scale * 1.5;
-                const outerGeo = new THREE.BoxGeometry(outerSize, outerSize, outerSize);
-                const outerMat = new THREE.MeshStandardMaterial({
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * Math.PI * 2;
+                    const cubeGeo = new THREE.OctahedronGeometry(cubeSize);
+                    const cubeMat = new THREE.MeshStandardMaterial({
+                        color: towerColor,
+                        emissive: emissiveColor,
+                        emissiveIntensity: 1.5,
+                        metalness: 0.9,
+                        roughness: 0.1
+                    });
+                    const cube = new THREE.Mesh(cubeGeo, cubeMat);
+
+                    // Add wireframe
+                    const wireGeo = new THREE.EdgesGeometry(cubeGeo);
+                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                    const wire = new THREE.LineSegments(wireGeo, wireMat);
+                    cube.add(wire);
+
+                    cube.userData.angle = angle;
+                    cube.userData.radius = radius;
+                    cube.position.x = Math.cos(angle) * radius;
+                    cube.position.y = 0.3;
+                    cube.position.z = Math.sin(angle) * radius;
+
+                    this.group.add(cube);
+                    this.orbitingCubes.push(cube);
+                }
+
+                // Central core cube
+                const coreGeo = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+                const coreMat = new THREE.MeshStandardMaterial({
                     color: towerColor,
                     emissive: emissiveColor,
-                    emissiveIntensity: 0.8,
-                    metalness: 0.9,
-                    roughness: 0.1,
-                    transparent: true,
-                    opacity: 0.3
+                    emissiveIntensity: 2,
+                    metalness: 1,
+                    roughness: 0
                 });
-                this.outerCube = new THREE.Mesh(outerGeo, outerMat);
-                this.outerCube.position.y = 0.3;
-                this.group.add(this.outerCube);
+                this.towerCore = new THREE.Mesh(coreGeo, coreMat);
+                this.towerCore.position.y = 0.3;
 
-                // Outer wireframe
-                const outerWireGeo = new THREE.EdgesGeometry(outerGeo);
-                const outerWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
-                const outerWire = new THREE.LineSegments(outerWireGeo, outerWireMat);
-                this.outerCube.add(outerWire);
+                const coreWireGeo = new THREE.EdgesGeometry(coreGeo);
+                const coreWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 3 });
+                const coreWire = new THREE.LineSegments(coreWireGeo, coreWireMat);
+                this.towerCore.add(coreWire);
 
-                // Inner cube
-                const innerSize = scale;
-                const innerGeo = new THREE.BoxGeometry(innerSize, innerSize, innerSize);
-                const innerMat = new THREE.MeshStandardMaterial({
-                    color: towerColor,
-                    emissive: emissiveColor,
-                    emissiveIntensity: 1.2,
-                    metalness: 0.9,
-                    roughness: 0.1,
-                    transparent: true,
-                    opacity: 0.6
-                });
-                this.innerCube = new THREE.Mesh(innerGeo, innerMat);
-                this.innerCube.position.y = 0.3;
-                this.group.add(this.innerCube);
-
-                // Inner wireframe
-                const innerWireGeo = new THREE.EdgesGeometry(innerGeo);
-                const innerWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 3 });
-                const innerWire = new THREE.LineSegments(innerWireGeo, innerWireMat);
-                this.innerCube.add(innerWire);
-
-                // Connection lines between cubes (tesseract edges)
-                const connectionGeo = new THREE.BufferGeometry();
-                const positions = [];
-                const halfOuter = outerSize / 2;
-                const halfInner = innerSize / 2;
-
-                // Connect corners
-                const corners = [
-                    [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
-                    [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]
-                ];
-
-                corners.forEach(corner => {
-                    positions.push(
-                        corner[0] * halfOuter, corner[1] * halfOuter + 0.3, corner[2] * halfOuter,
-                        corner[0] * halfInner, corner[1] * halfInner + 0.3, corner[2] * halfInner
-                    );
-                });
-
-                connectionGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-                const connectionMat = new THREE.LineBasicMaterial({
-                    color: emissiveColor,
-                    transparent: true,
-                    opacity: 0.4
-                });
-                this.connections = new THREE.LineSegments(connectionGeo, connectionMat);
-                this.group.add(this.connections);
+                this.group.add(this.towerCore);
             }
 
             createRapidFireTesseract(towerColor, emissiveColor, level) {
@@ -888,197 +866,237 @@
             }
 
             createSniperTesseract(towerColor, emissiveColor, level) {
-                // Elongated stretched tesseract
-                const height = 0.8 + (level * 0.1);
-                const width = 0.25;
+                // Orbiting elongated diamonds around vertical core
+                this.orbitingCubes = [];
+                const count = 4 + level;
+                const radius = 0.4;
 
-                // Outer elongated box
-                const outerGeo = new THREE.BoxGeometry(width * 1.5, height, width * 1.5);
-                const outerMat = new THREE.MeshStandardMaterial({
-                    color: towerColor,
-                    emissive: emissiveColor,
-                    emissiveIntensity: 0.7,
-                    metalness: 0.9,
-                    roughness: 0.1,
-                    transparent: true,
-                    opacity: 0.2
-                });
-                this.outerCube = new THREE.Mesh(outerGeo, outerMat);
-                this.outerCube.position.y = 0.5;
-                this.group.add(this.outerCube);
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * Math.PI * 2;
+                    // Elongated diamond shape
+                    const cubeGeo = new THREE.OctahedronGeometry(0.08);
+                    cubeGeo.scale(0.5, 2, 0.5);
 
-                const outerWireGeo = new THREE.EdgesGeometry(outerGeo);
-                const outerWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
-                const outerWire = new THREE.LineSegments(outerWireGeo, outerWireMat);
-                this.outerCube.add(outerWire);
-
-                // Inner elongated box
-                const innerGeo = new THREE.BoxGeometry(width, height * 0.8, width);
-                const innerMat = new THREE.MeshStandardMaterial({
-                    color: towerColor,
-                    emissive: emissiveColor,
-                    emissiveIntensity: 1.5,
-                    metalness: 1,
-                    roughness: 0
-                });
-                this.innerCube = new THREE.Mesh(innerGeo, innerMat);
-                this.innerCube.position.y = 0.5;
-                this.group.add(this.innerCube);
-
-                const innerWireGeo = new THREE.EdgesGeometry(innerGeo);
-                const innerWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 3 });
-                const innerWire = new THREE.LineSegments(innerWireGeo, innerWireMat);
-                this.innerCube.add(innerWire);
-
-                // Focusing rings
-                this.focusRings = [];
-                for (let i = 0; i < 3; i++) {
-                    const ringGeo = new THREE.TorusGeometry(0.3 + i * 0.05, 0.02, 8, 16);
-                    const ringMat = new THREE.MeshStandardMaterial({
+                    const cubeMat = new THREE.MeshStandardMaterial({
                         color: towerColor,
                         emissive: emissiveColor,
-                        emissiveIntensity: 1.5
+                        emissiveIntensity: 1.8,
+                        metalness: 1,
+                        roughness: 0
                     });
-                    const ring = new THREE.Mesh(ringGeo, ringMat);
-                    ring.rotation.x = Math.PI / 2;
-                    ring.position.y = 0.3 + i * 0.3;
-                    this.group.add(ring);
-                    this.focusRings.push(ring);
+                    const cube = new THREE.Mesh(cubeGeo, cubeMat);
+
+                    // Add wireframe
+                    const wireGeo = new THREE.EdgesGeometry(cubeGeo);
+                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                    const wire = new THREE.LineSegments(wireGeo, wireMat);
+                    cube.add(wire);
+
+                    cube.userData.angle = angle;
+                    cube.userData.radius = radius;
+                    cube.position.x = Math.cos(angle) * radius;
+                    cube.position.y = 0.5;
+                    cube.position.z = Math.sin(angle) * radius;
+
+                    this.group.add(cube);
+                    this.orbitingCubes.push(cube);
                 }
-            }
 
-            createFrostTesseract(towerColor, emissiveColor, level) {
-                // Crystalline structure with spikes
-                const coreSize = 0.3 + (level * 0.03);
-
-                // Core crystal
-                const coreGeo = new THREE.OctahedronGeometry(coreSize);
+                // Central tall crystal
+                const coreGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 8);
                 const coreMat = new THREE.MeshStandardMaterial({
                     color: towerColor,
                     emissive: emissiveColor,
-                    emissiveIntensity: 1.2,
-                    metalness: 0.9,
-                    roughness: 0.1,
+                    emissiveIntensity: 2.5,
+                    metalness: 1,
+                    roughness: 0
+                });
+                this.towerCore = new THREE.Mesh(coreGeo, coreMat);
+                this.towerCore.position.y = 0.5;
+
+                const coreWireGeo = new THREE.EdgesGeometry(coreGeo);
+                const coreWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 3 });
+                const coreWire = new THREE.LineSegments(coreWireGeo, coreWireMat);
+                this.towerCore.add(coreWire);
+
+                this.group.add(this.towerCore);
+            }
+
+            createFrostTesseract(towerColor, emissiveColor, level) {
+                // Orbiting ice crystals around frozen core
+                this.orbitingCubes = [];
+                const count = 6 + level;
+                const radius = 0.38;
+
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * Math.PI * 2;
+                    // Ice crystal shape
+                    const cubeGeo = new THREE.ConeGeometry(0.06, 0.25, 6);
+                    const cubeMat = new THREE.MeshStandardMaterial({
+                        color: towerColor,
+                        emissive: emissiveColor,
+                        emissiveIntensity: 1.8,
+                        metalness: 1,
+                        roughness: 0,
+                        transparent: true,
+                        opacity: 0.9
+                    });
+                    const cube = new THREE.Mesh(cubeGeo, cubeMat);
+
+                    // Add wireframe
+                    const wireGeo = new THREE.EdgesGeometry(cubeGeo);
+                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                    const wire = new THREE.LineSegments(wireGeo, wireMat);
+                    cube.add(wire);
+
+                    cube.userData.angle = angle;
+                    cube.userData.radius = radius;
+                    cube.userData.verticalOffset = Math.sin(angle * 3) * 0.15; // Varied height
+                    cube.position.x = Math.cos(angle) * radius;
+                    cube.position.y = 0.4 + cube.userData.verticalOffset;
+                    cube.position.z = Math.sin(angle) * radius;
+                    cube.rotation.z = Math.PI; // Point down initially
+
+                    this.group.add(cube);
+                    this.orbitingCubes.push(cube);
+                }
+
+                // Central frozen octahedron
+                const coreGeo = new THREE.OctahedronGeometry(0.18);
+                const coreMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 2.2,
+                    metalness: 1,
+                    roughness: 0,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                this.towerCore = new THREE.Mesh(coreGeo, coreMat);
+                this.towerCore.position.y = 0.4;
+
+                const coreWireGeo = new THREE.EdgesGeometry(coreGeo);
+                const coreWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 3 });
+                const coreWire = new THREE.LineSegments(coreWireGeo, coreWireMat);
+                this.towerCore.add(coreWire);
+
+                this.group.add(this.towerCore);
+            }
+
+            createSplashTesseract(towerColor, emissiveColor, level) {
+                // Orbiting explosive shards around core
+                this.orbitingCubes = [];
+                const count = 6 + level;
+                const radius = 0.42;
+
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * Math.PI * 2;
+                    // Jagged shard shape
+                    const cubeGeo = new THREE.TetrahedronGeometry(0.12);
+                    const cubeMat = new THREE.MeshStandardMaterial({
+                        color: towerColor,
+                        emissive: emissiveColor,
+                        emissiveIntensity: 1.7,
+                        metalness: 0.9,
+                        roughness: 0.1
+                    });
+                    const cube = new THREE.Mesh(cubeGeo, cubeMat);
+
+                    // Add wireframe
+                    const wireGeo = new THREE.EdgesGeometry(cubeGeo);
+                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                    const wire = new THREE.LineSegments(wireGeo, wireMat);
+                    cube.add(wire);
+
+                    cube.userData.angle = angle;
+                    cube.userData.radius = radius;
+                    cube.userData.pulsePhase = i * 0.5;
+                    cube.position.x = Math.cos(angle) * radius;
+                    cube.position.y = 0.35;
+                    cube.position.z = Math.sin(angle) * radius;
+
+                    this.group.add(cube);
+                    this.orbitingCubes.push(cube);
+                }
+
+                // Central explosive core - dodecahedron
+                const coreGeo = new THREE.DodecahedronGeometry(0.16);
+                const coreMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 2.2,
+                    metalness: 1,
+                    roughness: 0
+                });
+                this.towerCore = new THREE.Mesh(coreGeo, coreMat);
+                this.towerCore.position.y = 0.35;
+                this.pulsePhase = 0;
+
+                const coreWireGeo = new THREE.EdgesGeometry(coreGeo);
+                const coreWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 3 });
+                const coreWire = new THREE.LineSegments(coreWireGeo, coreWireMat);
+                this.towerCore.add(coreWire);
+
+                this.group.add(this.towerCore);
+            }
+
+            createPoisonTesseract(towerColor, emissiveColor, level) {
+                // Orbiting toxic orbs around poisonous core
+                this.orbitingCubes = [];
+                const count = 5 + level;
+                const radius = 0.36;
+
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * Math.PI * 2;
+                    // Toxic orb with jagged exterior
+                    const cubeGeo = new THREE.IcosahedronGeometry(0.1);
+                    const cubeMat = new THREE.MeshStandardMaterial({
+                        color: towerColor,
+                        emissive: emissiveColor,
+                        emissiveIntensity: 1.9,
+                        metalness: 0.8,
+                        roughness: 0.2,
+                        transparent: true,
+                        opacity: 0.85
+                    });
+                    const cube = new THREE.Mesh(cubeGeo, cubeMat);
+
+                    // Add wireframe
+                    const wireGeo = new THREE.EdgesGeometry(cubeGeo);
+                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                    const wire = new THREE.LineSegments(wireGeo, wireMat);
+                    cube.add(wire);
+
+                    cube.userData.angle = angle;
+                    cube.userData.radius = radius;
+                    cube.userData.spiralPhase = i * 0.3;
+                    cube.position.x = Math.cos(angle) * radius;
+                    cube.position.y = 0.4;
+                    cube.position.z = Math.sin(angle) * radius;
+
+                    this.group.add(cube);
+                    this.orbitingCubes.push(cube);
+                }
+
+                // Central toxic sphere
+                const coreGeo = new THREE.SphereGeometry(0.15, 8, 8);
+                const coreMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 2.5,
+                    metalness: 0.7,
+                    roughness: 0.3,
                     transparent: true,
                     opacity: 0.7
                 });
                 this.towerCore = new THREE.Mesh(coreGeo, coreMat);
                 this.towerCore.position.y = 0.4;
-                this.group.add(this.towerCore);
 
                 const coreWireGeo = new THREE.EdgesGeometry(coreGeo);
-                const coreWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                const coreWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 3 });
                 const coreWire = new THREE.LineSegments(coreWireGeo, coreWireMat);
                 this.towerCore.add(coreWire);
 
-                // Ice spikes
-                this.iceSpikes = [];
-                const spikeCount = 6 + level;
-                for (let i = 0; i < spikeCount; i++) {
-                    const angle = (i / spikeCount) * Math.PI * 2;
-                    const spikeGeo = new THREE.ConeGeometry(0.05, 0.4, 4);
-                    const spikeMat = new THREE.MeshStandardMaterial({
-                        color: towerColor,
-                        emissive: emissiveColor,
-                        emissiveIntensity: 1.5,
-                        metalness: 1,
-                        roughness: 0
-                    });
-                    const spike = new THREE.Mesh(spikeGeo, spikeMat);
-
-                    const radius = 0.4;
-                    spike.position.x = Math.cos(angle) * radius;
-                    spike.position.y = 0.4;
-                    spike.position.z = Math.sin(angle) * radius;
-
-                    // Point outward
-                    spike.rotation.z = -Math.PI / 2;
-                    spike.rotation.y = -angle;
-
-                    this.group.add(spike);
-                    this.iceSpikes.push(spike);
-                }
-            }
-
-            createSplashTesseract(towerColor, emissiveColor, level) {
-                // Pulsing concentric structure
-                this.pulsePhase = 0;
-                this.pulseLayers = [];
-
-                const layerCount = 3 + level;
-                for (let i = 0; i < layerCount; i++) {
-                    const size = 0.2 + i * 0.15;
-                    const layerGeo = new THREE.OctahedronGeometry(size);
-                    const layerMat = new THREE.MeshStandardMaterial({
-                        color: towerColor,
-                        emissive: emissiveColor,
-                        emissiveIntensity: 1.0 + (i * 0.2),
-                        metalness: 0.9,
-                        roughness: 0.1,
-                        transparent: true,
-                        opacity: 0.4 - (i * 0.08)
-                    });
-                    const layer = new THREE.Mesh(layerGeo, layerMat);
-                    layer.position.y = 0.4;
-                    layer.userData.baseScale = 1 + (i * 0.1);
-                    layer.userData.phaseOffset = i * 0.5;
-
-                    const wireGeo = new THREE.EdgesGeometry(layerGeo);
-                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
-                    const wire = new THREE.LineSegments(wireGeo, wireMat);
-                    layer.add(wire);
-
-                    this.group.add(layer);
-                    this.pulseLayers.push(layer);
-                }
-            }
-
-            createPoisonTesseract(towerColor, emissiveColor, level) {
-                // Twisted helix structure
-                const segments = 8 + level * 2;
-                this.helixSegments = [];
-
-                // Create helix segments
-                for (let i = 0; i < segments; i++) {
-                    const angle = (i / segments) * Math.PI * 4; // Two full rotations
-                    const height = (i / segments) * 0.8;
-                    const radius = 0.25;
-
-                    const segmentGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-                    const segmentMat = new THREE.MeshStandardMaterial({
-                        color: towerColor,
-                        emissive: emissiveColor,
-                        emissiveIntensity: 1.5,
-                        metalness: 0.9,
-                        roughness: 0.1
-                    });
-                    const segment = new THREE.Mesh(segmentGeo, segmentMat);
-
-                    segment.position.x = Math.cos(angle) * radius;
-                    segment.position.y = height + 0.1;
-                    segment.position.z = Math.sin(angle) * radius;
-                    segment.rotation.y = angle;
-
-                    const wireGeo = new THREE.EdgesGeometry(segmentGeo);
-                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
-                    const wire = new THREE.LineSegments(wireGeo, wireMat);
-                    segment.add(wire);
-
-                    this.group.add(segment);
-                    this.helixSegments.push(segment);
-                }
-
-                // Central poison core
-                const coreGeo = new THREE.IcosahedronGeometry(0.15);
-                const coreMat = new THREE.MeshStandardMaterial({
-                    color: towerColor,
-                    emissive: emissiveColor,
-                    emissiveIntensity: 2,
-                    metalness: 1,
-                    roughness: 0
-                });
-                this.towerCore = new THREE.Mesh(coreGeo, coreMat);
-                this.towerCore.position.y = 0.45;
                 this.group.add(this.towerCore);
             }
 
@@ -1317,80 +1335,108 @@
 
                 // Animate tesseract structures based on type
                 if (!this.specialization) {
-                    // Basic tesseract - rotate inner and outer cubes in opposite directions
-                    if (this.innerCube) {
-                        this.innerCube.rotation.x += deltaTime * 0.5;
-                        this.innerCube.rotation.y += deltaTime * 0.8;
-                    }
-                    if (this.outerCube) {
-                        this.outerCube.rotation.x -= deltaTime * 0.3;
-                        this.outerCube.rotation.y -= deltaTime * 0.5;
-                    }
-                } else if (this.specialization === 'rapidfire') {
-                    // Rapid fire - orbit cubes around center
+                    // Basic - orbit octahedrons
                     if (this.orbitingCubes) {
                         this.orbitingCubes.forEach(cube => {
-                            cube.userData.angle += deltaTime * 3;
+                            cube.userData.angle += deltaTime * 2;
                             cube.position.x = Math.cos(cube.userData.angle) * cube.userData.radius;
                             cube.position.z = Math.sin(cube.userData.angle) * cube.userData.radius;
-                            cube.rotation.x += deltaTime * 4;
-                            cube.rotation.y += deltaTime * 4;
+                            cube.rotation.x += deltaTime * 3;
+                            cube.rotation.y += deltaTime * 3;
                         });
                     }
                     if (this.towerCore) {
-                        this.towerCore.rotation.x += deltaTime * 2;
-                        this.towerCore.rotation.y += deltaTime * 3;
+                        this.towerCore.rotation.x += deltaTime * 1.5;
+                        this.towerCore.rotation.y += deltaTime * 2;
                     }
-                } else if (this.specialization === 'sniper') {
-                    // Sniper - rotate boxes and pulse rings
-                    if (this.innerCube) {
-                        this.innerCube.rotation.y += deltaTime * 1.5;
-                    }
-                    if (this.outerCube) {
-                        this.outerCube.rotation.y += deltaTime * 1;
-                    }
-                    if (this.focusRings) {
-                        this.focusRings.forEach((ring, index) => {
-                            ring.rotation.z += deltaTime * (1 + index * 0.5);
-                            const pulse = Math.sin(this.time * 2 + index) * 0.05 + 1;
-                            ring.scale.set(pulse, pulse, 1);
+                } else if (this.specialization === 'rapidfire') {
+                    // Rapid fire - fast orbit cubes
+                    if (this.orbitingCubes) {
+                        this.orbitingCubes.forEach(cube => {
+                            cube.userData.angle += deltaTime * 4;
+                            cube.position.x = Math.cos(cube.userData.angle) * cube.userData.radius;
+                            cube.position.z = Math.sin(cube.userData.angle) * cube.userData.radius;
+                            cube.rotation.x += deltaTime * 5;
+                            cube.rotation.y += deltaTime * 5;
                         });
                     }
+                    if (this.towerCore) {
+                        this.towerCore.rotation.x += deltaTime * 3;
+                        this.towerCore.rotation.y += deltaTime * 4;
+                    }
+                } else if (this.specialization === 'sniper') {
+                    // Sniper - slower precise orbit
+                    if (this.orbitingCubes) {
+                        this.orbitingCubes.forEach(cube => {
+                            cube.userData.angle += deltaTime * 1.5;
+                            cube.position.x = Math.cos(cube.userData.angle) * cube.userData.radius;
+                            cube.position.z = Math.sin(cube.userData.angle) * cube.userData.radius;
+                            cube.rotation.y += deltaTime * 2;
+                        });
+                    }
+                    if (this.towerCore) {
+                        this.towerCore.rotation.y += deltaTime * 1;
+                    }
                 } else if (this.specialization === 'frost') {
-                    // Frost - rotate core and pulse spikes
+                    // Frost - orbit crystals with vertical bobbing
+                    if (this.orbitingCubes) {
+                        this.orbitingCubes.forEach(cube => {
+                            cube.userData.angle += deltaTime * 1.8;
+                            cube.position.x = Math.cos(cube.userData.angle) * cube.userData.radius;
+                            cube.position.z = Math.sin(cube.userData.angle) * cube.userData.radius;
+                            // Bobbing effect
+                            const bob = Math.sin(this.time * 2 + cube.userData.angle) * 0.08;
+                            cube.position.y = 0.4 + cube.userData.verticalOffset + bob;
+                            cube.rotation.x += deltaTime * 2;
+                        });
+                    }
                     if (this.towerCore) {
                         this.towerCore.rotation.x += deltaTime * 0.5;
                         this.towerCore.rotation.y += deltaTime * 0.8;
-                    }
-                    if (this.iceSpikes) {
-                        this.iceSpikes.forEach((spike, index) => {
-                            const pulse = Math.sin(this.time * 3 + index * 0.5) * 0.1 + 1;
-                            spike.scale.y = pulse;
-                        });
+                        // Pulse scale
+                        const pulse = Math.sin(this.time * 2) * 0.1 + 1;
+                        this.towerCore.scale.set(pulse, pulse, pulse);
                     }
                 } else if (this.specialization === 'splash') {
-                    // Splash - pulsing layers
-                    if (this.pulseLayers) {
+                    // Splash - chaotic orbit with pulsing
+                    if (this.orbitingCubes) {
                         this.pulsePhase += deltaTime * 2;
-                        this.pulseLayers.forEach((layer, index) => {
-                            const phase = this.pulsePhase + layer.userData.phaseOffset;
-                            const pulse = Math.sin(phase) * 0.3 + 1;
-                            const scale = layer.userData.baseScale * pulse;
-                            layer.scale.set(scale, scale, scale);
-                            layer.rotation.x += deltaTime * 0.5;
-                            layer.rotation.y += deltaTime * (0.8 + index * 0.2);
-                        });
-                    }
-                } else if (this.specialization === 'poison') {
-                    // Poison - rotate helix
-                    if (this.helixSegments) {
-                        this.helixSegments.forEach(segment => {
-                            segment.rotation.y += deltaTime * 2;
+                        this.orbitingCubes.forEach((cube, index) => {
+                            cube.userData.angle += deltaTime * 2.5;
+                            const pulse = Math.sin(this.pulsePhase + cube.userData.pulsePhase) * 0.1 + 1;
+                            const radiusPulse = cube.userData.radius * pulse;
+                            cube.position.x = Math.cos(cube.userData.angle) * radiusPulse;
+                            cube.position.z = Math.sin(cube.userData.angle) * radiusPulse;
+                            cube.rotation.x += deltaTime * 4;
+                            cube.rotation.y += deltaTime * 3;
+                            cube.rotation.z += deltaTime * 2;
                         });
                     }
                     if (this.towerCore) {
                         this.towerCore.rotation.x += deltaTime * 2;
-                        this.towerCore.rotation.y += deltaTime * 3;
+                        this.towerCore.rotation.y += deltaTime * 2;
+                        const pulse = Math.sin(this.pulsePhase) * 0.15 + 1;
+                        this.towerCore.scale.set(pulse, pulse, pulse);
+                    }
+                } else if (this.specialization === 'poison') {
+                    // Poison - orbit with spiral motion
+                    if (this.orbitingCubes) {
+                        this.orbitingCubes.forEach(cube => {
+                            cube.userData.angle += deltaTime * 2.2;
+                            cube.position.x = Math.cos(cube.userData.angle) * cube.userData.radius;
+                            cube.position.z = Math.sin(cube.userData.angle) * cube.userData.radius;
+                            // Spiral up and down
+                            const spiral = Math.sin(cube.userData.angle * 2 + cube.userData.spiralPhase) * 0.2;
+                            cube.position.y = 0.4 + spiral;
+                            cube.rotation.x += deltaTime * 3;
+                            cube.rotation.y += deltaTime * 3;
+                        });
+                    }
+                    if (this.towerCore) {
+                        this.towerCore.rotation.x += deltaTime * 1.5;
+                        this.towerCore.rotation.y += deltaTime * 2;
+                        const pulse = Math.sin(this.time * 3) * 0.08 + 1;
+                        this.towerCore.scale.set(pulse, pulse, pulse);
                     }
                 }
 
@@ -1596,8 +1642,61 @@
                 // Create grid
                 this.createGrid();
 
+                // Create path arrows
+                this.createPathArrows();
+
                 // Update UI
                 this.updateUI();
+            }
+
+            createPathArrows() {
+                this.pathArrows = [];
+
+                // Create arrows for each path segment
+                for (let i = 0; i < PATH.length - 1; i++) {
+                    const current = PATH[i];
+                    const next = PATH[i + 1];
+
+                    // Calculate direction
+                    const dx = next.x - current.x;
+                    const dz = next.z - current.z;
+                    const angle = Math.atan2(dx, dz);
+
+                    // Create arrow shape
+                    const arrowShape = new THREE.Shape();
+                    arrowShape.moveTo(0, -0.3);
+                    arrowShape.lineTo(0.15, -0.1);
+                    arrowShape.lineTo(0.05, -0.1);
+                    arrowShape.lineTo(0.05, 0.3);
+                    arrowShape.lineTo(-0.05, 0.3);
+                    arrowShape.lineTo(-0.05, -0.1);
+                    arrowShape.lineTo(-0.15, -0.1);
+                    arrowShape.closePath();
+
+                    const arrowGeo = new THREE.ShapeGeometry(arrowShape);
+                    const arrowMat = new THREE.MeshBasicMaterial({
+                        color: 0xff00ff,
+                        transparent: true,
+                        opacity: 0.5,
+                        side: THREE.DoubleSide
+                    });
+
+                    const arrow = new THREE.Mesh(arrowGeo, arrowMat);
+
+                    // Position and rotate arrow
+                    const worldX = current.x - CONFIG.GRID_SIZE/2 + 0.5;
+                    const worldZ = current.z - CONFIG.GRID_SIZE/2 + 0.5;
+                    arrow.position.set(worldX, 0.15, worldZ);
+                    arrow.rotation.x = -Math.PI / 2;
+                    arrow.rotation.z = -angle;
+
+                    // Store animation data
+                    arrow.userData.animOffset = i * 0.5;
+                    arrow.userData.baseY = 0.15;
+
+                    this.scene.add(arrow);
+                    this.pathArrows.push(arrow);
+                }
             }
 
             createStarfield() {
@@ -1672,16 +1771,16 @@
                         const worldZ = z - CONFIG.GRID_SIZE/2 + 0.5;
 
                         if (isPath) {
-                            // Glass-like path tiles
+                            // Purple/magenta path tiles
                             const geometry = new THREE.BoxGeometry(
                                 CONFIG.TILE_SIZE * 0.95,
                                 0.1,
                                 CONFIG.TILE_SIZE * 0.95
                             );
                             const material = new THREE.MeshStandardMaterial({
-                                color: 0x004466,
-                                emissive: 0x0088cc,
-                                emissiveIntensity: 0.5,
+                                color: 0x660066,
+                                emissive: 0xaa00aa,
+                                emissiveIntensity: 0.6,
                                 metalness: 0.9,
                                 roughness: 0.1,
                                 transparent: true,
@@ -1691,16 +1790,16 @@
                             tile.position.set(worldX, 0, worldZ);
                             this.scene.add(tile);
 
-                            // Glowing border for path
+                            // Glowing purple border for path
                             const borderGeo = new THREE.EdgesGeometry(geometry);
                             const borderMat = new THREE.LineBasicMaterial({
-                                color: 0x00ffff,
+                                color: 0xff00ff,
                                 linewidth: 2
                             });
                             const border = new THREE.LineSegments(borderGeo, borderMat);
                             tile.add(border);
 
-                            this.grid[x][z] = { type: 'path', mesh: tile };
+                            this.grid[x][z] = { type: 'path', mesh: tile, pathIndex: PATH.findIndex(p => p.x === x && p.z === z) };
                         } else {
                             // Elevated buildable platform
                             const geometry = new THREE.BoxGeometry(
@@ -2180,6 +2279,20 @@
                 if (this.starfield) {
                     this.starfield.rotation.y += 0.0001;
                     this.starfield.rotation.x += 0.00005;
+                }
+
+                // Animate path arrows
+                if (this.pathArrows) {
+                    const time = Date.now() * 0.001;
+                    this.pathArrows.forEach(arrow => {
+                        // Pulse opacity
+                        const pulse = Math.sin(time * 2 + arrow.userData.animOffset) * 0.3 + 0.5;
+                        arrow.material.opacity = pulse;
+
+                        // Slight vertical movement
+                        const bob = Math.sin(time * 3 + arrow.userData.animOffset) * 0.02;
+                        arrow.position.y = arrow.userData.baseY + bob;
+                    });
                 }
 
                 // Skip game update if paused
