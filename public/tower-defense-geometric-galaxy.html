@@ -40,8 +40,8 @@
 
         #ui h2 {
             margin-bottom: 10px;
-            color: #ff00ff;
-            text-shadow: 0 0 15px #ff00ff;
+            color: #ff3333;
+            text-shadow: 0 0 15px #ff3333;
         }
 
         #ui p {
@@ -61,15 +61,32 @@
             display: none;
             z-index: 200;
             min-width: 400px;
+            max-width: 500px;
             text-shadow: 0 0 5px #00ffff;
         }
 
         #upgradePanel h3 {
             margin-bottom: 20px;
-            color: #ff00ff;
+            color: #ff3333;
             text-align: center;
             font-size: 24px;
-            text-shadow: 0 0 15px #ff00ff;
+            text-shadow: 0 0 15px #ff3333;
+        }
+
+        #upgradePanel .specialization {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        #upgradePanel .specialization-label {
+            font-size: 18px;
+            color: #ff3333;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #ff3333;
         }
 
         #upgradePanel .stat {
@@ -77,6 +94,53 @@
             display: flex;
             justify-content: space-between;
             font-size: 16px;
+        }
+
+        #upgradePanel .upgrade-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #upgradePanel .upgrade-option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        #upgradePanel .upgrade-option:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 20px #00ffff;
+            transform: scale(1.05);
+        }
+
+        #upgradePanel .upgrade-option.selected {
+            background: rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+        }
+
+        #upgradePanel .upgrade-option h4 {
+            margin-bottom: 8px;
+            color: #00ffff;
+            font-size: 14px;
+        }
+
+        #upgradePanel .upgrade-option p {
+            font-size: 11px;
+            color: #aaa;
+            margin: 5px 0;
+        }
+
+        #upgradePanel .upgrade-option .cost {
+            color: #ff3333;
+            font-weight: bold;
+            margin-top: 8px;
+            text-shadow: 0 0 5px #ff3333;
         }
 
         #upgradePanel button {
@@ -112,15 +176,15 @@
         }
 
         #closeBtn {
-            background: rgba(255, 0, 255, 0.1);
-            border-color: #ff00ff;
-            color: #ff00ff;
-            text-shadow: 0 0 5px #ff00ff;
+            background: rgba(255, 51, 51, 0.1);
+            border-color: #ff3333;
+            color: #ff3333;
+            text-shadow: 0 0 5px #ff3333;
         }
 
         #closeBtn:hover {
-            background: rgba(255, 0, 255, 0.3);
-            box-shadow: 0 0 20px #ff00ff;
+            background: rgba(255, 51, 51, 0.3);
+            box-shadow: 0 0 20px #ff3333;
         }
 
         #controls {
@@ -192,6 +256,9 @@
 
     <div id="upgradePanel">
         <h3>⚡ TOWER UPGRADE ⚡</h3>
+        <div class="specialization" id="specializationInfo">
+            <div class="specialization-label" id="towerSpecialization">Basic Tower</div>
+        </div>
         <div class="stat">
             <span>Level:</span>
             <span id="towerLevel">1</span>
@@ -208,8 +275,55 @@
             <span>Damage:</span>
             <span id="towerDamage">1</span>
         </div>
-        <button id="upgradeBtn">⬆️ UPGRADE (100g)</button>
+        <div id="upgradeTreeSection" style="display: none;">
+            <h4 style="color: #ff3333; margin-top: 20px; text-align: center; text-shadow: 0 0 10px #ff3333;">Choose Specialization</h4>
+            <div class="upgrade-options">
+                <div class="upgrade-option" data-type="rapidfire">
+                    <h4>🔥 Rapid Fire</h4>
+                    <p>High fire rate</p>
+                    <p>Lower damage</p>
+                    <div class="cost">100g</div>
+                </div>
+                <div class="upgrade-option" data-type="sniper">
+                    <h4>🎯 Sniper</h4>
+                    <p>Long range</p>
+                    <p>High damage</p>
+                    <div class="cost">100g</div>
+                </div>
+                <div class="upgrade-option" data-type="frost">
+                    <h4>❄️ Frost</h4>
+                    <p>Slows enemies</p>
+                    <p>Moderate damage</p>
+                    <div class="cost">100g</div>
+                </div>
+                <div class="upgrade-option" data-type="splash">
+                    <h4>💥 Splash</h4>
+                    <p>Area damage</p>
+                    <p>Hits multiple</p>
+                    <div class="cost">100g</div>
+                </div>
+                <div class="upgrade-option" data-type="poison">
+                    <h4>☠️ Poison</h4>
+                    <p>Damage over time</p>
+                    <p>Stacking effect</p>
+                    <div class="cost">100g</div>
+                </div>
+            </div>
+        </div>
+        <div id="upgradeStandardSection">
+            <button id="upgradeBtn">⬆️ UPGRADE (150g)</button>
+        </div>
         <button id="closeBtn">✖️ CLOSE</button>
+    </div>
+
+    <div id="confirmPanel" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.95); padding: 30px; border-radius: 10px; border: 3px solid #00ffff; color: #00ffff; z-index: 200; min-width: 300px; text-shadow: 0 0 5px #00ffff;">
+        <h3 style="margin-bottom: 20px; color: #ff3333; text-align: center; text-shadow: 0 0 15px #ff3333;">Build Tower?</h3>
+        <p style="margin: 15px 0; text-align: center; font-size: 16px;">Cost: <span style="color: #ff3333; font-weight: bold; text-shadow: 0 0 5px #ff3333;">100 Gold</span></p>
+        <p style="font-size: 14px; color: #888; text-align: center; margin-bottom: 20px;">Place a tower on this tile?</p>
+        <div style="display: flex; gap: 10px;">
+            <button id="confirmBuildBtn" style="flex: 1; padding: 12px; border: 2px solid #00ffff; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; font-family: 'Courier New', monospace; transition: all 0.3s; background: rgba(0, 255, 255, 0.1); color: #00ffff; text-shadow: 0 0 5px #00ffff;">BUILD</button>
+            <button id="cancelBuildBtn" style="flex: 1; padding: 12px; border: 2px solid #ff3333; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; font-family: 'Courier New', monospace; transition: all 0.3s; background: rgba(255, 51, 51, 0.1); color: #ff3333; text-shadow: 0 0 5px #ff3333;">CANCEL</button>
+        </div>
     </div>
 
     <div id="controls">
@@ -240,21 +354,22 @@
             TOWER_COST: 100,
             INITIAL_GOLD: 500,
             INITIAL_LIVES: 20,
-            UPGRADE_COST_BASE: 100
+            ELEVATION_HEIGHT: 0.5
         };
 
         // ============================================
         // PATH DEFINITION - Winding glass path
         // ============================================
         const PATH = [
-            {x: 0, z: 2}, {x: 1, z: 2}, {x: 2, z: 2}, {x: 3, z: 2},
-            {x: 3, z: 3}, {x: 3, z: 4}, {x: 3, z: 5},
-            {x: 4, z: 5}, {x: 5, z: 5}, {x: 6, z: 5},
-            {x: 6, z: 4}, {x: 6, z: 3},
-            {x: 7, z: 3}, {x: 8, z: 3}, {x: 9, z: 3},
-            {x: 9, z: 4}, {x: 9, z: 5}, {x: 9, z: 6},
-            {x: 8, z: 6}, {x: 7, z: 6}, {x: 6, z: 6},
-            {x: 6, z: 7}, {x: 6, z: 8}, {x: 6, z: 9}
+            {x: 0, z: 1}, {x: 1, z: 1}, {x: 2, z: 1}, {x: 3, z: 1},
+            {x: 3, z: 2}, {x: 3, z: 3}, {x: 3, z: 4},
+            {x: 2, z: 4}, {x: 1, z: 4},
+            {x: 1, z: 5}, {x: 1, z: 6}, {x: 1, z: 7},
+            {x: 2, z: 7}, {x: 3, z: 7}, {x: 4, z: 7}, {x: 5, z: 7},
+            {x: 5, z: 6}, {x: 5, z: 5},
+            {x: 6, z: 5}, {x: 7, z: 5}, {x: 8, z: 5},
+            {x: 8, z: 6}, {x: 8, z: 7}, {x: 8, z: 8},
+            {x: 9, z: 8}
         ];
 
         // ============================================
@@ -267,12 +382,22 @@
                 this.pathIndex = 0;
                 this.wave = wave;
 
-                this.health = 3 + wave * 1.5;
+                // Match original game's difficulty
+                if (wave === 1) {
+                    this.health = 2;
+                } else if (wave === 2) {
+                    this.health = 3;
+                } else {
+                    this.health = 3 + wave * 1.5;
+                }
+
                 this.maxHealth = this.health;
-                this.baseSpeed = 0.015 + (wave * 0.002);
+                this.baseSpeed = 0.012 + (wave * 0.0015);
                 this.speed = this.baseSpeed;
-                this.reward = 15 + wave * 3;
+                this.reward = 10 + wave * 2;
                 this.alive = true;
+                this.slowUntil = 0;
+                this.poisonStacks = [];
 
                 // Create Glitch Enemy with jagged shards
                 this.createGlitchMesh();
@@ -334,6 +459,19 @@
                 this.mesh.add(this.wireframe);
             }
 
+            applySlow(amount, duration) {
+                this.slowUntil = Math.max(this.slowUntil, Date.now() + duration);
+                this.speed = this.baseSpeed * (1 - amount);
+            }
+
+            applyPoison(damage, duration) {
+                this.poisonStacks.push({
+                    damage: damage,
+                    endTime: Date.now() + duration,
+                    lastTick: Date.now()
+                });
+            }
+
             takeDamage(amount) {
                 this.health -= amount;
 
@@ -361,6 +499,23 @@
 
             update() {
                 if (!this.alive) return false;
+
+                // Update slow effect
+                if (Date.now() > this.slowUntil) {
+                    this.speed = this.baseSpeed;
+                }
+
+                // Update poison effects
+                const currentTime = Date.now();
+                for (let i = this.poisonStacks.length - 1; i >= 0; i--) {
+                    const poison = this.poisonStacks[i];
+                    if (currentTime > poison.endTime) {
+                        this.poisonStacks.splice(i, 1);
+                    } else if (currentTime - poison.lastTick >= 500) {
+                        poison.lastTick = currentTime;
+                        this.takeDamage(poison.damage);
+                    }
+                }
 
                 // Rotate for digital glitch effect
                 this.mesh.rotation.x += this.rotationSpeed;
@@ -414,13 +569,22 @@
                 this.fireRate = 1.0;
                 this.damage = 1;
                 this.lastFireTime = 0;
-                this.upgradeCost = CONFIG.UPGRADE_COST_BASE;
+                this.upgradeCost = 150;
+                this.specialization = null;
+                this.maxLevel = null;
+
+                // Specialization stats
+                this.slowAmount = 0;
+                this.slowDuration = 0;
+                this.poisonDamage = 0;
+                this.poisonDuration = 0;
+                this.splashRadius = 0;
 
                 // Animation properties
                 this.time = Math.random() * Math.PI * 2;
                 this.hoverSpeed = 1.5;
                 this.hoverAmplitude = 0.15;
-                this.originalY = 0.5;
+                this.baseY = CONFIG.ELEVATION_HEIGHT + 0.5;
 
                 // Toy lunge properties
                 this.isLunging = false;
@@ -432,7 +596,7 @@
                 this.createTowerGeometry(this.level);
 
                 const worldPos = this.gridToWorld(gridX, gridZ);
-                this.group.position.set(worldPos.x, this.originalY, worldPos.z);
+                this.group.position.set(worldPos.x, this.baseY, worldPos.z);
                 this.originalPosition.copy(this.group.position);
 
                 this.scene.add(this.group);
@@ -447,15 +611,42 @@
                     if (child.material) child.material.dispose();
                 }
 
+                // Determine color based on specialization
+                let towerColor = 0x00ffff;
+                let emissiveColor = 0x00ffff;
+
+                if (this.specialization) {
+                    switch(this.specialization) {
+                        case 'rapidfire':
+                            towerColor = 0xff3333;
+                            emissiveColor = 0xff3333;
+                            break;
+                        case 'sniper':
+                            towerColor = 0x4a90e2;
+                            emissiveColor = 0x4a90e2;
+                            break;
+                        case 'frost':
+                            towerColor = 0x74b9ff;
+                            emissiveColor = 0x74b9ff;
+                            break;
+                        case 'splash':
+                            towerColor = 0xff7f50;
+                            emissiveColor = 0xff7f50;
+                            break;
+                        case 'poison':
+                            towerColor = 0x6c5ce7;
+                            emissiveColor = 0x6c5ce7;
+                            break;
+                    }
+                }
+
                 // PEDESTAL - 1:1 scale BoxGeometry with perfect UV mapping
                 const pedestalGeo = new THREE.BoxGeometry(1, 0.2, 1);
-
-                // Ensure UV mapping is perfect for texture loading
                 pedestalGeo.computeBoundingBox();
 
                 const pedestalMat = new THREE.MeshStandardMaterial({
-                    color: 0x00ffff,
-                    emissive: 0x00ffff,
+                    color: towerColor,
+                    emissive: emissiveColor,
                     emissiveIntensity: 0.5,
                     metalness: 0.7,
                     roughness: 0.3,
@@ -463,17 +654,30 @@
                 });
 
                 this.pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
-                this.pedestal.position.y = -0.3;
+                this.pedestal.position.y = -0.5;
                 this.group.add(this.pedestal);
 
                 // Add glowing border to pedestal
                 const borderGeo = new THREE.EdgesGeometry(pedestalGeo);
                 const borderMat = new THREE.LineBasicMaterial({
-                    color: 0x00ffff,
+                    color: towerColor,
                     linewidth: 2
                 });
                 const border = new THREE.LineSegments(borderGeo, borderMat);
                 this.pedestal.add(border);
+
+                // BEVELED BASE - Cone shape for anti-clipping
+                const bevelGeo = new THREE.CylinderGeometry(0.4, 0.5, 0.15, 8);
+                const bevelMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 0.7,
+                    metalness: 0.8,
+                    roughness: 0.3
+                });
+                this.bevel = new THREE.Mesh(bevelGeo, bevelMat);
+                this.bevel.position.y = -0.25;
+                this.group.add(this.bevel);
 
                 // TOWER BODY - Changes with level
                 let bodyGeo, topGeo;
@@ -497,8 +701,8 @@
                 }
 
                 const bodyMat = new THREE.MeshStandardMaterial({
-                    color: 0xff00ff,
-                    emissive: 0xff00ff,
+                    color: towerColor,
+                    emissive: emissiveColor,
                     emissiveIntensity: 1,
                     metalness: 0.8,
                     roughness: 0.2,
@@ -506,13 +710,13 @@
                 });
 
                 this.towerBody = new THREE.Mesh(bodyGeo, bodyMat);
-                this.towerBody.position.y = 0.1;
+                this.towerBody.position.y = 0.2;
                 this.group.add(this.towerBody);
 
                 // Add body border
                 const bodyBorderGeo = new THREE.EdgesGeometry(bodyGeo);
                 const bodyBorderMat = new THREE.LineBasicMaterial({
-                    color: 0xff00ff,
+                    color: towerColor,
                     linewidth: 2
                 });
                 const bodyBorder = new THREE.LineSegments(bodyBorderGeo, bodyBorderMat);
@@ -520,16 +724,46 @@
 
                 // ROTATING TOP ELEMENT
                 const topMat = new THREE.MeshStandardMaterial({
-                    color: 0x00ffff,
-                    emissive: 0x00ffff,
+                    color: towerColor,
+                    emissive: emissiveColor,
                     emissiveIntensity: 1.5,
                     metalness: 0.9,
                     roughness: 0.1
                 });
 
                 this.towerTop = new THREE.Mesh(topGeo, topMat);
-                this.towerTop.position.y = 0.7;
+                this.towerTop.position.y = 0.8;
                 this.group.add(this.towerTop);
+
+                // Add range indicator
+                this.createRangeIndicator();
+            }
+
+            createRangeIndicator() {
+                const geometry = new THREE.RingGeometry(this.range - 0.1, this.range, 32);
+                const material = new THREE.MeshBasicMaterial({
+                    color: this.specialization ? this.getColorForSpecialization() : 0x00ffff,
+                    transparent: true,
+                    opacity: 0.15,
+                    side: THREE.DoubleSide
+                });
+                this.rangeIndicator = new THREE.Mesh(geometry, material);
+                this.rangeIndicator.rotation.x = -Math.PI / 2;
+                this.rangeIndicator.position.y = -this.baseY + 0.1;
+                this.group.add(this.rangeIndicator);
+                this.rangeIndicator.visible = false;
+            }
+
+            getColorForSpecialization() {
+                if (!this.specialization) return 0x00ffff;
+                switch(this.specialization) {
+                    case 'rapidfire': return 0xff3333;
+                    case 'sniper': return 0x4a90e2;
+                    case 'frost': return 0x74b9ff;
+                    case 'splash': return 0xff7f50;
+                    case 'poison': return 0x6c5ce7;
+                    default: return 0x00ffff;
+                }
             }
 
             gridToWorld(x, z) {
@@ -539,15 +773,111 @@
                 };
             }
 
+            specialize(type) {
+                this.specialization = type;
+                this.level = 2;
+                this.upgradeCost = 150;
+                this.maxLevel = 5;
+
+                switch(type) {
+                    case 'rapidfire':
+                        this.fireRate = 3.0;
+                        this.damage = 1;
+                        this.range = 2.5;
+                        break;
+                    case 'sniper':
+                        this.fireRate = 0.5;
+                        this.damage = 5;
+                        this.range = 6.0;
+                        break;
+                    case 'frost':
+                        this.fireRate = 1.2;
+                        this.damage = 1;
+                        this.range = 3.5;
+                        this.slowAmount = 0.5;
+                        this.slowDuration = 2000;
+                        break;
+                    case 'splash':
+                        this.fireRate = 0.8;
+                        this.damage = 2;
+                        this.range = 3.5;
+                        this.splashRadius = 1.5;
+                        break;
+                    case 'poison':
+                        this.fireRate = 1.0;
+                        this.damage = 1;
+                        this.range = 3.0;
+                        this.poisonDamage = 0.5;
+                        this.poisonDuration = 3000;
+                        break;
+                }
+
+                // Rebuild geometry with specialization color
+                this.createTowerGeometry(this.level);
+
+                // Update range indicator
+                if (this.rangeIndicator) {
+                    this.rangeIndicator.geometry.dispose();
+                    const geometry = new THREE.RingGeometry(this.range - 0.1, this.range, 32);
+                    this.rangeIndicator.geometry = geometry;
+                    this.rangeIndicator.material.color.setHex(this.getColorForSpecialization());
+                }
+            }
+
             upgrade() {
+                // Check if at max level
+                if (this.maxLevel && this.level >= this.maxLevel) {
+                    return false;
+                }
+
                 this.level++;
-                this.range += 0.5;
-                this.fireRate += 0.2;
-                this.damage += 1;
-                this.upgradeCost = Math.floor(this.upgradeCost * 1.5);
+
+                // Scale upgrade cost: 150 -> 250 -> 400 -> 650
+                this.upgradeCost = Math.floor(this.upgradeCost * 1.7);
+
+                if (!this.specialization) {
+                    // Basic tower upgrade
+                    this.range += 0.5;
+                    this.fireRate += 0.3;
+                    this.damage += 1;
+                } else {
+                    // Specialized tower upgrade
+                    switch(this.specialization) {
+                        case 'rapidfire':
+                            this.fireRate += 0.8;
+                            this.damage += 0.5;
+                            break;
+                        case 'sniper':
+                            this.damage += 3;
+                            this.range += 0.5;
+                            break;
+                        case 'frost':
+                            this.slowAmount = Math.min(0.8, this.slowAmount + 0.1);
+                            this.slowDuration += 500;
+                            this.damage += 0.5;
+                            break;
+                        case 'splash':
+                            this.damage += 1;
+                            this.splashRadius += 0.3;
+                            break;
+                        case 'poison':
+                            this.poisonDamage += 0.3;
+                            this.poisonDuration += 500;
+                            this.damage += 0.5;
+                            break;
+                    }
+                }
 
                 // Rebuild geometry with new level
                 this.createTowerGeometry(this.level);
+
+                // Update range indicator
+                if (this.rangeIndicator) {
+                    this.rangeIndicator.geometry.dispose();
+                    const geometry = new THREE.RingGeometry(this.range - 0.1, this.range, 32);
+                    this.rangeIndicator.geometry = geometry;
+                }
+
                 return true;
             }
 
@@ -586,7 +916,7 @@
                 }, 16);
             }
 
-            shoot(target, currentTime) {
+            shoot(target, currentTime, enemies) {
                 const timeSinceLastShot = (currentTime - this.lastFireTime) / 1000;
                 if (timeSinceLastShot < 1 / this.fireRate) return null;
 
@@ -598,21 +928,48 @@
                 // Apply damage
                 target.takeDamage(this.damage);
 
+                // Apply special effects
+                if (this.specialization === 'frost') {
+                    target.applySlow(this.slowAmount, this.slowDuration);
+                }
+
+                if (this.specialization === 'poison') {
+                    target.applyPoison(this.poisonDamage, this.poisonDuration);
+                }
+
+                if (this.specialization === 'splash' && this.splashRadius > 0) {
+                    // Deal splash damage to nearby enemies
+                    for (const enemy of enemies) {
+                        if (enemy === target || !enemy.alive) continue;
+                        const distance = target.mesh.position.distanceTo(enemy.mesh.position);
+                        if (distance <= this.splashRadius) {
+                            enemy.takeDamage(this.damage * 0.5);
+                        }
+                    }
+                }
+
                 // Return shot data for projectile
                 return {
                     from: this.group.position.clone(),
-                    to: target.mesh.position.clone()
+                    to: target.mesh.position.clone(),
+                    specialization: this.specialization
                 };
+            }
+
+            showRange(visible) {
+                if (this.rangeIndicator) {
+                    this.rangeIndicator.visible = visible;
+                }
             }
 
             update(enemies, currentTime, deltaTime) {
                 // Sine-wave hover effect
                 this.time += deltaTime * this.hoverSpeed;
                 const hover = Math.sin(this.time) * this.hoverAmplitude;
-                this.group.position.y = this.originalY + hover;
+                this.group.position.y = this.baseY + hover;
 
                 // Update original position for lunge
-                this.originalPosition.y = this.originalY + hover;
+                this.originalPosition.y = this.baseY + hover;
 
                 // Constant rotation for top element
                 if (this.towerTop) {
@@ -627,7 +984,7 @@
                     lookTarget.y = this.towerBody.position.y;
                     this.towerBody.lookAt(lookTarget);
 
-                    return this.shoot(target, currentTime);
+                    return this.shoot(target, currentTime, enemies);
                 }
                 return null;
             }
@@ -645,15 +1002,25 @@
         // GLOWING PROJECTILE CLASS
         // ============================================
         class Projectile {
-            constructor(scene, from, to) {
+            constructor(scene, from, to, specialization) {
                 this.scene = scene;
                 this.lifetime = 300;
                 this.createdAt = Date.now();
 
+                // Choose color based on specialization
+                let color = 0x00ffff;
+                switch(specialization) {
+                    case 'rapidfire': color = 0xff3333; break;
+                    case 'sniper': color = 0x4a90e2; break;
+                    case 'frost': color = 0x74b9ff; break;
+                    case 'splash': color = 0xff7f50; break;
+                    case 'poison': color = 0x6c5ce7; break;
+                }
+
                 // Create glowing line segment
                 const geometry = new THREE.BufferGeometry().setFromPoints([from, to]);
                 const material = new THREE.LineBasicMaterial({
-                    color: 0x00ffff,
+                    color: color,
                     linewidth: 3,
                     transparent: true,
                     opacity: 1
@@ -662,7 +1029,7 @@
 
                 // Add glow effect with multiple lines
                 const glowMat = new THREE.LineBasicMaterial({
-                    color: 0x00ffff,
+                    color: color,
                     linewidth: 6,
                     transparent: true,
                     opacity: 0.3
@@ -721,6 +1088,7 @@
                 this.wave = 0;
                 this.waveInProgress = false;
                 this.selectedTower = null;
+                this.pendingPlacement = null;
 
                 this.init();
                 this.setupEventListeners();
@@ -782,7 +1150,7 @@
                 pointLight1.position.set(-3, 3, -3);
                 this.scene.add(pointLight1);
 
-                const pointLight2 = new THREE.PointLight(0xff00ff, 2, 20);
+                const pointLight2 = new THREE.PointLight(0xff3333, 2, 20);
                 pointLight2.position.set(3, 3, 3);
                 this.scene.add(pointLight2);
 
@@ -795,10 +1163,6 @@
 
             createGrid() {
                 const pathSet = new Set(PATH.map(p => `${p.x},${p.z}`));
-
-                // Texture loader ready for Spoonflower patterns
-                // const textureLoader = new THREE.TextureLoader();
-                // const pattern = textureLoader.load('your-spoonflower-pattern.jpg');
 
                 for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
                     this.grid[x] = [];
@@ -838,11 +1202,11 @@
 
                             this.grid[x][z] = { type: 'path', mesh: tile };
                         } else {
-                            // Circuit tiles with glowing borders
+                            // Elevated buildable platform
                             const geometry = new THREE.BoxGeometry(
-                                CONFIG.TILE_SIZE * 0.95,
-                                0.2,
-                                CONFIG.TILE_SIZE * 0.95
+                                CONFIG.TILE_SIZE,
+                                CONFIG.ELEVATION_HEIGHT,
+                                CONFIG.TILE_SIZE
                             );
                             const material = new THREE.MeshStandardMaterial({
                                 color: 0x1a1a2e,
@@ -853,7 +1217,7 @@
                                 // Ready for texture: map: pattern
                             });
                             const tile = new THREE.Mesh(geometry, material);
-                            tile.position.set(worldX, 0.1, worldZ);
+                            tile.position.set(worldX, CONFIG.ELEVATION_HEIGHT/2, worldZ);
                             tile.userData = { gridX: x, gridZ: z, buildable: true };
                             this.scene.add(tile);
 
@@ -868,26 +1232,7 @@
                             border.material.opacity = 0.6;
                             tile.add(border);
 
-                            // Add subtle glow points at corners
-                            const cornerGeo = new THREE.SphereGeometry(0.05, 8, 8);
-                            const cornerMat = new THREE.MeshBasicMaterial({
-                                color: 0x00ffff,
-                                transparent: true,
-                                opacity: 0.8
-                            });
-                            const corners = [
-                                [-0.45, 0.1, -0.45],
-                                [0.45, 0.1, -0.45],
-                                [-0.45, 0.1, 0.45],
-                                [0.45, 0.1, 0.45]
-                            ];
-                            corners.forEach(pos => {
-                                const corner = new THREE.Mesh(cornerGeo, cornerMat.clone());
-                                corner.position.set(pos[0], pos[1], pos[2]);
-                                tile.add(corner);
-                            });
-
-                            this.grid[x][z] = { type: 'circuit', mesh: tile, tower: null };
+                            this.grid[x][z] = { type: 'elevated', mesh: tile, tower: null };
                         }
                     }
                 }
@@ -907,6 +1252,41 @@
 
                 document.getElementById('closeBtn').addEventListener('click', () => {
                     this.closeUpgradePanel();
+                });
+
+                // Upgrade tree specialization options
+                const upgradeOptions = document.querySelectorAll('.upgrade-option');
+                upgradeOptions.forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (!this.selectedTower || this.selectedTower.specialization) return;
+
+                        // Remove previous selection
+                        upgradeOptions.forEach(opt => opt.classList.remove('selected'));
+                        option.classList.add('selected');
+
+                        const type = option.getAttribute('data-type');
+                        this.specializeTower(type);
+                    });
+                });
+
+                // Prevent clicks on panels
+                document.getElementById('upgradePanel').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+
+                document.getElementById('confirmPanel').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+
+                document.getElementById('confirmBuildBtn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.confirmTowerPlacement();
+                });
+
+                document.getElementById('cancelBuildBtn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.cancelTowerPlacement();
                 });
             }
 
@@ -944,44 +1324,71 @@
                     }
                 }
 
-                // Check for tile clicks (tower placement) - use recursive raycasting
+                // Check for tile clicks - raycast against buildable tiles
                 const buildableTiles = [];
                 for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
                     for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
                         const cell = this.grid[x][z];
-                        if (cell.type === 'circuit' && !cell.tower) {
+                        if (cell.type === 'elevated' && !cell.tower) {
                             buildableTiles.push(cell.mesh);
                         }
                     }
                 }
 
-                // Use recursive raycasting to catch child objects too
                 const intersects = this.raycaster.intersectObjects(buildableTiles, true);
 
                 if (intersects.length > 0) {
-                    // Find the tile mesh (either the clicked object or its parent)
+                    // Find the tile mesh
                     let tile = intersects[0].object;
 
-                    // If we clicked a child (border/corner), get the parent tile
+                    // If we clicked a child (border), get the parent tile
                     while (tile && !tile.userData.buildable) {
                         tile = tile.parent;
                     }
 
                     if (tile && tile.userData.buildable && this.gold >= CONFIG.TOWER_COST) {
-                        this.placeTower(tile.userData.gridX, tile.userData.gridZ);
+                        this.showPlacementConfirmation(tile.userData.gridX, tile.userData.gridZ);
                         return;
                     }
                 }
 
-                // Close panel if clicking elsewhere
+                // Close panels if clicking elsewhere
                 this.closeUpgradePanel();
+                this.cancelTowerPlacement();
+            }
+
+            showPlacementConfirmation(gridX, gridZ) {
+                // Close upgrade panel if open
+                this.closeUpgradePanel();
+
+                // Store pending placement
+                this.pendingPlacement = { gridX, gridZ };
+
+                // Show confirmation panel
+                document.getElementById('confirmPanel').style.display = 'block';
+            }
+
+            confirmTowerPlacement() {
+                if (!this.pendingPlacement) return;
+
+                const { gridX, gridZ } = this.pendingPlacement;
+                this.placeTower(gridX, gridZ);
+
+                // Close panel
+                document.getElementById('confirmPanel').style.display = 'none';
+                this.pendingPlacement = null;
+            }
+
+            cancelTowerPlacement() {
+                document.getElementById('confirmPanel').style.display = 'none';
+                this.pendingPlacement = null;
             }
 
             placeTower(gridX, gridZ) {
                 if (this.gold < CONFIG.TOWER_COST) return;
 
                 const cell = this.grid[gridX][gridZ];
-                if (cell.type === 'circuit' && !cell.tower) {
+                if (cell.type === 'elevated' && !cell.tower) {
                     this.gold -= CONFIG.TOWER_COST;
                     const tower = new Tower(this.scene, gridX, gridZ);
                     this.towers.push(tower);
@@ -991,7 +1398,13 @@
             }
 
             selectTower(tower) {
+                // Hide range of previously selected tower
+                if (this.selectedTower) {
+                    this.selectedTower.showRange(false);
+                }
+
                 this.selectedTower = tower;
+                tower.showRange(true);
 
                 // Show upgrade panel
                 document.getElementById('upgradePanel').style.display = 'block';
@@ -1000,9 +1413,50 @@
                 document.getElementById('towerFireRate').textContent = tower.fireRate.toFixed(1) + '/s';
                 document.getElementById('towerDamage').textContent = tower.damage.toFixed(1);
 
-                const upgradeBtn = document.getElementById('upgradeBtn');
-                upgradeBtn.textContent = `⬆️ UPGRADE (${tower.upgradeCost}g)`;
-                upgradeBtn.disabled = this.gold < tower.upgradeCost;
+                // Show specialization name
+                const specializationNames = {
+                    rapidfire: '🔥 Rapid Fire Tower',
+                    sniper: '🎯 Sniper Tower',
+                    frost: '❄️ Frost Tower',
+                    splash: '💥 Splash Tower',
+                    poison: '☠️ Poison Tower'
+                };
+                document.getElementById('towerSpecialization').textContent =
+                    tower.specialization ? specializationNames[tower.specialization] : 'Basic Tower';
+
+                // Show/hide appropriate upgrade sections
+                if (tower.level === 1 && !tower.specialization) {
+                    // Show specialization tree for level 1 towers
+                    document.getElementById('upgradeTreeSection').style.display = 'block';
+                    document.getElementById('upgradeStandardSection').style.display = 'none';
+                } else {
+                    // Show standard upgrade button
+                    document.getElementById('upgradeTreeSection').style.display = 'none';
+                    document.getElementById('upgradeStandardSection').style.display = 'block';
+
+                    const upgradeBtn = document.getElementById('upgradeBtn');
+
+                    // Check if at max level
+                    if (tower.maxLevel && tower.level >= tower.maxLevel) {
+                        upgradeBtn.textContent = 'MAX LEVEL';
+                        upgradeBtn.disabled = true;
+                    } else {
+                        upgradeBtn.textContent = `⬆️ UPGRADE (${tower.upgradeCost}g)`;
+                        upgradeBtn.disabled = this.gold < tower.upgradeCost;
+                    }
+                }
+            }
+
+            specializeTower(type) {
+                if (!this.selectedTower) return;
+                if (this.gold < 100) return;
+
+                this.gold -= 100;
+                this.selectedTower.specialize(type);
+                this.updateUI();
+
+                // Close and reopen panel to update UI
+                this.closeUpgradePanel();
             }
 
             upgradeTower() {
@@ -1010,14 +1464,21 @@
                 if (this.gold < this.selectedTower.upgradeCost) return;
 
                 this.gold -= this.selectedTower.upgradeCost;
-                this.selectedTower.upgrade();
-                this.updateUI();
-                this.selectTower(this.selectedTower);
+                const upgraded = this.selectedTower.upgrade();
+
+                if (upgraded) {
+                    this.updateUI();
+                    // Update panel
+                    this.selectTower(this.selectedTower);
+                }
             }
 
             closeUpgradePanel() {
                 document.getElementById('upgradePanel').style.display = 'none';
-                this.selectedTower = null;
+                if (this.selectedTower) {
+                    this.selectedTower.showRange(false);
+                    this.selectedTower = null;
+                }
             }
 
             startWave() {
@@ -1027,8 +1488,18 @@
                 this.waveInProgress = true;
                 this.updateUI();
 
-                const enemyCount = 5 + this.wave * 2;
-                const spawnInterval = 800;
+                // Match original game's spawn logic
+                let enemyCount, spawnInterval;
+                if (this.wave === 1) {
+                    enemyCount = 5;
+                    spawnInterval = 900;
+                } else if (this.wave === 2) {
+                    enemyCount = 7;
+                    spawnInterval = 800;
+                } else {
+                    enemyCount = 8 + this.wave * 3;
+                    spawnInterval = 700;
+                }
 
                 for (let i = 0; i < enemyCount; i++) {
                     setTimeout(() => {
@@ -1044,11 +1515,9 @@
                         if (aliveEnemies.length === 0 && this.waveInProgress) {
                             this.waveInProgress = false;
                             clearInterval(checkComplete);
-                            this.gold += 50 + (this.wave * 10);
-                            this.updateUI();
                         }
                     }, 500);
-                }, enemyCount * spawnInterval + 3000);
+                }, enemyCount * spawnInterval + 5000);
             }
 
             updateUI() {
@@ -1093,7 +1562,7 @@
                 for (const tower of this.towers) {
                     const shot = tower.update(this.enemies, currentTime, deltaTime);
                     if (shot) {
-                        const projectile = new Projectile(this.scene, shot.from, shot.to);
+                        const projectile = new Projectile(this.scene, shot.from, shot.to, shot.specialization);
                         this.projectiles.push(projectile);
                     }
                 }
@@ -1122,6 +1591,7 @@
         console.log('🎨 Ready for Spoonflower patterns');
         console.log('📦 Tower pedestal UV mapped for textures');
         console.log('✨ UnrealBloomPass active for neon glow');
+        console.log('🔥 Full upgrade tree with 5 specializations');
     </script>
 </body>
 </html>
