@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometric Galaxy TD - Celestial Showcase</title>
+    <title>Geometric Galaxy TD</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,7 +21,7 @@
             position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
             display: flex; gap: 15px; align-items: center; z-index: 1000;
             background: rgba(255, 255, 255, 0.05); padding: 12px 30px;
-            border-radius: 100px; border: 1px solid rgba(0,255,255,0.3);
+            border-radius: 100px; border: 1px solid rgba(0,255,255,0.4);
             backdrop-filter: blur(15px);
         }
 
@@ -67,7 +67,7 @@
     <div id="upgradeModal" class="modal">
         <h3 style="color:#00ffff; margin-bottom:15px;">EVOLUTION TREE</h3>
         <div class="upgrade-grid">
-            <button onclick="game.specialize('rapidfire')">STORM</button>
+            <button onclick="game.specialize('rapidfire')">STORM (FRACTAL)</button>
             <button onclick="game.specialize('sniper')">RAILGUN</button>
             <button onclick="game.specialize('splash')">NOVA</button>
             <button onclick="game.specialize('frost')">ZERO</button>
@@ -99,14 +99,13 @@
 
         const PATH = [{x:0,z:1},{x:1,z:1},{x:2,z:1},{x:3,z:1},{x:3,z:2},{x:3,z:3},{x:3,z:4},{x:2,z:4},{x:1,z:4},{x:1,z:5},{x:1,z:6},{x:1,z:7},{x:2,z:7},{x:3,z:7},{x:4,z:7},{x:5,z:7},{x:5,z:6},{x:5,z:5},{x:6,z:5},{x:7,z:5},{x:8,z:5},{x:8,z:6},{x:8,z:7},{x:8,z:8},{x:9,z:8}];
 
-        // --- ENEMY ---
         class Enemy {
             constructor(scene, wave) {
                 this.scene = scene; this.pathIndex = 0; this.alive = true;
                 this.health = 3 + wave * 2.5; this.speed = 0.015 + (wave * 0.001);
                 this.mesh = new THREE.Mesh(
                     new THREE.IcosahedronGeometry(0.25, 0), 
-                    new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.5, wireframe: true })
+                    new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.3, wireframe: true })
                 );
                 this.mesh.position.set(PATH[0].x - 5 + 0.5, 0.4, PATH[0].z - 5 + 0.5);
                 scene.add(this.mesh);
@@ -125,7 +124,6 @@
             }
         }
 
-        // --- TOWER ---
         class Tower {
             constructor(scene, x, z) {
                 this.scene = scene; this.gridX = x; this.gridZ = z;
@@ -139,22 +137,46 @@
             }
             createModel() {
                 while(this.group.children.length > 0) this.group.remove(this.group.children[0]);
-                const p = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({ color: 0x110000 }));
+                const p = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 0.1, 6), new THREE.MeshStandardMaterial({ color: 0x111111 }));
                 this.group.add(p);
                 
                 let geo;
-                if (this.special === 'none') geo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-                else if (this.special === 'rapidfire') geo = new THREE.OctahedronGeometry(0.4);
-                else if (this.special === 'sniper') geo = new THREE.BoxGeometry(0.3, 0.8, 0.3);
-                else if (this.special === 'splash') geo = new THREE.SphereGeometry(0.35);
-                else geo = new THREE.TorusGeometry(0.2, 0.08);
+                const mat = new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0xff3366, emissiveIntensity: 0.8, wireframe: true });
                 
-                this.body = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0xff3366, emissiveIntensity: 2, wireframe: true }));
+                if (this.special === 'none') {
+                    geo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+                    this.body = new THREE.Mesh(geo, mat);
+                } else if (this.special === 'rapidfire') {
+                    // --- FRACTAL STORM GEOMETRY ---
+                    this.body = new THREE.Group();
+                    const subGeo = new THREE.TetrahedronGeometry(0.25);
+                    for(let i=0; i<4; i++) {
+                        const m = new THREE.Mesh(subGeo, mat);
+                        m.position.set(Math.sin(i*Math.PI/2)*0.2, Math.cos(i*Math.PI/2)*0.2, 0);
+                        m.rotation.set(Math.random(), Math.random(), Math.random());
+                        this.body.add(m);
+                    }
+                } else if (this.special === 'sniper') {
+                    geo = new THREE.BoxGeometry(0.3, 0.8, 0.3);
+                    this.body = new THREE.Mesh(geo, mat);
+                } else if (this.special === 'splash') {
+                    geo = new THREE.SphereGeometry(0.35);
+                    this.body = new THREE.Mesh(geo, mat);
+                } else {
+                    geo = new THREE.TorusGeometry(0.2, 0.08);
+                    this.body = new THREE.Mesh(geo, mat);
+                }
+                
                 this.body.position.y = 0.5;
                 this.group.add(this.body);
             }
             updatePulse(time) {
-                this.body.material.emissiveIntensity = 2 + Math.sin(time * 5) * 1.5;
+                const p = 0.6 + Math.sin(time * 3) * 0.4; // Toned down glow
+                if (this.body.isGroup) {
+                    this.body.children.forEach(c => c.material.emissiveIntensity = p);
+                } else {
+                    this.body.material.emissiveIntensity = p;
+                }
             }
             update(enemies, time, gameSpeed, onHit) {
                 const target = enemies.find(e => e.alive && e.mesh.position.distanceTo(this.group.position) < this.range);
@@ -167,6 +189,11 @@
                         return true;
                     }
                 } else if(this.special === 'sniper') this.body.scale.z = 1;
+                
+                if (this.special === 'rapidfire') {
+                    this.body.rotation.x += 0.05 * gameSpeed;
+                    this.body.rotation.z += 0.05 * gameSpeed;
+                }
                 return false;
             }
             lunge(targetPos) {
@@ -176,7 +203,6 @@
             }
         }
 
-        // --- GAME MANAGER ---
         class GameManager {
             constructor() {
                 this.scene = new THREE.Scene(); this.gameSpeed = 1.0; this.isPaused = false;
@@ -192,11 +218,11 @@
                 
                 this.composer = new EffectComposer(this.renderer);
                 this.composer.addPass(new RenderPass(this.scene, this.camera));
-                this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.8, 0.3, 0.7));
+                // DIALED BACK BLOOM
+                this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.35, 0.2, 0.95));
                 
-                this.scene.add(new THREE.AmbientLight(0x404040, 0.5));
+                this.scene.add(new THREE.AmbientLight(0x404040, 0.6));
 
-                // --- STARS ---
                 const starGeo = new THREE.BufferGeometry();
                 const starPos = [];
                 for(let i=0; i<3000; i++) {
@@ -209,29 +235,36 @@
                 this.stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.06 }));
                 this.scene.add(this.stars);
 
-                // --- GHOST TOWER ---
                 this.ghost = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.3), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.3 }));
                 this.ghost.visible = false;
                 this.scene.add(this.ghost);
                 
-                // --- GRID (BLUE GLASS) ---
+                // --- MORE VISIBLE HOLOGRAPHIC BOARD ---
                 const pathSet = new Set(PATH.map(p => `${p.x},${p.z}`));
                 for(let x=0; x<10; x++) {
                     for(let z=0; z<10; z++) {
                         const isP = pathSet.has(`${x},${z}`);
                         const tile = new THREE.Mesh(
-                            new THREE.BoxGeometry(0.95, isP?0.05:0.1, 0.95), 
+                            new THREE.BoxGeometry(0.95, isP?0.06:0.12, 0.95), 
                             new THREE.MeshStandardMaterial({ 
-                                color: isP ? 0x00ffff : 0x0088ff, 
+                                color: isP ? 0x00ffff : 0x00ccff, 
                                 transparent: true, 
-                                opacity: isP ? 0.6 : 0.2,
-                                emissive: isP ? 0x00ffff : 0x0088ff,
-                                emissiveIntensity: isP ? 0.3 : 0.05
+                                opacity: isP ? 0.7 : 0.35, // Increased visibility
+                                emissive: isP ? 0x00ffff : 0x004488,
+                                emissiveIntensity: isP ? 0.6 : 0.2
                             })
                         );
                         tile.position.set(x-5+0.5, 0, z-5+0.5);
                         tile.userData = { x, z, isP, tower: null };
                         this.scene.add(tile); this.tiles.push(tile);
+
+                        const edges = new THREE.EdgesGeometry(tile.geometry);
+                        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ 
+                            color: isP ? 0x00ffff : 0x00aaff, 
+                            transparent: true, 
+                            opacity: isP ? 0.8 : 0.4 
+                        }));
+                        tile.add(line);
                     }
                 }
                 this.raycaster = new THREE.Raycaster(); this.mouse = new THREE.Vector2();
@@ -276,14 +309,13 @@
                     const time = Date.now() * 0.001;
                     this.stars.rotation.y += 0.0001;
 
-                    // Improved Interaction Logic
                     this.raycaster.setFromCamera(this.mouse, this.camera);
                     const hit = this.raycaster.intersectObjects(this.tiles)[0];
-                    this.tiles.forEach(t => t.material.opacity = t.userData.isP ? 0.6 : 0.2);
+                    this.tiles.forEach(t => t.material.opacity = t.userData.isP ? 0.7 : 0.35);
                     this.ghost.visible = false;
                     
                     if (hit) {
-                        hit.object.material.opacity = 0.8;
+                        hit.object.material.opacity = 0.9;
                         if(!hit.object.userData.isP && !hit.object.userData.tower) {
                             this.ghost.visible = true;
                             this.ghost.position.set(hit.object.position.x, 0.4, hit.object.position.z);
