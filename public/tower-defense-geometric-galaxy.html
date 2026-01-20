@@ -3,71 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometric Galaxy Tower Defense - Pattern Ripple</title>
+    <title>Geometric Galaxy TD - Pulsing Red</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Courier New', monospace; overflow: hidden; background: #000; }
-        #gameCanvas { display: block; width: 100%; height: 100vh; }
+        body { font-family: 'Courier New', monospace; overflow: hidden; background: #000; color: #ff3333; }
+        #gameCanvas { display: block; width: 100%; height: 100vh; cursor: crosshair; }
 
         #ui {
-            position: absolute; top: 20px; left: 20px; color: #00ffff; font-size: 18px;
-            background: rgba(0, 0, 0, 0.85); padding: 20px; border-radius: 5px;
-            border: 2px solid #00ffff; z-index: 100; font-weight: bold;
-            text-shadow: 0 0 10px #00ffff; pointer-events: none;
-        }
-
-        #ui h2 { margin-bottom: 10px; color: #ff3333; text-shadow: 0 0 15px #ff3333; }
-
-        #upgradePanel {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95); padding: 30px; border-radius: 10px;
-            border: 3px solid #00ffff; color: #00ffff; display: none;
-            z-index: 200; min-width: 400px; text-shadow: 0 0 5px #00ffff;
+            position: absolute; top: 20px; left: 20px; 
+            background: rgba(0, 0, 0, 0.85); padding: 20px;
+            border-radius: 5px; border: 2px solid #ff3333; z-index: 100;
+            text-shadow: 0 0 10px #ff3333; pointer-events: none;
         }
 
         #controls {
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.85); padding: 15px 25px; border-radius: 5px;
-            border: 2px solid #00ffff; display: flex; gap: 10px; align-items: center; z-index: 1000;
+            position: absolute; bottom: 20px; left: 50%;
+            transform: translateX(-50%); background: rgba(0, 0, 0, 0.9);
+            padding: 15px 25px; border-radius: 5px; border: 2px solid #ff3333;
+            display: flex; gap: 10px; align-items: center; z-index: 1000;
         }
 
-        #controls button {
-            background: rgba(0, 255, 255, 0.2); color: #00ffff; border: 2px solid #00ffff;
-            padding: 10px 15px; border-radius: 5px; font-size: 14px; font-weight: bold;
-            cursor: pointer; transition: all 0.3s;
+        button {
+            background: rgba(255, 51, 51, 0.1); color: #ff3333;
+            border: 2px solid #ff3333; padding: 8px 15px;
+            font-family: 'Courier New', monospace; font-weight: bold;
+            cursor: pointer; transition: all 0.2s;
         }
 
-        #controls button.active { background: #00ffff; color: #000; }
-        .stat { display: flex; justify-content: space-between; margin: 10px 0; }
-        .upgrade-option { padding: 10px; border: 1px solid #00ffff; cursor: pointer; text-align: center; }
-        .upgrade-option:hover { background: rgba(0, 255, 255, 0.2); }
+        button:hover:not(:disabled) { background: rgba(255, 51, 51, 0.4); box-shadow: 0 0 15px #ff3333; }
+        button.active { background: #ff3333 !important; color: #000 !important; }
+        
+        .modal {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95); padding: 30px; border-radius: 10px;
+            border: 3px solid #ff3333; display: none; z-index: 2000; min-width: 350px;
+            text-align: center; box-shadow: 0 0 30px rgba(255, 51, 51, 0.3); color: #ff3333;
+        }
+
+        .upgrade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .special-btn { font-size: 11px; padding: 10px 5px; }
+        h2, h3 { color: #ff3333; text-shadow: 0 0 10px #ff3333; }
+        .stat { display: flex; justify-content: space-between; margin: 5px 0; border-bottom: 1px dashed rgba(255,51,51,0.2); }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
 
     <div id="ui">
-        <h2>⚡ GEOMETRIC GALAXY TD ⚡</h2>
+        <h2>⚡ GALAXY TD ⚡</h2>
         <p>💰 Gold: <span id="gold">500</span></p>
-        <p>❤️ Lives: <span id="lives">20</span></p>
         <p>🌊 Wave: <span id="wave">0</span></p>
     </div>
 
-    <div id="upgradePanel">
-        <h3>⚡ TOWER UPGRADE ⚡</h3>
-        <div class="stat"><span>Level:</span><span id="towerLevel">1</span></div>
-        <div class="stat"><span>Range:</span><span id="towerRange">3.0</span></div>
-        <button id="upgradeBtn" style="width:100%; padding:15px; background:rgba(0,255,255,0.1); color:#00ffff; border:2px solid #00ffff; cursor:pointer;">UPGRADE</button>
-        <button id="closeBtn" style="width:100%; padding:10px; margin-top:10px; background:transparent; color:#ff3333; border:1px solid #ff3333; cursor:pointer;">CLOSE</button>
+    <div id="buildModal" class="modal">
+        <h3>CONSTRUCT MONOLITH?</h3>
+        <p style="margin:15px 0;">Cost: <span style="color:#ffffff;">100 Gold</span></p>
+        <div style="display:flex; gap:10px;">
+            <button id="confirmBuild" style="flex:1;">BUILD</button>
+            <button id="cancelBuild" style="flex:1; border-color:#ffffff; color:#ffffff;">CANCEL</button>
+        </div>
+    </div>
+
+    <div id="upgradeModal" class="modal">
+        <h3 id="towerTitle">LEVEL 1 MONOLITH</h3>
+        <div class="stat"><span>Range:</span><span id="statRange">3.0</span></div>
+        <div class="stat"><span>Damage:</span><span id="statDamage">1</span></div>
+        
+        <div id="specializationSection">
+            <p style="font-size:12px; margin-top:10px; color:#aaa;">EVOLVE SPECIALIZATION (150g):</p>
+            <div class="upgrade-grid">
+                <button class="special-btn" onclick="game.specialize('rapidfire')">🔥 RAPID</button>
+                <button class="special-btn" onclick="game.specialize('sniper')">🎯 SNIPER</button>
+                <button class="special-btn" onclick="game.specialize('splash')">💥 SPLASH</button>
+                <button class="special-btn" onclick="game.specialize('frost')">❄️ FROST</button>
+                <button class="special-btn" onclick="game.specialize('poison')" style="grid-column: span 2;">☠️ VOID POISON</button>
+            </div>
+        </div>
+        
+        <button id="standardUpgrade" style="width:100%; margin-top:15px; display:none;">UPGRADE POWER</button>
+        <button onclick="document.getElementById('upgradeModal').style.display='none'" style="width:100%; margin-top:10px; border-color:#ffffff; color:#ffffff;">CLOSE</button>
     </div>
 
     <div id="controls">
         <button id="pauseBtn">⏸ PAUSE</button>
-        <button class="speed-btn" data-speed="0.5">0.5x</button>
         <button class="speed-btn active" data-speed="1">1x</button>
         <button class="speed-btn" data-speed="1.5">1.5x</button>
         <button class="speed-btn" data-speed="3">3x</button>
-        <button id="waveBtn" style="color:#ff3333; border-color:#ff3333;">▶ START WAVE</button>
+        <button id="waveBtn">▶ START WAVE</button>
     </div>
 
     <script type="importmap">
@@ -85,35 +107,24 @@
         import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
         import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-        const CONFIG = { GRID_SIZE: 10, INITIAL_GOLD: 500, INITIAL_LIVES: 20 };
         const PATH = [{x:0,z:1},{x:1,z:1},{x:2,z:1},{x:3,z:1},{x:3,z:2},{x:3,z:3},{x:3,z:4},{x:2,z:4},{x:1,z:4},{x:1,z:5},{x:1,z:6},{x:1,z:7},{x:2,z:7},{x:3,z:7},{x:4,z:7},{x:5,z:7},{x:5,z:6},{x:5,z:5},{x:6,z:5},{x:7,z:5},{x:8,z:5},{x:8,z:6},{x:8,z:7},{x:8,z:8},{x:9,z:8}];
 
-        // --- RESTORED GLITCH ENEMY ---
+        // --- ENEMY CLASS ---
         class Enemy {
             constructor(scene, wave) {
-                this.scene = scene; this.wave = wave; this.pathIndex = 0;
-                this.health = 3 + wave * 1.5; this.alive = true; this.speed = 0.012 + (wave * 0.0015);
-                
-                const geometry = new THREE.IcosahedronGeometry(0.35, 1);
-                const positions = geometry.attributes.position;
-                for (let i = 0; i < positions.count; i++) {
-                    positions.setXYZ(i, positions.getX(i) + (Math.random()-0.5)*0.15, positions.getY(i) + (Math.random()-0.5)*0.15, positions.getZ(i) + (Math.random()-0.5)*0.15);
-                }
-                const hue = (wave * 0.1) % 1;
-                const material = new THREE.MeshStandardMaterial({ 
-                    color: new THREE.Color().setHSL(hue, 1, 0.5),
-                    emissive: new THREE.Color().setHSL(hue, 1, 0.4),
-                    emissiveIntensity: 2
-                });
+                this.scene = scene; this.pathIndex = 0; this.alive = true;
+                this.health = 3 + wave * 2; this.speed = 0.012 + (wave * 0.001);
+                this.poisonTicks = 0;
+
+                const geometry = new THREE.IcosahedronGeometry(0.3, 1);
+                const material = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x00ffff, emissiveIntensity: 1 });
                 this.mesh = new THREE.Mesh(geometry, material);
-                const wireframe = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.2 }));
-                this.mesh.add(wireframe);
                 this.mesh.position.set(PATH[0].x - 5 + 0.5, 0.4, PATH[0].z - 5 + 0.5);
                 scene.add(this.mesh);
             }
             update(gameSpeed) {
                 if (!this.alive) return;
-                this.mesh.rotation.x += 0.02 * gameSpeed;
+                if(this.poisonTicks > 0) { this.health -= 0.01 * gameSpeed; this.poisonTicks -= 1 * gameSpeed; }
                 const target = PATH[this.pathIndex];
                 const targetPos = new THREE.Vector3(target.x - 5 + 0.5, 0.4, target.z - 5 + 0.5);
                 const dir = targetPos.clone().sub(this.mesh.position);
@@ -123,14 +134,17 @@
                 } else {
                     this.mesh.position.add(dir.normalize().multiplyScalar(this.speed * gameSpeed));
                 }
+                if(this.health <= 0) this.alive = false;
                 return true;
             }
         }
 
+        // --- TOWER CLASS ---
         class Tower {
             constructor(scene, x, z) {
                 this.scene = scene; this.gridX = x; this.gridZ = z;
-                this.level = 1; this.range = 3; this.lastFire = 0; this.damage = 1; this.upgradeCost = 150;
+                this.level = 1; this.range = 3; this.damage = 1; this.fireRate = 1;
+                this.special = 'none'; this.lastFire = 0;
                 this.group = new THREE.Group();
                 this.group.position.set(x - 5 + 0.5, 0.4, z - 5 + 0.5);
                 this.originalPos = this.group.position.clone();
@@ -139,21 +153,28 @@
             }
             createModel() {
                 while(this.group.children.length > 0) this.group.remove(this.group.children[0]);
-                const p = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.8), new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.2 }));
-                p.position.y = -0.2; this.group.add(p);
+                
+                // Pedestal
+                const p = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.8), new THREE.MeshStandardMaterial({ color: 0x220000, emissive: 0xff0000, emissiveIntensity: 0.5, transparent: true, opacity: 0.8 }));
+                this.group.add(p);
+                
+                // Evolvable Body
                 let geo = this.level === 1 ? new THREE.BoxGeometry(0.4, 0.6, 0.4) : this.level === 2 ? new THREE.OctahedronGeometry(0.4) : new THREE.IcosahedronGeometry(0.4);
-                this.body = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true }));
-                this.body.position.y = 0.3; this.group.add(this.body);
+                this.body = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, wireframe: true }));
+                this.body.position.y = 0.4;
+                this.group.add(this.body);
             }
-            upgrade() { this.level++; this.range += 0.5; this.damage += 1; this.upgradeCost = Math.floor(this.upgradeCost * 1.7); this.createModel(); }
+            updatePulse(time) {
+                const intensity = 0.5 + Math.sin(time * 5) * 0.5; // Pulsing logic
+                this.body.material.emissiveIntensity = intensity * 2;
+            }
             update(enemies, time, gameSpeed) {
                 this.body.rotation.y += 0.02 * gameSpeed;
                 const target = enemies.find(e => e.alive && e.mesh.position.distanceTo(this.group.position) < this.range);
-                if (target && time - this.lastFire > 1000/gameSpeed) {
+                if (target && time - this.lastFire > (1000/this.fireRate)/gameSpeed) {
                     this.lastFire = time;
                     this.lunge(target.mesh.position);
-                    target.health -= this.damage;
-                    if (target.health <= 0) target.alive = false;
+                    this.attack(target, enemies);
                 }
             }
             lunge(targetPos) {
@@ -161,14 +182,24 @@
                 this.group.position.add(dir);
                 setTimeout(() => this.group.position.copy(this.originalPos), 50);
             }
+            attack(target, enemies) {
+                if(this.special === 'splash') {
+                    enemies.forEach(e => { if(e.alive && e.mesh.position.distanceTo(target.mesh.position) < 1.5) e.health -= this.damage; });
+                } else {
+                    target.health -= this.damage;
+                    if(this.special === 'frost') target.speed *= 0.8;
+                    if(this.special === 'poison') target.poisonTicks += 100;
+                }
+            }
         }
 
+        // --- GAME MANAGER ---
         class GameManager {
             constructor() {
                 this.scene = new THREE.Scene(); this.isPaused = false; this.gameSpeed = 1.0;
-                this.gold = 500; this.lives = 20; this.wave = 0;
-                this.towers = []; this.enemies = []; this.tiles = []; this.selectedTower = null;
-                this.init(); this.createStarfield(); this.setupUI(); this.animate();
+                this.gold = 500; this.wave = 0; this.lives = 20;
+                this.towers = []; this.enemies = []; this.tiles = []; this.hoveredTile = null; this.selectedTower = null;
+                this.init(); this.animate();
             }
             init() {
                 const aspect = window.innerWidth / window.innerHeight;
@@ -180,24 +211,28 @@
                 this.composer.addPass(new RenderPass(this.scene, this.camera));
                 this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85));
                 this.scene.add(new THREE.AmbientLight(0x404040));
-                const sun = new THREE.DirectionalLight(0xffffff, 1); sun.position.set(5, 10, 7); this.scene.add(sun);
+                
+                // Semi-transparent Board
                 const pathSet = new Set(PATH.map(p => `${p.x},${p.z}`));
                 for(let x=0; x<10; x++) {
                     for(let z=0; z<10; z++) {
                         const isP = pathSet.has(`${x},${z}`);
-                        const tile = new THREE.Mesh(new THREE.BoxGeometry(0.95, isP?0.1:0.4, 0.95), new THREE.MeshStandardMaterial({ color: isP?0x001122:0x050505, emissive: 0x00ffff, emissiveIntensity: isP?0.2:0.05 }));
+                        const tile = new THREE.Mesh(new THREE.BoxGeometry(0.95, isP?0.05:0.4, 0.95), new THREE.MeshStandardMaterial({ 
+                            color: isP?0x110000:0x050505, transparent: true, opacity: 0.5, emissive: 0xff0000, emissiveIntensity: 0.1 
+                        }));
                         tile.position.set(x-5+0.5, isP?0:0.2, z-5+0.5);
                         tile.userData = { x, z, isP, tower: null };
                         this.scene.add(tile); this.tiles.push(tile);
                     }
                 }
                 this.raycaster = new THREE.Raycaster(); this.mouse = new THREE.Vector2();
+                this.createStarfield(); this.setupUI();
             }
             createStarfield() {
                 const geo = new THREE.BufferGeometry(); const pos = [];
-                for(let i=0; i<1000; i++) pos.push((Math.random()-0.5)*40, (Math.random()-0.5)*40, (Math.random()-0.5)*40);
+                for(let i=0; i<800; i++) pos.push((Math.random()-0.5)*40, (Math.random()-0.5)*40, (Math.random()-0.5)*40);
                 geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-                this.stars = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.05 }));
+                this.stars = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xff3333, size: 0.05 }));
                 this.scene.add(this.stars);
             }
             setupUI() {
@@ -208,57 +243,64 @@
                     if (hit) {
                         const data = hit.object.userData;
                         if (data.tower) { this.selectedTower = data.tower; this.openUpgrade(); }
-                        else if (!data.isP && this.gold >= 100) {
-                            this.gold -= 100; const t = new Tower(this.scene, data.x, data.z);
-                            this.towers.push(t); data.tower = t; this.updateUI();
-                        }
+                        else if (!data.isP) { this.pendingTile = hit.object; document.getElementById('buildModal').style.display = 'block'; }
                     }
                 });
-                document.getElementById('upgradeBtn').onclick = () => {
-                    if (this.selectedTower && this.gold >= this.selectedTower.upgradeCost) {
-                        this.gold -= this.selectedTower.upgradeCost; this.selectedTower.upgrade(); this.openUpgrade(); this.updateUI();
+                document.getElementById('confirmBuild').onclick = () => {
+                    if (this.gold >= 100) {
+                        this.gold -= 100; const t = new Tower(this.scene, this.pendingTile.userData.x, this.pendingTile.userData.z);
+                        this.towers.push(t); this.pendingTile.userData.tower = t;
+                        document.getElementById('buildModal').style.display = 'none'; this.updateUI();
                     }
                 };
-                document.getElementById('closeBtn').onclick = () => document.getElementById('upgradePanel').style.display = 'none';
-                document.getElementById('waveBtn').onclick = () => {
-                    this.wave++; this.updateUI();
-                    for(let i=0; i<5+this.wave*2; i++) setTimeout(() => { if(!this.isPaused) this.enemies.push(new Enemy(this.scene, this.wave)) }, i*800/this.gameSpeed);
-                };
-                document.querySelectorAll('.speed-btn').forEach(b => b.onclick = (e) => {
-                    this.gameSpeed = parseFloat(e.target.dataset.speed);
-                    document.querySelectorAll('.speed-btn').forEach(btn => btn.classList.remove('active'));
-                    e.target.classList.add('active');
-                });
+                document.getElementById('cancelBuild').onclick = () => document.getElementById('buildModal').style.display = 'none';
+                document.getElementById('waveBtn').onclick = () => { this.wave++; this.updateUI(); for(let i=0; i<5+this.wave*2; i++) setTimeout(() => this.enemies.push(new Enemy(this.scene, this.wave)), i*800/this.gameSpeed); };
+                document.querySelectorAll('.speed-btn').forEach(b => b.onclick = (e) => { this.gameSpeed = parseFloat(e.target.dataset.speed); document.querySelectorAll('.speed-btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); });
                 document.getElementById('pauseBtn').onclick = (e) => { this.isPaused = !this.isPaused; e.target.innerText = this.isPaused ? "▶ RESUME" : "⏸ PAUSE"; };
             }
             openUpgrade() {
-                document.getElementById('upgradePanel').style.display = 'block';
-                document.getElementById('towerLevel').innerText = this.selectedTower.level;
-                document.getElementById('towerRange').innerText = this.selectedTower.range.toFixed(1);
-                document.getElementById('upgradeBtn').innerText = `UPGRADE (${this.selectedTower.upgradeCost}g)`;
+                const t = this.selectedTower;
+                document.getElementById('upgradeModal').style.display = 'block';
+                document.getElementById('statRange').innerText = t.range.toFixed(1);
+                document.getElementById('statDamage').innerText = t.damage;
+                document.getElementById('specializationSection').style.display = t.special === 'none' ? 'block' : 'none';
+                document.getElementById('standardUpgrade').style.display = t.special !== 'none' ? 'block' : 'none';
             }
-            updateUI() {
-                document.getElementById('gold').innerText = this.gold; document.getElementById('lives').innerText = this.lives; document.getElementById('wave').innerText = this.wave;
+            specialize(type) {
+                if(this.gold >= 150) {
+                    this.gold -= 150; this.selectedTower.special = type;
+                    if(type === 'rapidfire') { this.selectedTower.fireRate = 3; this.selectedTower.damage = 0.5; }
+                    if(type === 'sniper') { this.selectedTower.range = 6; this.selectedTower.damage = 5; }
+                    this.selectedTower.createModel(); this.openUpgrade(); this.updateUI();
+                }
             }
+            updateUI() { document.getElementById('gold').innerText = this.gold; document.getElementById('wave').innerText = this.wave; }
             animate() {
                 requestAnimationFrame(() => this.animate());
+                const time = Date.now() * 0.001;
                 if (!this.isPaused) {
                     this.stars.rotation.y += 0.0003;
                     this.raycaster.setFromCamera(this.mouse, this.camera);
                     const hit = this.raycaster.intersectObjects(this.tiles)[0];
-                    this.tiles.forEach(t => t.material.emissiveIntensity = t.userData.isP ? 0.2 : 0.05);
-                    if (hit) hit.object.material.emissiveIntensity = 0.8;
+                    this.tiles.forEach(t => t.material.emissiveIntensity = 0.1);
+                    if (hit) hit.object.material.emissiveIntensity = 0.6;
+                    
                     for (let i = this.enemies.length - 1; i >= 0; i--) {
                         const res = this.enemies[i].update(this.gameSpeed);
-                        if (res === 'escaped') { this.lives--; this.scene.remove(this.enemies[i].mesh); this.enemies.splice(i, 1); this.updateUI(); if(this.lives<=0) location.reload(); }
-                        else if (!this.enemies[i].alive) { this.gold += 15; this.scene.remove(this.enemies[i].mesh); this.enemies.splice(i, 1); this.updateUI(); }
+                        if (res === 'escaped' || !this.enemies[i].alive) { 
+                            if(res !== 'escaped') this.gold += 15; else this.lives--;
+                            this.scene.remove(this.enemies[i].mesh); this.enemies.splice(i, 1); this.updateUI(); 
+                        }
                     }
-                    this.towers.forEach(t => t.update(this.enemies, Date.now(), this.gameSpeed));
+                    this.towers.forEach(t => {
+                        t.updatePulse(time);
+                        t.update(this.enemies, Date.now(), this.gameSpeed);
+                    });
                 }
                 this.composer.render();
             }
         }
-        new GameManager();
+        const game = new GameManager(); window.game = game;
     </script>
 </body>
 </html>
