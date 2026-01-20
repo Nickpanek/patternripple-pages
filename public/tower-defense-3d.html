@@ -494,12 +494,18 @@
         };
 
         // ============================================
-        // PATH DEFINITION (Canyon road)
+        // PATH DEFINITION (Canyon road) - Serpentine path
         // ============================================
         const PATH = [
-            {x: 0, z: 4}, {x: 1, z: 4}, {x: 2, z: 4}, {x: 3, z: 4},
-            {x: 4, z: 4}, {x: 4, z: 5}, {x: 5, z: 5}, {x: 6, z: 5},
-            {x: 7, z: 5}, {x: 8, z: 5}, {x: 9, z: 5}
+            {x: 0, z: 1}, {x: 1, z: 1}, {x: 2, z: 1}, {x: 3, z: 1},
+            {x: 3, z: 2}, {x: 3, z: 3}, {x: 3, z: 4},
+            {x: 2, z: 4}, {x: 1, z: 4},
+            {x: 1, z: 5}, {x: 1, z: 6}, {x: 1, z: 7},
+            {x: 2, z: 7}, {x: 3, z: 7}, {x: 4, z: 7}, {x: 5, z: 7},
+            {x: 5, z: 6}, {x: 5, z: 5},
+            {x: 6, z: 5}, {x: 7, z: 5}, {x: 8, z: 5},
+            {x: 8, z: 6}, {x: 8, z: 7}, {x: 8, z: 8},
+            {x: 9, z: 8}
         ];
 
         // ============================================
@@ -1496,25 +1502,25 @@
             }
 
             calculateWaveReward() {
-                // Base reward
-                const baseReward = 50 + (this.wave * 25);
+                // Base reward (reduced to 1/3)
+                const baseReward = 15 + (this.wave * 8);
 
-                // Perfect health bonus (no lives lost)
+                // Perfect health bonus (no lives lost) (reduced to 1/3)
                 const livesLost = this.waveStartLives - this.lives;
                 let healthBonus = 0;
                 if (livesLost === 0) {
-                    healthBonus = 100 + (this.wave * 20);
+                    healthBonus = 30 + (this.wave * 7);
                 } else if (livesLost <= 2) {
-                    healthBonus = 50 + (this.wave * 10);
+                    healthBonus = 15 + (this.wave * 3);
                 }
 
-                // Speed clear bonus (completed in under 60 seconds)
+                // Speed clear bonus (completed in under 60 seconds) (reduced to 1/3)
                 const waveTime = (Date.now() - this.waveStartTime) / 1000;
                 let speedBonus = 0;
                 if (waveTime < 45) {
-                    speedBonus = 100;
+                    speedBonus = 30;
                 } else if (waveTime < 60) {
-                    speedBonus = 50;
+                    speedBonus = 15;
                 }
 
                 this.showRewardPanel(baseReward, healthBonus, speedBonus);
