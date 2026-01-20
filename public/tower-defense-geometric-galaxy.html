@@ -1603,60 +1603,8 @@
                 // Create grid
                 this.createGrid();
 
-                // Create path arrows
-                this.createPathArrows();
-
                 // Update UI
                 this.updateUI();
-            }
-
-            createPathArrows() {
-                this.pathArrows = [];
-
-                // Create arrows for every other path segment (reduced for performance)
-                for (let i = 0; i < PATH.length - 1; i += 2) {
-                    const current = PATH[i];
-                    const next = PATH[i + 1];
-
-                    // Calculate direction
-                    const dx = next.x - current.x;
-                    const dz = next.z - current.z;
-                    const angle = Math.atan2(dx, dz);
-
-                    // Create arrow shape pointing up (positive Y)
-                    const arrowShape = new THREE.Shape();
-                    arrowShape.moveTo(0, 0.25);      // Arrow point
-                    arrowShape.lineTo(-0.15, 0);     // Left wing
-                    arrowShape.lineTo(-0.05, 0);     // Left of shaft
-                    arrowShape.lineTo(-0.05, -0.25); // Left bottom
-                    arrowShape.lineTo(0.05, -0.25);  // Right bottom
-                    arrowShape.lineTo(0.05, 0);      // Right of shaft
-                    arrowShape.lineTo(0.15, 0);      // Right wing
-                    arrowShape.closePath();
-
-                    const arrowGeo = new THREE.ShapeGeometry(arrowShape);
-                    const arrowMat = new THREE.MeshBasicMaterial({
-                        color: 0xff00ff,
-                        transparent: true,
-                        opacity: 0.6
-                    });
-
-                    const arrow = new THREE.Mesh(arrowGeo, arrowMat);
-
-                    // Position and rotate arrow
-                    const worldX = current.x - CONFIG.GRID_SIZE/2 + 0.5;
-                    const worldZ = current.z - CONFIG.GRID_SIZE/2 + 0.5;
-                    arrow.position.set(worldX, 0.15, worldZ);
-                    arrow.rotation.x = -Math.PI / 2;  // Lay flat
-                    arrow.rotation.y = angle;          // Rotate in XZ plane (fixed from rotation.z)
-
-                    // Store animation data
-                    arrow.userData.animOffset = i * 0.5;
-                    arrow.userData.baseY = 0.15;
-
-                    this.scene.add(arrow);
-                    this.pathArrows.push(arrow);
-                }
             }
 
             createStarfield() {
@@ -1722,38 +1670,61 @@
 
             createGrid() {
                 const pathSet = new Set(PATH.map(p => `${p.x},${p.z}`));
+                const startPos = PATH[0];
+                const endPos = PATH[PATH.length - 1];
 
                 for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
                     this.grid[x] = [];
                     for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
                         const isPath = pathSet.has(`${x},${z}`);
+                        const isStart = x === startPos.x && z === startPos.z;
+                        const isEnd = x === endPos.x && z === endPos.z;
                         const worldX = x - CONFIG.GRID_SIZE/2 + 0.5;
                         const worldZ = z - CONFIG.GRID_SIZE/2 + 0.5;
 
                         if (isPath) {
-                            // Purple/magenta path tiles
+                            // Path tiles with special colors for start/end
                             const geometry = new THREE.BoxGeometry(
                                 CONFIG.TILE_SIZE * 0.95,
                                 0.1,
                                 CONFIG.TILE_SIZE * 0.95
                             );
+
+                            let tileColor, emissiveColor, borderColor;
+                            if (isStart) {
+                                // Yellow start tile
+                                tileColor = 0xaa8800;
+                                emissiveColor = 0xffff00;
+                                borderColor = 0xffff00;
+                            } else if (isEnd) {
+                                // Red end tile
+                                tileColor = 0x880000;
+                                emissiveColor = 0xff0000;
+                                borderColor = 0xff0000;
+                            } else {
+                                // Purple/magenta regular path
+                                tileColor = 0x660066;
+                                emissiveColor = 0xaa00aa;
+                                borderColor = 0xff00ff;
+                            }
+
                             const material = new THREE.MeshStandardMaterial({
-                                color: 0x660066,
-                                emissive: 0xaa00aa,
-                                emissiveIntensity: 0.6,
+                                color: tileColor,
+                                emissive: emissiveColor,
+                                emissiveIntensity: 0.8,
                                 metalness: 0.9,
                                 roughness: 0.1,
                                 transparent: true,
-                                opacity: 0.7
+                                opacity: 0.8
                             });
                             const tile = new THREE.Mesh(geometry, material);
                             tile.position.set(worldX, 0, worldZ);
                             this.scene.add(tile);
 
-                            // Glowing purple border for path
+                            // Glowing border for path
                             const borderGeo = new THREE.EdgesGeometry(geometry);
                             const borderMat = new THREE.LineBasicMaterial({
-                                color: 0xff00ff,
+                                color: borderColor,
                                 linewidth: 2
                             });
                             const border = new THREE.LineSegments(borderGeo, borderMat);
@@ -1761,16 +1732,16 @@
 
                             this.grid[x][z] = { type: 'path', mesh: tile, pathIndex: PATH.findIndex(p => p.x === x && p.z === z) };
                         } else {
-                            // Elevated buildable platform
+                            // Elevated buildable platform (brighter)
                             const geometry = new THREE.BoxGeometry(
                                 CONFIG.TILE_SIZE,
                                 CONFIG.ELEVATION_HEIGHT,
                                 CONFIG.TILE_SIZE
                             );
                             const material = new THREE.MeshStandardMaterial({
-                                color: 0x1a1a2e,
-                                emissive: 0x0f0f1e,
-                                emissiveIntensity: 0.3,
+                                color: 0x2a2a4e,
+                                emissive: 0x1f1f3e,
+                                emissiveIntensity: 0.6,
                                 metalness: 0.6,
                                 roughness: 0.4,
                                 // Ready for texture: map: pattern
@@ -1780,7 +1751,7 @@
                             tile.userData = { gridX: x, gridZ: z, buildable: true };
                             this.scene.add(tile);
 
-                            // Glowing circuit border
+                            // Glowing circuit border (brighter)
                             const borderGeo = new THREE.EdgesGeometry(geometry);
                             const borderMat = new THREE.LineBasicMaterial({
                                 color: 0x00ffff,
@@ -1788,7 +1759,7 @@
                             });
                             const border = new THREE.LineSegments(borderGeo, borderMat);
                             border.material.transparent = true;
-                            border.material.opacity = 0.6;
+                            border.material.opacity = 0.8;
                             tile.add(border);
 
                             this.grid[x][z] = { type: 'elevated', mesh: tile, tower: null };
@@ -1928,11 +1899,18 @@
                         this.scene.remove(this.hoveredObject);
                         this.hoveredObject.geometry.dispose();
                         this.hoveredObject.material.dispose();
+                        // Dispose border too
+                        if (this.hoveredObject.children.length > 0) {
+                            this.hoveredObject.children.forEach(child => {
+                                if (child.geometry) child.geometry.dispose();
+                                if (child.material) child.material.dispose();
+                            });
+                        }
                     }
                     this.hoveredObject = null;
                 }
 
-                // Check for tile/tower hover
+                // Check for tile/tower hover - only check tile meshes, not children
                 const allTiles = [];
                 for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
                     for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
@@ -1943,14 +1921,11 @@
                     }
                 }
 
-                const tileIntersects = this.raycaster.intersectObjects(allTiles, true);
+                // Only intersect the tiles themselves, not their children (false parameter)
+                const tileIntersects = this.raycaster.intersectObjects(allTiles, false);
 
                 if (tileIntersects.length > 0) {
-                    let tile = tileIntersects[0].object;
-
-                    while (tile && !tile.userData.buildable) {
-                        tile = tile.parent;
-                    }
+                    const tile = tileIntersects[0].object;
 
                     if (tile && tile.userData.buildable) {
                         const gridX = tile.userData.gridX;
@@ -1970,24 +1945,28 @@
                             hoverHeight = CONFIG.ELEVATION_HEIGHT + 1.2;
                         }
 
-                        const geometry = new THREE.BoxGeometry(1.1, hoverHeight, 1.1);
+                        const geometry = new THREE.BoxGeometry(1.05, hoverHeight, 1.05);
                         const material = new THREE.MeshBasicMaterial({
                             color: hoverColor,
                             transparent: true,
-                            opacity: 0.2,
-                            wireframe: false
+                            opacity: 0.25,
+                            wireframe: false,
+                            depthTest: false
                         });
                         const hoverBox = new THREE.Mesh(geometry, material);
                         hoverBox.position.set(worldX, hoverHeight / 2, worldZ);
                         hoverBox.userData.isHoverIndicator = true;
+                        hoverBox.renderOrder = 999;
 
                         // Add wireframe border
                         const borderGeo = new THREE.EdgesGeometry(geometry);
                         const borderMat = new THREE.LineBasicMaterial({
                             color: hoverColor,
-                            linewidth: 3
+                            linewidth: 3,
+                            depthTest: false
                         });
                         const border = new THREE.LineSegments(borderGeo, borderMat);
+                        border.renderOrder = 1000;
                         hoverBox.add(border);
 
                         this.scene.add(hoverBox);
@@ -2239,20 +2218,6 @@
                 if (this.starfield) {
                     this.starfield.rotation.y += 0.0001;
                     this.starfield.rotation.x += 0.00005;
-                }
-
-                // Animate path arrows
-                if (this.pathArrows) {
-                    const time = Date.now() * 0.001;
-                    this.pathArrows.forEach(arrow => {
-                        // Pulse opacity
-                        const pulse = Math.sin(time * 2 + arrow.userData.animOffset) * 0.3 + 0.5;
-                        arrow.material.opacity = pulse;
-
-                        // Slight vertical movement
-                        const bob = Math.sin(time * 3 + arrow.userData.animOffset) * 0.02;
-                        arrow.position.y = arrow.userData.baseY + bob;
-                    });
                 }
 
                 // Skip game update if paused
