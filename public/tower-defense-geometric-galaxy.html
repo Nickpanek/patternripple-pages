@@ -394,7 +394,7 @@
                 this.maxHealth = this.health;
                 this.baseSpeed = 0.012 + (wave * 0.0015);
                 this.speed = this.baseSpeed;
-                this.reward = 10 + wave * 2;
+                this.reward = 3 + wave;
                 this.alive = true;
                 this.slowUntil = 0;
                 this.poisonStacks = [];
@@ -1308,47 +1308,44 @@
 
                 this.raycaster.setFromCamera(this.mouse, this.camera);
 
-                // Check for tower clicks
-                const towerGroups = this.towers.map(t => t.group);
-                const towerIntersects = this.raycaster.intersectObjects(towerGroups, true);
-
-                if (towerIntersects.length > 0) {
-                    const clickedTower = this.towers.find(t =>
-                        t.group === towerIntersects[0].object ||
-                        t.group === towerIntersects[0].object.parent ||
-                        t.group === towerIntersects[0].object.parent?.parent
-                    );
-                    if (clickedTower) {
-                        this.selectTower(clickedTower);
-                        return;
-                    }
-                }
-
-                // Check for tile clicks - raycast against buildable tiles
-                const buildableTiles = [];
+                // First, check ALL tiles (not just buildable) to determine which grid cell was clicked
+                const allTiles = [];
                 for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
                     for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
                         const cell = this.grid[x][z];
-                        if (cell.type === 'elevated' && !cell.tower) {
-                            buildableTiles.push(cell.mesh);
+                        if (cell.type === 'elevated') {
+                            allTiles.push(cell.mesh);
                         }
                     }
                 }
 
-                const intersects = this.raycaster.intersectObjects(buildableTiles, true);
+                const tileIntersects = this.raycaster.intersectObjects(allTiles, true);
 
-                if (intersects.length > 0) {
+                if (tileIntersects.length > 0) {
                     // Find the tile mesh
-                    let tile = intersects[0].object;
+                    let tile = tileIntersects[0].object;
 
                     // If we clicked a child (border), get the parent tile
                     while (tile && !tile.userData.buildable) {
                         tile = tile.parent;
                     }
 
-                    if (tile && tile.userData.buildable && this.gold >= CONFIG.TOWER_COST) {
-                        this.showPlacementConfirmation(tile.userData.gridX, tile.userData.gridZ);
-                        return;
+                    if (tile && tile.userData.buildable) {
+                        const gridX = tile.userData.gridX;
+                        const gridZ = tile.userData.gridZ;
+                        const cell = this.grid[gridX][gridZ];
+
+                        // Check if this tile has a tower
+                        if (cell.tower) {
+                            this.selectTower(cell.tower);
+                            return;
+                        }
+
+                        // Otherwise, show placement confirmation if we have enough gold
+                        if (this.gold >= CONFIG.TOWER_COST) {
+                            this.showPlacementConfirmation(gridX, gridZ);
+                            return;
+                        }
                     }
                 }
 
