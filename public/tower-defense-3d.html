@@ -140,6 +140,70 @@
             background: #45b393;
             transform: scale(1.05);
         }
+
+        #confirmPanel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            display: none;
+            z-index: 200;
+            min-width: 300px;
+            border: 2px solid #4ecca3;
+        }
+
+        #confirmPanel h3 {
+            margin-bottom: 20px;
+            color: #4ecca3;
+            text-align: center;
+        }
+
+        #confirmPanel p {
+            margin: 15px 0;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        #confirmPanel .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #confirmPanel button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        #confirmBuildBtn {
+            background: #4ecca3;
+            color: #1a1a2e;
+        }
+
+        #confirmBuildBtn:hover {
+            background: #45b393;
+            transform: scale(1.05);
+        }
+
+        #cancelBuildBtn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        #cancelBuildBtn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -151,7 +215,8 @@
         <p>Lives: <span id="lives">20</span></p>
         <p>Wave: <span id="wave">0</span></p>
         <p style="margin-top: 10px; font-size: 14px; color: #aaa;">
-            Click elevated tiles to build towers (100g)
+            Click tiles to build towers (100g)<br>
+            Click towers to upgrade
         </p>
     </div>
 
@@ -179,6 +244,16 @@
         </div>
         <button id="upgradeBtn">UPGRADE</button>
         <button id="closeBtn">CLOSE</button>
+    </div>
+
+    <div id="confirmPanel">
+        <h3>Build Tower?</h3>
+        <p>Cost: <span style="color: #f39c12; font-weight: bold;">100 Gold</span></p>
+        <p style="font-size: 14px; color: #aaa;">Place a tower on this tile?</p>
+        <div class="buttons">
+            <button id="confirmBuildBtn">BUILD</button>
+            <button id="cancelBuildBtn">CANCEL</button>
+        </div>
     </div>
 
     <div id="controls">
@@ -528,6 +603,7 @@
                 this.wave = 0;
                 this.waveInProgress = false;
                 this.selectedTower = null;
+                this.pendingPlacement = null;
 
                 this.init();
                 this.setupEventListeners();
@@ -687,6 +763,14 @@
                 document.getElementById('closeBtn').addEventListener('click', () => {
                     this.closeUpgradePanel();
                 });
+
+                document.getElementById('confirmBuildBtn').addEventListener('click', () => {
+                    this.confirmTowerPlacement();
+                });
+
+                document.getElementById('cancelBuildBtn').addEventListener('click', () => {
+                    this.cancelTowerPlacement();
+                });
             }
 
             onWindowResize() {
@@ -734,13 +818,15 @@
                 if (intersects.length > 0) {
                     const tile = intersects[0].object;
                     if (tile.userData.buildable) {
-                        this.placeTower(tile.userData.gridX, tile.userData.gridZ);
+                        this.showPlacementConfirmation(tile.userData.gridX, tile.userData.gridZ);
+                        return;
                     }
                 }
 
-                // Close upgrade panel if clicking elsewhere
-                if (towerIntersects.length === 0) {
+                // Close panels if clicking elsewhere
+                if (towerIntersects.length === 0 && intersects.length === 0) {
                     this.closeUpgradePanel();
+                    this.cancelTowerPlacement();
                 }
             }
 
@@ -764,6 +850,38 @@
                         }
                     }
                 }
+            }
+
+            showPlacementConfirmation(gridX, gridZ) {
+                if (this.gold < CONFIG.TOWER_COST) {
+                    console.log('Not enough gold!');
+                    return;
+                }
+
+                // Close upgrade panel if open
+                this.closeUpgradePanel();
+
+                // Store pending placement
+                this.pendingPlacement = { gridX, gridZ };
+
+                // Show confirmation panel
+                document.getElementById('confirmPanel').style.display = 'block';
+            }
+
+            confirmTowerPlacement() {
+                if (!this.pendingPlacement) return;
+
+                const { gridX, gridZ } = this.pendingPlacement;
+                this.placeTower(gridX, gridZ);
+
+                // Close panel
+                document.getElementById('confirmPanel').style.display = 'none';
+                this.pendingPlacement = null;
+            }
+
+            cancelTowerPlacement() {
+                document.getElementById('confirmPanel').style.display = 'none';
+                this.pendingPlacement = null;
             }
 
             placeTower(gridX, gridZ) {
