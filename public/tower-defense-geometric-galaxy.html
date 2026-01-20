@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometric Galaxy: Celestial Showcase</title>
+    <title>Geometric Galaxy TD - Celestial Showcase</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,38 +14,36 @@
             position: absolute; top: 30px; left: 30px; 
             padding: 20px; border-left: 2px solid #00ffff;
             z-index: 100; pointer-events: none;
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
         }
 
         #controls {
             position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 20px; align-items: center; z-index: 1000;
-            background: rgba(255, 255, 255, 0.05); padding: 10px 30px;
-            border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);
+            display: flex; gap: 15px; align-items: center; z-index: 1000;
+            background: rgba(255, 255, 255, 0.05); padding: 12px 30px;
+            border-radius: 100px; border: 1px solid rgba(0,255,255,0.3);
             backdrop-filter: blur(15px);
         }
 
         button {
-            background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3);
+            background: transparent; color: #00ffff; border: 1px solid rgba(0,255,255,0.4);
             padding: 8px 18px; font-family: 'Space Grotesk', sans-serif; font-size: 11px;
             cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 2px;
             border-radius: 50px;
         }
 
-        button:hover:not(:disabled) { background: #fff; color: #000; border-color: #fff; }
+        button:hover:not(:disabled) { background: #00ffff; color: #000; box-shadow: 0 0 20px #00ffff; }
         button.active { background: #00ffff; color: #000; border-color: #00ffff; }
         
         .modal {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9); padding: 40px; border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2); display: none; z-index: 2000; 
+            background: rgba(0, 0, 0, 0.95); padding: 40px; border-radius: 20px;
+            border: 2px solid #ff3366; display: none; z-index: 2000; 
             min-width: 350px; text-align: center; backdrop-filter: blur(20px);
         }
 
         .upgrade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
         h2 { font-weight: 700; font-size: 20px; letter-spacing: 4px; margin-bottom: 5px; color: #00ffff; }
-        h3 { color: #ff3366; font-size: 14px; letter-spacing: 2px; }
-        .stat { display: flex; justify-content: space-between; margin: 10px 0; font-size: 12px; opacity: 0.6; }
     </style>
 </head>
 <body>
@@ -53,38 +51,35 @@
 
     <div id="ui">
         <h2>NEURAL GRID</h2>
-        <p style="font-size: 10px; opacity: 0.5;">ENERGY: <span id="gold" style="color:#00ffff">500</span></p>
-        <p style="font-size: 10px; opacity: 0.5;">THREAT LEVEL: <span id="wave" style="color:#ff3366">0</span></p>
+        <p>ENERGY: <span id="gold" style="color:#00ffff">500</span></p>
+        <p>THREAT: <span id="wave" style="color:#ff3366">0</span></p>
     </div>
 
     <div id="buildModal" class="modal">
-        <h3>STATION DEPLOYMENT</h3>
+        <h3 style="color:#ff3366; margin-bottom:10px;">DEPLOY MONOLITH</h3>
         <p style="margin:20px 0; font-size:12px; opacity:0.7;">ALLOCATE 100 ENERGY UNITS?</p>
         <div style="display:flex; gap:10px;">
-            <button id="confirmBuild" style="flex:1; border-color:#00ffff; color:#00ffff;">CONFIRM</button>
-            <button id="cancelBuild" style="flex:1;">CANCEL</button>
+            <button id="confirmBuild" style="flex:1; border-color:#00ffff; color:#00ffff;">DEPLOY</button>
+            <button id="cancelBuild" style="flex:1;">ABORT</button>
         </div>
     </div>
 
     <div id="upgradeModal" class="modal">
-        <h3 style="color:#00ffff">MODULAR EVOLUTION</h3>
-        <div class="stat"><span>LETHALITY:</span><span id="statDamage">1</span></div>
-        <div id="specializationSection">
-            <div class="upgrade-grid">
-                <button class="special-btn" onclick="game.specialize('rapidfire')">STORM</button>
-                <button class="special-btn" onclick="game.specialize('sniper')">RAILGUN</button>
-                <button class="special-btn" onclick="game.specialize('splash')">NOVA</button>
-                <button class="special-btn" onclick="game.specialize('frost')">ZERO</button>
-            </div>
+        <h3 style="color:#00ffff; margin-bottom:15px;">EVOLUTION TREE</h3>
+        <div class="upgrade-grid">
+            <button onclick="game.specialize('rapidfire')">STORM</button>
+            <button onclick="game.specialize('sniper')">RAILGUN</button>
+            <button onclick="game.specialize('splash')">NOVA</button>
+            <button onclick="game.specialize('frost')">ZERO</button>
         </div>
-        <button onclick="document.getElementById('upgradeModal').style.display='none'" style="width:100%; margin-top:20px; opacity:0.5;">CLOSE</button>
+        <button onclick="document.getElementById('upgradeModal').style.display='none'" style="width:100%; margin-top:20px;">CLOSE</button>
     </div>
 
     <div id="controls">
-        <button id="pauseBtn" style="border:none; font-size:16px;">⏸</button>
+        <button id="pauseBtn">⏸</button>
         <button class="speed-btn active" data-speed="1">1X</button>
         <button class="speed-btn" data-speed="2.5">FAST</button>
-        <button id="waveBtn" style="background:#ff3366; border:none; color:#fff;">INITIATE WAVE</button>
+        <button id="waveBtn" style="background:#ff3366; border:none; color:#fff;">START WAVE</button>
     </div>
 
     <script type="importmap">
@@ -144,31 +139,40 @@
             }
             createModel() {
                 while(this.group.children.length > 0) this.group.remove(this.group.children[0]);
-                
-                // Slim Base
-                const p = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 0.1, 6), new THREE.MeshStandardMaterial({ color: 0x222222 }));
+                const p = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({ color: 0x110000 }));
                 this.group.add(p);
                 
-                let geo = this.special === 'none' ? new THREE.BoxGeometry(0.3, 0.3, 0.3) : 
-                          this.special === 'sniper' ? new THREE.OctahedronGeometry(0.4) : 
-                          this.special === 'splash' ? new THREE.SphereGeometry(0.35) : new THREE.TorusGeometry(0.2, 0.08);
+                let geo;
+                if (this.special === 'none') geo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+                else if (this.special === 'rapidfire') geo = new THREE.OctahedronGeometry(0.4);
+                else if (this.special === 'sniper') geo = new THREE.BoxGeometry(0.3, 0.8, 0.3);
+                else if (this.special === 'splash') geo = new THREE.SphereGeometry(0.35);
+                else geo = new THREE.TorusGeometry(0.2, 0.08);
                 
                 this.body = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0xff3366, emissiveIntensity: 2, wireframe: true }));
                 this.body.position.y = 0.5;
                 this.group.add(this.body);
             }
             updatePulse(time) {
-                const p = 1.5 + Math.sin(time * 4) * 1.5;
-                this.body.material.emissiveIntensity = p;
+                this.body.material.emissiveIntensity = 2 + Math.sin(time * 5) * 1.5;
             }
             update(enemies, time, gameSpeed, onHit) {
                 const target = enemies.find(e => e.alive && e.mesh.position.distanceTo(this.group.position) < this.range);
-                if (target && time - this.lastFire > (1000/this.fireRate)/gameSpeed) {
-                    this.lastFire = time;
-                    onHit(target, this.damage);
-                    return true;
-                }
+                if (target) {
+                    if(this.special === 'sniper') { this.body.lookAt(target.mesh.position); this.body.scale.z = 1.5; }
+                    if (time - this.lastFire > (1000/this.fireRate)/gameSpeed) {
+                        this.lastFire = time;
+                        this.lunge(target.mesh.position);
+                        onHit(target, this.damage);
+                        return true;
+                    }
+                } else if(this.special === 'sniper') this.body.scale.z = 1;
                 return false;
+            }
+            lunge(targetPos) {
+                const dir = targetPos.clone().sub(this.group.position).normalize().multiplyScalar(0.2);
+                this.group.position.add(dir);
+                setTimeout(() => this.group.position.copy(this.originalPos), 50);
             }
         }
 
@@ -188,50 +192,46 @@
                 
                 this.composer = new EffectComposer(this.renderer);
                 this.composer.addPass(new RenderPass(this.scene, this.camera));
-                this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.8, 0.3, 0.9));
+                this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.8, 0.3, 0.7));
                 
                 this.scene.add(new THREE.AmbientLight(0x404040, 0.5));
-                const pLight = new THREE.PointLight(0x00ffff, 2, 20);
-                pLight.position.set(0, 5, 0);
-                this.scene.add(pLight);
 
-                // --- STARS IN THE SKY ---
+                // --- STARS ---
                 const starGeo = new THREE.BufferGeometry();
                 const starPos = [];
-                for(let i=0; i<2000; i++) {
-                    const r = 30 + Math.random() * 20;
+                for(let i=0; i<3000; i++) {
+                    const r = 20 + Math.random() * 30;
                     const theta = Math.random() * Math.PI * 2;
                     const phi = Math.acos(2 * Math.random() - 1);
                     starPos.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
                 }
                 starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
-                this.stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, transparent: true, opacity: 0.8 }));
+                this.stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.06 }));
                 this.scene.add(this.stars);
+
+                // --- GHOST TOWER ---
+                this.ghost = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.3), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.3 }));
+                this.ghost.visible = false;
+                this.scene.add(this.ghost);
                 
-                // --- THE GRID (TRANSPARENT) ---
+                // --- GRID (BLUE GLASS) ---
                 const pathSet = new Set(PATH.map(p => `${p.x},${p.z}`));
                 for(let x=0; x<10; x++) {
                     for(let z=0; z<10; z++) {
                         const isP = pathSet.has(`${x},${z}`);
                         const tile = new THREE.Mesh(
-                            new THREE.BoxGeometry(0.95, isP?0.02:0.1, 0.95), 
+                            new THREE.BoxGeometry(0.95, isP?0.05:0.1, 0.95), 
                             new THREE.MeshStandardMaterial({ 
-                                color: isP ? 0x00ffff : 0xffffff, 
+                                color: isP ? 0x00ffff : 0x0088ff, 
                                 transparent: true, 
-                                opacity: isP ? 0.4 : 0.08,
-                                emissive: isP ? 0x00ffff : 0x000000,
-                                emissiveIntensity: isP ? 0.5 : 0
+                                opacity: isP ? 0.6 : 0.2,
+                                emissive: isP ? 0x00ffff : 0x0088ff,
+                                emissiveIntensity: isP ? 0.3 : 0.05
                             })
                         );
                         tile.position.set(x-5+0.5, 0, z-5+0.5);
                         tile.userData = { x, z, isP, tower: null };
                         this.scene.add(tile); this.tiles.push(tile);
-
-                        if(isP) { // Path Highlights
-                            const edges = new THREE.EdgesGeometry(tile.geometry);
-                            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x00ffff }));
-                            tile.add(line);
-                        }
                     }
                 }
                 this.raycaster = new THREE.Raycaster(); this.mouse = new THREE.Vector2();
@@ -239,13 +239,14 @@
             }
             setupUI() {
                 window.addEventListener('mousemove', e => { this.mouse.x = (e.clientX/window.innerWidth)*2-1; this.mouse.y = -(e.clientY/window.innerHeight)*2+1; });
-                window.addEventListener('mousedown', () => {
+                window.addEventListener('mousedown', (e) => {
+                    if(e.target.tagName !== 'CANVAS') return;
                     this.raycaster.setFromCamera(this.mouse, this.camera);
                     const hit = this.raycaster.intersectObjects(this.tiles)[0];
                     if (hit) {
                         const obj = hit.object;
-                        if (obj.userData.tower) { this.selectedTower = obj.userData.tower; this.openUpgrade(); }
-                        else if (!obj.userData.isP) { this.pendingTile = obj; document.getElementById('buildModal').style.display = 'block'; }
+                        if (obj.userData.tower) { this.selectedTower = obj.userData.tower; document.getElementById('upgradeModal').style.display='block'; }
+                        else if (!obj.userData.isP) { this.pendingTile = obj; document.getElementById('buildModal').style.display='block'; }
                     }
                 });
                 document.getElementById('confirmBuild').onclick = () => {
@@ -260,10 +261,6 @@
                 document.querySelectorAll('.speed-btn').forEach(b => b.onclick = e => { this.gameSpeed = parseFloat(e.target.dataset.speed); document.querySelectorAll('.speed-btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); });
                 document.getElementById('pauseBtn').onclick = (e) => { this.isPaused = !this.isPaused; e.target.innerText = this.isPaused ? "▶" : "⏸"; };
             }
-            openUpgrade() {
-                document.getElementById('upgradeModal').style.display = 'block';
-                document.getElementById('statDamage').innerText = this.selectedTower.damage;
-            }
             specialize(type) {
                 if(this.gold >= 150) {
                     this.gold -= 150; this.selectedTower.special = type;
@@ -277,13 +274,21 @@
                 requestAnimationFrame(() => this.animate());
                 if (!this.isPaused) {
                     const time = Date.now() * 0.001;
-                    this.stars.rotation.y += 0.0001; // Deep space parallax
-                    this.stars.rotation.x += 0.00005;
+                    this.stars.rotation.y += 0.0001;
 
+                    // Improved Interaction Logic
                     this.raycaster.setFromCamera(this.mouse, this.camera);
                     const hit = this.raycaster.intersectObjects(this.tiles)[0];
-                    this.tiles.forEach(t => t.material.opacity = t.userData.isP ? 0.4 : 0.08);
-                    if (hit) hit.object.material.opacity = 0.8;
+                    this.tiles.forEach(t => t.material.opacity = t.userData.isP ? 0.6 : 0.2);
+                    this.ghost.visible = false;
+                    
+                    if (hit) {
+                        hit.object.material.opacity = 0.8;
+                        if(!hit.object.userData.isP && !hit.object.userData.tower) {
+                            this.ghost.visible = true;
+                            this.ghost.position.set(hit.object.position.x, 0.4, hit.object.position.z);
+                        }
+                    }
 
                     this.enemies.forEach((e, i) => {
                         const res = e.update(this.gameSpeed);
@@ -292,10 +297,7 @@
                             this.scene.remove(e.mesh); this.enemies.splice(i, 1); this.updateUI();
                         }
                     });
-                    this.towers.forEach(t => {
-                        t.updatePulse(time);
-                        t.update(this.enemies, Date.now(), this.gameSpeed, (target, dmg) => { target.health -= dmg; });
-                    });
+                    this.towers.forEach(t => { t.updatePulse(time); t.update(this.enemies, Date.now(), this.gameSpeed, (target, dmg) => { target.health -= dmg; }); });
                 }
                 this.composer.render();
             }
