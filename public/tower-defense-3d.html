@@ -57,7 +57,8 @@
             color: white;
             display: none;
             z-index: 200;
-            min-width: 300px;
+            min-width: 350px;
+            max-width: 500px;
             border: 2px solid #4ecca3;
         }
 
@@ -71,6 +72,66 @@
             margin: 10px 0;
             display: flex;
             justify-content: space-between;
+        }
+
+        #upgradePanel .specialization {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        #upgradePanel .specialization-label {
+            font-size: 18px;
+            color: #4ecca3;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #upgradePanel .upgrade-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #upgradePanel .upgrade-option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #4ecca3;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        #upgradePanel .upgrade-option:hover {
+            background: rgba(78, 204, 163, 0.2);
+            transform: scale(1.05);
+        }
+
+        #upgradePanel .upgrade-option.selected {
+            background: rgba(78, 204, 163, 0.3);
+            border-color: #45b393;
+        }
+
+        #upgradePanel .upgrade-option h4 {
+            margin-bottom: 8px;
+            color: #4ecca3;
+            font-size: 14px;
+        }
+
+        #upgradePanel .upgrade-option p {
+            font-size: 11px;
+            color: #aaa;
+            margin: 5px 0;
+        }
+
+        #upgradePanel .upgrade-option .cost {
+            color: #f39c12;
+            font-weight: bold;
+            margin-top: 8px;
         }
 
         #upgradePanel button {
@@ -222,6 +283,9 @@
 
     <div id="upgradePanel">
         <h3>Tower Upgrade</h3>
+        <div class="specialization" id="specializationInfo">
+            <div class="specialization-label" id="towerSpecialization">Basic Tower</div>
+        </div>
         <div class="stat">
             <span>Level:</span>
             <span id="towerLevel">1</span>
@@ -238,11 +302,44 @@
             <span>Damage:</span>
             <span id="towerDamage">1</span>
         </div>
-        <div class="stat" style="margin-top: 15px; font-size: 18px; color: #4ecca3;">
-            <span>Upgrade Cost:</span>
-            <span id="upgradeCost">150</span>
+        <div id="upgradeTreeSection" style="display: none;">
+            <h4 style="color: #4ecca3; margin-top: 20px; text-align: center;">Choose Specialization</h4>
+            <div class="upgrade-options">
+                <div class="upgrade-option" data-type="rapidfire">
+                    <h4>🔥 Rapid Fire</h4>
+                    <p>High fire rate</p>
+                    <p>Lower damage</p>
+                    <div class="cost">200g</div>
+                </div>
+                <div class="upgrade-option" data-type="sniper">
+                    <h4>🎯 Sniper</h4>
+                    <p>Long range</p>
+                    <p>High damage</p>
+                    <div class="cost">200g</div>
+                </div>
+                <div class="upgrade-option" data-type="frost">
+                    <h4>❄️ Frost</h4>
+                    <p>Slows enemies</p>
+                    <p>Moderate damage</p>
+                    <div class="cost">200g</div>
+                </div>
+                <div class="upgrade-option" data-type="splash">
+                    <h4>💥 Splash</h4>
+                    <p>Area damage</p>
+                    <p>Hits multiple</p>
+                    <div class="cost">200g</div>
+                </div>
+                <div class="upgrade-option" data-type="poison">
+                    <h4>☠️ Poison</h4>
+                    <p>Damage over time</p>
+                    <p>Stacking effect</p>
+                    <div class="cost">200g</div>
+                </div>
+            </div>
         </div>
-        <button id="upgradeBtn">UPGRADE</button>
+        <div id="upgradeStandardSection">
+            <button id="upgradeBtn">UPGRADE (150g)</button>
+        </div>
         <button id="closeBtn">CLOSE</button>
     </div>
 
@@ -300,11 +397,14 @@
                 this.scene = scene;
                 this.path = path;
                 this.pathIndex = 0;
-                this.health = 2 + wave;
+                this.health = 3 + wave * 1.5;
                 this.maxHealth = this.health;
-                this.speed = 0.01 + (wave * 0.001);
+                this.baseSpeed = 0.012 + (wave * 0.0015);
+                this.speed = this.baseSpeed;
                 this.reward = 10 + wave * 2;
                 this.alive = true;
+                this.slowUntil = 0;
+                this.poisonStacks = [];
 
                 // Create enemy mesh (colored sphere)
                 const geometry = new THREE.SphereGeometry(0.3, 16, 16);
@@ -364,6 +464,19 @@
                 this.healthBar.material.color = color;
             }
 
+            applySlow(amount, duration) {
+                this.slowUntil = Math.max(this.slowUntil, Date.now() + duration);
+                this.speed = this.baseSpeed * (1 - amount);
+            }
+
+            applyPoison(damage, duration) {
+                this.poisonStacks.push({
+                    damage: damage,
+                    endTime: Date.now() + duration,
+                    lastTick: Date.now()
+                });
+            }
+
             takeDamage(amount) {
                 this.health -= amount;
                 this.updateHealthBar();
@@ -377,6 +490,23 @@
 
             update() {
                 if (!this.alive) return false;
+
+                // Update slow effect
+                if (Date.now() > this.slowUntil) {
+                    this.speed = this.baseSpeed;
+                }
+
+                // Update poison effects
+                const currentTime = Date.now();
+                for (let i = this.poisonStacks.length - 1; i >= 0; i--) {
+                    const poison = this.poisonStacks[i];
+                    if (currentTime > poison.endTime) {
+                        this.poisonStacks.splice(i, 1);
+                    } else if (currentTime - poison.lastTick >= 500) {
+                        poison.lastTick = currentTime;
+                        this.takeDamage(poison.damage);
+                    }
+                }
 
                 const currentTarget = this.path[this.pathIndex];
                 const targetWorldPos = new THREE.Vector3(
@@ -431,6 +561,14 @@
                 this.damage = 1;
                 this.lastFireTime = 0;
                 this.upgradeCost = 150;
+                this.specialization = null;
+
+                // Specialization stats
+                this.slowAmount = 0;
+                this.slowDuration = 0;
+                this.poisonDamage = 0;
+                this.poisonDuration = 0;
+                this.splashRadius = 0;
 
                 // Create tower mesh (box on elevated platform)
                 const geometry = new THREE.BoxGeometry(0.6, 0.8, 0.6);
@@ -472,16 +610,91 @@
                 };
             }
 
+            specialize(type) {
+                this.specialization = type;
+                this.level = 2;
+                this.upgradeCost = 250;
+
+                switch(type) {
+                    case 'rapidfire':
+                        this.fireRate = 3.0;
+                        this.damage = 1;
+                        this.range = 2.5;
+                        this.mesh.material.color.setHex(0xff6b6b);
+                        break;
+                    case 'sniper':
+                        this.fireRate = 0.5;
+                        this.damage = 5;
+                        this.range = 6.0;
+                        this.mesh.material.color.setHex(0x4a90e2);
+                        break;
+                    case 'frost':
+                        this.fireRate = 1.2;
+                        this.damage = 1;
+                        this.range = 3.5;
+                        this.slowAmount = 0.5;
+                        this.slowDuration = 2000;
+                        this.mesh.material.color.setHex(0x74b9ff);
+                        break;
+                    case 'splash':
+                        this.fireRate = 0.8;
+                        this.damage = 2;
+                        this.range = 3.5;
+                        this.splashRadius = 1.5;
+                        this.mesh.material.color.setHex(0xff7f50);
+                        break;
+                    case 'poison':
+                        this.fireRate = 1.0;
+                        this.damage = 1;
+                        this.range = 3.0;
+                        this.poisonDamage = 0.5;
+                        this.poisonDuration = 3000;
+                        this.mesh.material.color.setHex(0x6c5ce7);
+                        break;
+                }
+
+                // Update range indicator
+                this.rangeIndicator.geometry.dispose();
+                const geometry = new THREE.RingGeometry(this.range - 0.1, this.range, 32);
+                this.rangeIndicator.geometry = geometry;
+            }
+
             upgrade() {
                 this.level++;
-                this.range += 0.5;
-                this.fireRate += 0.3;
-                this.damage += 1;
-                this.upgradeCost = Math.floor(this.upgradeCost * 1.5);
+                this.upgradeCost = Math.floor(this.upgradeCost * 1.6);
 
-                // Update visual - change color based on level
-                const colors = [0x3498db, 0x9b59b6, 0xe74c3c, 0xf39c12, 0x1abc9c];
-                this.mesh.material.color.setHex(colors[Math.min(this.level - 1, colors.length - 1)]);
+                if (!this.specialization) {
+                    // Basic tower upgrade
+                    this.range += 0.5;
+                    this.fireRate += 0.3;
+                    this.damage += 1;
+                } else {
+                    // Specialized tower upgrade
+                    switch(this.specialization) {
+                        case 'rapidfire':
+                            this.fireRate += 0.8;
+                            this.damage += 0.5;
+                            break;
+                        case 'sniper':
+                            this.damage += 3;
+                            this.range += 0.5;
+                            break;
+                        case 'frost':
+                            this.slowAmount = Math.min(0.8, this.slowAmount + 0.1);
+                            this.slowDuration += 500;
+                            this.damage += 0.5;
+                            break;
+                        case 'splash':
+                            this.damage += 1;
+                            this.splashRadius += 0.3;
+                            break;
+                        case 'poison':
+                            this.poisonDamage += 0.3;
+                            this.poisonDuration += 500;
+                            this.damage += 0.5;
+                            break;
+                    }
+                }
 
                 // Update range indicator
                 this.rangeIndicator.geometry.dispose();
@@ -506,7 +719,7 @@
                 return furthestEnemy;
             }
 
-            shoot(target, currentTime) {
+            shoot(target, currentTime, enemies) {
                 const timeSinceLastShot = (currentTime - this.lastFireTime) / 1000;
                 if (timeSinceLastShot < 1 / this.fireRate) return null;
 
@@ -515,17 +728,41 @@
                 // Rotate tower to face target
                 this.mesh.lookAt(target.mesh.position);
 
+                // Apply damage to target
+                target.takeDamage(this.damage);
+
+                // Apply special effects
+                if (this.specialization === 'frost') {
+                    target.applySlow(this.slowAmount, this.slowDuration);
+                }
+
+                if (this.specialization === 'poison') {
+                    target.applyPoison(this.poisonDamage, this.poisonDuration);
+                }
+
+                if (this.specialization === 'splash' && this.splashRadius > 0) {
+                    // Deal splash damage to nearby enemies
+                    for (const enemy of enemies) {
+                        if (enemy === target || !enemy.alive) continue;
+                        const distance = target.mesh.position.distanceTo(enemy.mesh.position);
+                        if (distance <= this.splashRadius) {
+                            enemy.takeDamage(this.damage * 0.5);
+                        }
+                    }
+                }
+
                 // Return shot data for visual representation
                 return {
                     from: this.mesh.position.clone(),
-                    to: target.mesh.position.clone()
+                    to: target.mesh.position.clone(),
+                    specialization: this.specialization
                 };
             }
 
             update(enemies, currentTime) {
                 const target = this.findTarget(enemies);
                 if (target) {
-                    return this.shoot(target, currentTime);
+                    return this.shoot(target, currentTime, enemies);
                 }
                 return null;
             }
@@ -547,16 +784,26 @@
         // PROJECTILE EFFECT
         // ============================================
         class Projectile {
-            constructor(scene, from, to) {
+            constructor(scene, from, to, specialization) {
                 this.scene = scene;
                 this.lifetime = 200; // milliseconds
                 this.createdAt = Date.now();
 
+                // Choose color based on specialization
+                let color = 0xffff00;
+                switch(specialization) {
+                    case 'rapidfire': color = 0xff6b6b; break;
+                    case 'sniper': color = 0x4a90e2; break;
+                    case 'frost': color = 0x74b9ff; break;
+                    case 'splash': color = 0xff7f50; break;
+                    case 'poison': color = 0x6c5ce7; break;
+                }
+
                 // Create line for projectile
                 const geometry = new THREE.BufferGeometry().setFromPoints([from, to]);
                 const material = new THREE.LineBasicMaterial({
-                    color: 0xffff00,
-                    linewidth: 2
+                    color: color,
+                    linewidth: 3
                 });
                 this.line = new THREE.Line(geometry, material);
                 this.scene.add(this.line);
@@ -771,6 +1018,21 @@
                 document.getElementById('cancelBuildBtn').addEventListener('click', () => {
                     this.cancelTowerPlacement();
                 });
+
+                // Upgrade tree specialization options
+                const upgradeOptions = document.querySelectorAll('.upgrade-option');
+                upgradeOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (!this.selectedTower || this.selectedTower.specialization) return;
+
+                        // Remove previous selection
+                        upgradeOptions.forEach(opt => opt.classList.remove('selected'));
+                        option.classList.add('selected');
+
+                        const type = option.getAttribute('data-type');
+                        this.specializeTower(type);
+                    });
+                });
             }
 
             onWindowResize() {
@@ -914,11 +1176,45 @@
                 document.getElementById('towerLevel').textContent = tower.level;
                 document.getElementById('towerRange').textContent = tower.range.toFixed(1);
                 document.getElementById('towerFireRate').textContent = tower.fireRate.toFixed(1) + '/s';
-                document.getElementById('towerDamage').textContent = tower.damage;
-                document.getElementById('upgradeCost').textContent = tower.upgradeCost;
+                document.getElementById('towerDamage').textContent = tower.damage.toFixed(1);
 
-                const upgradeBtn = document.getElementById('upgradeBtn');
-                upgradeBtn.disabled = this.gold < tower.upgradeCost;
+                // Show specialization name
+                const specializationNames = {
+                    rapidfire: '🔥 Rapid Fire Tower',
+                    sniper: '🎯 Sniper Tower',
+                    frost: '❄️ Frost Tower',
+                    splash: '💥 Splash Tower',
+                    poison: '☠️ Poison Tower'
+                };
+                document.getElementById('towerSpecialization').textContent =
+                    tower.specialization ? specializationNames[tower.specialization] : 'Basic Tower';
+
+                // Show/hide appropriate upgrade sections
+                if (tower.level === 1 && !tower.specialization) {
+                    // Show specialization tree for level 1 towers
+                    document.getElementById('upgradeTreeSection').style.display = 'block';
+                    document.getElementById('upgradeStandardSection').style.display = 'none';
+                } else {
+                    // Show standard upgrade button
+                    document.getElementById('upgradeTreeSection').style.display = 'none';
+                    document.getElementById('upgradeStandardSection').style.display = 'block';
+
+                    const upgradeBtn = document.getElementById('upgradeBtn');
+                    upgradeBtn.textContent = `UPGRADE (${tower.upgradeCost}g)`;
+                    upgradeBtn.disabled = this.gold < tower.upgradeCost;
+                }
+            }
+
+            specializeTower(type) {
+                if (!this.selectedTower) return;
+                if (this.gold < 200) return;
+
+                this.gold -= 200;
+                this.selectedTower.specialize(type);
+                this.updateUI();
+
+                // Close and reopen panel to update UI
+                this.closeUpgradePanel();
             }
 
             upgradeTower() {
@@ -948,8 +1244,8 @@
                 this.waveInProgress = true;
                 this.updateUI();
 
-                const enemyCount = 5 + this.wave * 2;
-                const spawnInterval = 800; // milliseconds
+                const enemyCount = 8 + this.wave * 3;
+                const spawnInterval = 700; // milliseconds
 
                 for (let i = 0; i < enemyCount; i++) {
                     setTimeout(() => {
@@ -1006,15 +1302,9 @@
                 for (const tower of this.towers) {
                     const shot = tower.update(this.enemies, currentTime);
                     if (shot) {
-                        // Create projectile effect
-                        const projectile = new Projectile(this.scene, shot.from, shot.to);
+                        // Create projectile effect with specialization color
+                        const projectile = new Projectile(this.scene, shot.from, shot.to, shot.specialization);
                         this.projectiles.push(projectile);
-
-                        // Deal damage to target
-                        const target = tower.findTarget(this.enemies);
-                        if (target) {
-                            target.takeDamage(tower.damage);
-                        }
                     }
                 }
 
