@@ -348,8 +348,10 @@
     </div>
 
     <div id="controls">
+        <button id="rotateLeftBtn">⟲ ROTATE</button>
         <button id="waveBtn">▶️ START WAVE</button>
         <button id="pauseBtn">⏸️ PAUSE</button>
+        <button id="rotateRightBtn">⟳ ROTATE</button>
         <div id="speedControls">
             <button class="speedBtn" data-speed="0.5">0.5x</button>
             <button class="speedBtn active" data-speed="1">1x</button>
@@ -372,6 +374,7 @@
         import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
         import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
         import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
         // ============================================
         // GAME CONFIGURATION
@@ -383,6 +386,42 @@
             INITIAL_GOLD: 500,
             INITIAL_LIVES: 20,
             ELEVATION_HEIGHT: 0.5
+        };
+
+        // ============================================
+        // SCANLINES SHADER
+        // ============================================
+        const ScanlinesShader = {
+            uniforms: {
+                'tDiffuse': { value: null },
+                'time': { value: 0 },
+                'intensity': { value: 0.15 }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D tDiffuse;
+                uniform float time;
+                uniform float intensity;
+                varying vec2 vUv;
+
+                void main() {
+                    vec4 color = texture2D(tDiffuse, vUv);
+
+                    // Slow moving scanlines
+                    float scanline = sin((vUv.y + time * 0.02) * 300.0) * 0.5 + 0.5;
+                    scanline = pow(scanline, 3.0) * intensity;
+
+                    color.rgb -= scanline;
+
+                    gl_FragColor = color;
+                }
+            `
         };
 
         // ============================================
@@ -695,77 +734,352 @@
                 const border = new THREE.LineSegments(borderGeo, borderMat);
                 this.pedestal.add(border);
 
-                // BEVELED BASE - Cone shape for anti-clipping
-                const bevelGeo = new THREE.CylinderGeometry(0.4, 0.5, 0.15, 8);
-                const bevelMat = new THREE.MeshStandardMaterial({
-                    color: towerColor,
-                    emissive: emissiveColor,
-                    emissiveIntensity: 0.7,
-                    metalness: 0.8,
-                    roughness: 0.3
-                });
-                this.bevel = new THREE.Mesh(bevelGeo, bevelMat);
-                this.bevel.position.y = -0.25;
-                this.group.add(this.bevel);
-
-                // TOWER BODY - Changes with level
-                let bodyGeo, topGeo;
-
-                if (level === 1) {
-                    // Level 1: Simple Cube
-                    bodyGeo = new THREE.BoxGeometry(0.6, 0.8, 0.6);
-                    topGeo = new THREE.ConeGeometry(0.35, 0.4, 4);
-                } else if (level === 2) {
-                    // Level 2: Octahedron
-                    bodyGeo = new THREE.OctahedronGeometry(0.5);
-                    topGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.5, 8);
-                } else if (level === 3) {
-                    // Level 3: Complex shape
-                    bodyGeo = new THREE.DodecahedronGeometry(0.45);
-                    topGeo = new THREE.TorusGeometry(0.25, 0.1, 8, 8);
+                // Create tesseract-like structure based on specialization
+                if (!this.specialization) {
+                    this.createBasicTesseract(towerColor, emissiveColor, level);
                 } else {
-                    // Level 4+: Advanced geometry
-                    bodyGeo = new THREE.IcosahedronGeometry(0.5, 0);
-                    topGeo = new THREE.OctahedronGeometry(0.3);
+                    switch(this.specialization) {
+                        case 'rapidfire':
+                            this.createRapidFireTesseract(towerColor, emissiveColor, level);
+                            break;
+                        case 'sniper':
+                            this.createSniperTesseract(towerColor, emissiveColor, level);
+                            break;
+                        case 'frost':
+                            this.createFrostTesseract(towerColor, emissiveColor, level);
+                            break;
+                        case 'splash':
+                            this.createSplashTesseract(towerColor, emissiveColor, level);
+                            break;
+                        case 'poison':
+                            this.createPoisonTesseract(towerColor, emissiveColor, level);
+                            break;
+                    }
                 }
-
-                const bodyMat = new THREE.MeshStandardMaterial({
-                    color: towerColor,
-                    emissive: emissiveColor,
-                    emissiveIntensity: 1,
-                    metalness: 0.8,
-                    roughness: 0.2,
-                    // Ready for texture: map: textureLoader.load('your-pattern.jpg')
-                });
-
-                this.towerBody = new THREE.Mesh(bodyGeo, bodyMat);
-                this.towerBody.position.y = 0.2;
-                this.group.add(this.towerBody);
-
-                // Add body border
-                const bodyBorderGeo = new THREE.EdgesGeometry(bodyGeo);
-                const bodyBorderMat = new THREE.LineBasicMaterial({
-                    color: towerColor,
-                    linewidth: 2
-                });
-                const bodyBorder = new THREE.LineSegments(bodyBorderGeo, bodyBorderMat);
-                this.towerBody.add(bodyBorder);
-
-                // ROTATING TOP ELEMENT
-                const topMat = new THREE.MeshStandardMaterial({
-                    color: towerColor,
-                    emissive: emissiveColor,
-                    emissiveIntensity: 1.5,
-                    metalness: 0.9,
-                    roughness: 0.1
-                });
-
-                this.towerTop = new THREE.Mesh(topGeo, topMat);
-                this.towerTop.position.y = 0.8;
-                this.group.add(this.towerTop);
 
                 // Add range indicator
                 this.createRangeIndicator();
+            }
+
+            createBasicTesseract(towerColor, emissiveColor, level) {
+                // Basic nested cubes representing 4D projection
+                const scale = 0.3 + (level * 0.05);
+
+                // Outer cube
+                const outerSize = scale * 1.5;
+                const outerGeo = new THREE.BoxGeometry(outerSize, outerSize, outerSize);
+                const outerMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 0.8,
+                    metalness: 0.9,
+                    roughness: 0.1,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                this.outerCube = new THREE.Mesh(outerGeo, outerMat);
+                this.outerCube.position.y = 0.3;
+                this.group.add(this.outerCube);
+
+                // Outer wireframe
+                const outerWireGeo = new THREE.EdgesGeometry(outerGeo);
+                const outerWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                const outerWire = new THREE.LineSegments(outerWireGeo, outerWireMat);
+                this.outerCube.add(outerWire);
+
+                // Inner cube
+                const innerSize = scale;
+                const innerGeo = new THREE.BoxGeometry(innerSize, innerSize, innerSize);
+                const innerMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 1.2,
+                    metalness: 0.9,
+                    roughness: 0.1,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                this.innerCube = new THREE.Mesh(innerGeo, innerMat);
+                this.innerCube.position.y = 0.3;
+                this.group.add(this.innerCube);
+
+                // Inner wireframe
+                const innerWireGeo = new THREE.EdgesGeometry(innerGeo);
+                const innerWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 3 });
+                const innerWire = new THREE.LineSegments(innerWireGeo, innerWireMat);
+                this.innerCube.add(innerWire);
+
+                // Connection lines between cubes (tesseract edges)
+                const connectionGeo = new THREE.BufferGeometry();
+                const positions = [];
+                const halfOuter = outerSize / 2;
+                const halfInner = innerSize / 2;
+
+                // Connect corners
+                const corners = [
+                    [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
+                    [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]
+                ];
+
+                corners.forEach(corner => {
+                    positions.push(
+                        corner[0] * halfOuter, corner[1] * halfOuter + 0.3, corner[2] * halfOuter,
+                        corner[0] * halfInner, corner[1] * halfInner + 0.3, corner[2] * halfInner
+                    );
+                });
+
+                connectionGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                const connectionMat = new THREE.LineBasicMaterial({
+                    color: emissiveColor,
+                    transparent: true,
+                    opacity: 0.4
+                });
+                this.connections = new THREE.LineSegments(connectionGeo, connectionMat);
+                this.group.add(this.connections);
+            }
+
+            createRapidFireTesseract(towerColor, emissiveColor, level) {
+                // Multiple small cubes orbiting center
+                this.orbitingCubes = [];
+                const count = 4 + level;
+                const radius = 0.4;
+                const cubeSize = 0.15;
+
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * Math.PI * 2;
+                    const cubeGeo = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+                    const cubeMat = new THREE.MeshStandardMaterial({
+                        color: towerColor,
+                        emissive: emissiveColor,
+                        emissiveIntensity: 1.5,
+                        metalness: 0.9,
+                        roughness: 0.1
+                    });
+                    const cube = new THREE.Mesh(cubeGeo, cubeMat);
+
+                    // Add wireframe
+                    const wireGeo = new THREE.EdgesGeometry(cubeGeo);
+                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                    const wire = new THREE.LineSegments(wireGeo, wireMat);
+                    cube.add(wire);
+
+                    cube.userData.angle = angle;
+                    cube.userData.radius = radius;
+                    cube.position.x = Math.cos(angle) * radius;
+                    cube.position.y = 0.3;
+                    cube.position.z = Math.sin(angle) * radius;
+
+                    this.group.add(cube);
+                    this.orbitingCubes.push(cube);
+                }
+
+                // Central core
+                const coreGeo = new THREE.OctahedronGeometry(0.2);
+                const coreMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 2,
+                    metalness: 1,
+                    roughness: 0
+                });
+                this.towerCore = new THREE.Mesh(coreGeo, coreMat);
+                this.towerCore.position.y = 0.3;
+                this.group.add(this.towerCore);
+            }
+
+            createSniperTesseract(towerColor, emissiveColor, level) {
+                // Elongated stretched tesseract
+                const height = 0.8 + (level * 0.1);
+                const width = 0.25;
+
+                // Outer elongated box
+                const outerGeo = new THREE.BoxGeometry(width * 1.5, height, width * 1.5);
+                const outerMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 0.7,
+                    metalness: 0.9,
+                    roughness: 0.1,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                this.outerCube = new THREE.Mesh(outerGeo, outerMat);
+                this.outerCube.position.y = 0.5;
+                this.group.add(this.outerCube);
+
+                const outerWireGeo = new THREE.EdgesGeometry(outerGeo);
+                const outerWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                const outerWire = new THREE.LineSegments(outerWireGeo, outerWireMat);
+                this.outerCube.add(outerWire);
+
+                // Inner elongated box
+                const innerGeo = new THREE.BoxGeometry(width, height * 0.8, width);
+                const innerMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 1.5,
+                    metalness: 1,
+                    roughness: 0
+                });
+                this.innerCube = new THREE.Mesh(innerGeo, innerMat);
+                this.innerCube.position.y = 0.5;
+                this.group.add(this.innerCube);
+
+                const innerWireGeo = new THREE.EdgesGeometry(innerGeo);
+                const innerWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 3 });
+                const innerWire = new THREE.LineSegments(innerWireGeo, innerWireMat);
+                this.innerCube.add(innerWire);
+
+                // Focusing rings
+                this.focusRings = [];
+                for (let i = 0; i < 3; i++) {
+                    const ringGeo = new THREE.TorusGeometry(0.3 + i * 0.05, 0.02, 8, 16);
+                    const ringMat = new THREE.MeshStandardMaterial({
+                        color: towerColor,
+                        emissive: emissiveColor,
+                        emissiveIntensity: 1.5
+                    });
+                    const ring = new THREE.Mesh(ringGeo, ringMat);
+                    ring.rotation.x = Math.PI / 2;
+                    ring.position.y = 0.3 + i * 0.3;
+                    this.group.add(ring);
+                    this.focusRings.push(ring);
+                }
+            }
+
+            createFrostTesseract(towerColor, emissiveColor, level) {
+                // Crystalline structure with spikes
+                const coreSize = 0.3 + (level * 0.03);
+
+                // Core crystal
+                const coreGeo = new THREE.OctahedronGeometry(coreSize);
+                const coreMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 1.2,
+                    metalness: 0.9,
+                    roughness: 0.1,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                this.towerCore = new THREE.Mesh(coreGeo, coreMat);
+                this.towerCore.position.y = 0.4;
+                this.group.add(this.towerCore);
+
+                const coreWireGeo = new THREE.EdgesGeometry(coreGeo);
+                const coreWireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                const coreWire = new THREE.LineSegments(coreWireGeo, coreWireMat);
+                this.towerCore.add(coreWire);
+
+                // Ice spikes
+                this.iceSpikes = [];
+                const spikeCount = 6 + level;
+                for (let i = 0; i < spikeCount; i++) {
+                    const angle = (i / spikeCount) * Math.PI * 2;
+                    const spikeGeo = new THREE.ConeGeometry(0.05, 0.4, 4);
+                    const spikeMat = new THREE.MeshStandardMaterial({
+                        color: towerColor,
+                        emissive: emissiveColor,
+                        emissiveIntensity: 1.5,
+                        metalness: 1,
+                        roughness: 0
+                    });
+                    const spike = new THREE.Mesh(spikeGeo, spikeMat);
+
+                    const radius = 0.4;
+                    spike.position.x = Math.cos(angle) * radius;
+                    spike.position.y = 0.4;
+                    spike.position.z = Math.sin(angle) * radius;
+
+                    // Point outward
+                    spike.rotation.z = -Math.PI / 2;
+                    spike.rotation.y = -angle;
+
+                    this.group.add(spike);
+                    this.iceSpikes.push(spike);
+                }
+            }
+
+            createSplashTesseract(towerColor, emissiveColor, level) {
+                // Pulsing concentric structure
+                this.pulsePhase = 0;
+                this.pulseLayers = [];
+
+                const layerCount = 3 + level;
+                for (let i = 0; i < layerCount; i++) {
+                    const size = 0.2 + i * 0.15;
+                    const layerGeo = new THREE.OctahedronGeometry(size);
+                    const layerMat = new THREE.MeshStandardMaterial({
+                        color: towerColor,
+                        emissive: emissiveColor,
+                        emissiveIntensity: 1.0 + (i * 0.2),
+                        metalness: 0.9,
+                        roughness: 0.1,
+                        transparent: true,
+                        opacity: 0.4 - (i * 0.08)
+                    });
+                    const layer = new THREE.Mesh(layerGeo, layerMat);
+                    layer.position.y = 0.4;
+                    layer.userData.baseScale = 1 + (i * 0.1);
+                    layer.userData.phaseOffset = i * 0.5;
+
+                    const wireGeo = new THREE.EdgesGeometry(layerGeo);
+                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                    const wire = new THREE.LineSegments(wireGeo, wireMat);
+                    layer.add(wire);
+
+                    this.group.add(layer);
+                    this.pulseLayers.push(layer);
+                }
+            }
+
+            createPoisonTesseract(towerColor, emissiveColor, level) {
+                // Twisted helix structure
+                const segments = 8 + level * 2;
+                this.helixSegments = [];
+
+                // Create helix segments
+                for (let i = 0; i < segments; i++) {
+                    const angle = (i / segments) * Math.PI * 4; // Two full rotations
+                    const height = (i / segments) * 0.8;
+                    const radius = 0.25;
+
+                    const segmentGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+                    const segmentMat = new THREE.MeshStandardMaterial({
+                        color: towerColor,
+                        emissive: emissiveColor,
+                        emissiveIntensity: 1.5,
+                        metalness: 0.9,
+                        roughness: 0.1
+                    });
+                    const segment = new THREE.Mesh(segmentGeo, segmentMat);
+
+                    segment.position.x = Math.cos(angle) * radius;
+                    segment.position.y = height + 0.1;
+                    segment.position.z = Math.sin(angle) * radius;
+                    segment.rotation.y = angle;
+
+                    const wireGeo = new THREE.EdgesGeometry(segmentGeo);
+                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
+                    const wire = new THREE.LineSegments(wireGeo, wireMat);
+                    segment.add(wire);
+
+                    this.group.add(segment);
+                    this.helixSegments.push(segment);
+                }
+
+                // Central poison core
+                const coreGeo = new THREE.IcosahedronGeometry(0.15);
+                const coreMat = new THREE.MeshStandardMaterial({
+                    color: towerColor,
+                    emissive: emissiveColor,
+                    emissiveIntensity: 2,
+                    metalness: 1,
+                    roughness: 0
+                });
+                this.towerCore = new THREE.Mesh(coreGeo, coreMat);
+                this.towerCore.position.y = 0.45;
+                this.group.add(this.towerCore);
             }
 
             createRangeIndicator() {
@@ -1001,18 +1315,94 @@
                 // Update original position for lunge
                 this.originalPosition.y = this.baseY + hover;
 
-                // Constant rotation for top element
-                if (this.towerTop) {
-                    this.towerTop.rotation.y += deltaTime * 2;
+                // Animate tesseract structures based on type
+                if (!this.specialization) {
+                    // Basic tesseract - rotate inner and outer cubes in opposite directions
+                    if (this.innerCube) {
+                        this.innerCube.rotation.x += deltaTime * 0.5;
+                        this.innerCube.rotation.y += deltaTime * 0.8;
+                    }
+                    if (this.outerCube) {
+                        this.outerCube.rotation.x -= deltaTime * 0.3;
+                        this.outerCube.rotation.y -= deltaTime * 0.5;
+                    }
+                } else if (this.specialization === 'rapidfire') {
+                    // Rapid fire - orbit cubes around center
+                    if (this.orbitingCubes) {
+                        this.orbitingCubes.forEach(cube => {
+                            cube.userData.angle += deltaTime * 3;
+                            cube.position.x = Math.cos(cube.userData.angle) * cube.userData.radius;
+                            cube.position.z = Math.sin(cube.userData.angle) * cube.userData.radius;
+                            cube.rotation.x += deltaTime * 4;
+                            cube.rotation.y += deltaTime * 4;
+                        });
+                    }
+                    if (this.towerCore) {
+                        this.towerCore.rotation.x += deltaTime * 2;
+                        this.towerCore.rotation.y += deltaTime * 3;
+                    }
+                } else if (this.specialization === 'sniper') {
+                    // Sniper - rotate boxes and pulse rings
+                    if (this.innerCube) {
+                        this.innerCube.rotation.y += deltaTime * 1.5;
+                    }
+                    if (this.outerCube) {
+                        this.outerCube.rotation.y += deltaTime * 1;
+                    }
+                    if (this.focusRings) {
+                        this.focusRings.forEach((ring, index) => {
+                            ring.rotation.z += deltaTime * (1 + index * 0.5);
+                            const pulse = Math.sin(this.time * 2 + index) * 0.05 + 1;
+                            ring.scale.set(pulse, pulse, 1);
+                        });
+                    }
+                } else if (this.specialization === 'frost') {
+                    // Frost - rotate core and pulse spikes
+                    if (this.towerCore) {
+                        this.towerCore.rotation.x += deltaTime * 0.5;
+                        this.towerCore.rotation.y += deltaTime * 0.8;
+                    }
+                    if (this.iceSpikes) {
+                        this.iceSpikes.forEach((spike, index) => {
+                            const pulse = Math.sin(this.time * 3 + index * 0.5) * 0.1 + 1;
+                            spike.scale.y = pulse;
+                        });
+                    }
+                } else if (this.specialization === 'splash') {
+                    // Splash - pulsing layers
+                    if (this.pulseLayers) {
+                        this.pulsePhase += deltaTime * 2;
+                        this.pulseLayers.forEach((layer, index) => {
+                            const phase = this.pulsePhase + layer.userData.phaseOffset;
+                            const pulse = Math.sin(phase) * 0.3 + 1;
+                            const scale = layer.userData.baseScale * pulse;
+                            layer.scale.set(scale, scale, scale);
+                            layer.rotation.x += deltaTime * 0.5;
+                            layer.rotation.y += deltaTime * (0.8 + index * 0.2);
+                        });
+                    }
+                } else if (this.specialization === 'poison') {
+                    // Poison - rotate helix
+                    if (this.helixSegments) {
+                        this.helixSegments.forEach(segment => {
+                            segment.rotation.y += deltaTime * 2;
+                        });
+                    }
+                    if (this.towerCore) {
+                        this.towerCore.rotation.x += deltaTime * 2;
+                        this.towerCore.rotation.y += deltaTime * 3;
+                    }
                 }
 
                 // Find and shoot target
                 const target = this.findTarget(enemies);
                 if (target) {
-                    // Rotate body to face target
-                    const lookTarget = target.mesh.position.clone();
-                    lookTarget.y = this.towerBody.position.y;
-                    this.towerBody.lookAt(lookTarget);
+                    // Rotate pedestal to face target
+                    if (this.pedestal) {
+                        const lookTarget = target.mesh.position.clone();
+                        lookTarget.y = this.pedestal.position.y;
+                        this.pedestal.lookAt(lookTarget);
+                    }
 
                     return this.shoot(target, currentTime, enemies, gameSpeed);
                 }
@@ -1124,6 +1514,14 @@
                 this.gameSpeed = 1.0;
                 this.isPaused = false;
 
+                // Camera rotation
+                this.cameraRotation = Math.PI / 4; // 45 degrees initial
+                this.cameraDistance = Math.sqrt(10 * 10 + 10 * 10 + 10 * 10);
+
+                // Hover highlight
+                this.hoveredObject = null;
+                this.hoverIndicator = null;
+
                 this.init();
                 this.setupEventListeners();
                 this.animate();
@@ -1170,6 +1568,10 @@
                     0.85  // Threshold
                 );
                 this.composer.addPass(bloomPass);
+
+                // Add scanlines effect
+                this.scanlinesPass = new ShaderPass(ScanlinesShader);
+                this.composer.addPass(this.scanlinesPass);
 
                 // Lights
                 const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
@@ -1339,6 +1741,8 @@
             setupEventListeners() {
                 window.addEventListener('resize', () => this.onWindowResize());
                 window.addEventListener('click', (e) => this.onClick(e));
+                window.addEventListener('mousemove', (e) => this.onMouseMove(e));
+                window.addEventListener('keydown', (e) => this.onKeyDown(e));
 
                 document.getElementById('waveBtn').addEventListener('click', () => {
                     this.startWave();
@@ -1404,6 +1808,15 @@
                         btn.classList.add('active');
                     });
                 });
+
+                // Rotation buttons
+                document.getElementById('rotateLeftBtn').addEventListener('click', () => {
+                    this.rotateCamera(-Math.PI / 4);
+                });
+
+                document.getElementById('rotateRightBtn').addEventListener('click', () => {
+                    this.rotateCamera(Math.PI / 4);
+                });
             }
 
             togglePause() {
@@ -1418,6 +1831,110 @@
 
             setGameSpeed(speed) {
                 this.gameSpeed = speed;
+            }
+
+            rotateCamera(angleChange) {
+                this.cameraRotation += angleChange;
+                this.updateCameraPosition();
+            }
+
+            updateCameraPosition() {
+                const height = 10;
+                const radius = Math.sqrt(this.cameraDistance * this.cameraDistance - height * height);
+
+                this.camera.position.x = radius * Math.cos(this.cameraRotation);
+                this.camera.position.y = height;
+                this.camera.position.z = radius * Math.sin(this.cameraRotation);
+                this.camera.lookAt(0, 0, 0);
+            }
+
+            onKeyDown(event) {
+                if (event.key === 'q' || event.key === 'Q') {
+                    this.rotateCamera(-Math.PI / 4);
+                } else if (event.key === 'e' || event.key === 'E') {
+                    this.rotateCamera(Math.PI / 4);
+                }
+            }
+
+            onMouseMove(event) {
+                this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                this.raycaster.setFromCamera(this.mouse, this.camera);
+
+                // Clear previous hover
+                if (this.hoveredObject) {
+                    if (this.hoveredObject.userData.isHoverIndicator) {
+                        // Remove hover indicator
+                        this.scene.remove(this.hoveredObject);
+                        this.hoveredObject.geometry.dispose();
+                        this.hoveredObject.material.dispose();
+                    }
+                    this.hoveredObject = null;
+                }
+
+                // Check for tile/tower hover
+                const allTiles = [];
+                for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
+                    for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
+                        const cell = this.grid[x][z];
+                        if (cell.type === 'elevated') {
+                            allTiles.push(cell.mesh);
+                        }
+                    }
+                }
+
+                const tileIntersects = this.raycaster.intersectObjects(allTiles, true);
+
+                if (tileIntersects.length > 0) {
+                    let tile = tileIntersects[0].object;
+
+                    while (tile && !tile.userData.buildable) {
+                        tile = tile.parent;
+                    }
+
+                    if (tile && tile.userData.buildable) {
+                        const gridX = tile.userData.gridX;
+                        const gridZ = tile.userData.gridZ;
+                        const cell = this.grid[gridX][gridZ];
+
+                        // Create hover indicator
+                        const worldX = gridX - CONFIG.GRID_SIZE/2 + 0.5;
+                        const worldZ = gridZ - CONFIG.GRID_SIZE/2 + 0.5;
+
+                        let hoverColor = 0x00ffff;
+                        let hoverHeight = CONFIG.ELEVATION_HEIGHT + 0.1;
+
+                        if (cell.tower) {
+                            // Hovering over tower - highlight in yellow
+                            hoverColor = 0xffff00;
+                            hoverHeight = CONFIG.ELEVATION_HEIGHT + 1.2;
+                        }
+
+                        const geometry = new THREE.BoxGeometry(1.1, hoverHeight, 1.1);
+                        const material = new THREE.MeshBasicMaterial({
+                            color: hoverColor,
+                            transparent: true,
+                            opacity: 0.2,
+                            wireframe: false
+                        });
+                        const hoverBox = new THREE.Mesh(geometry, material);
+                        hoverBox.position.set(worldX, hoverHeight / 2, worldZ);
+                        hoverBox.userData.isHoverIndicator = true;
+
+                        // Add wireframe border
+                        const borderGeo = new THREE.EdgesGeometry(geometry);
+                        const borderMat = new THREE.LineBasicMaterial({
+                            color: hoverColor,
+                            linewidth: 3
+                        });
+                        const border = new THREE.LineSegments(borderGeo, borderMat);
+                        hoverBox.add(border);
+
+                        this.scene.add(hoverBox);
+                        this.hoveredObject = hoverBox;
+                    }
+                }
             }
 
             onWindowResize() {
@@ -1654,7 +2171,18 @@
             }
 
             update() {
-                // Skip update if paused
+                // Update scanlines even when paused
+                if (this.scanlinesPass) {
+                    this.scanlinesPass.uniforms.time.value = Date.now() * 0.001;
+                }
+
+                // Slowly rotate starfield
+                if (this.starfield) {
+                    this.starfield.rotation.y += 0.0001;
+                    this.starfield.rotation.x += 0.00005;
+                }
+
+                // Skip game update if paused
                 if (this.isPaused) {
                     return;
                 }
