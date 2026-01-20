@@ -233,6 +233,27 @@
             text-shadow: none;
         }
 
+        #controls button.active {
+            background: rgba(255, 51, 51, 0.4);
+            border-color: #ff3333;
+            color: #ff3333;
+            text-shadow: 0 0 10px #ff3333;
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+        }
+
+        #speedControls {
+            display: flex;
+            gap: 5px;
+            border-left: 2px solid rgba(0, 255, 255, 0.3);
+            padding-left: 15px;
+        }
+
+        .speedBtn {
+            padding: 8px 15px !important;
+            font-size: 14px !important;
+            min-width: 60px;
+        }
+
         .info {
             font-size: 12px;
             color: #888;
@@ -328,6 +349,13 @@
 
     <div id="controls">
         <button id="waveBtn">▶️ START WAVE</button>
+        <button id="pauseBtn">⏸️ PAUSE</button>
+        <div id="speedControls">
+            <button class="speedBtn" data-speed="0.5">0.5x</button>
+            <button class="speedBtn active" data-speed="1">1x</button>
+            <button class="speedBtn" data-speed="1.5">1.5x</button>
+            <button class="speedBtn" data-speed="3">3x</button>
+        </div>
     </div>
 
     <script type="importmap">
@@ -497,7 +525,7 @@
                 fadeOut();
             }
 
-            update() {
+            update(gameSpeed = 1) {
                 if (!this.alive) return false;
 
                 // Update slow effect
@@ -517,9 +545,9 @@
                     }
                 }
 
-                // Rotate for digital glitch effect
-                this.mesh.rotation.x += this.rotationSpeed;
-                this.mesh.rotation.y += this.rotationSpeed * 1.5;
+                // Rotate for digital glitch effect - affected by game speed
+                this.mesh.rotation.x += this.rotationSpeed * gameSpeed;
+                this.mesh.rotation.y += this.rotationSpeed * 1.5 * gameSpeed;
 
                 const currentTarget = this.path[this.pathIndex];
                 const targetWorldPos = new THREE.Vector3(
@@ -539,7 +567,8 @@
                     }
                 } else {
                     direction.normalize();
-                    this.mesh.position.add(direction.multiplyScalar(this.speed));
+                    // Apply game speed to movement
+                    this.mesh.position.add(direction.multiplyScalar(this.speed * gameSpeed));
                 }
 
                 return true;
@@ -916,9 +945,10 @@
                 }, 16);
             }
 
-            shoot(target, currentTime, enemies) {
+            shoot(target, currentTime, enemies, gameSpeed = 1) {
                 const timeSinceLastShot = (currentTime - this.lastFireTime) / 1000;
-                if (timeSinceLastShot < 1 / this.fireRate) return null;
+                // Adjust fire rate threshold by game speed
+                if (timeSinceLastShot < (1 / this.fireRate) / gameSpeed) return null;
 
                 this.lastFireTime = currentTime;
 
@@ -962,7 +992,7 @@
                 }
             }
 
-            update(enemies, currentTime, deltaTime) {
+            update(enemies, currentTime, deltaTime, gameSpeed = 1) {
                 // Sine-wave hover effect
                 this.time += deltaTime * this.hoverSpeed;
                 const hover = Math.sin(this.time) * this.hoverAmplitude;
@@ -984,7 +1014,7 @@
                     lookTarget.y = this.towerBody.position.y;
                     this.towerBody.lookAt(lookTarget);
 
-                    return this.shoot(target, currentTime, enemies);
+                    return this.shoot(target, currentTime, enemies, gameSpeed);
                 }
                 return null;
             }
@@ -1090,6 +1120,10 @@
                 this.selectedTower = null;
                 this.pendingPlacement = null;
 
+                // Game speed and pause
+                this.gameSpeed = 1.0;
+                this.isPaused = false;
+
                 this.init();
                 this.setupEventListeners();
                 this.animate();
@@ -1154,11 +1188,75 @@
                 pointLight2.position.set(3, 3, 3);
                 this.scene.add(pointLight2);
 
+                // Create starfield background
+                this.createStarfield();
+
                 // Create grid
                 this.createGrid();
 
                 // Update UI
                 this.updateUI();
+            }
+
+            createStarfield() {
+                const starCount = 1000;
+                const starGeometry = new THREE.BufferGeometry();
+                const starPositions = new Float32Array(starCount * 3);
+                const starSizes = new Float32Array(starCount);
+
+                // Distribute stars in a large sphere around the scene
+                const radius = 50;
+                for (let i = 0; i < starCount; i++) {
+                    const i3 = i * 3;
+
+                    // Random spherical coordinates
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos((Math.random() * 2) - 1);
+                    const r = radius + Math.random() * 10;
+
+                    starPositions[i3] = r * Math.sin(phi) * Math.cos(theta);
+                    starPositions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                    starPositions[i3 + 2] = r * Math.cos(phi);
+
+                    // Vary star sizes
+                    starSizes[i] = Math.random() * 2 + 0.5;
+                }
+
+                starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+                starGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+
+                const starMaterial = new THREE.PointsMaterial({
+                    color: 0xffffff,
+                    size: 0.15,
+                    sizeAttenuation: true,
+                    transparent: true,
+                    opacity: 0.8,
+                    map: this.createStarTexture(),
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+
+                this.starfield = new THREE.Points(starGeometry, starMaterial);
+                this.scene.add(this.starfield);
+            }
+
+            createStarTexture() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 32;
+                canvas.height = 32;
+                const ctx = canvas.getContext('2d');
+
+                const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+                gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.3)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 32, 32);
+
+                const texture = new THREE.CanvasTexture(canvas);
+                return texture;
             }
 
             createGrid() {
@@ -1288,6 +1386,38 @@
                     e.stopPropagation();
                     this.cancelTowerPlacement();
                 });
+
+                // Pause button
+                document.getElementById('pauseBtn').addEventListener('click', () => {
+                    this.togglePause();
+                });
+
+                // Speed control buttons
+                const speedButtons = document.querySelectorAll('.speedBtn');
+                speedButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const speed = parseFloat(btn.getAttribute('data-speed'));
+                        this.setGameSpeed(speed);
+
+                        // Update active state
+                        speedButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    });
+                });
+            }
+
+            togglePause() {
+                this.isPaused = !this.isPaused;
+                const pauseBtn = document.getElementById('pauseBtn');
+                if (this.isPaused) {
+                    pauseBtn.textContent = '▶️ RESUME';
+                } else {
+                    pauseBtn.textContent = '⏸️ PAUSE';
+                }
+            }
+
+            setGameSpeed(speed) {
+                this.gameSpeed = speed;
             }
 
             onWindowResize() {
@@ -1524,13 +1654,21 @@
             }
 
             update() {
+                // Skip update if paused
+                if (this.isPaused) {
+                    return;
+                }
+
                 const deltaTime = this.clock.getDelta();
                 const currentTime = Date.now();
+
+                // Apply game speed to deltaTime
+                const adjustedDeltaTime = deltaTime * this.gameSpeed;
 
                 // Update enemies
                 for (let i = this.enemies.length - 1; i >= 0; i--) {
                     const enemy = this.enemies[i];
-                    const result = enemy.update();
+                    const result = enemy.update(this.gameSpeed);
 
                     if (result === 'escaped') {
                         this.lives--;
@@ -1557,7 +1695,7 @@
 
                 // Update towers
                 for (const tower of this.towers) {
-                    const shot = tower.update(this.enemies, currentTime, deltaTime);
+                    const shot = tower.update(this.enemies, currentTime, adjustedDeltaTime, this.gameSpeed);
                     if (shot) {
                         const projectile = new Projectile(this.scene, shot.from, shot.to, shot.specialization);
                         this.projectiles.push(projectile);
