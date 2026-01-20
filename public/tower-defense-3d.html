@@ -14,7 +14,7 @@
         body {
             font-family: 'Arial', sans-serif;
             overflow: hidden;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #87ceeb 0%, #a8d8f0 100%);
         }
 
         #gameCanvas {
@@ -235,10 +235,10 @@
                 const geometry = new THREE.SphereGeometry(0.3, 16, 16);
                 const hue = (wave * 0.1) % 1;
                 const material = new THREE.MeshStandardMaterial({
-                    color: new THREE.Color().setHSL(hue, 0.8, 0.5),
-                    emissive: new THREE.Color().setHSL(hue, 0.8, 0.3),
+                    color: new THREE.Color().setHSL(hue, 0.9, 0.6),
+                    emissive: new THREE.Color().setHSL(hue, 0.9, 0.4),
                     metalness: 0.3,
-                    roughness: 0.7
+                    roughness: 0.6
                 });
                 this.mesh = new THREE.Mesh(geometry, material);
 
@@ -537,8 +537,8 @@
             init() {
                 // Scene
                 this.scene = new THREE.Scene();
-                this.scene.background = new THREE.Color(0x0f0f1e);
-                this.scene.fog = new THREE.Fog(0x0f0f1e, 8, 20);
+                this.scene.background = new THREE.Color(0x87ceeb);
+                this.scene.fog = new THREE.Fog(0x87ceeb, 15, 30);
 
                 // Orthographic Camera (45-degree isometric angle)
                 const aspect = window.innerWidth / window.innerHeight;
@@ -566,10 +566,10 @@
                 this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
                 // Lights
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+                const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
                 this.scene.add(ambientLight);
 
-                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
                 directionalLight.position.set(5, 10, 5);
                 directionalLight.castShadow = true;
                 directionalLight.shadow.camera.left = -10;
@@ -611,8 +611,8 @@
                                 CONFIG.TILE_SIZE
                             );
                             const material = new THREE.MeshStandardMaterial({
-                                color: 0x8b7355,
-                                roughness: 0.9
+                                color: 0xd4a574,
+                                roughness: 0.8
                             });
                             const tile = new THREE.Mesh(geometry, material);
                             tile.position.set(worldX, 0, worldZ);
@@ -652,11 +652,11 @@
                 const ctx = canvas.getContext('2d');
 
                 // Base color
-                ctx.fillStyle = '#2c3e50';
+                ctx.fillStyle = '#95c5a4';
                 ctx.fillRect(0, 0, size, size);
 
                 // Pattern
-                ctx.fillStyle = '#34495e';
+                ctx.fillStyle = '#a8d5ba';
                 const cells = 8;
                 const cellSize = size / cells;
                 for (let i = 0; i < cells; i++) {
