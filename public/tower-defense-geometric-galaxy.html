@@ -3,89 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometric Galaxy TD - Unique Evolutions</title>
+    <title>Geometric Galaxy: OVERDRIVE</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Courier New', monospace; overflow: hidden; background: #000; color: #00ffff; }
+        body { font-family: 'Orbitron', sans-serif; overflow: hidden; background: #050505; color: #00ffff; }
         #gameCanvas { display: block; width: 100%; height: 100vh; cursor: crosshair; }
 
         #ui {
             position: absolute; top: 20px; left: 20px; 
-            background: rgba(0, 0, 0, 0.85); padding: 20px;
-            border-radius: 5px; border: 2px solid #00ffff; z-index: 100;
-            text-shadow: 0 0 10px #00ffff; pointer-events: none;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 0, 0, 0.9));
+            padding: 20px; border-radius: 0 20px 0 20px; border-left: 5px solid #00ffff;
+            z-index: 100; pointer-events: none; backdrop-filter: blur(10px);
         }
 
         #controls {
-            position: absolute; bottom: 20px; left: 50%;
-            transform: translateX(-50%); background: rgba(0, 0, 0, 0.9);
-            padding: 15px 25px; border-radius: 5px; border: 2px solid #00ffff;
-            display: flex; gap: 10px; align-items: center; z-index: 1000;
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9); padding: 15px 30px; border-radius: 50px;
+            border: 2px solid #00ffff; display: flex; gap: 15px; align-items: center; z-index: 1000;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
         }
 
         button {
-            background: rgba(0, 255, 255, 0.1); color: #00ffff;
-            border: 2px solid #00ffff; padding: 8px 15px;
-            font-family: 'Courier New', monospace; font-weight: bold;
-            cursor: pointer; transition: all 0.2s;
+            background: transparent; color: #00ffff; border: 1px solid #00ffff;
+            padding: 10px 20px; font-family: 'Orbitron', sans-serif; font-size: 12px;
+            cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px;
         }
 
-        button:hover:not(:disabled) { background: rgba(0, 255, 255, 0.4); box-shadow: 0 0 15px #00ffff; }
-        button.active { background: #00ffff !important; color: #000 !important; }
+        button:hover:not(:disabled) { background: #00ffff; color: #000; box-shadow: 0 0 15px #00ffff; }
+        button.active { background: #00ffff; color: #000; font-weight: 900; }
         
         .modal {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95); padding: 30px; border-radius: 10px;
-            border: 3px solid #ff3333; display: none; z-index: 2000; min-width: 350px;
-            text-align: center; box-shadow: 0 0 30px rgba(255, 51, 51, 0.3); color: #ff3333;
+            background: rgba(0, 0, 0, 0.95); padding: 40px; border-radius: 10px;
+            border: 2px solid #ff0044; display: none; z-index: 2000; min-width: 400px;
+            text-align: center; box-shadow: 0 0 50px rgba(255, 0, 68, 0.4);
         }
 
-        .upgrade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .special-btn { font-size: 11px; padding: 10px 5px; border-color: #ff3333; color: #ff3333; }
-        h2 { color: #00ffff; text-shadow: 0 0 10px #00ffff; }
-        h3 { color: #ff3333; text-shadow: 0 0 10px #ff3333; }
-        .stat { display: flex; justify-content: space-between; margin: 5px 0; border-bottom: 1px dashed rgba(255,51,51,0.2); }
+        .upgrade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        h2 { font-weight: 900; font-size: 24px; margin-bottom: 10px; color: #00ffff; }
+        h3 { color: #ff0044; margin-bottom: 15px; }
+        .stat { display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; opacity: 0.8; }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
 
     <div id="ui">
-        <h2>⚡ GALAXY TD ⚡</h2>
-        <p>💰 Gold: <span id="gold">500</span></p>
-        <p>🌊 Wave: <span id="wave">0</span></p>
+        <h2>CORE STABILITY</h2>
+        <p>RESOURCES: <span id="gold" style="color:#fff">500</span></p>
+        <p>WAVE INDEX: <span id="wave" style="color:#ff0044">0</span></p>
     </div>
 
     <div id="buildModal" class="modal">
-        <h3>CONSTRUCT MONOLITH?</h3>
-        <p style="margin:15px 0; color:#fff;">Cost: 100 Gold</p>
-        <div style="display:flex; gap:10px;">
-            <button id="confirmBuild" style="flex:1; border-color:#ff3333; color:#ff3333;">BUILD</button>
-            <button id="cancelBuild" style="flex:1; border-color:#aaa; color:#aaa;">CANCEL</button>
+        <h3>INITIATE CONSTRUCTION?</h3>
+        <p style="margin-bottom:20px; opacity:0.7;">System requires 100 energy units.</p>
+        <div style="display:flex; gap:15px;">
+            <button id="confirmBuild" style="flex:1; border-color:#ff0044; color:#ff0044;">DEPLOY</button>
+            <button id="cancelBuild" style="flex:1; border:none; color:#555;">ABORT</button>
         </div>
     </div>
 
     <div id="upgradeModal" class="modal">
-        <h3 id="towerTitle">LEVEL 1 MONOLITH</h3>
-        <div class="stat"><span>Range:</span><span id="statRange">3.0</span></div>
+        <h3 id="towerTitle">MONOLITH OVERRIDE</h3>
+        <div class="stat"><span>LETHALITY:</span><span id="statDamage">1</span></div>
+        <div class="stat"><span>SCAN RANGE:</span><span id="statRange">3.0</span></div>
         <div id="specializationSection">
             <div class="upgrade-grid">
-                <button class="special-btn" onclick="game.specialize('rapidfire')">🔥 RAPID (Octa)</button>
-                <button class="special-btn" onclick="game.specialize('sniper')">🎯 SNIPER (Tess)</button>
-                <button class="special-btn" onclick="game.specialize('splash')">💥 SPLASH (Sphere)</button>
-                <button class="special-btn" onclick="game.specialize('frost')">❄️ FROST (Torus)</button>
-                <button class="special-btn" onclick="game.specialize('poison')" style="grid-column: span 2;">☠️ VOID POISON (Icosa)</button>
+                <button class="special-btn" onclick="game.specialize('rapidfire')">STORM</button>
+                <button class="special-btn" onclick="game.specialize('sniper')">RAILGUN</button>
+                <button class="special-btn" onclick="game.specialize('splash')">NOVA</button>
+                <button class="special-btn" onclick="game.specialize('frost')">ZERO</button>
             </div>
         </div>
-        <button onclick="document.getElementById('upgradeModal').style.display='none'" style="width:100%; margin-top:10px; border-color:#aaa; color:#aaa;">CLOSE</button>
+        <button onclick="document.getElementById('upgradeModal').style.display='none'" style="width:100%; margin-top:20px; border-color:#555; color:#555;">DISMISS</button>
     </div>
 
     <div id="controls">
-        <button id="pauseBtn">⏸ PAUSE</button>
+        <button id="pauseBtn">⏸</button>
         <button class="speed-btn active" data-speed="1">1x</button>
-        <button class="speed-btn" data-speed="1.5">1.5x</button>
-        <button class="speed-btn" data-speed="3">3x</button>
-        <button id="waveBtn" style="color:#00ffff; border-color:#00ffff;">▶ START WAVE</button>
+        <button class="speed-btn" data-speed="2">2x</button>
+        <button class="speed-btn" data-speed="4">MAX</button>
+        <button id="waveBtn" style="border-color:#ff0044; color:#ff0044;">ENGAGE WAVE</button>
     </div>
 
     <script type="importmap">
@@ -105,19 +104,41 @@
 
         const PATH = [{x:0,z:1},{x:1,z:1},{x:2,z:1},{x:3,z:1},{x:3,z:2},{x:3,z:3},{x:3,z:4},{x:2,z:4},{x:1,z:4},{x:1,z:5},{x:1,z:6},{x:1,z:7},{x:2,z:7},{x:3,z:7},{x:4,z:7},{x:5,z:7},{x:5,z:6},{x:5,z:5},{x:6,z:5},{x:7,z:5},{x:8,z:5},{x:8,z:6},{x:8,z:7},{x:8,z:8},{x:9,z:8}];
 
+        // --- PARTICLE EXPLOSION ---
+        class Explosion {
+            constructor(scene, pos, color) {
+                this.particles = [];
+                const geo = new THREE.BoxGeometry(0.05, 0.05, 0.05);
+                const mat = new THREE.MeshBasicMaterial({ color });
+                for(let i=0; i<15; i++) {
+                    const p = new THREE.Mesh(geo, mat);
+                    p.position.copy(pos);
+                    p.userData.v = new THREE.Vector3((Math.random()-0.5)*0.2, Math.random()*0.2, (Math.random()-0.5)*0.2);
+                    scene.add(p);
+                    this.particles.push(p);
+                }
+                setTimeout(() => this.particles.forEach(p => scene.remove(p)), 600);
+            }
+            update() {
+                this.particles.forEach(p => {
+                    p.position.add(p.userData.v);
+                    p.userData.v.y -= 0.01;
+                    p.scale.multiplyScalar(0.95);
+                });
+            }
+        }
+
+        // --- ENEMY ---
         class Enemy {
             constructor(scene, wave) {
                 this.scene = scene; this.pathIndex = 0; this.alive = true;
-                this.health = 3 + wave * 2; this.speed = 0.012 + (wave * 0.001);
-                this.poisonTicks = 0;
-                const geometry = new THREE.IcosahedronGeometry(0.3, 1);
-                this.mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 1 }));
+                this.health = 4 + wave * 3; this.speed = 0.015 + (wave * 0.001);
+                this.mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(0.3, 0), new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 2, wireframe: true }));
                 this.mesh.position.set(PATH[0].x - 5 + 0.5, 0.4, PATH[0].z - 5 + 0.5);
                 scene.add(this.mesh);
             }
             update(gameSpeed) {
                 if (!this.alive) return;
-                if(this.poisonTicks > 0) { this.health -= 0.01 * gameSpeed; this.poisonTicks -= 1 * gameSpeed; }
                 const target = PATH[this.pathIndex];
                 const targetPos = new THREE.Vector3(target.x - 5 + 0.5, 0.4, target.z - 5 + 0.5);
                 const dir = targetPos.clone().sub(this.mesh.position);
@@ -125,111 +146,79 @@
                     this.pathIndex++;
                     if (this.pathIndex >= PATH.length) { this.alive = false; return 'escaped'; }
                 } else { this.mesh.position.add(dir.normalize().multiplyScalar(this.speed * gameSpeed)); }
-                if(this.health <= 0) this.alive = false;
+                this.mesh.rotation.y += 0.1 * gameSpeed;
                 return true;
             }
         }
 
+        // --- TOWER ---
         class Tower {
             constructor(scene, x, z) {
                 this.scene = scene; this.gridX = x; this.gridZ = z;
-                this.level = 1; this.range = 3; this.damage = 1; this.fireRate = 1;
+                this.range = 3.5; this.damage = 1.5; this.fireRate = 1.2;
                 this.special = 'none'; this.lastFire = 0;
                 this.group = new THREE.Group();
                 this.group.position.set(x - 5 + 0.5, 0.4, z - 5 + 0.5);
-                this.originalPos = this.group.position.clone();
                 this.createModel();
                 scene.add(this.group);
             }
             createModel() {
                 while(this.group.children.length > 0) this.group.remove(this.group.children[0]);
-                const p = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.8), new THREE.MeshStandardMaterial({ color: 0x220000, emissive: 0xff0000, emissiveIntensity: 0.5, transparent: true, opacity: 0.8 }));
+                const color = 0xff0044;
+                const p = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0x00ffff, emissiveIntensity: 0.2 }));
                 this.group.add(p);
                 
-                let geo;
-                if (this.special === 'none') geo = new THREE.BoxGeometry(0.4, 0.6, 0.4);
-                else if (this.special === 'rapidfire') geo = new THREE.OctahedronGeometry(0.4);
-                else if (this.special === 'sniper') geo = new THREE.BoxGeometry(0.3, 0.8, 0.3); // Tesseract Base
-                else if (this.special === 'splash') geo = new THREE.SphereGeometry(0.4, 16, 16);
-                else if (this.special === 'frost') geo = new THREE.TorusGeometry(0.3, 0.1, 8, 16);
-                else if (this.special === 'poison') geo = new THREE.IcosahedronGeometry(0.4, 0);
-
-                this.body = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, wireframe: true }));
-                this.body.position.y = 0.4;
+                let geo = this.special === 'none' ? new THREE.BoxGeometry(0.4, 0.4, 0.4) : 
+                          this.special === 'sniper' ? new THREE.OctahedronGeometry(0.5) : 
+                          this.special === 'splash' ? new THREE.SphereGeometry(0.4) : new THREE.TorusGeometry(0.3, 0.1);
+                
+                this.body = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 2, wireframe: true }));
+                this.body.position.y = 0.5;
                 this.group.add(this.body);
-
-                if(this.special === 'sniper') { // Add inner tesseract wire
-                    const inner = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.4, 0.15), new THREE.MeshBasicMaterial({ color: 0xff3333, wireframe: true }));
-                    this.body.add(inner);
-                }
             }
-            updatePulse(time, gameSpeed) {
-                const intensity = 0.5 + Math.sin(time * 5) * 0.5;
-                this.body.material.emissiveIntensity = intensity * 3;
-                if(this.special === 'frost') this.body.rotation.z += 0.05 * gameSpeed;
-                if(this.special === 'splash') {
-                    const s = 1 + Math.sin(time * 10) * 0.1;
-                    this.body.scale.set(s, s, s);
-                }
-            }
-            update(enemies, time, gameSpeed) {
-                this.body.rotation.y += 0.02 * gameSpeed;
+            update(enemies, time, gameSpeed, onHit) {
                 const target = enemies.find(e => e.alive && e.mesh.position.distanceTo(this.group.position) < this.range);
-                if (target) {
-                    if(this.special === 'sniper') { // Stretches towards enemy
-                        this.body.lookAt(target.mesh.position);
-                        this.body.scale.z = 1.5;
-                    }
-                    if (time - this.lastFire > (1000/this.fireRate)/gameSpeed) {
-                        this.lastFire = time;
-                        this.lunge(target.mesh.position);
-                        this.attack(target, enemies);
-                    }
-                } else {
-                    if(this.special === 'sniper') this.body.scale.z = 1;
+                this.body.material.emissiveIntensity = 1 + Math.sin(time * 0.005) * 2;
+                
+                if (target && time - this.lastFire > (1000/this.fireRate)/gameSpeed) {
+                    this.lastFire = time;
+                    this.body.lookAt(target.mesh.position);
+                    onHit(target, this.special, this.damage);
+                    return true;
                 }
-            }
-            lunge(targetPos) {
-                const dir = targetPos.clone().sub(this.group.position).normalize().multiplyScalar(0.2);
-                this.group.position.add(dir);
-                setTimeout(() => this.group.position.copy(this.originalPos), 50);
-            }
-            attack(target, enemies) {
-                if(this.special === 'splash') {
-                    enemies.forEach(e => { if(e.alive && e.mesh.position.distanceTo(target.mesh.position) < 2) e.health -= this.damage; });
-                } else {
-                    target.health -= this.damage;
-                    if(this.special === 'frost') target.speed *= 0.7;
-                    if(this.special === 'poison') target.poisonTicks += 150;
-                }
+                return false;
             }
         }
 
+        // --- GAME MANAGER ---
         class GameManager {
             constructor() {
-                this.scene = new THREE.Scene(); this.isPaused = false; this.gameSpeed = 1.0;
-                this.gold = 500; this.wave = 0; this.towers = []; this.enemies = []; this.tiles = [];
+                this.scene = new THREE.Scene(); this.gameSpeed = 1.0; this.isPaused = false;
+                this.gold = 500; this.wave = 0; this.towers = []; this.enemies = []; this.explosions = [];
                 this.init(); this.animate();
             }
             init() {
                 const aspect = window.innerWidth / window.innerHeight;
-                this.camera = new THREE.OrthographicCamera(-8*aspect, 8*aspect, 8, -8, 0.1, 1000);
-                this.camera.position.set(10, 10, 10); this.camera.lookAt(0, 0, 0);
+                this.camera = new THREE.OrthographicCamera(-9*aspect, 9*aspect, 9, -9, 0.1, 1000);
+                this.camera.position.set(10, 12, 10); this.camera.lookAt(0, 0, 0);
                 this.renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas'), antialias: true });
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
                 this.composer = new EffectComposer(this.renderer);
                 this.composer.addPass(new RenderPass(this.scene, this.camera));
-                this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85));
-                this.scene.add(new THREE.AmbientLight(0x404040));
+                this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.5, 0.5, 0.1));
                 
+                this.scene.add(new THREE.AmbientLight(0x202020));
+                
+                // Grid
                 const pathSet = new Set(PATH.map(p => `${p.x},${p.z}`));
+                this.tiles = [];
                 for(let x=0; x<10; x++) {
                     for(let z=0; z<10; z++) {
                         const isP = pathSet.has(`${x},${z}`);
-                        const tile = new THREE.Mesh(new THREE.BoxGeometry(0.95, isP?0.05:0.4, 0.95), new THREE.MeshStandardMaterial({ 
-                            color: isP?0x002233:0x001122, transparent: true, opacity: 0.5, emissive: 0x00ffff, emissiveIntensity: 0.1 
+                        const tile = new THREE.Mesh(new THREE.BoxGeometry(0.9, isP?0.05:0.3, 0.9), new THREE.MeshStandardMaterial({ 
+                            color: isP?0x000000:0x050505, transparent: true, opacity: 0.7, emissive: 0x00ffff, emissiveIntensity: 0.1
                         }));
-                        tile.position.set(x-5+0.5, isP?0:0.2, z-5+0.5);
+                        tile.position.set(x-5+0.5, 0, z-5+0.5);
                         tile.userData = { x, z, isP, tower: null };
                         this.scene.add(tile); this.tiles.push(tile);
                     }
@@ -238,14 +227,13 @@
                 this.setupUI();
             }
             setupUI() {
-                window.addEventListener('mousemove', (e) => { this.mouse.x = (e.clientX/window.innerWidth)*2-1; this.mouse.y = -(e.clientY/window.innerHeight)*2+1; });
+                window.addEventListener('mousemove', e => { this.mouse.x = (e.clientX/window.innerWidth)*2-1; this.mouse.y = -(e.clientY/window.innerHeight)*2+1; });
                 window.addEventListener('mousedown', () => {
                     this.raycaster.setFromCamera(this.mouse, this.camera);
                     const hit = this.raycaster.intersectObjects(this.tiles)[0];
                     if (hit) {
-                        const data = hit.object.userData;
-                        if (data.tower) { this.selectedTower = data.tower; this.openUpgrade(); }
-                        else if (!data.isP) { this.pendingTile = hit.object; document.getElementById('buildModal').style.display = 'block'; }
+                        if (hit.object.userData.tower) { this.selectedTower = hit.object.userData.tower; this.openUpgrade(); }
+                        else if (!hit.object.userData.isP) { this.pendingTile = hit.object; document.getElementById('buildModal').style.display = 'block'; }
                     }
                 });
                 document.getElementById('confirmBuild').onclick = () => {
@@ -256,40 +244,47 @@
                     }
                 };
                 document.getElementById('cancelBuild').onclick = () => document.getElementById('buildModal').style.display = 'none';
-                document.getElementById('waveBtn').onclick = () => { this.wave++; this.updateUI(); for(let i=0; i<5+this.wave*2; i++) setTimeout(() => this.enemies.push(new Enemy(this.scene, this.wave)), i*800/this.gameSpeed); };
-                document.querySelectorAll('.speed-btn').forEach(b => b.onclick = (e) => { this.gameSpeed = parseFloat(e.target.dataset.speed); document.querySelectorAll('.speed-btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); });
-                document.getElementById('pauseBtn').onclick = (e) => { this.isPaused = !this.isPaused; e.target.innerText = this.isPaused ? "▶ RESUME" : "⏸ PAUSE"; };
+                document.getElementById('waveBtn').onclick = () => { this.wave++; this.updateUI(); for(let i=0; i<5+this.wave*3; i++) setTimeout(() => this.enemies.push(new Enemy(this.scene, this.wave)), i*600/this.gameSpeed); };
+                document.querySelectorAll('.speed-btn').forEach(b => b.onclick = e => { this.gameSpeed = parseFloat(e.target.dataset.speed); document.querySelectorAll('.speed-btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); });
+                document.getElementById('pauseBtn').onclick = (e) => { this.isPaused = !this.isPaused; e.target.innerText = this.isPaused ? "▶" : "⏸"; };
             }
             openUpgrade() {
                 document.getElementById('upgradeModal').style.display = 'block';
-                document.getElementById('statRange').innerText = this.selectedTower.range.toFixed(1);
+                document.getElementById('statDamage').innerText = this.selectedTower.damage;
+                document.getElementById('statRange').innerText = this.selectedTower.range;
             }
             specialize(type) {
                 if(this.gold >= 150) {
                     this.gold -= 150; this.selectedTower.special = type;
-                    if(type === 'rapidfire') { this.selectedTower.fireRate = 4; this.selectedTower.damage = 0.4; }
-                    if(type === 'sniper') { this.selectedTower.range = 7; this.selectedTower.damage = 8; this.selectedTower.fireRate = 0.4; }
-                    if(type === 'splash') { this.selectedTower.damage = 2; this.selectedTower.fireRate = 0.8; }
+                    if(type === 'rapidfire') { this.selectedTower.fireRate = 5; this.selectedTower.damage = 0.5; }
+                    if(type === 'sniper') { this.selectedTower.range = 8; this.selectedTower.damage = 10; this.selectedTower.fireRate = 0.3; }
                     this.selectedTower.createModel(); document.getElementById('upgradeModal').style.display = 'none'; this.updateUI();
                 }
             }
             updateUI() { document.getElementById('gold').innerText = this.gold; document.getElementById('wave').innerText = this.wave; }
             animate() {
                 requestAnimationFrame(() => this.animate());
-                const time = Date.now() * 0.001;
                 if (!this.isPaused) {
+                    this.camera.position.x = 10 + Math.sin(Date.now()*0.001)*0.1; // Breathing cam
                     this.raycaster.setFromCamera(this.mouse, this.camera);
                     const hit = this.raycaster.intersectObjects(this.tiles)[0];
                     this.tiles.forEach(t => t.material.emissiveIntensity = 0.1);
-                    if (hit) hit.object.material.emissiveIntensity = 0.6;
-                    for (let i = this.enemies.length - 1; i >= 0; i--) {
-                        const res = this.enemies[i].update(this.gameSpeed);
-                        if (res === 'escaped' || !this.enemies[i].alive) { 
-                            if(res !== 'escaped') this.gold += 15;
-                            this.scene.remove(this.enemies[i].mesh); this.enemies.splice(i, 1); this.updateUI(); 
+                    if (hit) hit.object.material.emissiveIntensity = 0.8;
+
+                    this.enemies.forEach((e, i) => {
+                        const res = e.update(this.gameSpeed);
+                        if (res === 'escaped' || e.health <= 0) {
+                            if(res !== 'escaped') { this.gold += 20; new Explosion(this.scene, e.mesh.position, 0x00ffff); }
+                            this.scene.remove(e.mesh); this.enemies.splice(i, 1); this.updateUI();
                         }
-                    }
-                    this.towers.forEach(t => { t.updatePulse(time, this.gameSpeed); t.update(this.enemies, Date.now(), this.gameSpeed); });
+                    });
+                    this.towers.forEach(t => {
+                        if(t.update(this.enemies, Date.now(), this.gameSpeed, (target, type, dmg) => {
+                            target.health -= dmg;
+                            if(type === 'sniper') this.camera.position.y += 0.2; // Recoil shake
+                        })) {}
+                    });
+                    this.explosions.forEach(ex => ex.update());
                 }
                 this.composer.render();
             }
