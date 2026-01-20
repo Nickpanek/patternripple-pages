@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Galaxy Tower Defense - Pattern Ripple</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00ffff;
+            font-size: 18px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid #00ffff;
+            z-index: 100;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        #ui h2 {
+            margin-bottom: 10px;
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+        }
+
+        #ui p {
+            margin: 5px 0;
+        }
+
+        #upgradePanel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid #00ffff;
+            color: #00ffff;
+            display: none;
+            z-index: 200;
+            min-width: 400px;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        #upgradePanel h3 {
+            margin-bottom: 20px;
+            color: #ff00ff;
+            text-align: center;
+            font-size: 24px;
+            text-shadow: 0 0 15px #ff00ff;
+        }
+
+        #upgradePanel .stat {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+        }
+
+        #upgradePanel button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: 2px solid #00ffff;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        #upgradePanel button:hover {
+            background: rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 20px #00ffff;
+            transform: scale(1.05);
+        }
+
+        #upgradePanel button:disabled {
+            background: rgba(100, 100, 100, 0.3);
+            border-color: #666;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            text-shadow: none;
+        }
+
+        #closeBtn {
+            background: rgba(255, 0, 255, 0.1);
+            border-color: #ff00ff;
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+
+        #closeBtn:hover {
+            background: rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 20px #ff00ff;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            padding: 15px 25px;
+            border-radius: 5px;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            text-align: center;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #controls button {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        #controls button:hover {
+            background: rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 20px #00ffff;
+            transform: scale(1.05);
+        }
+
+        #controls button:disabled {
+            background: rgba(100, 100, 100, 0.2);
+            border-color: #666;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            text-shadow: none;
+        }
+
+        .info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="ui">
+        <h2>⚡ GEOMETRIC GALAXY TD ⚡</h2>
+        <p>💰 Gold: <span id="gold">500</span></p>
+        <p>❤️ Lives: <span id="lives">20</span></p>
+        <p>🌊 Wave: <span id="wave">0</span></p>
+        <p class="info">
+            Click tiles to build towers (100g)<br>
+            Click towers to upgrade
+        </p>
+    </div>
+
+    <div id="upgradePanel">
+        <h3>⚡ TOWER UPGRADE ⚡</h3>
+        <div class="stat">
+            <span>Level:</span>
+            <span id="towerLevel">1</span>
+        </div>
+        <div class="stat">
+            <span>Range:</span>
+            <span id="towerRange">3.0</span>
+        </div>
+        <div class="stat">
+            <span>Fire Rate:</span>
+            <span id="towerFireRate">1.0/s</span>
+        </div>
+        <div class="stat">
+            <span>Damage:</span>
+            <span id="towerDamage">1</span>
+        </div>
+        <button id="upgradeBtn">⬆️ UPGRADE (100g)</button>
+        <button id="closeBtn">✖️ CLOSE</button>
+    </div>
+
+    <div id="controls">
+        <button id="waveBtn">▶️ START WAVE</button>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+        // ============================================
+        // GAME CONFIGURATION
+        // ============================================
+        const CONFIG = {
+            GRID_SIZE: 10,
+            TILE_SIZE: 1,
+            TOWER_COST: 100,
+            INITIAL_GOLD: 500,
+            INITIAL_LIVES: 20,
+            UPGRADE_COST_BASE: 100
+        };
+
+        // ============================================
+        // PATH DEFINITION - Winding glass path
+        // ============================================
+        const PATH = [
+            {x: 0, z: 2}, {x: 1, z: 2}, {x: 2, z: 2}, {x: 3, z: 2},
+            {x: 3, z: 3}, {x: 3, z: 4}, {x: 3, z: 5},
+            {x: 4, z: 5}, {x: 5, z: 5}, {x: 6, z: 5},
+            {x: 6, z: 4}, {x: 6, z: 3},
+            {x: 7, z: 3}, {x: 8, z: 3}, {x: 9, z: 3},
+            {x: 9, z: 4}, {x: 9, z: 5}, {x: 9, z: 6},
+            {x: 8, z: 6}, {x: 7, z: 6}, {x: 6, z: 6},
+            {x: 6, z: 7}, {x: 6, z: 8}, {x: 6, z: 9}
+        ];
+
+        // ============================================
+        // PROCEDURAL GLITCH ENEMY CLASS
+        // ============================================
+        class Enemy {
+            constructor(scene, path, wave) {
+                this.scene = scene;
+                this.path = path;
+                this.pathIndex = 0;
+                this.wave = wave;
+
+                this.health = 3 + wave * 1.5;
+                this.maxHealth = this.health;
+                this.baseSpeed = 0.015 + (wave * 0.002);
+                this.speed = this.baseSpeed;
+                this.reward = 15 + wave * 3;
+                this.alive = true;
+
+                // Create Glitch Enemy with jagged shards
+                this.createGlitchMesh();
+
+                // Start at first path position
+                const startPos = this.path[0];
+                this.mesh.position.set(
+                    startPos.x - CONFIG.GRID_SIZE/2 + 0.5,
+                    0.4,
+                    startPos.z - CONFIG.GRID_SIZE/2 + 0.5
+                );
+
+                this.scene.add(this.mesh);
+                this.rotationSpeed = 0.02;
+            }
+
+            createGlitchMesh() {
+                // Create IcosahedronGeometry with vertex jittering
+                const geometry = new THREE.IcosahedronGeometry(0.35, 1);
+                const positions = geometry.attributes.position;
+
+                // Jitter vertices to create jagged glitch effect
+                for (let i = 0; i < positions.count; i++) {
+                    const vertex = new THREE.Vector3();
+                    vertex.fromBufferAttribute(positions, i);
+
+                    // Random jitter
+                    vertex.x += (Math.random() - 0.5) * 0.15;
+                    vertex.y += (Math.random() - 0.5) * 0.15;
+                    vertex.z += (Math.random() - 0.5) * 0.15;
+
+                    positions.setXYZ(i, vertex.x, vertex.y, vertex.z);
+                }
+
+                geometry.computeVertexNormals();
+
+                // Neon glowing material
+                const hue = (this.wave * 0.1) % 1;
+                const material = new THREE.MeshStandardMaterial({
+                    color: new THREE.Color().setHSL(hue, 1, 0.5),
+                    emissive: new THREE.Color().setHSL(hue, 1, 0.4),
+                    emissiveIntensity: 2,
+                    metalness: 0.8,
+                    roughness: 0.2,
+                    wireframe: false
+                });
+
+                this.mesh = new THREE.Mesh(geometry, material);
+
+                // Add wireframe overlay for extra glitch effect
+                const wireframeGeo = geometry.clone();
+                const wireframeMat = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color().setHSL(hue, 1, 0.7),
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                this.wireframe = new THREE.Mesh(wireframeGeo, wireframeMat);
+                this.mesh.add(this.wireframe);
+            }
+
+            takeDamage(amount) {
+                this.health -= amount;
+
+                if (this.health <= 0) {
+                    this.alive = false;
+                    this.die();
+                    return true;
+                }
+                return false;
+            }
+
+            die() {
+                // Shrink and fade effect
+                const fadeOut = () => {
+                    this.mesh.scale.multiplyScalar(0.9);
+                    this.mesh.material.opacity -= 0.1;
+                    this.mesh.material.transparent = true;
+
+                    if (this.mesh.material.opacity > 0) {
+                        requestAnimationFrame(fadeOut);
+                    }
+                };
+                fadeOut();
+            }
+
+            update() {
+                if (!this.alive) return false;
+
+                // Rotate for digital glitch effect
+                this.mesh.rotation.x += this.rotationSpeed;
+                this.mesh.rotation.y += this.rotationSpeed * 1.5;
+
+                const currentTarget = this.path[this.pathIndex];
+                const targetWorldPos = new THREE.Vector3(
+                    currentTarget.x - CONFIG.GRID_SIZE/2 + 0.5,
+                    0.4,
+                    currentTarget.z - CONFIG.GRID_SIZE/2 + 0.5
+                );
+
+                const direction = targetWorldPos.clone().sub(this.mesh.position);
+                const distance = direction.length();
+
+                if (distance < 0.1) {
+                    this.pathIndex++;
+                    if (this.pathIndex >= this.path.length) {
+                        this.alive = false;
+                        return 'escaped';
+                    }
+                } else {
+                    direction.normalize();
+                    this.mesh.position.add(direction.multiplyScalar(this.speed));
+                }
+
+                return true;
+            }
+
+            destroy() {
+                this.scene.remove(this.mesh);
+                this.mesh.geometry.dispose();
+                this.mesh.material.dispose();
+                if (this.wireframe) {
+                    this.wireframe.geometry.dispose();
+                    this.wireframe.material.dispose();
+                }
+            }
+        }
+
+        // ============================================
+        // PROCEDURAL MONOLITH TOWER CLASS
+        // ============================================
+        class Tower {
+            constructor(scene, gridX, gridZ) {
+                this.scene = scene;
+                this.gridX = gridX;
+                this.gridZ = gridZ;
+                this.level = 1;
+                this.range = 3.0;
+                this.fireRate = 1.0;
+                this.damage = 1;
+                this.lastFireTime = 0;
+                this.upgradeCost = CONFIG.UPGRADE_COST_BASE;
+
+                // Animation properties
+                this.time = Math.random() * Math.PI * 2;
+                this.hoverSpeed = 1.5;
+                this.hoverAmplitude = 0.15;
+                this.originalY = 0.5;
+
+                // Toy lunge properties
+                this.isLunging = false;
+                this.lungeTarget = null;
+                this.originalPosition = new THREE.Vector3();
+
+                // Create tower group
+                this.group = new THREE.Group();
+                this.createTowerGeometry(this.level);
+
+                const worldPos = this.gridToWorld(gridX, gridZ);
+                this.group.position.set(worldPos.x, this.originalY, worldPos.z);
+                this.originalPosition.copy(this.group.position);
+
+                this.scene.add(this.group);
+            }
+
+            createTowerGeometry(level) {
+                // Clear existing geometry
+                while(this.group.children.length > 0) {
+                    const child = this.group.children[0];
+                    this.group.remove(child);
+                    if (child.geometry) child.geometry.dispose();
+                    if (child.material) child.material.dispose();
+                }
+
+                // PEDESTAL - 1:1 scale BoxGeometry with perfect UV mapping
+                const pedestalGeo = new THREE.BoxGeometry(1, 0.2, 1);
+
+                // Ensure UV mapping is perfect for texture loading
+                pedestalGeo.computeBoundingBox();
+
+                const pedestalMat = new THREE.MeshStandardMaterial({
+                    color: 0x00ffff,
+                    emissive: 0x00ffff,
+                    emissiveIntensity: 0.5,
+                    metalness: 0.7,
+                    roughness: 0.3,
+                    // Ready for texture: map: textureLoader.load('your-pattern.jpg')
+                });
+
+                this.pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
+                this.pedestal.position.y = -0.3;
+                this.group.add(this.pedestal);
+
+                // Add glowing border to pedestal
+                const borderGeo = new THREE.EdgesGeometry(pedestalGeo);
+                const borderMat = new THREE.LineBasicMaterial({
+                    color: 0x00ffff,
+                    linewidth: 2
+                });
+                const border = new THREE.LineSegments(borderGeo, borderMat);
+                this.pedestal.add(border);
+
+                // TOWER BODY - Changes with level
+                let bodyGeo, topGeo;
+
+                if (level === 1) {
+                    // Level 1: Simple Cube
+                    bodyGeo = new THREE.BoxGeometry(0.6, 0.8, 0.6);
+                    topGeo = new THREE.ConeGeometry(0.35, 0.4, 4);
+                } else if (level === 2) {
+                    // Level 2: Octahedron
+                    bodyGeo = new THREE.OctahedronGeometry(0.5);
+                    topGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.5, 8);
+                } else if (level === 3) {
+                    // Level 3: Complex shape
+                    bodyGeo = new THREE.DodecahedronGeometry(0.45);
+                    topGeo = new THREE.TorusGeometry(0.25, 0.1, 8, 8);
+                } else {
+                    // Level 4+: Advanced geometry
+                    bodyGeo = new THREE.IcosahedronGeometry(0.5, 0);
+                    topGeo = new THREE.OctahedronGeometry(0.3);
+                }
+
+                const bodyMat = new THREE.MeshStandardMaterial({
+                    color: 0xff00ff,
+                    emissive: 0xff00ff,
+                    emissiveIntensity: 1,
+                    metalness: 0.8,
+                    roughness: 0.2,
+                    // Ready for texture: map: textureLoader.load('your-pattern.jpg')
+                });
+
+                this.towerBody = new THREE.Mesh(bodyGeo, bodyMat);
+                this.towerBody.position.y = 0.1;
+                this.group.add(this.towerBody);
+
+                // Add body border
+                const bodyBorderGeo = new THREE.EdgesGeometry(bodyGeo);
+                const bodyBorderMat = new THREE.LineBasicMaterial({
+                    color: 0xff00ff,
+                    linewidth: 2
+                });
+                const bodyBorder = new THREE.LineSegments(bodyBorderGeo, bodyBorderMat);
+                this.towerBody.add(bodyBorder);
+
+                // ROTATING TOP ELEMENT
+                const topMat = new THREE.MeshStandardMaterial({
+                    color: 0x00ffff,
+                    emissive: 0x00ffff,
+                    emissiveIntensity: 1.5,
+                    metalness: 0.9,
+                    roughness: 0.1
+                });
+
+                this.towerTop = new THREE.Mesh(topGeo, topMat);
+                this.towerTop.position.y = 0.7;
+                this.group.add(this.towerTop);
+            }
+
+            gridToWorld(x, z) {
+                return {
+                    x: x - CONFIG.GRID_SIZE/2 + 0.5,
+                    z: z - CONFIG.GRID_SIZE/2 + 0.5
+                };
+            }
+
+            upgrade() {
+                this.level++;
+                this.range += 0.5;
+                this.fireRate += 0.2;
+                this.damage += 1;
+                this.upgradeCost = Math.floor(this.upgradeCost * 1.5);
+
+                // Rebuild geometry with new level
+                this.createTowerGeometry(this.level);
+                return true;
+            }
+
+            findTarget(enemies) {
+                let furthestEnemy = null;
+                let maxDistance = 0;
+
+                for (const enemy of enemies) {
+                    if (!enemy.alive) continue;
+
+                    const distance = this.group.position.distanceTo(enemy.mesh.position);
+                    if (distance <= this.range && enemy.pathIndex > maxDistance) {
+                        maxDistance = enemy.pathIndex;
+                        furthestEnemy = enemy;
+                    }
+                }
+
+                return furthestEnemy;
+            }
+
+            toyLunge(target) {
+                // Store target for lunge animation
+                this.lungeTarget = target.mesh.position.clone();
+
+                // Calculate lunge direction
+                const direction = this.lungeTarget.clone().sub(this.group.position).normalize();
+                direction.y = 0; // Keep vertical position
+
+                // Lunge 0.15 units toward target
+                const lungePos = this.group.position.clone().add(direction.multiplyScalar(0.15));
+                this.group.position.copy(lungePos);
+
+                // Snap back immediately (next frame)
+                setTimeout(() => {
+                    this.group.position.copy(this.originalPosition);
+                }, 16);
+            }
+
+            shoot(target, currentTime) {
+                const timeSinceLastShot = (currentTime - this.lastFireTime) / 1000;
+                if (timeSinceLastShot < 1 / this.fireRate) return null;
+
+                this.lastFireTime = currentTime;
+
+                // TOY LUNGE MECHANIC
+                this.toyLunge(target);
+
+                // Apply damage
+                target.takeDamage(this.damage);
+
+                // Return shot data for projectile
+                return {
+                    from: this.group.position.clone(),
+                    to: target.mesh.position.clone()
+                };
+            }
+
+            update(enemies, currentTime, deltaTime) {
+                // Sine-wave hover effect
+                this.time += deltaTime * this.hoverSpeed;
+                const hover = Math.sin(this.time) * this.hoverAmplitude;
+                this.group.position.y = this.originalY + hover;
+
+                // Update original position for lunge
+                this.originalPosition.y = this.originalY + hover;
+
+                // Constant rotation for top element
+                if (this.towerTop) {
+                    this.towerTop.rotation.y += deltaTime * 2;
+                }
+
+                // Find and shoot target
+                const target = this.findTarget(enemies);
+                if (target) {
+                    // Rotate body to face target
+                    const lookTarget = target.mesh.position.clone();
+                    lookTarget.y = this.towerBody.position.y;
+                    this.towerBody.lookAt(lookTarget);
+
+                    return this.shoot(target, currentTime);
+                }
+                return null;
+            }
+
+            destroy() {
+                this.scene.remove(this.group);
+                this.group.traverse((child) => {
+                    if (child.geometry) child.geometry.dispose();
+                    if (child.material) child.material.dispose();
+                });
+            }
+        }
+
+        // ============================================
+        // GLOWING PROJECTILE CLASS
+        // ============================================
+        class Projectile {
+            constructor(scene, from, to) {
+                this.scene = scene;
+                this.lifetime = 300;
+                this.createdAt = Date.now();
+
+                // Create glowing line segment
+                const geometry = new THREE.BufferGeometry().setFromPoints([from, to]);
+                const material = new THREE.LineBasicMaterial({
+                    color: 0x00ffff,
+                    linewidth: 3,
+                    transparent: true,
+                    opacity: 1
+                });
+                this.line = new THREE.Line(geometry, material);
+
+                // Add glow effect with multiple lines
+                const glowMat = new THREE.LineBasicMaterial({
+                    color: 0x00ffff,
+                    linewidth: 6,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                this.glowLine = new THREE.Line(geometry.clone(), glowMat);
+
+                this.scene.add(this.line);
+                this.scene.add(this.glowLine);
+            }
+
+            update() {
+                const age = Date.now() - this.createdAt;
+                if (age > this.lifetime) {
+                    this.destroy();
+                    return false;
+                }
+
+                // Fade out quickly
+                const fadeAmount = 1 - (age / this.lifetime);
+                this.line.material.opacity = fadeAmount;
+                this.glowLine.material.opacity = fadeAmount * 0.3;
+
+                return true;
+            }
+
+            destroy() {
+                this.scene.remove(this.line);
+                this.scene.remove(this.glowLine);
+                this.line.geometry.dispose();
+                this.line.material.dispose();
+                this.glowLine.geometry.dispose();
+                this.glowLine.material.dispose();
+            }
+        }
+
+        // ============================================
+        // GAME MANAGER
+        // ============================================
+        class GameManager {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.composer = null;
+                this.raycaster = new THREE.Raycaster();
+                this.mouse = new THREE.Vector2();
+                this.clock = new THREE.Clock();
+
+                this.grid = [];
+                this.towers = [];
+                this.enemies = [];
+                this.projectiles = [];
+
+                this.gold = CONFIG.INITIAL_GOLD;
+                this.lives = CONFIG.INITIAL_LIVES;
+                this.wave = 0;
+                this.waveInProgress = false;
+                this.selectedTower = null;
+
+                this.init();
+                this.setupEventListeners();
+                this.animate();
+            }
+
+            init() {
+                // Scene
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x000000);
+                this.scene.fog = new THREE.FogExp2(0x000011, 0.05);
+
+                // Orthographic Camera - Isometric 45-degree angle
+                const aspect = window.innerWidth / window.innerHeight;
+                const frustumSize = 12;
+                this.camera = new THREE.OrthographicCamera(
+                    frustumSize * aspect / -2,
+                    frustumSize * aspect / 2,
+                    frustumSize / 2,
+                    frustumSize / -2,
+                    0.1,
+                    1000
+                );
+                this.camera.position.set(10, 10, 10);
+                this.camera.lookAt(0, 0, 0);
+
+                // Renderer
+                const canvas = document.getElementById('gameCanvas');
+                this.renderer = new THREE.WebGLRenderer({
+                    canvas,
+                    antialias: true
+                });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(window.devicePixelRatio);
+
+                // Post-processing with UnrealBloomPass
+                this.composer = new EffectComposer(this.renderer);
+                const renderPass = new RenderPass(this.scene, this.camera);
+                this.composer.addPass(renderPass);
+
+                const bloomPass = new UnrealBloomPass(
+                    new THREE.Vector2(window.innerWidth, window.innerHeight),
+                    1.5,  // Strength
+                    0.4,  // Radius
+                    0.85  // Threshold
+                );
+                this.composer.addPass(bloomPass);
+
+                // Lights
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+                this.scene.add(ambientLight);
+
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(5, 10, 5);
+                this.scene.add(directionalLight);
+
+                // Add point lights for neon atmosphere
+                const pointLight1 = new THREE.PointLight(0x00ffff, 2, 20);
+                pointLight1.position.set(-3, 3, -3);
+                this.scene.add(pointLight1);
+
+                const pointLight2 = new THREE.PointLight(0xff00ff, 2, 20);
+                pointLight2.position.set(3, 3, 3);
+                this.scene.add(pointLight2);
+
+                // Create grid
+                this.createGrid();
+
+                // Update UI
+                this.updateUI();
+            }
+
+            createGrid() {
+                const pathSet = new Set(PATH.map(p => `${p.x},${p.z}`));
+
+                // Texture loader ready for Spoonflower patterns
+                // const textureLoader = new THREE.TextureLoader();
+                // const pattern = textureLoader.load('your-spoonflower-pattern.jpg');
+
+                for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
+                    this.grid[x] = [];
+                    for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
+                        const isPath = pathSet.has(`${x},${z}`);
+                        const worldX = x - CONFIG.GRID_SIZE/2 + 0.5;
+                        const worldZ = z - CONFIG.GRID_SIZE/2 + 0.5;
+
+                        if (isPath) {
+                            // Glass-like path tiles
+                            const geometry = new THREE.BoxGeometry(
+                                CONFIG.TILE_SIZE * 0.95,
+                                0.1,
+                                CONFIG.TILE_SIZE * 0.95
+                            );
+                            const material = new THREE.MeshStandardMaterial({
+                                color: 0x004466,
+                                emissive: 0x0088cc,
+                                emissiveIntensity: 0.5,
+                                metalness: 0.9,
+                                roughness: 0.1,
+                                transparent: true,
+                                opacity: 0.7
+                            });
+                            const tile = new THREE.Mesh(geometry, material);
+                            tile.position.set(worldX, 0, worldZ);
+                            this.scene.add(tile);
+
+                            // Glowing border for path
+                            const borderGeo = new THREE.EdgesGeometry(geometry);
+                            const borderMat = new THREE.LineBasicMaterial({
+                                color: 0x00ffff,
+                                linewidth: 2
+                            });
+                            const border = new THREE.LineSegments(borderGeo, borderMat);
+                            tile.add(border);
+
+                            this.grid[x][z] = { type: 'path', mesh: tile };
+                        } else {
+                            // Circuit tiles with glowing borders
+                            const geometry = new THREE.BoxGeometry(
+                                CONFIG.TILE_SIZE * 0.95,
+                                0.2,
+                                CONFIG.TILE_SIZE * 0.95
+                            );
+                            const material = new THREE.MeshStandardMaterial({
+                                color: 0x1a1a2e,
+                                emissive: 0x0f0f1e,
+                                emissiveIntensity: 0.3,
+                                metalness: 0.6,
+                                roughness: 0.4,
+                                // Ready for texture: map: pattern
+                            });
+                            const tile = new THREE.Mesh(geometry, material);
+                            tile.position.set(worldX, 0.1, worldZ);
+                            tile.userData = { gridX: x, gridZ: z, buildable: true };
+                            this.scene.add(tile);
+
+                            // Glowing circuit border
+                            const borderGeo = new THREE.EdgesGeometry(geometry);
+                            const borderMat = new THREE.LineBasicMaterial({
+                                color: 0x00ffff,
+                                linewidth: 2
+                            });
+                            const border = new THREE.LineSegments(borderGeo, borderMat);
+                            border.material.transparent = true;
+                            border.material.opacity = 0.6;
+                            tile.add(border);
+
+                            // Add subtle glow points at corners
+                            const cornerGeo = new THREE.SphereGeometry(0.05, 8, 8);
+                            const cornerMat = new THREE.MeshBasicMaterial({
+                                color: 0x00ffff,
+                                transparent: true,
+                                opacity: 0.8
+                            });
+                            const corners = [
+                                [-0.45, 0.1, -0.45],
+                                [0.45, 0.1, -0.45],
+                                [-0.45, 0.1, 0.45],
+                                [0.45, 0.1, 0.45]
+                            ];
+                            corners.forEach(pos => {
+                                const corner = new THREE.Mesh(cornerGeo, cornerMat.clone());
+                                corner.position.set(pos[0], pos[1], pos[2]);
+                                tile.add(corner);
+                            });
+
+                            this.grid[x][z] = { type: 'circuit', mesh: tile, tower: null };
+                        }
+                    }
+                }
+            }
+
+            setupEventListeners() {
+                window.addEventListener('resize', () => this.onWindowResize());
+                window.addEventListener('click', (e) => this.onClick(e));
+
+                document.getElementById('waveBtn').addEventListener('click', () => {
+                    this.startWave();
+                });
+
+                document.getElementById('upgradeBtn').addEventListener('click', () => {
+                    this.upgradeTower();
+                });
+
+                document.getElementById('closeBtn').addEventListener('click', () => {
+                    this.closeUpgradePanel();
+                });
+            }
+
+            onWindowResize() {
+                const aspect = window.innerWidth / window.innerHeight;
+                const frustumSize = 12;
+                this.camera.left = frustumSize * aspect / -2;
+                this.camera.right = frustumSize * aspect / 2;
+                this.camera.top = frustumSize / 2;
+                this.camera.bottom = frustumSize / -2;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.composer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            onClick(event) {
+                this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                this.raycaster.setFromCamera(this.mouse, this.camera);
+
+                // Check for tower clicks
+                const towerGroups = this.towers.map(t => t.group);
+                const towerIntersects = this.raycaster.intersectObjects(towerGroups, true);
+
+                if (towerIntersects.length > 0) {
+                    const clickedTower = this.towers.find(t =>
+                        t.group === towerIntersects[0].object ||
+                        t.group === towerIntersects[0].object.parent ||
+                        t.group === towerIntersects[0].object.parent?.parent
+                    );
+                    if (clickedTower) {
+                        this.selectTower(clickedTower);
+                        return;
+                    }
+                }
+
+                // Check for tile clicks (tower placement)
+                const buildableTiles = [];
+                for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
+                    for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
+                        const cell = this.grid[x][z];
+                        if (cell.type === 'circuit' && !cell.tower) {
+                            buildableTiles.push(cell.mesh);
+                        }
+                    }
+                }
+
+                const intersects = this.raycaster.intersectObjects(buildableTiles);
+
+                if (intersects.length > 0) {
+                    const tile = intersects[0].object;
+                    if (tile.userData.buildable && this.gold >= CONFIG.TOWER_COST) {
+                        this.placeTower(tile.userData.gridX, tile.userData.gridZ);
+                        return;
+                    }
+                }
+
+                // Close panel if clicking elsewhere
+                this.closeUpgradePanel();
+            }
+
+            placeTower(gridX, gridZ) {
+                if (this.gold < CONFIG.TOWER_COST) return;
+
+                const cell = this.grid[gridX][gridZ];
+                if (cell.type === 'circuit' && !cell.tower) {
+                    this.gold -= CONFIG.TOWER_COST;
+                    const tower = new Tower(this.scene, gridX, gridZ);
+                    this.towers.push(tower);
+                    cell.tower = tower;
+                    this.updateUI();
+                }
+            }
+
+            selectTower(tower) {
+                this.selectedTower = tower;
+
+                // Show upgrade panel
+                document.getElementById('upgradePanel').style.display = 'block';
+                document.getElementById('towerLevel').textContent = tower.level;
+                document.getElementById('towerRange').textContent = tower.range.toFixed(1);
+                document.getElementById('towerFireRate').textContent = tower.fireRate.toFixed(1) + '/s';
+                document.getElementById('towerDamage').textContent = tower.damage.toFixed(1);
+
+                const upgradeBtn = document.getElementById('upgradeBtn');
+                upgradeBtn.textContent = `⬆️ UPGRADE (${tower.upgradeCost}g)`;
+                upgradeBtn.disabled = this.gold < tower.upgradeCost;
+            }
+
+            upgradeTower() {
+                if (!this.selectedTower) return;
+                if (this.gold < this.selectedTower.upgradeCost) return;
+
+                this.gold -= this.selectedTower.upgradeCost;
+                this.selectedTower.upgrade();
+                this.updateUI();
+                this.selectTower(this.selectedTower);
+            }
+
+            closeUpgradePanel() {
+                document.getElementById('upgradePanel').style.display = 'none';
+                this.selectedTower = null;
+            }
+
+            startWave() {
+                if (this.waveInProgress) return;
+
+                this.wave++;
+                this.waveInProgress = true;
+                this.updateUI();
+
+                const enemyCount = 5 + this.wave * 2;
+                const spawnInterval = 800;
+
+                for (let i = 0; i < enemyCount; i++) {
+                    setTimeout(() => {
+                        const enemy = new Enemy(this.scene, PATH, this.wave);
+                        this.enemies.push(enemy);
+                    }, i * spawnInterval);
+                }
+
+                // Check wave completion
+                setTimeout(() => {
+                    const checkComplete = setInterval(() => {
+                        const aliveEnemies = this.enemies.filter(e => e.alive);
+                        if (aliveEnemies.length === 0 && this.waveInProgress) {
+                            this.waveInProgress = false;
+                            clearInterval(checkComplete);
+                            this.gold += 50 + (this.wave * 10);
+                            this.updateUI();
+                        }
+                    }, 500);
+                }, enemyCount * spawnInterval + 3000);
+            }
+
+            updateUI() {
+                document.getElementById('gold').textContent = this.gold;
+                document.getElementById('lives').textContent = this.lives;
+                document.getElementById('wave').textContent = this.wave;
+            }
+
+            update() {
+                const deltaTime = this.clock.getDelta();
+                const currentTime = Date.now();
+
+                // Update enemies
+                for (let i = this.enemies.length - 1; i >= 0; i--) {
+                    const enemy = this.enemies[i];
+                    const result = enemy.update();
+
+                    if (result === 'escaped') {
+                        this.lives--;
+                        this.updateUI();
+                        enemy.destroy();
+                        this.enemies.splice(i, 1);
+
+                        if (this.lives <= 0) {
+                            alert('💀 GAME OVER 💀\nFinal Wave: ' + this.wave);
+                            location.reload();
+                        }
+                    } else if (!enemy.alive) {
+                        this.gold += enemy.reward;
+                        this.updateUI();
+
+                        // Keep enemy for fade animation
+                        setTimeout(() => {
+                            enemy.destroy();
+                            const index = this.enemies.indexOf(enemy);
+                            if (index > -1) this.enemies.splice(index, 1);
+                        }, 500);
+                    }
+                }
+
+                // Update towers
+                for (const tower of this.towers) {
+                    const shot = tower.update(this.enemies, currentTime, deltaTime);
+                    if (shot) {
+                        const projectile = new Projectile(this.scene, shot.from, shot.to);
+                        this.projectiles.push(projectile);
+                    }
+                }
+
+                // Update projectiles
+                for (let i = this.projectiles.length - 1; i >= 0; i--) {
+                    if (!this.projectiles[i].update()) {
+                        this.projectiles.splice(i, 1);
+                    }
+                }
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                this.update();
+                this.composer.render();
+            }
+        }
+
+        // ============================================
+        // START GAME
+        // ============================================
+        const game = new GameManager();
+
+        console.log('⚡ GEOMETRIC GALAXY TD LOADED ⚡');
+        console.log('🎨 Ready for Spoonflower patterns');
+        console.log('📦 Tower pedestal UV mapped for textures');
+        console.log('✨ UnrealBloomPass active for neon glow');
+    </script>
+</body>
+</html>
