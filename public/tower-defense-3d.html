@@ -309,31 +309,31 @@
                     <h4>🔥 Rapid Fire</h4>
                     <p>High fire rate</p>
                     <p>Lower damage</p>
-                    <div class="cost">200g</div>
+                    <div class="cost">100g</div>
                 </div>
                 <div class="upgrade-option" data-type="sniper">
                     <h4>🎯 Sniper</h4>
                     <p>Long range</p>
                     <p>High damage</p>
-                    <div class="cost">200g</div>
+                    <div class="cost">100g</div>
                 </div>
                 <div class="upgrade-option" data-type="frost">
                     <h4>❄️ Frost</h4>
                     <p>Slows enemies</p>
                     <p>Moderate damage</p>
-                    <div class="cost">200g</div>
+                    <div class="cost">100g</div>
                 </div>
                 <div class="upgrade-option" data-type="splash">
                     <h4>💥 Splash</h4>
                     <p>Area damage</p>
                     <p>Hits multiple</p>
-                    <div class="cost">200g</div>
+                    <div class="cost">100g</div>
                 </div>
                 <div class="upgrade-option" data-type="poison">
                     <h4>☠️ Poison</h4>
                     <p>Damage over time</p>
                     <p>Stacking effect</p>
-                    <div class="cost">200g</div>
+                    <div class="cost">100g</div>
                 </div>
             </div>
         </div>
@@ -397,7 +397,16 @@
                 this.scene = scene;
                 this.path = path;
                 this.pathIndex = 0;
-                this.health = 3 + wave * 1.5;
+
+                // Make first 2 waves easier with less health
+                if (wave === 1) {
+                    this.health = 2;
+                } else if (wave === 2) {
+                    this.health = 3;
+                } else {
+                    this.health = 3 + wave * 1.5;
+                }
+
                 this.maxHealth = this.health;
                 this.baseSpeed = 0.012 + (wave * 0.0015);
                 this.speed = this.baseSpeed;
@@ -613,7 +622,8 @@
             specialize(type) {
                 this.specialization = type;
                 this.level = 2;
-                this.upgradeCost = 250;
+                this.upgradeCost = 150;
+                this.maxLevel = 5;
 
                 switch(type) {
                     case 'rapidfire':
@@ -660,8 +670,15 @@
             }
 
             upgrade() {
+                // Check if at max level
+                if (this.maxLevel && this.level >= this.maxLevel) {
+                    return false;
+                }
+
                 this.level++;
-                this.upgradeCost = Math.floor(this.upgradeCost * 1.6);
+
+                // Scale upgrade cost: 150 -> 250 -> 400 -> 650
+                this.upgradeCost = Math.floor(this.upgradeCost * 1.7);
 
                 if (!this.specialization) {
                     // Basic tower upgrade
@@ -700,6 +717,8 @@
                 this.rangeIndicator.geometry.dispose();
                 const geometry = new THREE.RingGeometry(this.range - 0.1, this.range, 32);
                 this.rangeIndicator.geometry = geometry;
+
+                return true;
             }
 
             findTarget(enemies) {
@@ -1011,18 +1030,21 @@
                     this.closeUpgradePanel();
                 });
 
-                document.getElementById('confirmBuildBtn').addEventListener('click', () => {
+                document.getElementById('confirmBuildBtn').addEventListener('click', (e) => {
+                    e.stopPropagation();
                     this.confirmTowerPlacement();
                 });
 
-                document.getElementById('cancelBuildBtn').addEventListener('click', () => {
+                document.getElementById('cancelBuildBtn').addEventListener('click', (e) => {
+                    e.stopPropagation();
                     this.cancelTowerPlacement();
                 });
 
                 // Upgrade tree specialization options
                 const upgradeOptions = document.querySelectorAll('.upgrade-option');
                 upgradeOptions.forEach(option => {
-                    option.addEventListener('click', () => {
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
                         if (!this.selectedTower || this.selectedTower.specialization) return;
 
                         // Remove previous selection
@@ -1032,6 +1054,15 @@
                         const type = option.getAttribute('data-type');
                         this.specializeTower(type);
                     });
+                });
+
+                // Prevent clicks on panels from propagating to the game canvas
+                document.getElementById('confirmPanel').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+
+                document.getElementById('upgradePanel').addEventListener('click', (e) => {
+                    e.stopPropagation();
                 });
             }
 
@@ -1200,16 +1231,23 @@
                     document.getElementById('upgradeStandardSection').style.display = 'block';
 
                     const upgradeBtn = document.getElementById('upgradeBtn');
-                    upgradeBtn.textContent = `UPGRADE (${tower.upgradeCost}g)`;
-                    upgradeBtn.disabled = this.gold < tower.upgradeCost;
+
+                    // Check if at max level
+                    if (tower.maxLevel && tower.level >= tower.maxLevel) {
+                        upgradeBtn.textContent = 'MAX LEVEL';
+                        upgradeBtn.disabled = true;
+                    } else {
+                        upgradeBtn.textContent = `UPGRADE (${tower.upgradeCost}g)`;
+                        upgradeBtn.disabled = this.gold < tower.upgradeCost;
+                    }
                 }
             }
 
             specializeTower(type) {
                 if (!this.selectedTower) return;
-                if (this.gold < 200) return;
+                if (this.gold < 100) return;
 
-                this.gold -= 200;
+                this.gold -= 100;
                 this.selectedTower.specialize(type);
                 this.updateUI();
 
@@ -1222,11 +1260,13 @@
                 if (this.gold < this.selectedTower.upgradeCost) return;
 
                 this.gold -= this.selectedTower.upgradeCost;
-                this.selectedTower.upgrade();
-                this.updateUI();
+                const upgraded = this.selectedTower.upgrade();
 
-                // Update panel
-                this.selectTower(this.selectedTower);
+                if (upgraded) {
+                    this.updateUI();
+                    // Update panel
+                    this.selectTower(this.selectedTower);
+                }
             }
 
             closeUpgradePanel() {
@@ -1244,8 +1284,18 @@
                 this.waveInProgress = true;
                 this.updateUI();
 
-                const enemyCount = 8 + this.wave * 3;
-                const spawnInterval = 700; // milliseconds
+                // Make first 2 waves easier
+                let enemyCount, spawnInterval;
+                if (this.wave === 1) {
+                    enemyCount = 5;
+                    spawnInterval = 900;
+                } else if (this.wave === 2) {
+                    enemyCount = 7;
+                    spawnInterval = 800;
+                } else {
+                    enemyCount = 8 + this.wave * 3;
+                    spawnInterval = 700;
+                }
 
                 for (let i = 0; i < enemyCount; i++) {
                     setTimeout(() => {
