@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometric Galaxy TD - Starfield Edition</title>
+    <title>Geometric Galaxy TD - Fixed Interaction</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Courier New', monospace; overflow: hidden; background: #000; }
-        #gameCanvas { display: block; width: 100%; height: 100vh; }
+        body { font-family: 'Courier New', monospace; overflow: hidden; background: #000; color: #00ffff; }
+        #gameCanvas { display: block; width: 100%; height: 100vh; cursor: crosshair; }
 
         #ui {
-            position: absolute; top: 20px; left: 20px; color: #00ffff;
+            position: absolute; top: 20px; left: 20px; 
             background: rgba(0, 0, 0, 0.85); padding: 20px;
             border-radius: 5px; border: 2px solid #00ffff; z-index: 100;
             text-shadow: 0 0 10px #00ffff; pointer-events: none;
@@ -18,9 +18,9 @@
 
         #controls {
             position: absolute; bottom: 20px; left: 50%;
-            transform: translateX(-50%); background: rgba(0, 0, 0, 0.85);
+            transform: translateX(-50%); background: rgba(0, 0, 0, 0.9);
             padding: 15px 25px; border-radius: 5px; border: 2px solid #00ffff;
-            display: flex; gap: 10px; align-items: center; z-index: 100;
+            display: flex; gap: 10px; align-items: center; z-index: 1000;
         }
 
         button {
@@ -30,20 +30,17 @@
             cursor: pointer; transition: all 0.2s;
         }
 
-        button:hover { background: rgba(0, 255, 255, 0.3); box-shadow: 0 0 15px #00ffff; }
-        button.active { background: #00ffff; color: #000; }
-        button#pauseBtn.paused { border-color: #ff3333; color: #ff3333; }
-
+        button:hover { background: rgba(0, 255, 255, 0.4); box-shadow: 0 0 15px #00ffff; }
+        button.active { background: #00ffff !important; color: #000 !important; }
+        
         #upgradePanel {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.95); padding: 30px; border-radius: 10px;
-            border: 3px solid #00ffff; color: #00ffff; display: none; z-index: 200;
+            border: 3px solid #00ffff; display: none; z-index: 2000; min-width: 300px;
         }
 
-        .stat { display: flex; justify-content: space-between; margin: 5px 0; }
-        .upgrade-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .upgrade-option { border: 1px solid #00ffff; padding: 10px; cursor: pointer; text-align: center; font-size: 12px; }
-        .upgrade-option:hover { background: rgba(0, 255, 255, 0.2); }
+        .stat { display: flex; justify-content: space-between; margin: 8px 0; border-bottom: 1px dashed rgba(0,255,255,0.3); }
+        h2, h3 { color: #ff3333; text-shadow: 0 0 10px #ff3333; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -58,31 +55,19 @@
 
     <div id="controls">
         <button id="pauseBtn">⏸ PAUSE</button>
-        <div style="width: 2px; height: 30px; background: #00ffff; margin: 0 10px;"></div>
         <button class="speedBtn" data-speed="0.5">0.5x</button>
         <button class="speedBtn active" data-speed="1">1x</button>
         <button class="speedBtn" data-speed="1.5">1.5x</button>
         <button class="speedBtn" data-speed="3">3x</button>
-        <div style="width: 2px; height: 30px; background: #00ffff; margin: 0 10px;"></div>
-        <button id="waveBtn">▶ START WAVE</button>
+        <button id="waveBtn" style="border-color:#ff3333; color:#ff3333;">▶ START WAVE</button>
     </div>
 
     <div id="upgradePanel">
-        <h3 id="towerSpecialization" style="color:#ff3333; margin-bottom:15px; text-align:center;">Basic Tower</h3>
+        <h3 id="panelTitle">TOWER UPGRADE</h3>
         <div class="stat"><span>Level:</span><span id="towerLevel">1</span></div>
         <div class="stat"><span>Range:</span><span id="towerRange">3.0</span></div>
-        <div class="stat"><span>Damage:</span><span id="towerDamage">1</span></div>
-        
-        <div id="upgradeTreeSection" style="display:none;">
-            <div class="upgrade-options">
-                <div class="upgrade-option" data-type="rapidfire">🔥 RAPID</div>
-                <div class="upgrade-option" data-type="sniper">🎯 SNIPER</div>
-                <div class="upgrade-option" data-type="frost">❄️ FROST</div>
-                <div class="upgrade-option" data-type="splash">💥 SPLASH</div>
-            </div>
-        </div>
-        <button id="upgradeBtn" style="width:100%; margin-top:20px;">UPGRADE</button>
-        <button id="closeBtn" style="width:100%; margin-top:10px; border-color:#ff3333; color:#ff3333;">CLOSE</button>
+        <button id="upgradeBtn">UPGRADE (150g)</button>
+        <button id="closeBtn" style="border-color:#ff3333; color:#ff3333; margin-top:10px;">CLOSE</button>
     </div>
 
     <script type="importmap">
@@ -100,14 +85,6 @@
         import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
         import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-        const CONFIG = {
-            GRID_SIZE: 10,
-            TOWER_COST: 100,
-            INITIAL_GOLD: 500,
-            INITIAL_LIVES: 20,
-            ELEVATION_HEIGHT: 0.5
-        };
-
         const PATH = [
             {x: 0, z: 1}, {x: 1, z: 1}, {x: 2, z: 1}, {x: 3, z: 1},
             {x: 3, z: 2}, {x: 3, z: 3}, {x: 3, z: 4},
@@ -119,22 +96,17 @@
             {x: 8, z: 7}, {x: 8, z: 8}, {x: 9, z: 8}
         ];
 
-        // --- ENEMY CLASS ---
         class Enemy {
             constructor(scene, wave) {
                 this.scene = scene;
                 this.wave = wave;
                 this.pathIndex = 0;
-                this.health = 3 + wave * 1.5;
-                this.speed = 0.015 + (wave * 0.002);
+                this.health = 2 + wave;
+                this.speed = 0.015 + (wave * 0.001);
                 this.alive = true;
                 
-                const geo = new THREE.IcosahedronGeometry(0.3, 0);
-                const mat = new THREE.MeshStandardMaterial({ 
-                    color: new THREE.Color().setHSL((wave * 0.15) % 1, 1, 0.5),
-                    emissive: new THREE.Color().setHSL((wave * 0.15) % 1, 1, 0.3),
-                    wireframe: true 
-                });
+                const geo = new THREE.OctahedronGeometry(0.3);
+                const mat = new THREE.MeshStandardMaterial({ color: 0xff3333, emissive: 0xff0000, wireframe: true });
                 this.mesh = new THREE.Mesh(geo, mat);
                 const start = PATH[0];
                 this.mesh.position.set(start.x - 5 + 0.5, 0.4, start.z - 5 + 0.5);
@@ -143,6 +115,7 @@
             update(gameSpeed) {
                 if (!this.alive) return;
                 const target = PATH[this.pathIndex];
+                if(!target) return;
                 const targetPos = new THREE.Vector3(target.x - 5 + 0.5, 0.4, target.z - 5 + 0.5);
                 const dir = targetPos.clone().sub(this.mesh.position);
                 if (dir.length() < 0.1) {
@@ -151,35 +124,24 @@
                 } else {
                     this.mesh.position.add(dir.normalize().multiplyScalar(this.speed * gameSpeed));
                 }
-                this.mesh.rotation.x += 0.02 * gameSpeed;
+                this.mesh.rotation.y += 0.05 * gameSpeed;
                 return true;
-            }
-            takeDamage(amt) {
-                this.health -= amt;
-                if (this.health <= 0) { this.alive = false; this.scene.remove(this.mesh); return true; }
-                return false;
             }
         }
 
-        // --- TOWER CLASS ---
         class Tower {
             constructor(scene, x, z) {
                 this.scene = scene;
                 this.gridX = x; this.gridZ = z;
-                this.level = 1; this.range = 3; this.fireRate = 1; this.damage = 1;
-                this.lastFire = 0;
+                this.level = 1; this.range = 3; this.lastFire = 0;
                 this.group = new THREE.Group();
                 
-                // Pedestal
-                const pGeo = new THREE.BoxGeometry(0.9, 0.2, 0.9);
-                const pMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, emissive: 0x00ffff, emissiveIntensity: 0.2 });
-                this.pedestal = new THREE.Mesh(pGeo, pMat);
-                this.group.add(this.pedestal);
+                const pGeo = new THREE.BoxGeometry(0.8, 0.2, 0.8);
+                const pMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.2 });
+                this.group.add(new THREE.Mesh(pGeo, pMat));
 
-                // Body
-                const bGeo = new THREE.BoxGeometry(0.5, 0.6, 0.5);
-                const bMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true });
-                this.body = new THREE.Mesh(bGeo, bMat);
+                const bGeo = new THREE.BoxGeometry(0.4, 0.6, 0.4);
+                this.body = new THREE.Mesh(bGeo, new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true }));
                 this.body.position.y = 0.4;
                 this.group.add(this.body);
 
@@ -187,24 +149,17 @@
                 scene.add(this.group);
             }
             update(enemies, time, gameSpeed) {
-                this.body.rotation.y += 0.01 * gameSpeed;
+                this.body.rotation.y += 0.02 * gameSpeed;
                 const target = enemies.find(e => e.mesh.position.distanceTo(this.group.position) < this.range);
-                if (target && time - this.lastFire > (1000 / this.fireRate) / gameSpeed) {
+                if (target && time - this.lastFire > 1000/gameSpeed) {
                     this.lastFire = time;
-                    this.lunge(target.mesh.position);
-                    return target;
+                    target.health -= 1;
+                    if(target.health <= 0) { target.alive = false; this.scene.remove(target.mesh); return true; }
                 }
-                return null;
-            }
-            lunge(targetPos) {
-                const dir = targetPos.clone().sub(this.group.position).normalize().multiplyScalar(0.2);
-                const orig = this.group.position.clone();
-                this.group.position.add(dir);
-                setTimeout(() => this.group.position.copy(orig), 50);
+                return false;
             }
         }
 
-        // --- GAME MANAGER ---
         class GameManager {
             constructor() {
                 this.scene = new THREE.Scene();
@@ -215,102 +170,98 @@
                 this.wave = 0;
                 this.towers = [];
                 this.enemies = [];
-                this.grid = [];
-                this.clock = new THREE.Clock();
+                this.selectableTiles = [];
+                this.hoveredTile = null;
 
-                this.initGraphics();
-                this.createStarfield();
-                this.createGrid();
-                this.setupUI();
+                this.init();
                 this.animate();
             }
 
-            initGraphics() {
+            init() {
                 const aspect = window.innerWidth / window.innerHeight;
-                const d = 7;
+                const d = 8;
                 this.camera = new THREE.OrthographicCamera(-d*aspect, d*aspect, d, -d, 0.1, 1000);
                 this.camera.position.set(10, 10, 10);
                 this.camera.lookAt(0, 0, 0);
 
                 this.renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas'), antialias: true });
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
-                this.renderer.setPixelRatio(window.devicePixelRatio);
 
-                const renderScene = new RenderPass(this.scene, this.camera);
-                const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
                 this.composer = new EffectComposer(this.renderer);
-                this.composer.addPass(renderScene);
-                this.composer.addPass(bloomPass);
+                this.composer.addPass(new RenderPass(this.scene, this.camera));
+                this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.2, 0.4, 0.8));
 
                 this.scene.add(new THREE.AmbientLight(0x404040));
-                const sun = new THREE.DirectionalLight(0xffffff, 1);
-                sun.position.set(5, 10, 7);
-                this.scene.add(sun);
+                const dl = new THREE.DirectionalLight(0xffffff, 1);
+                dl.position.set(5, 10, 7);
+                this.scene.add(dl);
 
                 this.raycaster = new THREE.Raycaster();
                 this.mouse = new THREE.Vector2();
-                this.hoveredObj = null;
+
+                this.createStarfield();
+                this.createGrid();
+                this.createGhostTower();
+                this.setupEvents();
+            }
+
+            createGhostTower() {
+                const geo = new THREE.BoxGeometry(0.5, 0.8, 0.5);
+                const mat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.3, wireframe: true });
+                this.ghostTower = new THREE.Mesh(geo, mat);
+                this.ghostTower.visible = false;
+                this.scene.add(this.ghostTower);
             }
 
             createStarfield() {
                 const geo = new THREE.BufferGeometry();
                 const pos = [];
-                for(let i=0; i<1000; i++) {
-                    pos.push((Math.random()-0.5)*50, (Math.random()-0.5)*50, (Math.random()-0.5)*50);
-                }
+                for(let i=0; i<800; i++) pos.push((Math.random()-0.5)*40, (Math.random()-0.5)*40, (Math.random()-0.5)*40);
                 geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-                const mat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05, transparent: true });
-                this.stars = new THREE.Points(geo, mat);
+                this.stars = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.05 }));
                 this.scene.add(this.stars);
             }
 
             createGrid() {
                 const pathSet = new Set(PATH.map(p => `${p.x},${p.z}`));
                 for(let x=0; x<10; x++) {
-                    this.grid[x] = [];
                     for(let z=0; z<10; z++) {
                         const isPath = pathSet.has(`${x},${z}`);
-                        const geo = new THREE.BoxGeometry(1, isPath ? 0.1 : 0.5, 1);
+                        const geo = new THREE.BoxGeometry(0.95, isPath ? 0.05 : 0.4, 0.95);
                         const mat = new THREE.MeshStandardMaterial({ 
-                            color: isPath ? 0x002233 : 0x111111,
-                            emissive: isPath ? 0x00ffff : 0x000000,
-                            emissiveIntensity: 0.2
+                            color: isPath ? 0x001122 : 0x050505,
+                            emissive: 0x00ffff,
+                            emissiveIntensity: isPath ? 0.2 : 0.05
                         });
                         const tile = new THREE.Mesh(geo, mat);
-                        tile.position.set(x-5+0.5, isPath ? 0 : 0.25, z-5+0.5);
-                        tile.userData = { gridX: x, gridZ: z, isPath };
+                        tile.position.set(x-5+0.5, isPath ? 0 : 0.2, z-5+0.5);
+                        tile.userData = { x, z, isPath, hasTower: false };
                         this.scene.add(tile);
-                        
-                        const edges = new THREE.EdgesGeometry(geo);
-                        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x00ffff }));
-                        tile.add(line);
-                        this.grid[x][z] = tile;
+                        if (!isPath) this.selectableTiles.push(tile);
                     }
                 }
             }
 
-            setupUI() {
+            setupEvents() {
                 window.addEventListener('mousemove', (e) => {
                     this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
                     this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
                 });
 
-                window.addEventListener('click', () => {
-                    if (this.hoveredObj && !this.hoveredObj.userData.isPath) {
-                        const cell = this.hoveredObj.userData;
-                        if (this.gold >= 100) {
-                            this.gold -= 100;
-                            const t = new Tower(this.scene, cell.gridX, cell.gridZ);
-                            this.towers.push(t);
-                            this.updateUI();
-                        }
+                window.addEventListener('mousedown', () => {
+                    if (this.hoveredTile && !this.hoveredTile.userData.hasTower && this.gold >= 100) {
+                        this.gold -= 100;
+                        const t = new Tower(this.scene, this.hoveredTile.userData.x, this.hoveredTile.userData.z);
+                        this.towers.push(t);
+                        this.hoveredTile.userData.hasTower = true;
+                        this.updateUI();
                     }
                 });
 
                 document.getElementById('waveBtn').onclick = () => {
                     this.wave++;
                     for(let i=0; i<5+this.wave; i++) {
-                        setTimeout(() => this.enemies.push(new Enemy(this.scene, this.wave)), i*800/this.gameSpeed);
+                        setTimeout(() => { if(!this.isPaused) this.enemies.push(new Enemy(this.scene, this.wave)) }, i*800/this.gameSpeed);
                     }
                     this.updateUI();
                 };
@@ -318,7 +269,6 @@
                 document.getElementById('pauseBtn').onclick = (e) => {
                     this.isPaused = !this.isPaused;
                     e.target.innerText = this.isPaused ? "▶ RESUME" : "⏸ PAUSE";
-                    e.target.classList.toggle('paused');
                 };
 
                 document.querySelectorAll('.speedBtn').forEach(btn => {
@@ -338,24 +288,28 @@
 
             animate() {
                 requestAnimationFrame(() => this.animate());
+                
                 if (!this.isPaused) {
-                    const dt = this.clock.getDelta();
-                    this.stars.rotation.y += 0.0005;
+                    this.stars.rotation.y += 0.0003;
 
-                    // Hover logic
+                    // Hover logic (Specific to selectable tiles only)
                     this.raycaster.setFromCamera(this.mouse, this.camera);
-                    const intersects = this.raycaster.intersectObjects(this.scene.children);
+                    const intersects = this.raycaster.intersectObjects(this.selectableTiles);
                     
-                    if (this.hoveredObj) this.hoveredObj.material.emissiveIntensity = 0.2;
+                    if (this.hoveredTile) this.hoveredTile.material.emissiveIntensity = 0.05;
+                    this.ghostTower.visible = false;
+
                     if (intersects.length > 0) {
-                        const obj = intersects[0].object;
-                        if (obj.userData.gridX !== undefined) {
-                            this.hoveredObj = obj;
-                            obj.material.emissiveIntensity = 1.0;
+                        this.hoveredTile = intersects[0].object;
+                        this.hoveredTile.material.emissiveIntensity = 0.8;
+                        
+                        if (!this.hoveredTile.userData.hasTower) {
+                            this.ghostTower.visible = true;
+                            this.ghostTower.position.set(this.hoveredTile.position.x, 0.8, this.hoveredTile.position.z);
                         }
                     }
 
-                    // Enemies
+                    // Enemy movement
                     for(let i=this.enemies.length-1; i>=0; i--) {
                         const res = this.enemies[i].update(this.gameSpeed);
                         if (res === 'escaped') {
@@ -363,17 +317,16 @@
                             this.scene.remove(this.enemies[i].mesh);
                             this.enemies.splice(i, 1);
                             this.updateUI();
+                            if(this.lives <= 0) { alert("GAME OVER"); location.reload(); }
+                        } else if (this.enemies[i].alive === false) {
+                            this.gold += 15;
+                            this.enemies.splice(i, 1);
+                            this.updateUI();
                         }
                     }
 
-                    // Towers
-                    this.towers.forEach(t => {
-                        const target = t.update(this.enemies, Date.now(), this.gameSpeed);
-                        if (target && target.takeDamage(1)) {
-                            this.gold += 10;
-                            this.updateUI();
-                        }
-                    });
+                    // Tower logic
+                    this.towers.forEach(t => t.update(this.enemies, Date.now(), this.gameSpeed));
                 }
                 this.composer.render();
             }
