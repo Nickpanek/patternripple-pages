@@ -944,7 +944,7 @@
                     }
                 }
 
-                // Check for tile clicks (tower placement)
+                // Check for tile clicks (tower placement) - use recursive raycasting
                 const buildableTiles = [];
                 for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
                     for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
@@ -955,11 +955,19 @@
                     }
                 }
 
-                const intersects = this.raycaster.intersectObjects(buildableTiles);
+                // Use recursive raycasting to catch child objects too
+                const intersects = this.raycaster.intersectObjects(buildableTiles, true);
 
                 if (intersects.length > 0) {
-                    const tile = intersects[0].object;
-                    if (tile.userData.buildable && this.gold >= CONFIG.TOWER_COST) {
+                    // Find the tile mesh (either the clicked object or its parent)
+                    let tile = intersects[0].object;
+
+                    // If we clicked a child (border/corner), get the parent tile
+                    while (tile && !tile.userData.buildable) {
+                        tile = tile.parent;
+                    }
+
+                    if (tile && tile.userData.buildable && this.gold >= CONFIG.TOWER_COST) {
                         this.placeTower(tile.userData.gridX, tile.userData.gridZ);
                         return;
                     }
