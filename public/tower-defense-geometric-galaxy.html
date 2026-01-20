@@ -1647,8 +1647,8 @@
                     const worldX = current.x - CONFIG.GRID_SIZE/2 + 0.5;
                     const worldZ = current.z - CONFIG.GRID_SIZE/2 + 0.5;
                     arrow.position.set(worldX, 0.15, worldZ);
-                    arrow.rotation.x = -Math.PI / 2;
-                    arrow.rotation.z = -angle;
+                    arrow.rotation.x = -Math.PI / 2;  // Lay flat
+                    arrow.rotation.y = angle;          // Rotate in XZ plane (fixed from rotation.z)
 
                     // Store animation data
                     arrow.userData.animOffset = i * 0.5;
