@@ -25,27 +25,36 @@
 
         #ui {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 10px;
+            left: 10px;
             color: #00ffff;
-            font-size: 18px;
+            font-size: 11px;
             background: rgba(0, 0, 0, 0.85);
-            padding: 20px;
-            border-radius: 5px;
-            border: 2px solid #00ffff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #00ffff;
             z-index: 100;
             font-weight: bold;
-            text-shadow: 0 0 10px #00ffff;
+            text-shadow: 0 0 5px #00ffff;
         }
 
         #ui h2 {
-            margin-bottom: 10px;
+            margin-bottom: 4px;
             color: #ff3333;
-            text-shadow: 0 0 15px #ff3333;
+            font-size: 13px;
+            text-shadow: 0 0 10px #ff3333;
         }
 
         #ui p {
-            margin: 5px 0;
+            margin: 2px 0;
+            line-height: 1.3;
+        }
+
+        #ui .info {
+            font-size: 9px;
+            color: #888;
+            margin-top: 4px;
+            line-height: 1.2;
         }
 
         #upgradePanel {
@@ -253,26 +262,17 @@
             font-size: 14px !important;
             min-width: 60px;
         }
-
-        .info {
-            font-size: 12px;
-            color: #888;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
 
     <div id="ui">
-        <h2>⚡ GEOMETRIC GALAXY TD ⚡</h2>
-        <p>💰 Gold: <span id="gold">500</span></p>
-        <p>❤️ Lives: <span id="lives">20</span></p>
-        <p>🌊 Wave: <span id="wave">0</span></p>
-        <p class="info">
-            Click tiles to build towers (100g)<br>
-            Click towers to upgrade
-        </p>
+        <h2>⚡ GALAXY TD</h2>
+        <p>💰 <span id="gold">500</span></p>
+        <p>❤️ <span id="lives">20</span></p>
+        <p>🌊 <span id="wave">0</span></p>
+        <p class="info">Build: 100g | Click to upgrade</p>
     </div>
 
     <div id="upgradePanel">
@@ -1623,23 +1623,22 @@
                     const dz = next.z - current.z;
                     const angle = Math.atan2(dx, dz);
 
-                    // Create arrow shape
+                    // Create arrow shape pointing up (positive Y)
                     const arrowShape = new THREE.Shape();
-                    arrowShape.moveTo(0, -0.3);
-                    arrowShape.lineTo(0.15, -0.1);
-                    arrowShape.lineTo(0.05, -0.1);
-                    arrowShape.lineTo(0.05, 0.3);
-                    arrowShape.lineTo(-0.05, 0.3);
-                    arrowShape.lineTo(-0.05, -0.1);
-                    arrowShape.lineTo(-0.15, -0.1);
+                    arrowShape.moveTo(0, 0.25);      // Arrow point
+                    arrowShape.lineTo(-0.15, 0);     // Left wing
+                    arrowShape.lineTo(-0.05, 0);     // Left of shaft
+                    arrowShape.lineTo(-0.05, -0.25); // Left bottom
+                    arrowShape.lineTo(0.05, -0.25);  // Right bottom
+                    arrowShape.lineTo(0.05, 0);      // Right of shaft
+                    arrowShape.lineTo(0.15, 0);      // Right wing
                     arrowShape.closePath();
 
                     const arrowGeo = new THREE.ShapeGeometry(arrowShape);
                     const arrowMat = new THREE.MeshBasicMaterial({
                         color: 0xff00ff,
                         transparent: true,
-                        opacity: 0.5,
-                        side: THREE.DoubleSide
+                        opacity: 0.6
                     });
 
                     const arrow = new THREE.Mesh(arrowGeo, arrowMat);
