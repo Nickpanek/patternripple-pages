@@ -483,7 +483,7 @@
 
             createGlitchMesh() {
                 // Create IcosahedronGeometry with vertex jittering
-                const geometry = new THREE.IcosahedronGeometry(0.35, 1);
+                const geometry = new THREE.IcosahedronGeometry(0.35, 0);
                 const positions = geometry.attributes.position;
 
                 // Jitter vertices to create jagged glitch effect
@@ -513,17 +513,6 @@
                 });
 
                 this.mesh = new THREE.Mesh(geometry, material);
-
-                // Add wireframe overlay for extra glitch effect
-                const wireframeGeo = geometry.clone();
-                const wireframeMat = new THREE.MeshBasicMaterial({
-                    color: new THREE.Color().setHSL(hue, 1, 0.7),
-                    wireframe: true,
-                    transparent: true,
-                    opacity: 0.3
-                });
-                this.wireframe = new THREE.Mesh(wireframeGeo, wireframeMat);
-                this.mesh.add(this.wireframe);
             }
 
             applySlow(amount, duration) {
@@ -617,10 +606,6 @@
                 this.scene.remove(this.mesh);
                 this.mesh.geometry.dispose();
                 this.mesh.material.dispose();
-                if (this.wireframe) {
-                    this.wireframe.geometry.dispose();
-                    this.wireframe.material.dispose();
-                }
             }
         }
 
@@ -764,7 +749,7 @@
             createBasicTesseract(towerColor, emissiveColor, level) {
                 // Orbiting octahedrons around center
                 this.orbitingCubes = [];
-                const count = 3 + level;
+                const count = 3;
                 const radius = 0.35;
                 const cubeSize = 0.12;
 
@@ -779,12 +764,6 @@
                         roughness: 0.1
                     });
                     const cube = new THREE.Mesh(cubeGeo, cubeMat);
-
-                    // Add wireframe
-                    const wireGeo = new THREE.EdgesGeometry(cubeGeo);
-                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
-                    const wire = new THREE.LineSegments(wireGeo, wireMat);
-                    cube.add(wire);
 
                     cube.userData.angle = angle;
                     cube.userData.radius = radius;
@@ -819,7 +798,7 @@
             createRapidFireTesseract(towerColor, emissiveColor, level) {
                 // Multiple small cubes orbiting center
                 this.orbitingCubes = [];
-                const count = 4 + level;
+                const count = 4;
                 const radius = 0.4;
                 const cubeSize = 0.15;
 
@@ -834,12 +813,6 @@
                         roughness: 0.1
                     });
                     const cube = new THREE.Mesh(cubeGeo, cubeMat);
-
-                    // Add wireframe
-                    const wireGeo = new THREE.EdgesGeometry(cubeGeo);
-                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
-                    const wire = new THREE.LineSegments(wireGeo, wireMat);
-                    cube.add(wire);
 
                     cube.userData.angle = angle;
                     cube.userData.radius = radius;
@@ -868,7 +841,7 @@
             createSniperTesseract(towerColor, emissiveColor, level) {
                 // Orbiting elongated diamonds around vertical core
                 this.orbitingCubes = [];
-                const count = 4 + level;
+                const count = 3;
                 const radius = 0.4;
 
                 for (let i = 0; i < count; i++) {
@@ -925,7 +898,7 @@
             createFrostTesseract(towerColor, emissiveColor, level) {
                 // Orbiting ice crystals around frozen core
                 this.orbitingCubes = [];
-                const count = 6 + level;
+                const count = 4;
                 const radius = 0.38;
 
                 for (let i = 0; i < count; i++) {
@@ -986,7 +959,7 @@
             createSplashTesseract(towerColor, emissiveColor, level) {
                 // Orbiting explosive shards around core
                 this.orbitingCubes = [];
-                const count = 6 + level;
+                const count = 4;
                 const radius = 0.42;
 
                 for (let i = 0; i < count; i++) {
@@ -1001,12 +974,6 @@
                         roughness: 0.1
                     });
                     const cube = new THREE.Mesh(cubeGeo, cubeMat);
-
-                    // Add wireframe
-                    const wireGeo = new THREE.EdgesGeometry(cubeGeo);
-                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
-                    const wire = new THREE.LineSegments(wireGeo, wireMat);
-                    cube.add(wire);
 
                     cube.userData.angle = angle;
                     cube.userData.radius = radius;
@@ -1043,7 +1010,7 @@
             createPoisonTesseract(towerColor, emissiveColor, level) {
                 // Orbiting toxic orbs around poisonous core
                 this.orbitingCubes = [];
-                const count = 5 + level;
+                const count = 3;
                 const radius = 0.36;
 
                 for (let i = 0; i < count; i++) {
@@ -1060,12 +1027,6 @@
                         opacity: 0.85
                     });
                     const cube = new THREE.Mesh(cubeGeo, cubeMat);
-
-                    // Add wireframe
-                    const wireGeo = new THREE.EdgesGeometry(cubeGeo);
-                    const wireMat = new THREE.LineBasicMaterial({ color: towerColor, linewidth: 2 });
-                    const wire = new THREE.LineSegments(wireGeo, wireMat);
-                    cube.add(wire);
 
                     cube.userData.angle = angle;
                     cube.userData.radius = radius;
@@ -1609,9 +1570,9 @@
 
                 const bloomPass = new UnrealBloomPass(
                     new THREE.Vector2(window.innerWidth, window.innerHeight),
-                    1.5,  // Strength
-                    0.4,  // Radius
-                    0.85  // Threshold
+                    0.8,  // Strength (reduced from 1.5)
+                    0.3,  // Radius (reduced from 0.4)
+                    0.9  // Threshold (increased from 0.85)
                 );
                 this.composer.addPass(bloomPass);
 
@@ -1652,8 +1613,8 @@
             createPathArrows() {
                 this.pathArrows = [];
 
-                // Create arrows for each path segment
-                for (let i = 0; i < PATH.length - 1; i++) {
+                // Create arrows for every other path segment (reduced for performance)
+                for (let i = 0; i < PATH.length - 1; i += 2) {
                     const current = PATH[i];
                     const next = PATH[i + 1];
 
@@ -1700,7 +1661,7 @@
             }
 
             createStarfield() {
-                const starCount = 1000;
+                const starCount = 200;
                 const starGeometry = new THREE.BufferGeometry();
                 const starPositions = new Float32Array(starCount * 3);
                 const starSizes = new Float32Array(starCount);
