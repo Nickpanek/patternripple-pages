@@ -183,9 +183,12 @@
             color: white;
             text-align: center;
             backdrop-filter: blur(10px);
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
-        #waveBtn {
+        #controls button {
             background: #4ecca3;
             color: #1a1a2e;
             border: none;
@@ -197,7 +200,89 @@
             transition: all 0.3s;
         }
 
-        #waveBtn:hover {
+        #controls button:hover {
+            background: #45b393;
+            transform: scale(1.05);
+        }
+
+        #controls button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #speedControls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .speedBtn {
+            padding: 8px 15px !important;
+            font-size: 14px !important;
+        }
+
+        .speedBtn.active {
+            background: #f39c12 !important;
+            color: white !important;
+        }
+
+        #rewardPanel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            color: white;
+            display: none;
+            z-index: 300;
+            min-width: 400px;
+            border: 3px solid #f39c12;
+            text-align: center;
+        }
+
+        #rewardPanel h2 {
+            color: #f39c12;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        #rewardPanel .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+
+        #rewardPanel .bonus {
+            color: #4ecca3;
+            font-weight: bold;
+        }
+
+        #rewardPanel .total {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #f39c12;
+            font-size: 24px;
+            color: #f39c12;
+        }
+
+        #rewardPanel button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 15px;
+            background: #4ecca3;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #rewardPanel button:hover {
             background: #45b393;
             transform: scale(1.05);
         }
@@ -277,7 +362,8 @@
         <p>Wave: <span id="wave">0</span></p>
         <p style="margin-top: 10px; font-size: 14px; color: #aaa;">
             Click tiles to build towers (100g)<br>
-            Click towers to upgrade
+            Click towers to upgrade<br>
+            Use pause/speed controls below
         </p>
     </div>
 
@@ -355,6 +441,33 @@
 
     <div id="controls">
         <button id="waveBtn">START WAVE</button>
+        <button id="pauseBtn">⏸ PAUSE</button>
+        <div id="speedControls">
+            <button class="speedBtn active" data-speed="1">1x</button>
+            <button class="speedBtn" data-speed="1.5">1.5x</button>
+            <button class="speedBtn" data-speed="3">3x</button>
+        </div>
+    </div>
+
+    <div id="rewardPanel">
+        <h2>🎉 Wave Complete! 🎉</h2>
+        <div class="stat-line">
+            <span>Base Reward:</span>
+            <span class="bonus" id="baseReward">0g</span>
+        </div>
+        <div class="stat-line">
+            <span>Perfect Health Bonus:</span>
+            <span class="bonus" id="healthBonus">0g</span>
+        </div>
+        <div class="stat-line">
+            <span>Speed Clear Bonus:</span>
+            <span class="bonus" id="speedBonus">0g</span>
+        </div>
+        <div class="total">
+            <span>Total Earned: </span>
+            <span id="totalReward">0g</span>
+        </div>
+        <button id="continueBtn">CONTINUE</button>
     </div>
 
     <script type="importmap">
@@ -497,7 +610,7 @@
                 return false;
             }
 
-            update() {
+            update(gameSpeed = 1) {
                 if (!this.alive) return false;
 
                 // Update slow effect
@@ -535,7 +648,7 @@
                     }
                 } else {
                     direction.normalize();
-                    this.mesh.position.add(direction.multiplyScalar(this.speed));
+                    this.mesh.position.add(direction.multiplyScalar(this.speed * gameSpeed));
                 }
 
                 return true;
@@ -870,6 +983,10 @@
                 this.waveInProgress = false;
                 this.selectedTower = null;
                 this.pendingPlacement = null;
+                this.paused = false;
+                this.gameSpeed = 1;
+                this.waveStartTime = 0;
+                this.waveStartLives = CONFIG.INITIAL_LIVES;
 
                 this.init();
                 this.setupEventListeners();
@@ -1022,6 +1139,27 @@
                     this.startWave();
                 });
 
+                document.getElementById('pauseBtn').addEventListener('click', () => {
+                    this.togglePause();
+                });
+
+                document.getElementById('continueBtn').addEventListener('click', () => {
+                    this.closeRewardPanel();
+                });
+
+                // Speed control buttons
+                const speedButtons = document.querySelectorAll('.speedBtn');
+                speedButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const speed = parseFloat(btn.getAttribute('data-speed'));
+                        this.setGameSpeed(speed);
+
+                        // Update active state
+                        speedButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    });
+                });
+
                 document.getElementById('upgradeBtn').addEventListener('click', () => {
                     this.upgradeTower();
                 });
@@ -1062,6 +1200,10 @@
                 });
 
                 document.getElementById('upgradePanel').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+
+                document.getElementById('rewardPanel').addEventListener('click', (e) => {
                     e.stopPropagation();
                 });
             }
@@ -1277,11 +1419,47 @@
                 }
             }
 
+            togglePause() {
+                this.paused = !this.paused;
+                const pauseBtn = document.getElementById('pauseBtn');
+                if (this.paused) {
+                    pauseBtn.textContent = '▶ RESUME';
+                    pauseBtn.style.background = '#4ecca3';
+                } else {
+                    pauseBtn.textContent = '⏸ PAUSE';
+                    pauseBtn.style.background = '#4ecca3';
+                }
+            }
+
+            setGameSpeed(speed) {
+                this.gameSpeed = speed;
+            }
+
+            showRewardPanel(baseReward, healthBonus, speedBonus) {
+                const totalReward = baseReward + healthBonus + speedBonus;
+
+                document.getElementById('baseReward').textContent = baseReward + 'g';
+                document.getElementById('healthBonus').textContent = '+' + healthBonus + 'g';
+                document.getElementById('speedBonus').textContent = '+' + speedBonus + 'g';
+                document.getElementById('totalReward').textContent = totalReward + 'g';
+
+                this.gold += totalReward;
+                this.updateUI();
+
+                document.getElementById('rewardPanel').style.display = 'block';
+            }
+
+            closeRewardPanel() {
+                document.getElementById('rewardPanel').style.display = 'none';
+            }
+
             startWave() {
                 if (this.waveInProgress) return;
 
                 this.wave++;
                 this.waveInProgress = true;
+                this.waveStartTime = Date.now();
+                this.waveStartLives = this.lives;
                 this.updateUI();
 
                 // Make first 2 waves easier
@@ -1301,19 +1479,45 @@
                     setTimeout(() => {
                         const enemy = new Enemy(this.scene, PATH, this.wave);
                         this.enemies.push(enemy);
-                    }, i * spawnInterval);
+                    }, i * spawnInterval / this.gameSpeed);
                 }
 
                 // Check if wave is complete
                 setTimeout(() => {
                     const checkWaveComplete = setInterval(() => {
                         const aliveEnemies = this.enemies.filter(e => e.alive);
-                        if (aliveEnemies.length === 0) {
+                        if (aliveEnemies.length === 0 && this.waveInProgress) {
                             this.waveInProgress = false;
                             clearInterval(checkWaveComplete);
+                            this.calculateWaveReward();
                         }
                     }, 500);
-                }, enemyCount * spawnInterval + 5000);
+                }, enemyCount * spawnInterval / this.gameSpeed + 5000);
+            }
+
+            calculateWaveReward() {
+                // Base reward
+                const baseReward = 50 + (this.wave * 25);
+
+                // Perfect health bonus (no lives lost)
+                const livesLost = this.waveStartLives - this.lives;
+                let healthBonus = 0;
+                if (livesLost === 0) {
+                    healthBonus = 100 + (this.wave * 20);
+                } else if (livesLost <= 2) {
+                    healthBonus = 50 + (this.wave * 10);
+                }
+
+                // Speed clear bonus (completed in under 60 seconds)
+                const waveTime = (Date.now() - this.waveStartTime) / 1000;
+                let speedBonus = 0;
+                if (waveTime < 45) {
+                    speedBonus = 100;
+                } else if (waveTime < 60) {
+                    speedBonus = 50;
+                }
+
+                this.showRewardPanel(baseReward, healthBonus, speedBonus);
             }
 
             updateUI() {
@@ -1323,12 +1527,15 @@
             }
 
             update() {
+                // Skip update if paused
+                if (this.paused) return;
+
                 const currentTime = Date.now();
 
-                // Update enemies
+                // Update enemies with speed multiplier
                 for (let i = this.enemies.length - 1; i >= 0; i--) {
                     const enemy = this.enemies[i];
-                    const result = enemy.update();
+                    const result = enemy.update(this.gameSpeed);
 
                     if (result === 'escaped') {
                         this.lives--;
