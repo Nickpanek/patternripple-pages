@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometric Galaxy TD - Placement Fix</title>
+    <title>Geometric Galaxy TD - Final Fix</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,7 +33,7 @@
         }
 
         button:hover:not(:disabled) { background: #00ffff; color: #000; box-shadow: 0 0 20px #00ffff; }
-        button.active { background: #00ffff !important; color: #000 !important; }
+        button.active { background: #00ffff; color: #000; border-color: #00ffff; }
         
         .modal {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -45,6 +45,7 @@
         .upgrade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
         .special-btn { border-color: #ff3366; color: #ff3366; font-size: 10px; }
         h2 { font-weight: 700; font-size: 20px; letter-spacing: 4px; margin-bottom: 5px; color: #00ffff; }
+        .stat { display: flex; justify-content: space-between; margin: 10px 0; font-size: 12px; opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -107,7 +108,7 @@
                 this.health = 3 + wave * 2.5; this.speed = 0.015 + (wave * 0.001);
                 this.mesh = new THREE.Mesh(
                     new THREE.IcosahedronGeometry(0.25, 0), 
-                    new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.3, wireframe: true })
+                    new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.5, wireframe: true })
                 );
                 this.mesh.position.set(PATH[0].x - 5 + 0.5, 0.4, PATH[0].z - 5 + 0.5);
                 scene.add(this.mesh);
@@ -133,83 +134,69 @@
                 this.range = 3.5; this.damage = 1; this.fireRate = 1.5;
                 this.special = 'none'; this.lastFire = 0;
                 this.group = new THREE.Group();
-                
-                // Position group explicitly in world space
-                this.group.position.set(x - 5 + 0.5, 0, z - 5 + 0.5);
+                this.group.position.set(x - 5 + 0.5, 0.4, z - 5 + 0.5);
                 this.originalPos = this.group.position.clone();
-                
                 this.createModel();
+                
+                // Laser beam geometry
+                this.laserGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)]);
+                this.laser = new THREE.Line(this.laserGeo, new THREE.LineBasicMaterial({ color: 0xff3366, transparent: true, opacity: 0 }));
+                this.group.add(this.laser);
+                
                 scene.add(this.group);
             }
             createModel() {
-                // Remove all existing children
-                while(this.group.children.length > 0) {
-                    const child = this.group.children[0];
-                    this.group.remove(child);
-                    if(child.geometry) child.geometry.dispose();
-                }
-
-                // Small dark base
-                const p = new THREE.Mesh(
-                    new THREE.CylinderGeometry(0.3, 0.4, 0.1, 6), 
-                    new THREE.MeshStandardMaterial({ color: 0x111111 })
-                );
-                p.position.y = 0.1;
+                // Clear old models except laser
+                this.group.children.forEach(c => { if(c !== this.laser) this.group.remove(c); });
+                
+                // Base
+                const p = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 0.1, 6), new THREE.MeshStandardMaterial({ color: 0x111111 }));
                 this.group.add(p);
                 
-                let geo; 
-                const mat = new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0xff3366, emissiveIntensity: 0.8, wireframe: true });
-                
-                if (this.special === 'none') {
-                    geo = new THREE.BoxGeometry(0.35, 0.35, 0.35);
-                    this.body = new THREE.Mesh(geo, mat);
-                } else if (this.special === 'rapidfire') {
-                    this.body = new THREE.Group();
-                    const subGeo = new THREE.TetrahedronGeometry(0.2);
+                let geo; const mat = new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0xff3366, emissiveIntensity: 0.8, wireframe: true });
+                if (this.special === 'none') { geo = new THREE.BoxGeometry(0.3, 0.3, 0.3); this.body = new THREE.Mesh(geo, mat); }
+                else if (this.special === 'rapidfire') {
+                    // Fractal Geometry
+                    this.body = new THREE.Group(); const subGeo = new THREE.TetrahedronGeometry(0.2);
                     for(let i=0; i<4; i++) {
                         const m = new THREE.Mesh(subGeo, mat);
                         m.position.set(Math.sin(i*Math.PI/2)*0.2, Math.cos(i*Math.PI/2)*0.2, 0);
                         this.body.add(m);
                     }
-                } else if (this.special === 'sniper') {
-                    geo = new THREE.BoxGeometry(0.3, 0.8, 0.3);
-                    this.body = new THREE.Mesh(geo, mat);
-                } else if (this.special === 'splash') {
-                    geo = new THREE.SphereGeometry(0.35);
-                    this.body = new THREE.Mesh(geo, mat);
-                } else {
-                    geo = new THREE.TorusGeometry(0.2, 0.08);
-                    this.body = new THREE.Mesh(geo, mat);
-                }
+                } else if (this.special === 'sniper') { geo = new THREE.BoxGeometry(0.3, 0.8, 0.3); this.body = new THREE.Mesh(geo, mat); }
+                else if (this.special === 'splash') { geo = new THREE.SphereGeometry(0.35); this.body = new THREE.Mesh(geo, mat); }
+                else { geo = new THREE.TorusGeometry(0.2, 0.08); this.body = new THREE.Mesh(geo, mat); }
                 
-                this.body.position.y = 0.6; // Hover height
-                this.group.add(this.body);
+                this.body.position.y = 0.5; this.group.add(this.body);
             }
             updatePulse(time) {
                 const p = 0.6 + Math.sin(time * 3) * 0.4;
                 if (this.body.isGroup) this.body.children.forEach(c => c.material.emissiveIntensity = p);
                 else this.body.material.emissiveIntensity = p;
+                this.laser.material.opacity *= 0.8; // Fade laser
             }
             update(enemies, time, gameSpeed, onHit) {
                 const target = enemies.find(e => e.alive && e.mesh.position.distanceTo(this.group.position) < this.range);
                 if (target) {
                     if(this.special === 'sniper') { this.body.lookAt(target.mesh.position); this.body.scale.z = 1.5; }
                     if (time - this.lastFire > (1000/this.fireRate)/gameSpeed) {
-                        this.lastFire = time;
-                        onHit(target, this.damage);
+                        this.lastFire = time; onHit(target, this.damage);
                         
-                        // Lunge animation logic
-                        const dir = target.mesh.position.clone().sub(this.group.position).normalize().multiplyScalar(0.15);
+                        // Fire Laser Visual
+                        const localTarget = this.group.worldToLocal(target.mesh.position.clone());
+                        this.laser.geometry.setFromPoints([new THREE.Vector3(0, 0.5, 0), localTarget]);
+                        this.laser.geometry.attributes.position.needsUpdate = true;
+                        this.laser.material.opacity = 1.0;
+
+                        // Lunge
+                        const dir = target.mesh.position.clone().sub(this.group.position).normalize().multiplyScalar(0.2);
                         this.group.position.add(dir);
                         setTimeout(() => this.group.position.copy(this.originalPos), 50);
                         return true;
                     }
                 } else if(this.special === 'sniper') this.body.scale.z = 1;
                 
-                if (this.special === 'rapidfire') {
-                    this.body.rotation.x += 0.05 * gameSpeed;
-                    this.body.rotation.z += 0.05 * gameSpeed;
-                }
+                if (this.special === 'rapidfire') { this.body.rotation.x += 0.05 * gameSpeed; this.body.rotation.z += 0.05 * gameSpeed; }
                 return false;
             }
         }
@@ -231,10 +218,9 @@
                 this.composer = new EffectComposer(this.renderer);
                 this.composer.addPass(new RenderPass(this.scene, this.camera));
                 this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.35, 0.2, 0.95));
-                
                 this.scene.add(new THREE.AmbientLight(0x404040, 0.6));
 
-                // Stars in sky
+                // Stars
                 const starGeo = new THREE.BufferGeometry(); const starPos = [];
                 for(let i=0; i<3000; i++) {
                     const r = 20 + Math.random() * 30; const theta = Math.random() * Math.PI * 2; const phi = Math.acos(2 * Math.random() - 1);
@@ -244,10 +230,11 @@
                 this.stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.06 }));
                 this.scene.add(this.stars);
 
-                // Placement Ghost
+                // Ghost
                 this.ghost = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.3), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.3 }));
                 this.ghost.visible = false; this.scene.add(this.ghost);
                 
+                // Grid
                 const pathSet = new Set(PATH.map(p => `${p.x},${p.z}`));
                 for(let x=0; x<10; x++) {
                     for(let z=0; z<10; z++) {
@@ -283,19 +270,9 @@
                 });
                 document.getElementById('confirmBuild').onclick = () => {
                     if (this.gold >= 100 && this.pendingTile) {
-                        const {x, z} = this.pendingTile.userData;
-                        
-                        // Explicit Tower Creation
-                        const t = new Tower(this.scene, x, z);
-                        this.towers.push(t);
-                        
-                        // Update Data
-                        this.pendingTile.userData.tower = t;
-                        this.gold -= 100;
-                        this.updateUI();
-                        
-                        // Close & Cleanup
-                        document.getElementById('buildModal').style.display = 'none';
+                        this.gold -= 100; const t = new Tower(this.scene, this.pendingTile.userData.x, this.pendingTile.userData.z);
+                        this.towers.push(t); this.pendingTile.userData.tower = t;
+                        document.getElementById('buildModal').style.display = 'none'; this.updateUI();
                         this.pendingTile = null;
                     }
                 };
