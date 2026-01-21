@@ -411,15 +411,65 @@
                 }
             }
 
-            playShoot() {
+            playShoot(towerType = 'basic') {
                 if (!this.enabled) return;
                 try {
-                    const synth = new Tone.Synth({
-                        oscillator: { type: 'sine' },
-                        envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
-                    }).toDestination();
-                    synth.triggerAttackRelease('C6', '0.05');
-                    setTimeout(() => synth.dispose(), 200);
+                    if (towerType === 'sniper') {
+                        // Swift energy beam - frequency sweep
+                        const synth = new Tone.Synth({
+                            oscillator: { type: 'sine' },
+                            envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.05 }
+                        }).toDestination();
+                        synth.frequency.rampTo('G6', 0.03);
+                        synth.triggerAttackRelease('C7', '0.08');
+                        setTimeout(() => synth.dispose(), 200);
+                    } else if (towerType === 'poison') {
+                        // Bubbly toxic sound
+                        const synth = new Tone.Synth({
+                            oscillator: { type: 'triangle' },
+                            envelope: { attack: 0.01, decay: 0.15, sustain: 0.1, release: 0.15 }
+                        }).toDestination();
+                        synth.triggerAttackRelease('E3', '0.12');
+                        setTimeout(() => {
+                            synth.triggerAttackRelease('G3', '0.05');
+                        }, 60);
+                        setTimeout(() => synth.dispose(), 300);
+                    } else if (towerType === 'splash') {
+                        // Burst explosion sound
+                        const synth = new Tone.NoiseSynth({
+                            noise: { type: 'pink' },
+                            envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
+                        }).toDestination();
+                        synth.triggerAttackRelease('0.06');
+                        setTimeout(() => synth.dispose(), 200);
+                    } else if (towerType === 'frost') {
+                        // Crystalline icy sound
+                        const synth = new Tone.Synth({
+                            oscillator: { type: 'sine' },
+                            envelope: { attack: 0.001, decay: 0.2, sustain: 0.1, release: 0.3 }
+                        }).toDestination();
+                        synth.triggerAttackRelease('E6', '0.15');
+                        setTimeout(() => {
+                            synth.triggerAttackRelease('G#6', '0.08');
+                        }, 40);
+                        setTimeout(() => synth.dispose(), 500);
+                    } else if (towerType === 'rapidfire') {
+                        // Quick rapid fire blip
+                        const synth = new Tone.Synth({
+                            oscillator: { type: 'square' },
+                            envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.05 }
+                        }).toDestination();
+                        synth.triggerAttackRelease('A5', '0.03');
+                        setTimeout(() => synth.dispose(), 150);
+                    } else {
+                        // Basic tower sound
+                        const synth = new Tone.Synth({
+                            oscillator: { type: 'sine' },
+                            envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
+                        }).toDestination();
+                        synth.triggerAttackRelease('C6', '0.05');
+                        setTimeout(() => synth.dispose(), 200);
+                    }
                 } catch (e) { console.error('Sound error:', e); }
             }
 
@@ -1349,7 +1399,7 @@
 
                 // Apply damage
                 target.takeDamage(this.damage);
-                soundSystem.playShoot();
+                soundSystem.playShoot(this.specialization || 'basic');
 
                 // Apply special effects
                 if (this.specialization === 'frost') {
