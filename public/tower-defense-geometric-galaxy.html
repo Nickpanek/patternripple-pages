@@ -2431,12 +2431,14 @@
 
                 // Pulse buildable tiles (always animate, even when paused)
                 const pulseTime = Date.now() * 0.001;
+                const pulseFactor = Math.sin(pulseTime * 0.8) * 0.5 + 0.5; // 0 to 1
                 for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
                     for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
                         const cell = this.grid[x][z];
                         if (cell.type === 'elevated') {
                             // Pulse from 0.6 (softest) to 0.8 (33% brighter)
-                            cell.mesh.material.emissiveIntensity = 0.7 + Math.sin(pulseTime * 1.5) * 0.1;
+                            const intensity = 0.6 + (pulseFactor * 0.2);
+                            cell.mesh.material.emissiveIntensity = intensity;
                         }
                     }
                 }
