@@ -273,6 +273,7 @@
         <p>❤️ <span id="lives">20</span></p>
         <p>🌊 <span id="wave">0</span></p>
         <p class="info">Build: 100g | Click to upgrade</p>
+        <button id="soundToggle" style="margin-top: 8px; padding: 4px 8px; background: rgba(0,255,255,0.1); border: 1px solid #00ffff; color: #00ffff; cursor: pointer; font-size: 10px; border-radius: 3px;">🔊 Sound ON</button>
     </div>
 
     <div id="upgradePanel">
@@ -1585,7 +1586,7 @@
                     // Splash creates a burst sphere
                     const sphereGeo = new THREE.SphereGeometry(0.25, 12, 12);
                     const sphereMat = new THREE.MeshBasicMaterial({
-                        color: 0xff0000,
+                        color: 0xffffff,
                         transparent: true,
                         opacity: 0.9
                     });
@@ -1595,7 +1596,7 @@
                     // Add outer glow sphere
                     const glowSphereGeo = new THREE.SphereGeometry(0.35, 12, 12);
                     const glowSphereMat = new THREE.MeshBasicMaterial({
-                        color: 0xff6666,
+                        color: 0xdddddd,
                         transparent: true,
                         opacity: 0.4
                     });
@@ -1628,7 +1629,7 @@
                     // Glow beam
                     const glowGeo = new THREE.CylinderGeometry(0.08, 0.08, distance, 8);
                     const glowMat = new THREE.MeshBasicMaterial({
-                        color: 0xff0000,
+                        color: 0xffffff,
                         transparent: true,
                         opacity: 0.6
                     });
@@ -1883,28 +1884,31 @@
                                 CONFIG.TILE_SIZE * 0.95
                             );
 
-                            let tileColor, emissiveColor, borderColor;
+                            let tileColor, emissiveColor, borderColor, emissiveIntensity;
                             if (isStart) {
-                                // Yellow start tile
-                                tileColor = 0xffdd00;
-                                emissiveColor = 0xffff00;
-                                borderColor = 0xffff00;
+                                // Subtle green start tile
+                                tileColor = 0x00aa00;
+                                emissiveColor = 0x00ff00;
+                                borderColor = 0x00ff00;
+                                emissiveIntensity = 0.8;
                             } else if (isEnd) {
                                 // Red end tile
                                 tileColor = 0xff0000;
                                 emissiveColor = 0xff0000;
                                 borderColor = 0xff0000;
+                                emissiveIntensity = 1.8;
                             } else {
                                 // Orange regular path
                                 tileColor = 0xff8800;
                                 emissiveColor = 0xff8800;
                                 borderColor = 0xff8800;
+                                emissiveIntensity = 1.8;
                             }
 
                             const material = new THREE.MeshStandardMaterial({
                                 color: tileColor,
                                 emissive: emissiveColor,
-                                emissiveIntensity: 1.8,
+                                emissiveIntensity: emissiveIntensity,
                                 metalness: 0.9,
                                 roughness: 0.1,
                                 transparent: true,
@@ -1977,6 +1981,15 @@
 
                 document.getElementById('closeBtn').addEventListener('click', () => {
                     this.closeUpgradePanel();
+                });
+
+                // Sound toggle button
+                document.getElementById('soundToggle').addEventListener('click', () => {
+                    soundSystem.enabled = !soundSystem.enabled;
+                    const btn = document.getElementById('soundToggle');
+                    btn.textContent = soundSystem.enabled ? '🔊 Sound ON' : '🔇 Sound OFF';
+                    btn.style.borderColor = soundSystem.enabled ? '#00ffff' : '#666';
+                    btn.style.color = soundSystem.enabled ? '#00ffff' : '#666';
                 });
 
                 // Upgrade tree specialization options
