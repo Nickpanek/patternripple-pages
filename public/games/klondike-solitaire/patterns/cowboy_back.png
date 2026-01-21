@@ -1,0 +1,17 @@
+<svg width="200" height="280" xmlns="http://www.w3.org/2000/svg">
+  <!-- Cowboy Pattern Placeholder -->
+  <defs>
+    <pattern id="cowboyPattern" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <rect width="60" height="60" fill="#654321"/>
+      <circle cx="15" cy="15" r="8" fill="#8B7355" opacity="0.6"/>
+      <circle cx="45" cy="15" r="8" fill="#8B7355" opacity="0.6"/>
+      <circle cx="15" cy="45" r="8" fill="#8B7355" opacity="0.6"/>
+      <circle cx="45" cy="45" r="8" fill="#8B7355" opacity="0.6"/>
+      <path d="M 25 25 L 35 25 L 30 35 Z" fill="#A0826D" opacity="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="200" height="280" fill="url(#cowboyPattern)"/>
+  <text x="100" y="140" font-family="Arial" font-size="14" fill="#D2B48C" text-anchor="middle" opacity="0.5">
+    REPLACE WITH YOUR COWBOY PATTERN
+  </text>
+</svg>
