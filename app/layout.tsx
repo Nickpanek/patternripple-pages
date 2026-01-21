@@ -1,12 +1,8 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import Script from "next/script";
-
-// stop Next from preloading the font to remove preload warnings
-const inter = Inter({ subsets: ["latin"], display: "swap", preload: false });
 
 export const metadata: Metadata = {
   title: "PatternRipple - Creative Tools and Utilities",
@@ -40,7 +36,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className={`${inter.className} bg-[#111] text-gray-300 min-h-screen`}>
+      <body className="font-sans bg-[#111] text-gray-300 min-h-screen">
         <nav className="bg-[#1a1a1a]/90 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
             <Link href="/" className="text-xl font-bold text-accent">
