@@ -2434,7 +2434,7 @@
                 for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
                     for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
                         const cell = this.grid[x][z];
-                        if (cell.type === 'elevated' && !cell.tower) {
+                        if (cell.type === 'elevated') {
                             // Pulse from 0.6 (softest) to 0.8 (33% brighter)
                             cell.mesh.material.emissiveIntensity = 0.7 + Math.sin(pulseTime * 1.5) * 0.1;
                         }
