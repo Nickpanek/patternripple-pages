@@ -1782,12 +1782,12 @@
                 directionalLight.position.set(5, 10, 5);
                 this.scene.add(directionalLight);
 
-                // Add point lights for neon atmosphere
-                const pointLight1 = new THREE.PointLight(0x00ffff, 2, 20);
+                // Add point lights for neon atmosphere (reduced to prevent center glow)
+                const pointLight1 = new THREE.PointLight(0x00ffff, 1.0, 12);
                 pointLight1.position.set(-3, 3, -3);
                 this.scene.add(pointLight1);
 
-                const pointLight2 = new THREE.PointLight(0xff3333, 2, 20);
+                const pointLight2 = new THREE.PointLight(0xff3333, 1.0, 12);
                 pointLight2.position.set(3, 3, 3);
                 this.scene.add(pointLight2);
 
