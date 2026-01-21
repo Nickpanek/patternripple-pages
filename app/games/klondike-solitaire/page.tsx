@@ -215,10 +215,11 @@ type CardProps = {
   onClick?: () => void;
   draggable?: boolean;
   onDragStart?: (e: React.DragEvent) => void;
+  onDragEnd?: () => void;
   style?: React.CSSProperties;
 };
 
-function CardComponent({ card, onClick, draggable, onDragStart, style }: CardProps) {
+function CardComponent({ card, onClick, draggable, onDragStart, onDragEnd, style }: CardProps) {
   const { currentTheme } = useTheme();
 
   if (!card.faceUp) {
@@ -239,6 +240,7 @@ function CardComponent({ card, onClick, draggable, onDragStart, style }: CardPro
         onClick={onClick}
         draggable={draggable}
         onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
       />
     );
   }
@@ -261,6 +263,7 @@ function CardComponent({ card, onClick, draggable, onDragStart, style }: CardPro
       onClick={onClick}
       draggable={draggable}
       onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
     >
       <div className="text-xs absolute top-1 left-1 font-bold leading-none">
         {card.rank}
@@ -320,67 +323,94 @@ function KlondikeSolitaire() {
     setDraggedCards({ cards, source });
   };
 
+  const handleDragEnd = () => {
+    // Reset dragged cards state when drag ends (whether successful or not)
+    setDraggedCards(null);
+  };
+
   const handleDrop = (target: string, targetIndex?: number) => (e: React.DragEvent) => {
     e.preventDefault();
     if (!draggedCards) return;
 
-    setGameState((prev) => {
-      const newState = { ...prev };
-      const { cards, source } = draggedCards;
+    const { cards, source } = draggedCards;
 
-      // Remove cards from source
-      if (source.startsWith("tableau-")) {
-        const sourceCol = parseInt(source.split("-")[1]);
-        const pile = [...newState.tableau[sourceCol]];
-        const startIndex = pile.findIndex(c => c.id === cards[0].id);
-        newState.tableau[sourceCol] = pile.slice(0, startIndex);
+    // Validate move BEFORE modifying state
+    let isValidMove = false;
 
-        // Flip last card if needed
-        if (newState.tableau[sourceCol].length > 0) {
-          const lastCard = newState.tableau[sourceCol][newState.tableau[sourceCol].length - 1];
-          lastCard.faceUp = true;
-        }
-      } else if (source === "waste") {
-        newState.waste = newState.waste.slice(0, -1);
-      } else if (source.startsWith("foundation-")) {
-        const foundIndex = parseInt(source.split("-")[1]);
-        newState.foundations[foundIndex] = newState.foundations[foundIndex].slice(0, -1);
-      }
-
-      // Add cards to target
-      if (target.startsWith("tableau-")) {
-        const targetCol = parseInt(target.split("-")[1]);
-        const pile = [...newState.tableau[targetCol]];
+    if (target.startsWith("tableau-")) {
+      const targetCol = parseInt(target.split("-")[1]);
+      setGameState((prev) => {
+        const pile = [...prev.tableau[targetCol]];
         const topCard = pile.length > 0 ? pile[pile.length - 1] : null;
 
         if (canPlaceOnTableau(cards[0], topCard)) {
+          const newState = { ...prev };
+
+          // Remove cards from source
+          if (source.startsWith("tableau-")) {
+            const sourceCol = parseInt(source.split("-")[1]);
+            const sourcePile = [...newState.tableau[sourceCol]];
+            const startIndex = sourcePile.findIndex(c => c.id === cards[0].id);
+            newState.tableau[sourceCol] = sourcePile.slice(0, startIndex);
+
+            // Flip last card if needed
+            if (newState.tableau[sourceCol].length > 0) {
+              const lastCard = newState.tableau[sourceCol][newState.tableau[sourceCol].length - 1];
+              lastCard.faceUp = true;
+            }
+          } else if (source === "waste") {
+            newState.waste = newState.waste.slice(0, -1);
+          } else if (source.startsWith("foundation-")) {
+            const foundIndex = parseInt(source.split("-")[1]);
+            newState.foundations[foundIndex] = newState.foundations[foundIndex].slice(0, -1);
+          }
+
+          // Add cards to target
           newState.tableau[targetCol] = [...pile, ...cards];
           newState.moves++;
-        } else {
-          // Invalid move, restore original state
-          return prev;
+          isValidMove = true;
+
+          return newState;
         }
-      } else if (target.startsWith("foundation-")) {
-        if (cards.length === 1) {
-          const foundIndex = parseInt(target.split("-")[1]);
-          if (canPlaceOnFoundation(cards[0], newState.foundations[foundIndex])) {
+        return prev;
+      });
+    } else if (target.startsWith("foundation-")) {
+      if (cards.length === 1) {
+        const foundIndex = parseInt(target.split("-")[1]);
+        setGameState((prev) => {
+          if (canPlaceOnFoundation(cards[0], prev.foundations[foundIndex])) {
+            const newState = { ...prev };
+
+            // Remove from source
+            if (source.startsWith("tableau-")) {
+              const col = parseInt(source.split("-")[1]);
+              newState.tableau[col] = newState.tableau[col].slice(0, -1);
+              if (newState.tableau[col].length > 0) {
+                newState.tableau[col][newState.tableau[col].length - 1].faceUp = true;
+              }
+            } else if (source === "waste") {
+              newState.waste = newState.waste.slice(0, -1);
+            } else if (source.startsWith("foundation-")) {
+              const sourceFoundIndex = parseInt(source.split("-")[1]);
+              newState.foundations[sourceFoundIndex] = newState.foundations[sourceFoundIndex].slice(0, -1);
+            }
+
+            // Add to foundation
             newState.foundations[foundIndex] = [...newState.foundations[foundIndex], cards[0]];
             newState.moves++;
+            isValidMove = true;
 
             // Check for win
             if (checkWin(newState.foundations)) {
               newState.won = true;
             }
-          } else {
-            return prev;
-          }
-        } else {
-          return prev;
-        }
-      }
 
-      return newState;
-    });
+            return newState;
+          }
+          return prev;
+        });
+      }
+    }
 
     setDraggedCards(null);
   };
@@ -531,6 +561,7 @@ function KlondikeSolitaire() {
                     [gameState.waste[gameState.waste.length - 1]],
                     "waste"
                   )}
+                  onDragEnd={handleDragEnd}
                   onClick={() =>
                     autoMoveToFoundation(
                       gameState.waste[gameState.waste.length - 1],
@@ -562,6 +593,7 @@ function KlondikeSolitaire() {
                       [foundation[foundation.length - 1]],
                       `foundation-${i}`
                     )}
+                    onDragEnd={handleDragEnd}
                   />
                 </div>
               ) : (
@@ -608,6 +640,7 @@ function KlondikeSolitaire() {
                             ? handleDragStart(cardsFromHere, `tableau-${colIndex}`)
                             : undefined
                         }
+                        onDragEnd={canDrag ? handleDragEnd : undefined}
                         onClick={
                           canDrag && cardIndex === pile.length - 1
                             ? () => autoMoveToFoundation(card, `tableau-${colIndex}`)
