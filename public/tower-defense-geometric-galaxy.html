@@ -364,7 +364,8 @@
     {
         "imports": {
             "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+            "tone": "https://cdn.jsdelivr.net/npm/tone@15.1.22/build/Tone.js"
         }
     }
     </script>
@@ -375,6 +376,7 @@
         import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
         import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
         import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+        import * as Tone from 'tone';
 
         // ============================================
         // GAME CONFIGURATION
@@ -387,6 +389,85 @@
             INITIAL_LIVES: 20,
             ELEVATION_HEIGHT: 0.5
         };
+
+        // ============================================
+        // SOUND SYSTEM
+        // ============================================
+        class SoundSystem {
+            constructor() {
+                this.enabled = false;
+                this.initialized = false;
+            }
+
+            async init() {
+                if (this.initialized) return;
+                await Tone.start();
+                this.initialized = true;
+                this.enabled = true;
+            }
+
+            playShoot() {
+                if (!this.enabled) return;
+                const synth = new Tone.Synth({
+                    oscillator: { type: 'sine' },
+                    envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
+                }).toDestination();
+                synth.triggerAttackRelease('C6', '0.05');
+                setTimeout(() => synth.dispose(), 200);
+            }
+
+            playEnemyDeath() {
+                if (!this.enabled) return;
+                const synth = new Tone.Synth({
+                    oscillator: { type: 'square' },
+                    envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.2 }
+                }).toDestination();
+                synth.triggerAttackRelease('A2', '0.15');
+                setTimeout(() => synth.dispose(), 500);
+            }
+
+            playTowerPlace() {
+                if (!this.enabled) return;
+                const synth = new Tone.Synth({
+                    oscillator: { type: 'triangle' },
+                    envelope: { attack: 0.001, decay: 0.1, sustain: 0.3, release: 0.1 }
+                }).toDestination();
+                synth.triggerAttackRelease('G5', '0.1');
+                setTimeout(() => synth.dispose(), 300);
+            }
+
+            playUpgrade() {
+                if (!this.enabled) return;
+                const synth = new Tone.Synth({
+                    oscillator: { type: 'sine' },
+                    envelope: { attack: 0.005, decay: 0.1, sustain: 0.2, release: 0.2 }
+                }).toDestination();
+                synth.triggerAttackRelease('C6', '0.05');
+                setTimeout(() => {
+                    synth.triggerAttackRelease('E6', '0.05');
+                }, 50);
+                setTimeout(() => synth.dispose(), 400);
+            }
+
+            playWaveComplete() {
+                if (!this.enabled) return;
+                const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                synth.triggerAttackRelease(['C5', 'E5', 'G5'], '0.2');
+                setTimeout(() => synth.dispose(), 500);
+            }
+
+            playGameOver() {
+                if (!this.enabled) return;
+                const synth = new Tone.Synth({
+                    oscillator: { type: 'sawtooth' },
+                    envelope: { attack: 0.01, decay: 0.5, sustain: 0, release: 0.5 }
+                }).toDestination();
+                synth.triggerAttackRelease('E3', '0.8');
+                setTimeout(() => synth.dispose(), 1500);
+            }
+        }
+
+        const soundSystem = new SoundSystem();
 
         // ============================================
         // SCANLINES SHADER
@@ -540,6 +621,7 @@
             }
 
             die() {
+                soundSystem.playEnemyDeath();
                 // Shrink and fade effect
                 const fadeOut = () => {
                     this.mesh.scale.multiplyScalar(0.9);
@@ -1250,6 +1332,7 @@
 
                 // Apply damage
                 target.takeDamage(this.damage);
+                soundSystem.playShoot();
 
                 // Apply special effects
                 if (this.specialization === 'frost') {
@@ -1988,6 +2071,11 @@
             }
 
             onClick(event) {
+                // Initialize sound on first click
+                if (!soundSystem.initialized) {
+                    soundSystem.init();
+                }
+
                 this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
                 this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -2071,6 +2159,7 @@
                     this.towers.push(tower);
                     cell.tower = tower;
                     this.updateUI();
+                    soundSystem.playTowerPlace();
                 }
             }
 
@@ -2144,6 +2233,7 @@
                 const upgraded = this.selectedTower.upgrade();
 
                 if (upgraded) {
+                    soundSystem.playUpgrade();
                     this.updateUI();
                     // Update panel
                     this.selectTower(this.selectedTower);
@@ -2191,6 +2281,7 @@
                         const aliveEnemies = this.enemies.filter(e => e.alive);
                         if (aliveEnemies.length === 0 && this.waveInProgress) {
                             this.waveInProgress = false;
+                            soundSystem.playWaveComplete();
                             clearInterval(checkComplete);
                         }
                     }, 500);
@@ -2238,6 +2329,7 @@
                         this.enemies.splice(i, 1);
 
                         if (this.lives <= 0) {
+                            soundSystem.playGameOver();
                             alert('💀 GAME OVER 💀\nFinal Wave: ' + this.wave);
                             location.reload();
                         }
