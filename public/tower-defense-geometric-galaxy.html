@@ -1702,10 +1702,10 @@
                                 emissiveColor = 0xff0000;
                                 borderColor = 0xff0000;
                             } else {
-                                // Purple/magenta regular path
-                                tileColor = 0xcc00cc;
-                                emissiveColor = 0xff00ff;
-                                borderColor = 0xff00ff;
+                                // Orange regular path
+                                tileColor = 0xff8800;
+                                emissiveColor = 0xff8800;
+                                borderColor = 0xff8800;
                             }
 
                             const material = new THREE.MeshStandardMaterial({
@@ -1715,7 +1715,7 @@
                                 metalness: 0.9,
                                 roughness: 0.1,
                                 transparent: true,
-                                opacity: 1.0
+                                opacity: 0.7
                             });
                             const tile = new THREE.Mesh(geometry, material);
                             tile.position.set(worldX, 0, worldZ);
@@ -2004,16 +2004,11 @@
                     }
                 }
 
-                const tileIntersects = this.raycaster.intersectObjects(allTiles, true);
+                const tileIntersects = this.raycaster.intersectObjects(allTiles, false);
 
                 if (tileIntersects.length > 0) {
-                    // Find the tile mesh
-                    let tile = tileIntersects[0].object;
-
-                    // If we clicked a child (border), get the parent tile
-                    while (tile && !tile.userData.buildable) {
-                        tile = tile.parent;
-                    }
+                    // Get the tile mesh directly
+                    const tile = tileIntersects[0].object;
 
                     if (tile && tile.userData.buildable) {
                         const gridX = tile.userData.gridX;
