@@ -814,36 +814,36 @@
                 }
 
                 // Determine color based on specialization
-                let towerColor = 0x00ffff;
-                let emissiveColor = 0x00ffff;
+                let towerColor = 0xff0000;
+                let emissiveColor = 0xff0000;
 
                 if (this.specialization) {
                     switch(this.specialization) {
                         case 'rapidfire':
-                            towerColor = 0xff3333;
-                            emissiveColor = 0xff3333;
+                            towerColor = 0xff0000;
+                            emissiveColor = 0xff0000;
                             break;
                         case 'sniper':
-                            towerColor = 0x4a90e2;
-                            emissiveColor = 0x4a90e2;
+                            towerColor = 0xff0000;
+                            emissiveColor = 0xff0000;
                             break;
                         case 'frost':
-                            towerColor = 0x74b9ff;
-                            emissiveColor = 0x74b9ff;
+                            towerColor = 0xff0000;
+                            emissiveColor = 0xff0000;
                             break;
                         case 'splash':
-                            towerColor = 0xff7f50;
-                            emissiveColor = 0xff7f50;
+                            towerColor = 0xff0000;
+                            emissiveColor = 0xff0000;
                             break;
                         case 'poison':
-                            towerColor = 0x6c5ce7;
-                            emissiveColor = 0x6c5ce7;
+                            towerColor = 0xff0000;
+                            emissiveColor = 0xff0000;
                             break;
                     }
                 }
 
-                // PEDESTAL - 1:1 scale BoxGeometry with perfect UV mapping
-                const pedestalGeo = new THREE.BoxGeometry(1, 0.2, 1);
+                // PEDESTAL - smaller size
+                const pedestalGeo = new THREE.BoxGeometry(0.7, 0.15, 0.7);
                 pedestalGeo.computeBoundingBox();
 
                 const pedestalMat = new THREE.MeshStandardMaterial({
@@ -899,8 +899,8 @@
                 // Orbiting octahedrons around center
                 this.orbitingCubes = [];
                 const count = 3;
-                const radius = 0.35;
-                const cubeSize = 0.12;
+                const radius = 0.25;
+                const cubeSize = 0.09;
 
                 for (let i = 0; i < count; i++) {
                     const angle = (i / count) * Math.PI * 2;
@@ -925,7 +925,7 @@
                 }
 
                 // Central core cube
-                const coreGeo = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+                const coreGeo = new THREE.BoxGeometry(0.15, 0.15, 0.15);
                 const coreMat = new THREE.MeshStandardMaterial({
                     color: towerColor,
                     emissive: emissiveColor,
@@ -948,8 +948,8 @@
                 // Multiple small cubes orbiting center
                 this.orbitingCubes = [];
                 const count = 4;
-                const radius = 0.4;
-                const cubeSize = 0.15;
+                const radius = 0.28;
+                const cubeSize = 0.11;
 
                 for (let i = 0; i < count; i++) {
                     const angle = (i / count) * Math.PI * 2;
@@ -974,7 +974,7 @@
                 }
 
                 // Central core
-                const coreGeo = new THREE.OctahedronGeometry(0.2);
+                const coreGeo = new THREE.OctahedronGeometry(0.15);
                 const coreMat = new THREE.MeshStandardMaterial({
                     color: towerColor,
                     emissive: emissiveColor,
@@ -991,12 +991,12 @@
                 // Orbiting elongated diamonds around vertical core
                 this.orbitingCubes = [];
                 const count = 3;
-                const radius = 0.4;
+                const radius = 0.28;
 
                 for (let i = 0; i < count; i++) {
                     const angle = (i / count) * Math.PI * 2;
                     // Elongated diamond shape
-                    const cubeGeo = new THREE.OctahedronGeometry(0.08);
+                    const cubeGeo = new THREE.OctahedronGeometry(0.06);
                     cubeGeo.scale(0.5, 2, 0.5);
 
                     const cubeMat = new THREE.MeshStandardMaterial({
@@ -1025,7 +1025,7 @@
                 }
 
                 // Central tall crystal
-                const coreGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 8);
+                const coreGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.6, 8);
                 const coreMat = new THREE.MeshStandardMaterial({
                     color: towerColor,
                     emissive: emissiveColor,
@@ -1048,12 +1048,12 @@
                 // Orbiting ice crystals around frozen core
                 this.orbitingCubes = [];
                 const count = 4;
-                const radius = 0.38;
+                const radius = 0.27;
 
                 for (let i = 0; i < count; i++) {
                     const angle = (i / count) * Math.PI * 2;
                     // Ice crystal shape
-                    const cubeGeo = new THREE.ConeGeometry(0.06, 0.25, 6);
+                    const cubeGeo = new THREE.ConeGeometry(0.045, 0.18, 6);
                     const cubeMat = new THREE.MeshStandardMaterial({
                         color: towerColor,
                         emissive: emissiveColor,
@@ -1084,7 +1084,7 @@
                 }
 
                 // Central frozen octahedron
-                const coreGeo = new THREE.OctahedronGeometry(0.18);
+                const coreGeo = new THREE.OctahedronGeometry(0.13);
                 const coreMat = new THREE.MeshStandardMaterial({
                     color: towerColor,
                     emissive: emissiveColor,
@@ -1109,12 +1109,12 @@
                 // Orbiting explosive shards around core
                 this.orbitingCubes = [];
                 const count = 4;
-                const radius = 0.42;
+                const radius = 0.29;
 
                 for (let i = 0; i < count; i++) {
                     const angle = (i / count) * Math.PI * 2;
                     // Jagged shard shape
-                    const cubeGeo = new THREE.TetrahedronGeometry(0.12);
+                    const cubeGeo = new THREE.TetrahedronGeometry(0.09);
                     const cubeMat = new THREE.MeshStandardMaterial({
                         color: towerColor,
                         emissive: emissiveColor,
@@ -1136,7 +1136,7 @@
                 }
 
                 // Central explosive core - dodecahedron
-                const coreGeo = new THREE.DodecahedronGeometry(0.16);
+                const coreGeo = new THREE.DodecahedronGeometry(0.12);
                 const coreMat = new THREE.MeshStandardMaterial({
                     color: towerColor,
                     emissive: emissiveColor,
@@ -1160,12 +1160,12 @@
                 // Orbiting toxic orbs around poisonous core
                 this.orbitingCubes = [];
                 const count = 3;
-                const radius = 0.36;
+                const radius = 0.25;
 
                 for (let i = 0; i < count; i++) {
                     const angle = (i / count) * Math.PI * 2;
                     // Toxic orb with jagged exterior
-                    const cubeGeo = new THREE.IcosahedronGeometry(0.1);
+                    const cubeGeo = new THREE.IcosahedronGeometry(0.07);
                     const cubeMat = new THREE.MeshStandardMaterial({
                         color: towerColor,
                         emissive: emissiveColor,
@@ -1189,7 +1189,7 @@
                 }
 
                 // Central toxic sphere
-                const coreGeo = new THREE.SphereGeometry(0.15, 8, 8);
+                const coreGeo = new THREE.SphereGeometry(0.11, 8, 8);
                 const coreMat = new THREE.MeshStandardMaterial({
                     color: towerColor,
                     emissive: emissiveColor,
@@ -1213,7 +1213,7 @@
             createRangeIndicator() {
                 const geometry = new THREE.RingGeometry(this.range - 0.1, this.range, 32);
                 const material = new THREE.MeshBasicMaterial({
-                    color: this.specialization ? this.getColorForSpecialization() : 0x00ffff,
+                    color: 0xff0000,
                     transparent: true,
                     opacity: 0.15,
                     side: THREE.DoubleSide
@@ -1226,15 +1226,7 @@
             }
 
             getColorForSpecialization() {
-                if (!this.specialization) return 0x00ffff;
-                switch(this.specialization) {
-                    case 'rapidfire': return 0xff3333;
-                    case 'sniper': return 0x4a90e2;
-                    case 'frost': return 0x74b9ff;
-                    case 'splash': return 0xff7f50;
-                    case 'poison': return 0x6c5ce7;
-                    default: return 0x00ffff;
-                }
+                return 0xff0000;
             }
 
             gridToWorld(x, z) {
