@@ -365,7 +365,7 @@
         "imports": {
             "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
             "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
-            "tone": "https://cdn.jsdelivr.net/npm/tone@15.1.22/build/Tone.js"
+            "tone": "https://cdn.skypack.dev/tone@15.1.22"
         }
     }
     </script>
@@ -401,69 +401,86 @@
 
             async init() {
                 if (this.initialized) return;
-                await Tone.start();
-                this.initialized = true;
-                this.enabled = true;
+                try {
+                    await Tone.start();
+                    this.initialized = true;
+                    this.enabled = true;
+                    console.log('🔊 Sound system initialized');
+                } catch (error) {
+                    console.error('Failed to initialize sound:', error);
+                }
             }
 
             playShoot() {
                 if (!this.enabled) return;
-                const synth = new Tone.Synth({
-                    oscillator: { type: 'sine' },
-                    envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
-                }).toDestination();
-                synth.triggerAttackRelease('C6', '0.05');
-                setTimeout(() => synth.dispose(), 200);
+                try {
+                    const synth = new Tone.Synth({
+                        oscillator: { type: 'sine' },
+                        envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
+                    }).toDestination();
+                    synth.triggerAttackRelease('C6', '0.05');
+                    setTimeout(() => synth.dispose(), 200);
+                } catch (e) { console.error('Sound error:', e); }
             }
 
             playEnemyDeath() {
                 if (!this.enabled) return;
-                const synth = new Tone.Synth({
-                    oscillator: { type: 'square' },
-                    envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.2 }
-                }).toDestination();
-                synth.triggerAttackRelease('A2', '0.15');
-                setTimeout(() => synth.dispose(), 500);
+                try {
+                    const synth = new Tone.Synth({
+                        oscillator: { type: 'square' },
+                        envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.2 }
+                    }).toDestination();
+                    synth.triggerAttackRelease('A2', '0.15');
+                    setTimeout(() => synth.dispose(), 500);
+                } catch (e) { console.error('Sound error:', e); }
             }
 
             playTowerPlace() {
                 if (!this.enabled) return;
-                const synth = new Tone.Synth({
-                    oscillator: { type: 'triangle' },
-                    envelope: { attack: 0.001, decay: 0.1, sustain: 0.3, release: 0.1 }
-                }).toDestination();
-                synth.triggerAttackRelease('G5', '0.1');
-                setTimeout(() => synth.dispose(), 300);
+                try {
+                    const synth = new Tone.Synth({
+                        oscillator: { type: 'triangle' },
+                        envelope: { attack: 0.001, decay: 0.1, sustain: 0.3, release: 0.1 }
+                    }).toDestination();
+                    synth.triggerAttackRelease('G5', '0.1');
+                    setTimeout(() => synth.dispose(), 300);
+                } catch (e) { console.error('Sound error:', e); }
             }
 
             playUpgrade() {
                 if (!this.enabled) return;
-                const synth = new Tone.Synth({
-                    oscillator: { type: 'sine' },
-                    envelope: { attack: 0.005, decay: 0.1, sustain: 0.2, release: 0.2 }
-                }).toDestination();
-                synth.triggerAttackRelease('C6', '0.05');
-                setTimeout(() => {
-                    synth.triggerAttackRelease('E6', '0.05');
-                }, 50);
-                setTimeout(() => synth.dispose(), 400);
+                try {
+                    const synth = new Tone.Synth({
+                        oscillator: { type: 'sine' },
+                        envelope: { attack: 0.005, decay: 0.1, sustain: 0.2, release: 0.2 }
+                    }).toDestination();
+                    synth.triggerAttackRelease('C6', '0.05');
+                    setTimeout(() => {
+                        synth.triggerAttackRelease('E6', '0.05');
+                    }, 50);
+                    setTimeout(() => synth.dispose(), 400);
+                } catch (e) { console.error('Sound error:', e); }
             }
 
             playWaveComplete() {
                 if (!this.enabled) return;
-                const synth = new Tone.PolySynth(Tone.Synth).toDestination();
-                synth.triggerAttackRelease(['C5', 'E5', 'G5'], '0.2');
-                setTimeout(() => synth.dispose(), 500);
+                try {
+                    const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                    synth.triggerAttackRelease(['C5', 'E5', 'G5'], '0.2');
+                    setTimeout(() => synth.dispose(), 500);
+                } catch (e) { console.error('Sound error:', e); }
             }
 
             playGameOver() {
                 if (!this.enabled) return;
-                const synth = new Tone.Synth({
-                    oscillator: { type: 'sawtooth' },
-                    envelope: { attack: 0.01, decay: 0.5, sustain: 0, release: 0.5 }
-                }).toDestination();
-                synth.triggerAttackRelease('E3', '0.8');
-                setTimeout(() => synth.dispose(), 1500);
+                try {
+                    const synth = new Tone.Synth({
+                        oscillator: { type: 'sawtooth' },
+                        envelope: { attack: 0.01, decay: 0.5, sustain: 0, release: 0.5 }
+                    }).toDestination();
+                    synth.triggerAttackRelease('E3', '0.8');
+                    setTimeout(() => synth.dispose(), 1500);
+                } catch (e) { console.error('Sound error:', e); }
             }
         }
 
