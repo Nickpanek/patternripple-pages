@@ -1693,29 +1693,29 @@
                             let tileColor, emissiveColor, borderColor;
                             if (isStart) {
                                 // Yellow start tile
-                                tileColor = 0xaa8800;
+                                tileColor = 0xffdd00;
                                 emissiveColor = 0xffff00;
                                 borderColor = 0xffff00;
                             } else if (isEnd) {
                                 // Red end tile
-                                tileColor = 0x880000;
+                                tileColor = 0xff0000;
                                 emissiveColor = 0xff0000;
                                 borderColor = 0xff0000;
                             } else {
                                 // Purple/magenta regular path
-                                tileColor = 0x660066;
-                                emissiveColor = 0xaa00aa;
+                                tileColor = 0xcc00cc;
+                                emissiveColor = 0xff00ff;
                                 borderColor = 0xff00ff;
                             }
 
                             const material = new THREE.MeshStandardMaterial({
                                 color: tileColor,
                                 emissive: emissiveColor,
-                                emissiveIntensity: 0.8,
+                                emissiveIntensity: 1.8,
                                 metalness: 0.9,
                                 roughness: 0.1,
                                 transparent: true,
-                                opacity: 0.8
+                                opacity: 1.0
                             });
                             const tile = new THREE.Mesh(geometry, material);
                             tile.position.set(worldX, 0, worldZ);
