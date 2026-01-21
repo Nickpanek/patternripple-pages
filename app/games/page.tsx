@@ -4,21 +4,21 @@ import type { Metadata } from "next";
 
 // SEO
 export const metadata: Metadata = {
-  title: "Free Slot Machine Games - Tacticool Patches & Old West | PatternRipple",
-  description: "Play FREE slot machine games online! Tacticool Patches Slot Machine and Old West Slots. No download, no signup, instant play on desktop and mobile.",
-  keywords: "free slot machine, old west slots, tacticool patches, free browser games, HTML5 games, online games, slot machine game, airsoft games, wild west games, casual games, no download games, instant play games, mobile games, free games",
+  title: "Free Browser Games - Tower Defense, Slots & More | PatternRipple",
+  description: "Play FREE browser games! Geometric Galaxy Tower Defense, Tacticool Patches Slot Machine, and Old West Slots. No download, no signup, instant play on desktop and mobile.",
+  keywords: "free browser games, tower defense, 3D tower defense, slot machine games, old west slots, tacticool patches, HTML5 games, online games, casual games, no download games, instant play games, mobile games, free games, strategy games",
   alternates: { canonical: "https://www.patternripple.com/games" },
   openGraph: {
-    title: "Free Slot Machine Games | PatternRipple",
-    description: "FREE slot machines: Tacticool Patches and Old West Slots. Instant play, no downloads or signups.",
+    title: "Free Browser Games | PatternRipple",
+    description: "FREE games: 3D Tower Defense, Slot Machines, and more. Instant play, no downloads or signups.",
     url: "https://www.patternripple.com/games",
     type: "website",
     siteName: "PatternRipple",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free Slot Machine Games",
-    description: "Tacticool Patches Slot and Old West Slots. Free games, no download.",
+    title: "Free Browser Games",
+    description: "Tower Defense, Slot Machines, and more. Free games, no download.",
   },
   robots: {
     index: true,
@@ -43,6 +43,15 @@ type Game = {
 
 const games: Game[] = [
   {
+    slug: "geometric-galaxy-td",
+    title: "Geometric Galaxy Tower Defense",
+    description:
+      "3D isometric tower defense with tesseract towers and upgrade paths! Defend against glitch enemies with 5 tower specializations: rapid fire, sniper, frost, splash, and poison. Features dynamic lighting, particle effects, and strategic gameplay.",
+    href: "/tower-defense-geometric-galaxy.html",
+    badge: "New",
+    previewImage: "/games/geometric-galaxy-td-preview.png",
+  },
+  {
     slug: "tacticool-patches-slot",
     title: "Tacticool Patches Slot Machine",
     description:
@@ -57,7 +66,6 @@ const games: Game[] = [
     description:
       "Step into the Wild West with this classic slot machine! Features authentic Old West imagery, exciting bonus rounds, background music, and smooth animations. Can you strike gold?",
     href: "/old-west-slots/index.html",
-    badge: "New",
     previewImage: "/old-west-slots/bonus-trigger.gif",
   },
 ];
