@@ -43,15 +43,6 @@ type Game = {
 
 const games: Game[] = [
   {
-    slug: "geometric-galaxy-td",
-    title: "Geometric Galaxy Tower Defense",
-    description:
-      "3D isometric tower defense with tesseract towers and upgrade paths! Defend against glitch enemies with 5 tower specializations: rapid fire, sniper, frost, splash, and poison. Features dynamic lighting, particle effects, and strategic gameplay.",
-    href: "/tower-defense-geometric-galaxy.html",
-    badge: "New",
-    previewImage: "/games/geometric-galaxy-td-preview.png",
-  },
-  {
     slug: "tacticool-patches-slot",
     title: "Tacticool Patches Slot Machine",
     description:
@@ -67,6 +58,15 @@ const games: Game[] = [
       "Step into the Wild West with this classic slot machine! Features authentic Old West imagery, exciting bonus rounds, background music, and smooth animations. Can you strike gold?",
     href: "/old-west-slots/index.html",
     previewImage: "/old-west-slots/bonus-trigger.gif",
+  },
+  {
+    slug: "geometric-galaxy-td",
+    title: "Geometric Galaxy Tower Defense",
+    description:
+      "3D isometric tower defense with tesseract towers and upgrade paths! Defend against glitch enemies with 5 tower specializations: rapid fire, sniper, frost, splash, and poison. Features dynamic lighting, particle effects, and strategic gameplay.",
+    href: "/tower-defense-geometric-galaxy.html",
+    badge: "New",
+    previewImage: "/games/geometric-galaxy-td-preview.png",
   },
 ];
 
@@ -103,13 +103,13 @@ export default function GamesPage() {
             >
               <div className="p-6 flex flex-col h-full">
                 {game.previewImage && (
-                  <div className="mb-4 rounded-lg overflow-hidden bg-black">
+                  <div className="mb-4 rounded-lg overflow-hidden bg-black aspect-square">
                     <Image
                       src={game.previewImage}
                       alt={`${game.title} preview`}
                       width={640}
-                      height={360}
-                      className="w-full h-auto"
+                      height={640}
+                      className="w-full h-full object-cover"
                       unoptimized
                     />
                   </div>
