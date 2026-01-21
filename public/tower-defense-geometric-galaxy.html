@@ -1573,40 +1573,44 @@
         class Projectile {
             constructor(scene, from, to, specialization) {
                 this.scene = scene;
-                this.lifetime = 300;
+                this.lifetime = 400;
                 this.createdAt = Date.now();
+                this.specialization = specialization;
 
-                // Choose color based on specialization
-                let color = 0x00ffff;
-                switch(specialization) {
-                    case 'rapidfire': color = 0xff3333; break;
-                    case 'sniper': color = 0x4a90e2; break;
-                    case 'frost': color = 0x74b9ff; break;
-                    case 'splash': color = 0xff7f50; break;
-                    case 'poison': color = 0x6c5ce7; break;
+                if (specialization === 'splash') {
+                    // Splash creates a burst sphere
+                    const sphereGeo = new THREE.SphereGeometry(0.15, 8, 8);
+                    const sphereMat = new THREE.MeshBasicMaterial({
+                        color: 0xff0000,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+                    this.mesh = new THREE.Mesh(sphereGeo, sphereMat);
+                    this.mesh.position.copy(to);
+                    this.scene.add(this.mesh);
+                } else {
+                    // Create black line for all other types
+                    const geometry = new THREE.BufferGeometry().setFromPoints([from, to]);
+                    const material = new THREE.LineBasicMaterial({
+                        color: 0x000000,
+                        linewidth: 5,
+                        transparent: true,
+                        opacity: 1
+                    });
+                    this.line = new THREE.Line(geometry, material);
+
+                    // Add red glow effect
+                    const glowMat = new THREE.LineBasicMaterial({
+                        color: 0xff0000,
+                        linewidth: 8,
+                        transparent: true,
+                        opacity: 0.4
+                    });
+                    this.glowLine = new THREE.Line(geometry.clone(), glowMat);
+
+                    this.scene.add(this.line);
+                    this.scene.add(this.glowLine);
                 }
-
-                // Create glowing line segment
-                const geometry = new THREE.BufferGeometry().setFromPoints([from, to]);
-                const material = new THREE.LineBasicMaterial({
-                    color: color,
-                    linewidth: 3,
-                    transparent: true,
-                    opacity: 1
-                });
-                this.line = new THREE.Line(geometry, material);
-
-                // Add glow effect with multiple lines
-                const glowMat = new THREE.LineBasicMaterial({
-                    color: color,
-                    linewidth: 6,
-                    transparent: true,
-                    opacity: 0.3
-                });
-                this.glowLine = new THREE.Line(geometry.clone(), glowMat);
-
-                this.scene.add(this.line);
-                this.scene.add(this.glowLine);
             }
 
             update() {
@@ -1618,19 +1622,33 @@
 
                 // Fade out quickly
                 const fadeAmount = 1 - (age / this.lifetime);
-                this.line.material.opacity = fadeAmount;
-                this.glowLine.material.opacity = fadeAmount * 0.3;
+
+                if (this.specialization === 'splash') {
+                    // Expand and fade the splash sphere
+                    const scale = 1 + (age / this.lifetime) * 2;
+                    this.mesh.scale.set(scale, scale, scale);
+                    this.mesh.material.opacity = fadeAmount * 0.8;
+                } else {
+                    this.line.material.opacity = fadeAmount;
+                    this.glowLine.material.opacity = fadeAmount * 0.4;
+                }
 
                 return true;
             }
 
             destroy() {
-                this.scene.remove(this.line);
-                this.scene.remove(this.glowLine);
-                this.line.geometry.dispose();
-                this.line.material.dispose();
-                this.glowLine.geometry.dispose();
-                this.glowLine.material.dispose();
+                if (this.specialization === 'splash') {
+                    this.scene.remove(this.mesh);
+                    this.mesh.geometry.dispose();
+                    this.mesh.material.dispose();
+                } else {
+                    this.scene.remove(this.line);
+                    this.scene.remove(this.glowLine);
+                    this.line.geometry.dispose();
+                    this.line.material.dispose();
+                    this.glowLine.geometry.dispose();
+                    this.glowLine.material.dispose();
+                }
             }
         }
 
