@@ -662,7 +662,13 @@
                     tile.position.set(posX, 0, posZ);
                     tile.castShadow = true;
                     tile.receiveShadow = true;
-                    tile.userData = { gridX: x, gridY: y };
+                    // Store both original position (for victory check) and current position (for movement)
+                    tile.userData = {
+                        originalX: x,
+                        originalY: y,
+                        gridX: x,
+                        gridY: y
+                    };
 
                     scene.add(tile);
                     tiles[y][x] = tile;
@@ -741,7 +747,8 @@
                 for (let x = 0; x < CONFIG.gridSize; x++) {
                     if (x === CONFIG.gridSize - 1 && y === CONFIG.gridSize - 1) continue;
                     const tile = tiles[y][x];
-                    if (!tile || tile.userData.gridX !== x || tile.userData.gridY !== y) {
+                    // Check if tile's ORIGINAL position matches current grid position
+                    if (!tile || tile.userData.originalX !== x || tile.userData.originalY !== y) {
                         return false;
                     }
                 }
