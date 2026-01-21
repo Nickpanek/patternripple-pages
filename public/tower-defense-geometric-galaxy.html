@@ -385,8 +385,8 @@
             GRID_SIZE: 10,
             TILE_SIZE: 1,
             TOWER_COST: 100,
-            INITIAL_GOLD: 500,
-            INITIAL_LIVES: 20,
+            INITIAL_GOLD: 350,
+            INITIAL_LIVES: 15,
             ELEVATION_HEIGHT: 0.5
         };
 
@@ -597,19 +597,19 @@
                 this.pathIndex = 0;
                 this.wave = wave;
 
-                // Match original game's difficulty
+                // Increased difficulty - 30% harder
                 if (wave === 1) {
-                    this.health = 2;
-                } else if (wave === 2) {
                     this.health = 3;
+                } else if (wave === 2) {
+                    this.health = 4;
                 } else {
-                    this.health = 3 + wave * 1.5;
+                    this.health = 4 + wave * 2;
                 }
 
                 this.maxHealth = this.health;
-                this.baseSpeed = 0.012 + (wave * 0.0015);
+                this.baseSpeed = 0.016 + (wave * 0.002);
                 this.speed = this.baseSpeed;
-                this.reward = 3 + wave;
+                this.reward = 2 + Math.floor(wave * 0.8);
                 this.alive = true;
                 this.slowUntil = 0;
                 this.poisonStacks = [];
@@ -814,8 +814,8 @@
                 }
 
                 // Determine color based on specialization
-                let towerColor = 0xff0000;
-                let emissiveColor = 0xff0000;
+                let towerColor = 0x00ffff;
+                let emissiveColor = 0x00ffff;
 
                 if (this.specialization) {
                     switch(this.specialization) {
@@ -1213,7 +1213,7 @@
             createRangeIndicator() {
                 const geometry = new THREE.RingGeometry(this.range - 0.1, this.range, 32);
                 const material = new THREE.MeshBasicMaterial({
-                    color: 0xff0000,
+                    color: this.getColorForSpecialization(),
                     transparent: true,
                     opacity: 0.15,
                     side: THREE.DoubleSide
@@ -1226,6 +1226,7 @@
             }
 
             getColorForSpecialization() {
+                if (!this.specialization) return 0x00ffff;
                 return 0xff0000;
             }
 
@@ -1573,43 +1574,67 @@
         class Projectile {
             constructor(scene, from, to, specialization) {
                 this.scene = scene;
-                this.lifetime = 400;
+                this.lifetime = 500;
                 this.createdAt = Date.now();
                 this.specialization = specialization;
 
                 if (specialization === 'splash') {
                     // Splash creates a burst sphere
-                    const sphereGeo = new THREE.SphereGeometry(0.15, 8, 8);
+                    const sphereGeo = new THREE.SphereGeometry(0.25, 12, 12);
                     const sphereMat = new THREE.MeshBasicMaterial({
                         color: 0xff0000,
                         transparent: true,
-                        opacity: 0.8
+                        opacity: 0.9
                     });
                     this.mesh = new THREE.Mesh(sphereGeo, sphereMat);
                     this.mesh.position.copy(to);
-                    this.scene.add(this.mesh);
-                } else {
-                    // Create black line for all other types
-                    const geometry = new THREE.BufferGeometry().setFromPoints([from, to]);
-                    const material = new THREE.LineBasicMaterial({
-                        color: 0x000000,
-                        linewidth: 5,
-                        transparent: true,
-                        opacity: 1
-                    });
-                    this.line = new THREE.Line(geometry, material);
 
-                    // Add red glow effect
-                    const glowMat = new THREE.LineBasicMaterial({
-                        color: 0xff0000,
-                        linewidth: 8,
+                    // Add outer glow sphere
+                    const glowSphereGeo = new THREE.SphereGeometry(0.35, 12, 12);
+                    const glowSphereMat = new THREE.MeshBasicMaterial({
+                        color: 0xff6666,
                         transparent: true,
                         opacity: 0.4
                     });
-                    this.glowLine = new THREE.Line(geometry.clone(), glowMat);
+                    this.glowMesh = new THREE.Mesh(glowSphereGeo, glowSphereMat);
+                    this.glowMesh.position.copy(to);
 
-                    this.scene.add(this.line);
-                    this.scene.add(this.glowLine);
+                    this.scene.add(this.mesh);
+                    this.scene.add(this.glowMesh);
+                } else {
+                    // Create cylinder beam between from and to
+                    const direction = new THREE.Vector3().subVectors(to, from);
+                    const distance = direction.length();
+
+                    // Core beam
+                    const beamGeo = new THREE.CylinderGeometry(0.04, 0.04, distance, 8);
+                    const beamMat = new THREE.MeshBasicMaterial({
+                        color: 0x000000,
+                        transparent: true,
+                        opacity: 1
+                    });
+                    this.beam = new THREE.Mesh(beamGeo, beamMat);
+
+                    // Position and orient the beam
+                    this.beam.position.copy(from).add(direction.multiplyScalar(0.5));
+                    this.beam.quaternion.setFromUnitVectors(
+                        new THREE.Vector3(0, 1, 0),
+                        direction.normalize()
+                    );
+
+                    // Glow beam
+                    const glowGeo = new THREE.CylinderGeometry(0.08, 0.08, distance, 8);
+                    const glowMat = new THREE.MeshBasicMaterial({
+                        color: 0xff0000,
+                        transparent: true,
+                        opacity: 0.6
+                    });
+                    this.glowBeam = new THREE.Mesh(glowGeo, glowMat);
+                    this.glowBeam.position.copy(this.beam.position);
+                    this.glowBeam.quaternion.copy(this.beam.quaternion);
+
+                    this.scene.add(this.beam);
+                    this.scene.add(this.glowBeam);
                 }
             }
 
@@ -1625,12 +1650,14 @@
 
                 if (this.specialization === 'splash') {
                     // Expand and fade the splash sphere
-                    const scale = 1 + (age / this.lifetime) * 2;
+                    const scale = 1 + (age / this.lifetime) * 3;
                     this.mesh.scale.set(scale, scale, scale);
-                    this.mesh.material.opacity = fadeAmount * 0.8;
+                    this.mesh.material.opacity = fadeAmount * 0.9;
+                    this.glowMesh.scale.set(scale, scale, scale);
+                    this.glowMesh.material.opacity = fadeAmount * 0.4;
                 } else {
-                    this.line.material.opacity = fadeAmount;
-                    this.glowLine.material.opacity = fadeAmount * 0.4;
+                    this.beam.material.opacity = fadeAmount;
+                    this.glowBeam.material.opacity = fadeAmount * 0.6;
                 }
 
                 return true;
@@ -1639,15 +1666,18 @@
             destroy() {
                 if (this.specialization === 'splash') {
                     this.scene.remove(this.mesh);
+                    this.scene.remove(this.glowMesh);
                     this.mesh.geometry.dispose();
                     this.mesh.material.dispose();
+                    this.glowMesh.geometry.dispose();
+                    this.glowMesh.material.dispose();
                 } else {
-                    this.scene.remove(this.line);
-                    this.scene.remove(this.glowLine);
-                    this.line.geometry.dispose();
-                    this.line.material.dispose();
-                    this.glowLine.geometry.dispose();
-                    this.glowLine.material.dispose();
+                    this.scene.remove(this.beam);
+                    this.scene.remove(this.glowBeam);
+                    this.beam.geometry.dispose();
+                    this.beam.material.dispose();
+                    this.glowBeam.geometry.dispose();
+                    this.glowBeam.material.dispose();
                 }
             }
         }
@@ -2332,16 +2362,16 @@
                 this.waveInProgress = true;
                 this.updateUI();
 
-                // Match original game's spawn logic
+                // Increased difficulty - 30% more enemies
                 let enemyCount, spawnInterval;
                 if (this.wave === 1) {
-                    enemyCount = 5;
+                    enemyCount = 7;
                     spawnInterval = 900;
                 } else if (this.wave === 2) {
-                    enemyCount = 7;
+                    enemyCount = 9;
                     spawnInterval = 800;
                 } else {
-                    enemyCount = 8 + this.wave * 3;
+                    enemyCount = 10 + this.wave * 4;
                     spawnInterval = 700;
                 }
 
