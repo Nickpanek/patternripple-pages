@@ -6,6 +6,8 @@
       "name": "Wild West Collection",
       "theme": "cowboy",
       "description": "Authentic western patterns featuring cowboy and cowgirl designs",
+      "thumbnail": "/patternripple-data/cowboy-pack/pack-thumbnail.jpg",
+      "music": "/patternripple-data/cowboy-pack/background-music.mp3",
       "environment": {
         "skyColor": "#87CEEB",
         "groundColor": "#D2B48C",
@@ -25,57 +27,320 @@
           "position": [3, 0, 3],
           "scale": 0.4,
           "rotation": [0, -0.3, 0]
-        },
-        {
-          "type": "model",
-          "url": "/patternripple-data/assets/horseshoe.glb",
-          "position": [-2.5, 0.2, -2],
-          "scale": 0.3,
-          "rotation": [0, 1.2, 0]
         }
       ],
       "patterns": [
         {
-          "id": "western-bandana",
-          "name": "Classic Bandana",
-          "imageUrl": "/patternripple-data/cowboy-pack/western-bandana.jpg",
-          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/western-bandana",
+          "id": "western-bandana-1",
+          "name": "Classic Red Bandana",
+          "imageUrl": "/patternripple-data/cowboy-pack/western-bandana-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/classic-red-bandana",
+          "seller": "Your Shop Name",
           "description": "Traditional western bandana pattern"
         },
         {
-          "id": "cowboy-boots",
-          "name": "Vintage Boots",
-          "imageUrl": "/patternripple-data/cowboy-pack/cowboy-boots.jpg",
-          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/cowboy-boots",
+          "id": "cowboy-boots-1",
+          "name": "Vintage Cowboy Boots",
+          "imageUrl": "/patternripple-data/cowboy-pack/cowboy-boots-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/vintage-boots",
+          "seller": "Your Shop Name",
           "description": "Classic cowboy boot motif"
         },
         {
-          "id": "rodeo-rope",
+          "id": "rodeo-rope-1",
           "name": "Rodeo Lasso",
-          "imageUrl": "/patternripple-data/cowboy-pack/rodeo-rope.jpg",
+          "imageUrl": "/patternripple-data/cowboy-pack/rodeo-rope-1.jpg",
           "shopUrl": "https://www.spoonflower.com/profiles/yourshop/rodeo-rope",
+          "seller": "Your Shop Name",
           "description": "Western rope and lasso design"
         },
         {
-          "id": "cowgirl-hat",
+          "id": "cowgirl-hat-1",
           "name": "Cowgirl Charm",
-          "imageUrl": "/patternripple-data/cowboy-pack/cowgirl-hat.jpg",
+          "imageUrl": "/patternripple-data/cowboy-pack/cowgirl-hat-1.jpg",
           "shopUrl": "https://www.spoonflower.com/profiles/yourshop/cowgirl-hat",
+          "seller": "Your Shop Name",
           "description": "Stylish cowgirl hat pattern"
         },
         {
-          "id": "western-stars",
+          "id": "western-stars-1",
           "name": "Desert Stars",
-          "imageUrl": "/patternripple-data/cowboy-pack/western-stars.jpg",
+          "imageUrl": "/patternripple-data/cowboy-pack/western-stars-1.jpg",
           "shopUrl": "https://www.spoonflower.com/profiles/yourshop/western-stars",
+          "seller": "Your Shop Name",
           "description": "Starry western night sky"
         },
         {
-          "id": "horseshoe-lucky",
+          "id": "horseshoe-lucky-1",
           "name": "Lucky Horseshoe",
-          "imageUrl": "/patternripple-data/cowboy-pack/horseshoe-lucky.jpg",
-          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/horseshoe-lucky",
+          "imageUrl": "/patternripple-data/cowboy-pack/horseshoe-lucky-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/horseshoe",
+          "seller": "Your Shop Name",
           "description": "Good luck horseshoe pattern"
+        }
+      ]
+    },
+    {
+      "id": "floral-collection",
+      "name": "Floral Fantasy",
+      "theme": "floral",
+      "description": "Beautiful botanical patterns with flowers and gardens",
+      "thumbnail": "/patternripple-data/floral-pack/pack-thumbnail.jpg",
+      "music": "/patternripple-data/floral-pack/background-music.mp3",
+      "environment": {
+        "skyColor": "#FFE4E1",
+        "groundColor": "#90EE90",
+        "ambientColor": "#FFF0F5"
+      },
+      "decorations": [
+        {
+          "type": "model",
+          "url": "/patternripple-data/assets/flower-pot.glb",
+          "position": [-3, 0.5, 2],
+          "scale": 0.5,
+          "rotation": [0, 0.5, 0]
+        }
+      ],
+      "patterns": [
+        {
+          "id": "roses-garden-1",
+          "name": "Rose Garden",
+          "imageUrl": "/patternripple-data/floral-pack/roses-garden-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/momshop/rose-garden",
+          "seller": "Mom's Shop Name",
+          "description": "Beautiful rose garden pattern"
+        },
+        {
+          "id": "wildflowers-1",
+          "name": "Wildflower Meadow",
+          "imageUrl": "/patternripple-data/floral-pack/wildflowers-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/sistershop/wildflowers",
+          "seller": "Sister's Shop Name",
+          "description": "Wild meadow flowers"
+        },
+        {
+          "id": "tulips-1",
+          "name": "Spring Tulips",
+          "imageUrl": "/patternripple-data/floral-pack/tulips-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/tulips",
+          "seller": "Your Shop Name",
+          "description": "Cheerful spring tulips"
+        },
+        {
+          "id": "sunflowers-1",
+          "name": "Sunflower Fields",
+          "imageUrl": "/patternripple-data/floral-pack/sunflowers-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/momshop/sunflowers",
+          "seller": "Mom's Shop Name",
+          "description": "Bright sunflower pattern"
+        },
+        {
+          "id": "lavender-1",
+          "name": "Lavender Dreams",
+          "imageUrl": "/patternripple-data/floral-pack/lavender-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/sistershop/lavender",
+          "seller": "Sister's Shop Name",
+          "description": "Calming lavender fields"
+        },
+        {
+          "id": "daisy-chain-1",
+          "name": "Daisy Chain",
+          "imageUrl": "/patternripple-data/floral-pack/daisy-chain-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/daisies",
+          "seller": "Your Shop Name",
+          "description": "Cheerful daisy pattern"
+        },
+        {
+          "id": "orchids-1",
+          "name": "Exotic Orchids",
+          "imageUrl": "/patternripple-data/floral-pack/orchids-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/momshop/orchids",
+          "seller": "Mom's Shop Name",
+          "description": "Elegant orchid blooms"
+        },
+        {
+          "id": "peonies-1",
+          "name": "Peony Blush",
+          "imageUrl": "/patternripple-data/floral-pack/peonies-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/sistershop/peonies",
+          "seller": "Sister's Shop Name",
+          "description": "Soft pink peonies"
+        },
+        {
+          "id": "lotus-1",
+          "name": "Lotus Pond",
+          "imageUrl": "/patternripple-data/floral-pack/lotus-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/lotus",
+          "seller": "Your Shop Name",
+          "description": "Serene lotus flowers"
+        },
+        {
+          "id": "cherry-blossoms-1",
+          "name": "Cherry Blossoms",
+          "imageUrl": "/patternripple-data/floral-pack/cherry-blossoms-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/momshop/cherry-blossoms",
+          "seller": "Mom's Shop Name",
+          "description": "Delicate cherry blossoms"
+        },
+        {
+          "id": "hibiscus-1",
+          "name": "Tropical Hibiscus",
+          "imageUrl": "/patternripple-data/floral-pack/hibiscus-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/sistershop/hibiscus",
+          "seller": "Sister's Shop Name",
+          "description": "Bold tropical hibiscus"
+        },
+        {
+          "id": "magnolia-1",
+          "name": "Magnolia Elegance",
+          "imageUrl": "/patternripple-data/floral-pack/magnolia-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/magnolia",
+          "seller": "Your Shop Name",
+          "description": "Classic magnolia blooms"
+        }
+      ]
+    },
+    {
+      "id": "op-art-collection",
+      "name": "Op Art Collection",
+      "theme": "opart",
+      "description": "Bold optical illusion and geometric patterns",
+      "thumbnail": "/patternripple-data/opart-pack/pack-thumbnail.jpg",
+      "music": "/patternripple-data/opart-pack/background-music.mp3",
+      "environment": {
+        "skyColor": "#000000",
+        "groundColor": "#FFFFFF",
+        "ambientColor": "#808080"
+      },
+      "decorations": [
+        {
+          "type": "model",
+          "url": "/patternripple-data/assets/geometric-cube.glb",
+          "position": [-3, 0.5, 2],
+          "scale": 0.5,
+          "rotation": [0, 0.5, 0]
+        }
+      ],
+      "patterns": [
+        {
+          "id": "hypnotic-spirals-1",
+          "name": "Hypnotic Spirals",
+          "imageUrl": "/patternripple-data/opart-pack/hypnotic-spirals-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/spirals",
+          "seller": "Your Shop Name",
+          "description": "Mesmerizing spiral optical illusion"
+        },
+        {
+          "id": "checkered-waves-1",
+          "name": "Checkered Waves",
+          "imageUrl": "/patternripple-data/opart-pack/checkered-waves-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/sistershop/checkered-waves",
+          "seller": "Sister's Shop Name",
+          "description": "Flowing checkered pattern"
+        },
+        {
+          "id": "geometric-grid-1",
+          "name": "Geometric Grid",
+          "imageUrl": "/patternripple-data/opart-pack/geometric-grid-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/geometric-grid",
+          "seller": "Your Shop Name",
+          "description": "Bold geometric grid design"
+        },
+        {
+          "id": "optical-circles-1",
+          "name": "Optical Circles",
+          "imageUrl": "/patternripple-data/opart-pack/optical-circles-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/momshop/optical-circles",
+          "seller": "Mom's Shop Name",
+          "description": "Concentric circle illusion"
+        },
+        {
+          "id": "zigzag-illusion-1",
+          "name": "Zigzag Illusion",
+          "imageUrl": "/patternripple-data/opart-pack/zigzag-illusion-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/sistershop/zigzag",
+          "seller": "Sister's Shop Name",
+          "description": "Dynamic zigzag pattern"
+        },
+        {
+          "id": "moire-pattern-1",
+          "name": "Moiré Magic",
+          "imageUrl": "/patternripple-data/opart-pack/moire-pattern-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/moire",
+          "seller": "Your Shop Name",
+          "description": "Shifting moiré effect"
+        }
+      ]
+    },
+    {
+      "id": "catholic-collection",
+      "name": "Sacred Art Collection",
+      "theme": "catholic",
+      "description": "Beautiful religious and sacred patterns",
+      "thumbnail": "/patternripple-data/catholic-pack/pack-thumbnail.jpg",
+      "music": "/patternripple-data/catholic-pack/background-music.mp3",
+      "environment": {
+        "skyColor": "#4169E1",
+        "groundColor": "#DAA520",
+        "ambientColor": "#F0E68C"
+      },
+      "decorations": [
+        {
+          "type": "model",
+          "url": "/patternripple-data/assets/cross.glb",
+          "position": [-3, 0.5, 2],
+          "scale": 0.5,
+          "rotation": [0, 0.5, 0]
+        }
+      ],
+      "patterns": [
+        {
+          "id": "stained-glass-1",
+          "name": "Cathedral Stained Glass",
+          "imageUrl": "/patternripple-data/catholic-pack/stained-glass-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/momshop/stained-glass",
+          "seller": "Mom's Shop Name",
+          "description": "Beautiful cathedral glass pattern"
+        },
+        {
+          "id": "celtic-cross-1",
+          "name": "Celtic Cross",
+          "imageUrl": "/patternripple-data/catholic-pack/celtic-cross-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/celtic-cross",
+          "seller": "Your Shop Name",
+          "description": "Traditional Celtic cross design"
+        },
+        {
+          "id": "rosary-beads-1",
+          "name": "Rosary Beads",
+          "imageUrl": "/patternripple-data/catholic-pack/rosary-beads-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/sistershop/rosary",
+          "seller": "Sister's Shop Name",
+          "description": "Elegant rosary pattern"
+        },
+        {
+          "id": "sacred-heart-1",
+          "name": "Sacred Heart",
+          "imageUrl": "/patternripple-data/catholic-pack/sacred-heart-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/momshop/sacred-heart",
+          "seller": "Mom's Shop Name",
+          "description": "Sacred Heart devotional pattern"
+        },
+        {
+          "id": "angels-1",
+          "name": "Guardian Angels",
+          "imageUrl": "/patternripple-data/catholic-pack/angels-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/yourshop/angels",
+          "seller": "Your Shop Name",
+          "description": "Peaceful angel pattern"
+        },
+        {
+          "id": "fleur-de-lis-1",
+          "name": "Fleur-de-Lis",
+          "imageUrl": "/patternripple-data/catholic-pack/fleur-de-lis-1.jpg",
+          "shopUrl": "https://www.spoonflower.com/profiles/sistershop/fleur-de-lis",
+          "seller": "Sister's Shop Name",
+          "description": "Classic fleur-de-lis symbol"
         }
       ]
     }
