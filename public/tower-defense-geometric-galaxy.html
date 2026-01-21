@@ -597,19 +597,22 @@
                 this.pathIndex = 0;
                 this.wave = wave;
 
-                // Increased difficulty - 30% harder
+                // Balanced difficulty for late game
                 if (wave === 1) {
                     this.health = 3;
                 } else if (wave === 2) {
-                    this.health = 4;
+                    this.health = 5;
+                } else if (wave <= 5) {
+                    this.health = 5 + wave * 2.5;
                 } else {
-                    this.health = 4 + wave * 2;
+                    // Exponential health scaling for late game
+                    this.health = Math.floor(12 + wave * 3.5 + (wave - 5) * 1.5);
                 }
 
                 this.maxHealth = this.health;
-                this.baseSpeed = 0.016 + (wave * 0.002);
+                this.baseSpeed = 0.018 + (wave * 0.003);
                 this.speed = this.baseSpeed;
-                this.reward = 2 + Math.floor(wave * 0.8);
+                this.reward = 2 + Math.floor(wave * 0.7);
                 this.alive = true;
                 this.slowUntil = 0;
                 this.poisonStacks = [];
@@ -767,8 +770,8 @@
                 this.gridX = gridX;
                 this.gridZ = gridZ;
                 this.level = 1;
-                this.range = 3.0;
-                this.fireRate = 1.0;
+                this.range = 2.5;
+                this.fireRate = 0.8;
                 this.damage = 1;
                 this.lastFireTime = 0;
                 this.upgradeCost = 150;
@@ -1245,34 +1248,34 @@
 
                 switch(type) {
                     case 'rapidfire':
-                        this.fireRate = 3.0;
-                        this.damage = 1;
-                        this.range = 2.5;
+                        this.fireRate = 2.5;
+                        this.damage = 0.8;
+                        this.range = 2.2;
                         break;
                     case 'sniper':
-                        this.fireRate = 0.5;
-                        this.damage = 5;
-                        this.range = 6.0;
+                        this.fireRate = 0.4;
+                        this.damage = 3;
+                        this.range = 4.5;
                         break;
                     case 'frost':
-                        this.fireRate = 1.2;
-                        this.damage = 1;
-                        this.range = 3.5;
-                        this.slowAmount = 0.5;
-                        this.slowDuration = 2000;
+                        this.fireRate = 1.0;
+                        this.damage = 0.8;
+                        this.range = 3.0;
+                        this.slowAmount = 0.4;
+                        this.slowDuration = 1800;
                         break;
                     case 'splash':
-                        this.fireRate = 0.8;
-                        this.damage = 2;
-                        this.range = 3.5;
-                        this.splashRadius = 1.5;
+                        this.fireRate = 0.7;
+                        this.damage = 1.5;
+                        this.range = 3.0;
+                        this.splashRadius = 1.3;
                         break;
                     case 'poison':
-                        this.fireRate = 1.0;
-                        this.damage = 1;
-                        this.range = 3.0;
-                        this.poisonDamage = 0.5;
-                        this.poisonDuration = 3000;
+                        this.fireRate = 0.9;
+                        this.damage = 0.8;
+                        this.range = 2.8;
+                        this.poisonDamage = 0.4;
+                        this.poisonDuration = 2500;
                         break;
                 }
 
@@ -1301,33 +1304,33 @@
 
                 if (!this.specialization) {
                     // Basic tower upgrade
-                    this.range += 0.5;
-                    this.fireRate += 0.3;
-                    this.damage += 1;
+                    this.range += 0.3;
+                    this.fireRate += 0.2;
+                    this.damage += 0.5;
                 } else {
                     // Specialized tower upgrade
                     switch(this.specialization) {
                         case 'rapidfire':
-                            this.fireRate += 0.8;
-                            this.damage += 0.5;
+                            this.fireRate += 0.5;
+                            this.damage += 0.3;
                             break;
                         case 'sniper':
-                            this.damage += 3;
-                            this.range += 0.5;
+                            this.damage += 1.5;
+                            this.range += 0.3;
                             break;
                         case 'frost':
-                            this.slowAmount = Math.min(0.8, this.slowAmount + 0.1);
-                            this.slowDuration += 500;
-                            this.damage += 0.5;
+                            this.slowAmount = Math.min(0.7, this.slowAmount + 0.08);
+                            this.slowDuration += 400;
+                            this.damage += 0.3;
                             break;
                         case 'splash':
-                            this.damage += 1;
-                            this.splashRadius += 0.3;
+                            this.damage += 0.6;
+                            this.splashRadius += 0.2;
                             break;
                         case 'poison':
-                            this.poisonDamage += 0.3;
-                            this.poisonDuration += 500;
-                            this.damage += 0.5;
+                            this.poisonDamage += 0.2;
+                            this.poisonDuration += 400;
+                            this.damage += 0.3;
                             break;
                     }
                 }
@@ -2362,17 +2365,17 @@
                 this.waveInProgress = true;
                 this.updateUI();
 
-                // Increased difficulty - 30% more enemies
+                // Balanced difficulty with faster spawn rates
                 let enemyCount, spawnInterval;
                 if (this.wave === 1) {
                     enemyCount = 7;
                     spawnInterval = 900;
                 } else if (this.wave === 2) {
                     enemyCount = 9;
-                    spawnInterval = 800;
+                    spawnInterval = 750;
                 } else {
                     enemyCount = 10 + this.wave * 4;
-                    spawnInterval = 700;
+                    spawnInterval = Math.max(500, 750 - this.wave * 20);
                 }
 
                 for (let i = 0; i < enemyCount; i++) {
