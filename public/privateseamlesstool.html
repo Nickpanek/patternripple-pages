@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pro Texas Tessellator - Seamless Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #111; color: #e2e8f0; font-family: sans-serif; }
+        canvas { background: white; box-shadow: 0 0 40px rgba(0,0,0,0.7); cursor: move; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; }
+        input[type="range"] { width: 100%; height: 6px; border-radius: 3px; accent-color: #22c55e; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <aside class="w-80 bg-slate-900 border-r border-slate-700 p-6 overflow-y-auto flex flex-col gap-6">
+        <div>
+            <h1 class="text-green-500 font-bold text-xl tracking-tight">TEXAS ENGINE v5</h1>
+            <p class="text-xs text-slate-500">Perfectly Seamless Export</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                <label class="block text-xs font-bold uppercase mb-2">1. Upload Image</label>
+                <input type="file" id="upload" accept="image/*" class="text-xs text-slate-400">
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <div class="slider-label"><span>Scale</span><span id="v-scale">50%</span></div>
+                    <input type="range" id="scale" min="10" max="150" value="50">
+                </div>
+                <div>
+                    <div class="slider-label"><span>Horizontal Spacing</span><span id="v-spX">150</span></div>
+                    <input type="range" id="spX" min="50" max="400" value="150">
+                </div>
+                <div>
+                    <div class="slider-label"><span>Vertical Spacing</span><span id="v-spY">150</span></div>
+                    <input type="range" id="spY" min="50" max="400" value="150">
+                </div>
+                <div>
+                    <div class="slider-label"><span>Half-Drop Offset</span><span id="v-stag">75</span></div>
+                    <input type="range" id="stag" min="0" max="300" value="75">
+                </div>
+                <div>
+                    <div class="slider-label"><span>Rotation</span><span id="v-rot">0°</span></div>
+                    <input type="range" id="rot" min="0" max="360" value="0">
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex items-center gap-2 bg-slate-800 p-3 rounded-lg border border-slate-700">
+                    <input type="checkbox" id="forceBlack" checked>
+                    <label class="text-xs font-bold uppercase cursor-pointer">Force Solid Black</label>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800 p-3 rounded-lg border border-slate-700 text-green-400">
+                    <input type="checkbox" id="mirrorRows">
+                    <label class="text-xs font-bold uppercase cursor-pointer">Mirror Every Other Row</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-auto space-y-2">
+            <button id="download" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-green-900/20">
+                DOWNLOAD SEAMLESS TILE
+            </button>
+            <p class="text-[10px] text-center text-slate-500">Optimized for Spoonflower Basic Repeat</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex items-center justify-center bg-slate-950 relative">
+        <div class="absolute top-4 left-4 text-[10px] uppercase tracking-widest text-slate-600">Workspace: 1000x1000 Seamless Tile</div>
+        <canvas id="canvas" width="1000" height="1000"></canvas>
+    </main>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const upload = document.getElementById('upload');
+    let img = new Image();
+    let imgLoaded = false;
+
+    // Control Map (Added mirrorRows to listeners)
+    const controls = ['scale', 'spX', 'spY', 'stag', 'rot', 'forceBlack', 'mirrorRows'];
+    controls.forEach(id => {
+        document.getElementById(id).addEventListener('input', (e) => {
+            if(document.getElementById('v-'+id)) document.getElementById('v-'+id).innerText = e.target.value + (id === 'rot' ? '°' : '');
+            draw();
+        });
+    });
+
+    upload.onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = (f) => {
+            img.onload = () => { imgLoaded = true; draw(); };
+            img.src = f.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+    function draw() {
+        if (!imgLoaded) return;
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const s = document.getElementById('scale').value / 100;
+        const xGap = parseInt(document.getElementById('spX').value);
+        const yGap = parseInt(document.getElementById('spY').value);
+        const stagger = parseInt(document.getElementById('stag').value);
+        const rot = document.getElementById('rot').value * Math.PI / 180;
+        const isBlack = document.getElementById('forceBlack').checked;
+        const mirror = document.getElementById('mirrorRows').checked;
+
+        const w = img.width * s;
+        const h = img.height * s;
+
+        const offscreen = document.createElement('canvas');
+        offscreen.width = img.width; offscreen.height = img.height;
+        const oCtx = offscreen.getContext('2d');
+        oCtx.drawImage(img, 0, 0);
+        if (isBlack) {
+            oCtx.globalCompositeOperation = 'source-in';
+            oCtx.fillStyle = "black";
+            oCtx.fillRect(0, 0, offscreen.width, offscreen.height);
+        }
+
+        for (let y = 0; y < canvas.height + yGap; y += yGap) {
+            let rowIdx = Math.floor(y / yGap);
+            let offset = (rowIdx % 2 === 0) ? 0 : stagger;
+
+            for (let x = -xGap; x < canvas.width + xGap; x += xGap) {
+                const posX = x + offset;
+                const posY = y;
+
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) {
+                        ctx.save();
+                        ctx.translate(posX + (i * canvas.width), posY + (j * canvas.height));
+                        
+                        // Mirror logic injected here
+                        if (mirror && rowIdx % 2 !== 0) {
+                            ctx.scale(1, -1); 
+                        }
+
+                        ctx.rotate(rot);
+                        ctx.drawImage(offscreen, -w/2, -h/2, w, h);
+                        ctx.restore();
+                    }
+                }
+            }
+        }
+    }
+
+    document.getElementById('download').onclick = () => {
+        const link = document.createElement('a');
+        link.download = 'texas-seamless-pattern.png';
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+    };
+</script>
+</body>
+</html>
