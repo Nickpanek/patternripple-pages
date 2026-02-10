@@ -34,8 +34,50 @@
             <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 space-y-2">
                 <label class="block text-xs font-bold uppercase">1B. Generate Vector (Paper.js)</label>
                 <p class="text-[10px] text-slate-400 leading-snug">
-                    Paste Paper.js drawing code below (do NOT call paper.setup). Click GENERATE to use it as the motif.
+                    Choose a shape preset or paste Paper.js drawing code below (do NOT call paper.setup). Click GENERATE to use it as the motif.
                 </p>
+
+                <!-- Color Controls -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Fill Color</label>
+                        <div class="flex gap-2 items-center">
+                            <input type="color" id="fillColor" value="#000000" class="h-8 w-12 rounded cursor-pointer">
+                            <input type="text" id="fillColorHex" value="#000000" class="flex-1 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Stroke Color</label>
+                        <div class="flex gap-2 items-center">
+                            <input type="color" id="strokeColor" value="#000000" class="h-8 w-12 rounded cursor-pointer">
+                            <input type="text" id="strokeColorHex" value="#000000" class="flex-1 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shape Presets -->
+                <div>
+                    <label class="block text-[10px] text-slate-400 mb-1">Shape Presets</label>
+                    <select id="shapePreset" class="w-full bg-slate-900 border border-slate-700 rounded-md p-2 text-xs text-slate-200">
+                        <option value="">-- Select a shape --</option>
+                        <optgroup label="Filled Shapes">
+                            <option value="circle-fill">Circle (Filled)</option>
+                            <option value="rectangle-fill">Rectangle (Filled)</option>
+                            <option value="triangle-fill">Triangle (Filled)</option>
+                            <option value="pentagon-fill">Pentagon (Filled)</option>
+                            <option value="hexagon-fill">Hexagon (Filled)</option>
+                            <option value="star-fill">Star (Filled)</option>
+                        </optgroup>
+                        <optgroup label="Outline Shapes">
+                            <option value="circle-outline">Circle (Outline)</option>
+                            <option value="rectangle-outline">Rectangle (Outline)</option>
+                            <option value="triangle-outline">Triangle (Outline)</option>
+                            <option value="pentagon-outline">Pentagon (Outline)</option>
+                            <option value="hexagon-outline">Hexagon (Outline)</option>
+                            <option value="star-outline">Star (Outline)</option>
+                        </optgroup>
+                    </select>
+                </div>
 
                 <textarea id="paperCode" class="bg-slate-900 border border-slate-700 rounded-md p-2 text-xs text-slate-200 font-mono"
 spellcheck="false">// Example: solid black triangle
@@ -196,6 +238,151 @@ tri.position = view.center;</textarea>
         link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
     };
+
+    /* ===================== COLOR CONTROLS ===================== */
+
+    const fillColorPicker = document.getElementById('fillColor');
+    const fillColorHex = document.getElementById('fillColorHex');
+    const strokeColorPicker = document.getElementById('strokeColor');
+    const strokeColorHex = document.getElementById('strokeColorHex');
+    const shapePresetSelect = document.getElementById('shapePreset');
+
+    // Sync color picker with hex input
+    fillColorPicker.addEventListener('input', (e) => {
+        fillColorHex.value = e.target.value;
+    });
+    fillColorHex.addEventListener('input', (e) => {
+        fillColorPicker.value = e.target.value;
+    });
+    strokeColorPicker.addEventListener('input', (e) => {
+        strokeColorHex.value = e.target.value;
+    });
+    strokeColorHex.addEventListener('input', (e) => {
+        strokeColorPicker.value = e.target.value;
+    });
+
+    /* ===================== SHAPE TEMPLATES ===================== */
+
+    const shapeTemplates = {
+        'circle-fill': (fillColor, strokeColor) => `// Circle (Filled)
+const circle = new Path.Circle({
+  center: view.center,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: '${fillColor}',
+  strokeColor: null
+});`,
+        'circle-outline': (fillColor, strokeColor) => `// Circle (Outline)
+const circle = new Path.Circle({
+  center: view.center,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});`,
+        'rectangle-fill': (fillColor, strokeColor) => `// Rectangle (Filled)
+const rect = new Path.Rectangle({
+  point: [w * 0.2, h * 0.2],
+  size: [w * 0.6, h * 0.6],
+  fillColor: '${fillColor}',
+  strokeColor: null
+});`,
+        'rectangle-outline': (fillColor, strokeColor) => `// Rectangle (Outline)
+const rect = new Path.Rectangle({
+  point: [w * 0.2, h * 0.2],
+  size: [w * 0.6, h * 0.6],
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});`,
+        'triangle-fill': (fillColor, strokeColor) => `// Triangle (Filled)
+const tri = new Path({
+  segments: [
+    [w * 0.5, h * 0.15],
+    [w * 0.85, h * 0.85],
+    [w * 0.15, h * 0.85]
+  ],
+  closed: true,
+  fillColor: '${fillColor}',
+  strokeColor: null
+});
+tri.position = view.center;`,
+        'triangle-outline': (fillColor, strokeColor) => `// Triangle (Outline)
+const tri = new Path({
+  segments: [
+    [w * 0.5, h * 0.15],
+    [w * 0.85, h * 0.85],
+    [w * 0.15, h * 0.85]
+  ],
+  closed: true,
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});
+tri.position = view.center;`,
+        'pentagon-fill': (fillColor, strokeColor) => `// Pentagon (Filled)
+const pentagon = new Path.RegularPolygon({
+  center: view.center,
+  sides: 5,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: '${fillColor}',
+  strokeColor: null
+});`,
+        'pentagon-outline': (fillColor, strokeColor) => `// Pentagon (Outline)
+const pentagon = new Path.RegularPolygon({
+  center: view.center,
+  sides: 5,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});`,
+        'hexagon-fill': (fillColor, strokeColor) => `// Hexagon (Filled)
+const hexagon = new Path.RegularPolygon({
+  center: view.center,
+  sides: 6,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: '${fillColor}',
+  strokeColor: null
+});`,
+        'hexagon-outline': (fillColor, strokeColor) => `// Hexagon (Outline)
+const hexagon = new Path.RegularPolygon({
+  center: view.center,
+  sides: 6,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});`,
+        'star-fill': (fillColor, strokeColor) => `// Star (Filled)
+const star = new Path.Star({
+  center: view.center,
+  points: 5,
+  radius1: Math.min(w, h) * 0.35,
+  radius2: Math.min(w, h) * 0.18,
+  fillColor: '${fillColor}',
+  strokeColor: null
+});`,
+        'star-outline': (fillColor, strokeColor) => `// Star (Outline)
+const star = new Path.Star({
+  center: view.center,
+  points: 5,
+  radius1: Math.min(w, h) * 0.35,
+  radius2: Math.min(w, h) * 0.18,
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});`
+    };
+
+    // Handle shape preset selection
+    shapePresetSelect.addEventListener('change', (e) => {
+        const selectedShape = e.target.value;
+        if (selectedShape && shapeTemplates[selectedShape]) {
+            const fillColor = fillColorHex.value;
+            const strokeColor = strokeColorHex.value;
+            paperCodeEl.value = shapeTemplates[selectedShape](fillColor, strokeColor);
+        }
+    });
 
     /* ===================== PAPER.JS GENERATOR ===================== */
 
