@@ -10,30 +10,12 @@ const REDIRECTS: Record<string, string> = {
 };
 
 export const config = {
-  matcher: ["/p/:path*", "/plush-tool/:path*"], // run for /p/* and /plush-tool/*
+  matcher: ["/p/:path*"], // run for /p/*
 };
 
 export function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const path = url.pathname;
-
-  // Handle plush-tool authentication
-  if (path.startsWith('/plush-tool')) {
-    const authCookie = req.cookies.get('plush_auth');
-
-    // Allow access to login page and API routes
-    if (path.includes('/login') || path.includes('/api/')) {
-      return NextResponse.next();
-    }
-
-    // Redirect to login if not authenticated
-    if (!authCookie || authCookie.value !== 'authenticated') {
-      const loginUrl = new URL('/plush-tool/login', req.url);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    return NextResponse.next();
-  }
 
   // Handle /p/* redirects (existing logic)
   const slug = path.replace(/^\/p\//, ""); // xyz or nested/slug
