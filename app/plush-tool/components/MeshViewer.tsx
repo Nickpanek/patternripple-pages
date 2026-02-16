@@ -133,7 +133,6 @@ function MeshObject({
         geometry={geometry}
         onPointerMove={handlePointerMove}
         onClick={handleClick}
-        style={{ cursor: hoveredEdge ? 'pointer' : 'default' } as any}
       >
         <meshStandardMaterial
           color="#888888"
@@ -205,7 +204,10 @@ function CameraSetup({ geometry }: { geometry: THREE.BufferGeometry | null }) {
 
 export default function MeshViewer(props: MeshViewerProps) {
   return (
-    <div className="w-full h-full bg-gray-900 rounded-lg overflow-hidden">
+    <div
+      className="w-full h-full bg-gray-900 rounded-lg overflow-hidden"
+      style={{ cursor: props.hoveredEdge ? 'pointer' : 'default' }}
+    >
       <Canvas camera={{ position: [2, 2, 2], fov: 50 }}>
         <CameraSetup geometry={props.geometry} />
         <ambientLight intensity={0.5} />
