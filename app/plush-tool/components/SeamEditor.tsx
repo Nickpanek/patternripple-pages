@@ -77,9 +77,14 @@ export default function SeamEditor({
         <h3 className="text-lg font-semibold text-white mb-3">Seam Editor</h3>
 
         <div className="space-y-3">
-          <div className="text-sm text-gray-300">
-            <p className="mb-2">Click edges on the 3D model to mark as seams (red).</p>
-            <p className="text-gray-400">Seams define where the pattern will be cut.</p>
+          <div className="text-sm text-gray-300 space-y-2">
+            <p><strong>How to mark seams:</strong></p>
+            <ol className="list-decimal list-inside space-y-1 text-gray-400 ml-2">
+              <li>Hover over the model - edges turn <span className="text-green-400 font-semibold">green</span></li>
+              <li>Click a green edge to mark it as a seam</li>
+              <li>Marked seams turn <span className="text-red-400 font-semibold">red</span></li>
+              <li>Click a red edge again to unmark it</li>
+            </ol>
           </div>
 
           <div className="bg-gray-700 rounded p-3">
@@ -126,13 +131,13 @@ export default function SeamEditor({
 
       {/* Instructions */}
       <div className="bg-gray-800 rounded-lg p-4">
-        <h3 className="text-sm font-semibold text-gray-400 mb-2">Quick Guide</h3>
-        <ol className="list-decimal list-inside text-xs text-gray-400 space-y-1">
-          <li>Hover over edges to highlight them</li>
-          <li>Click to toggle seam marking</li>
-          <li>Red edges are marked as seams</li>
-          <li>Click "Generate Patterns" when done</li>
-        </ol>
+        <h3 className="text-sm font-semibold text-gray-400 mb-2">💡 Tips</h3>
+        <ul className="text-xs text-gray-400 space-y-1">
+          <li>• <span className="text-green-400">Green</span> = hovering</li>
+          <li>• <span className="text-red-400">Red</span> = seam marked</li>
+          <li>• Rotate the view to find edges easily</li>
+          <li>• Mark edges to "cut" the shape flat</li>
+        </ul>
       </div>
     </div>
   );
