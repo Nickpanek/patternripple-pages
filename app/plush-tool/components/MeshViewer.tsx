@@ -1,9 +1,22 @@
 'use client';
 
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Grid, Line } from '@react-three/drei';
 import * as THREE from 'three';
+
+// WebGL detection
+function isWebGLAvailable(): boolean {
+  try {
+    const canvas = document.createElement('canvas');
+    return !!(
+      window.WebGLRenderingContext &&
+      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+    );
+  } catch (e) {
+    return false;
+  }
+}
 
 interface MeshViewerProps {
   geometry: THREE.BufferGeometry | null;
@@ -203,6 +216,54 @@ function CameraSetup({ geometry }: { geometry: THREE.BufferGeometry | null }) {
 }
 
 export default function MeshViewer(props: MeshViewerProps) {
+  const [webglSupported, setWebglSupported] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setWebglSupported(isWebGLAvailable());
+  }, []);
+
+  // Loading state
+  if (webglSupported === null) {
+    return (
+      <div className="w-full h-full bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
+        <div className="text-gray-400">Loading 3D viewer...</div>
+      </div>
+    );
+  }
+
+  // WebGL not supported
+  if (!webglSupported) {
+    return (
+      <div className="w-full h-full bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center p-8">
+        <div className="max-w-md text-center space-y-4">
+          <div className="text-6xl">⚠️</div>
+          <h3 className="text-xl font-semibold text-white">WebGL Not Available</h3>
+          <p className="text-gray-400">
+            This 3D viewer requires WebGL to render models. WebGL is currently disabled or unavailable in your browser.
+          </p>
+          <div className="bg-gray-800 rounded-lg p-4 text-left text-sm space-y-2">
+            <p className="text-gray-300 font-semibold">How to fix:</p>
+            <ul className="text-gray-400 space-y-1 list-disc list-inside">
+              <li>Try a modern browser (Chrome, Firefox, Safari, Edge)</li>
+              <li>Enable GPU acceleration in browser settings</li>
+              <li>Update your graphics drivers</li>
+              <li>Check if hardware acceleration is enabled</li>
+            </ul>
+          </div>
+          <a
+            href="https://get.webgl.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+          >
+            Test WebGL Support
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // WebGL supported - render normally
   return (
     <div
       className="w-full h-full bg-gray-900 rounded-lg overflow-hidden"
