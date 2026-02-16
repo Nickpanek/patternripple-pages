@@ -88,9 +88,14 @@ function MeshObject({
     if (intersects.length > 0) {
       const point = intersects[0].point;
 
+      // Calculate adaptive threshold based on model size
+      const bbox = geometry?.boundingBox;
+      const modelSize = bbox ? new THREE.Vector3().subVectors(bbox.max, bbox.min).length() : 1;
+      const threshold = modelSize * 0.05; // 5% of model size
+
       // Find closest edge
       let closestEdge: string | null = null;
-      let minDist = 0.05; // threshold
+      let minDist = threshold;
 
       edgeLines.forEach(({ start, end, key }) => {
         const line = new THREE.Line3(start, end);
@@ -110,7 +115,8 @@ function MeshObject({
     }
   };
 
-  const handleClick = () => {
+  const handleClick = (e: any) => {
+    // Only trigger if not dragging (OrbitControls)
     if (hoveredEdge && onEdgeClick) {
       onEdgeClick(hoveredEdge);
     }
@@ -127,6 +133,7 @@ function MeshObject({
         geometry={geometry}
         onPointerMove={handlePointerMove}
         onClick={handleClick}
+        style={{ cursor: hoveredEdge ? 'pointer' : 'default' } as any}
       >
         <meshStandardMaterial
           color="#888888"
@@ -138,11 +145,11 @@ function MeshObject({
       {/* Regular edges */}
       {edgesGeometry && (
         <lineSegments geometry={edgesGeometry}>
-          <lineBasicMaterial color="#333333" linewidth={1} />
+          <lineBasicMaterial color="#555555" linewidth={1.5} />
         </lineSegments>
       )}
 
-      {/* Seam edges */}
+      {/* Seam edges and hovered edges */}
       {edgeLines?.map(({ start, end, key }) => {
         const isSeam = seamEdges.has(key);
         const isHovered = key === hoveredEdge;
@@ -155,8 +162,8 @@ function MeshObject({
           <Line
             key={key}
             points={points}
-            color={isSeam ? '#ff0000' : '#ffff00'}
-            lineWidth={isHovered ? 3 : 2}
+            color={isSeam ? '#ff0000' : '#00ff00'}
+            lineWidth={isHovered ? 5 : 3}
           />
         );
       })}
