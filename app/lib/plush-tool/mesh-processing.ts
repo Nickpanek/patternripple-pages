@@ -263,3 +263,100 @@ export function extractPatchGeometry(
 
   return patchGeometry;
 }
+
+/**
+ * Calculate face normal
+ */
+function getFaceNormal(geometry: THREE.BufferGeometry, faceIndex: number): THREE.Vector3 {
+  const position = geometry.attributes.position;
+  const index = geometry.index;
+
+  if (!index) return new THREE.Vector3();
+
+  const i = faceIndex * 3;
+  const v0 = index.array[i];
+  const v1 = index.array[i + 1];
+  const v2 = index.array[i + 2];
+
+  const p0 = new THREE.Vector3(
+    position.getX(v0),
+    position.getY(v0),
+    position.getZ(v0)
+  );
+  const p1 = new THREE.Vector3(
+    position.getX(v1),
+    position.getY(v1),
+    position.getZ(v1)
+  );
+  const p2 = new THREE.Vector3(
+    position.getX(v2),
+    position.getY(v2),
+    position.getZ(v2)
+  );
+
+  const v01 = new THREE.Vector3().subVectors(p1, p0);
+  const v02 = new THREE.Vector3().subVectors(p2, p0);
+
+  return new THREE.Vector3().crossVectors(v01, v02).normalize();
+}
+
+/**
+ * Automatically detect good seam candidates based on edge sharpness
+ */
+export function autoDetectSeams(
+  geometry: THREE.BufferGeometry,
+  options: {
+    angleThreshold?: number; // In degrees, default 30
+    maxSeams?: number; // Maximum number of seams to suggest
+    minSeams?: number; // Minimum number of seams to suggest
+  } = {}
+): Set<string> {
+  const {
+    angleThreshold = 30,
+    maxSeams = 20,
+    minSeams = 3
+  } = options;
+
+  const edges = buildEdgeMap(geometry);
+  const seamCandidates: Array<{ key: string; score: number }> = [];
+
+  // Calculate dihedral angle for each edge
+  edges.forEach(edge => {
+    // Skip boundary edges (they only have one face)
+    if (edge.faces.length !== 2) {
+      return;
+    }
+
+    const [f1, f2] = edge.faces;
+    const n1 = getFaceNormal(geometry, f1);
+    const n2 = getFaceNormal(geometry, f2);
+
+    // Calculate angle between normals
+    const dot = n1.dot(n2);
+    const angle = Math.acos(Math.max(-1, Math.min(1, dot))) * (180 / Math.PI);
+
+    // Higher score for sharper angles
+    if (angle > angleThreshold) {
+      seamCandidates.push({
+        key: edge.key,
+        score: angle
+      });
+    }
+  });
+
+  // Sort by score (sharpest angles first)
+  seamCandidates.sort((a, b) => b.score - a.score);
+
+  // Select top candidates
+  const numSeams = Math.min(
+    Math.max(seamCandidates.length, minSeams),
+    maxSeams
+  );
+
+  const selectedSeams = new Set<string>();
+  for (let i = 0; i < Math.min(numSeams, seamCandidates.length); i++) {
+    selectedSeams.add(seamCandidates[i].key);
+  }
+
+  return selectedSeams;
+}
