@@ -9,6 +9,11 @@
     "start": "next start"
   },
   "dependencies": {
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.18.0",
+    "@types/three": "^0.160.0",
+    "jszip": "^3.10.1",
+    "mathjs": "^12.4.3",
     "minisearch": "^7.1.0",
     "next": "^14.2.0",
     "next-sanity": "^7.0.0",
@@ -17,6 +22,7 @@
     "react-dom": "^18.2.0",
     "sanity": "^3.30.0",
     "stripe": "^15.12.0",
+    "three": "^0.160.1",
     "tone": "^15.1.22"
   },
   "devDependencies": {
