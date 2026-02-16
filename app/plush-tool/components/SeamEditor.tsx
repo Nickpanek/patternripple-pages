@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import * as THREE from 'three';
-import { calculateMeshStats } from '@/app/lib/plush-tool/mesh-processing';
+import { calculateMeshStats, autoDetectSeams } from '@/app/lib/plush-tool/mesh-processing';
 
 interface SeamEditorProps {
   geometry: THREE.BufferGeometry | null;
@@ -23,6 +23,18 @@ export default function SeamEditor({
 
   const handleClearSeams = () => {
     onSeamEdgesChange(new Set());
+  };
+
+  const handleAutoDetect = () => {
+    if (!geometry) return;
+
+    const detectedSeams = autoDetectSeams(geometry, {
+      angleThreshold: 25, // Detect edges with >25 degree angle
+      maxSeams: 15,
+      minSeams: 3
+    });
+
+    onSeamEdgesChange(detectedSeams);
   };
 
   const handleEdgeClick = (edgeKey: string) => {
@@ -94,13 +106,22 @@ export default function SeamEditor({
             </div>
           </div>
 
-          <button
-            onClick={handleClearSeams}
-            disabled={seamEdges.size === 0}
-            className="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 text-white rounded-lg transition-colors"
-          >
-            Clear All Seams
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleAutoDetect}
+              disabled={!geometry}
+              className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-800 disabled:text-gray-600 text-white font-semibold rounded-lg transition-colors"
+            >
+              🪄 Auto Detect
+            </button>
+            <button
+              onClick={handleClearSeams}
+              disabled={seamEdges.size === 0}
+              className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 text-white rounded-lg transition-colors"
+            >
+              Clear All
+            </button>
+          </div>
         </div>
       </div>
 
