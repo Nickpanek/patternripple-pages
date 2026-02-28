@@ -49,7 +49,7 @@ const tools: Tool[] = [
     title: "Colorway Generator",
     href: "/colorway-generator.html",
     summary:
-      "Upload a pattern image, detect its palette, pick replacement colors, and batch-export multiple colorways as a ZIP. Maps exact colors — not brightness — all in the browser.",
+      "Upload a pattern image, pick from 8 preset hues (Red, Blue, Yellow, Orange, Green, Purple, Teal, Pink), and export one recolored PNG per selection as a ZIP. Preserves light/dark structure via HSL hue-shift. Grays and whites stay neutral.",
     badge: "Design",
   },
   {
