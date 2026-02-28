@@ -45,6 +45,14 @@ type Tool = {
 
 const tools: Tool[] = [
   {
+    slug: "colorway-generator",
+    title: "Colorway Generator",
+    href: "/colorway-generator.html",
+    summary:
+      "Upload a pattern image, detect its palette, pick replacement colors, and batch-export multiple colorways as a ZIP. Maps exact colors — not brightness — all in the browser.",
+    badge: "Design",
+  },
+  {
     slug: "seamless-pattern-creator",
     title: "Seamless Pattern Creator",
     href: "/seamless-pattern-creator.html",
@@ -118,6 +126,7 @@ const tools: Tool[] = [
 ];
 
 const order: Record<string, number> = {
+  "colorway-generator": 5,
   "seamless-pattern-creator": 10,
   "png2svg": 15,
   "seamless-pattern-checker": 20,
@@ -175,7 +184,13 @@ export default function SoftwarePage() {
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Free browser tools and prototypes. Files stay local where possible. These will act as beta versions of apps and software.
           </p>
-          <div className="mt-5 flex justify-center gap-3">
+          <div className="mt-5 flex justify-center gap-3 flex-wrap">
+            <Link
+              href="/colorway-generator.html"
+              className="inline-block bg-accent text-[#0e0e0e] font-semibold px-5 py-3 rounded-lg hover:opacity-90 transition-opacity"
+            >
+              New: Colorway Generator
+            </Link>
             <Link
               href="/"
               className="inline-block border border-accent text-accent px-5 py-3 rounded-lg hover:bg-accent hover:text-white transition-colors"
