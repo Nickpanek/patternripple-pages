@@ -70,7 +70,7 @@
     </div>
     <div class="section-label">Pick colorways</div>
     <div class="color-grid">
-        <label class="color-option"><input type="checkbox" value="0,80"><div class="chip-wrap"><div class="color-chip" style="background:#e63946"></div><span class="color-name">Red</span></div></label>
+        <label class="color-option"><input type="checkbox" value="0,0"><div class="chip-wrap"><div class="color-chip" style="background:#e63946"></div><span class="color-name">Red</span></div></label>
         <label class="color-option"><input type="checkbox" value="215,215"><div class="chip-wrap"><div class="color-chip" style="background:#4578db"></div><span class="color-name">Blue</span></div></label>
         <label class="color-option"><input type="checkbox" value="52,52"><div class="chip-wrap"><div class="color-chip" style="background:#f4c430"></div><span class="color-name">Yellow</span></div></label>
         <label class="color-option"><input type="checkbox" value="25,25"><div class="chip-wrap"><div class="color-chip" style="background:#e07b30"></div><span class="color-name">Orange</span></div></label>
@@ -78,6 +78,7 @@
         <label class="color-option"><input type="checkbox" value="280,280"><div class="chip-wrap"><div class="color-chip" style="background:#7b52ab"></div><span class="color-name">Purple</span></div></label>
         <label class="color-option"><input type="checkbox" value="180,180"><div class="chip-wrap"><div class="color-chip" style="background:#2ab7ca"></div><span class="color-name">Teal</span></div></label>
         <label class="color-option"><input type="checkbox" value="330,330"><div class="chip-wrap"><div class="color-chip" style="background:#e05c8a"></div><span class="color-name">Pink</span></div></label>
+        <label class="color-option"><input type="checkbox" value="bw"><div class="chip-wrap"><div class="color-chip" style="background:linear-gradient(135deg,#fff 50%,#222 50%)"></div><span class="color-name">B&amp;W</span></div></label>
     </div>
     <button class="generate-btn" id="generateBtn" disabled>Generate & Download ZIP</button>
     <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
@@ -141,7 +142,8 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
     const zip=new JSZip();
     for(let i=0;i<selected.length;i++){
         const el=selected[i];
-        const [hueLight, hueDark]=el.value.split(',').map(Number);
+        const isBW=el.value==='bw';
+        const [hueLight, hueDark]=isBW?[0,0]:el.value.split(',').map(Number);
         const name=el.closest('label').querySelector('.color-name').textContent;
         status.textContent=`Processing ${name} (${i+1}/${selected.length})...`;
         const nd=new ImageData(new Uint8ClampedArray(originalImageData.data),originalImageData.width,originalImageData.height);
@@ -149,8 +151,12 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
         for(let j=0;j<d.length;j+=4){
             if(d[j+3]<10) continue;
             const [h,s,l]=rgbToHsl(d[j],d[j+1],d[j+2]);
+            if(isBW){
+                // desaturate all colored pixels to gray
+                if(s>=0.06){ const v=Math.round(l*255); d[j]=v;d[j+1]=v;d[j+2]=v; }
+                continue;
+            }
             if(s<0.06) continue; // leave grays/whites/blacks alone
-            // all colored pixels shift to the target hue, keeping their lightness & saturation
             const targetHue=hueLight*l+hueDark*(1-l);
             const [nr,ng,nb]=hslToRgb(targetHue,s,l);
             d[j]=nr;d[j+1]=ng;d[j+2]=nb;
