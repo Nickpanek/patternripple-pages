@@ -738,8 +738,8 @@ function getWinSrc(symbolId) {
 //  2-match wins are intentionally zero: they show as near-misses.
 // ─────────────────────────────────────────────
 const PAYOUTS = {
-    0: [0,  0,   2.0,   8],   // Common sym
-    1: [0,  0,   2.0,   8],   // Common sym
+    0: [0,  0,   1.5,   8],   // Common sym
+    1: [0,  0,   1.5,   8],   // Common sym
     2: [0,  0,   4.0,  16],   // Mid sym
     3: [0,  0,   6.0,  24],   // Mid-high sym
     4: [0,  0,  12.0,  50],   // High sym
@@ -814,8 +814,8 @@ let skipAnimation = false;
 let isWaitingForAnimation = false;
 
 const FREE_SPIN_MULTIPLIER = 1.5;
-// Normalization: calibrated for 25 paylines, 3-match minimum, ~93% RTP target
-const PAYOUT_NORM = 0.105;
+// Normalization: calibrated for 25 paylines, 3-match minimum, diluted wilds
+const PAYOUT_NORM = 0.085;
 
 // DOM refs
 const gridEl      = document.getElementById('reel-grid');
@@ -915,8 +915,8 @@ function getRandomSymbol(col) {
         if (rand < 52) return 1;
         if (rand < 69) return 2;
         if (rand < 83) return 3;
-        if (rand < 91) return 4;
-        return 5;                 // WILD ~9%
+        if (rand < 94) return 4;
+        return 5;                 // WILD ~6%
     }
 
     // Reels 1, 2, 3 — BONUS possible (reduced rate for tighter trigger)
@@ -924,9 +924,9 @@ function getRandomSymbol(col) {
     if (rand < 50) return 1;
     if (rand < 67) return 2;
     if (rand < 81) return 3;
-    if (rand < 88) return 4;
-    if (rand < 93) return 5;     // WILD ~5%
-    return 6;                    // BONUS ~7%
+    if (rand < 95) return 4;
+    if (rand < 98) return 5;     // WILD ~3%
+    return 6;                    // BONUS ~2%
 }
 
 // ─────────────────────────────────────────────
