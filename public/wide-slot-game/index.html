@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wide Cascade Slots - PatternRipple (Preview)</title>
+    <title>Spooky Slots with Hauntsync - PatternRipple (Preview)</title>
 
     <!-- NOT PUBLIC YET - noindex until assets uploaded and ready -->
     <meta name="robots" content="noindex, nofollow">
@@ -11,20 +11,22 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Rye&family=Roboto+Mono:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Roboto+Mono:wght@500;700&display=swap');
 
         :root {
-            --bg-dark: #1a1410;
-            --gold: #d4af37;
-            --western-brown: #5c4a3a;
-            --dusty-tan: #c5b896;
-            --saddle-leather: #8b4513;
+            --bg-dark: #000000;
+            --accent: #cc0000;
+            --accent-bright: #ff2222;
+            --accent-dim: #7a0000;
+            --panel-bg: #0d0d0d;
+            --border-col: #3a0000;
+            --text-main: #e0c0c0;
         }
 
         body {
             font-family: 'Roboto Mono', monospace;
-            background-color: var(--bg-dark);
-            color: #e6e6e6;
+            background-color: #000;
+            color: var(--text-main);
             overflow-x: hidden;
             touch-action: manipulation;
             min-height: 100vh;
@@ -34,9 +36,8 @@
             justify-content: center;
             padding: 10px;
             background-image:
-                radial-gradient(1200px 800px at 20% -10%, #3a2a1a 0%, rgba(26,20,16,0) 60%),
-                radial-gradient(900px 600px at 120% 120%, #2a1a0a 0%, rgba(16,14,10,0) 60%);
-            background-size: cover, cover;
+                radial-gradient(900px 600px at 50% 0%, #1a0000 0%, rgba(0,0,0,0) 70%),
+                radial-gradient(600px 400px at 80% 100%, #100000 0%, rgba(0,0,0,0) 70%);
         }
 
         body::before {
@@ -44,7 +45,7 @@
             position: fixed;
             inset: 0;
             pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
             mix-blend-mode: overlay;
             z-index: -1;
         }
@@ -53,14 +54,14 @@
         .preview-badge {
             width: 100%;
             max-width: 760px;
-            background: linear-gradient(135deg, #2a1a0a 0%, #1a0a00 100%);
-            border: 2px dashed #d4af37;
+            background: #0d0000;
+            border: 2px dashed var(--accent);
             border-radius: 8px;
             padding: 10px 20px;
             margin-bottom: 12px;
             text-align: center;
             font-size: 0.8rem;
-            color: #d4af37;
+            color: var(--accent);
             letter-spacing: 2px;
         }
 
@@ -78,17 +79,17 @@
             position: relative;
             width: 100%;
             aspect-ratio: 16 / 9;
-            background: linear-gradient(135deg, #3a2a1a 0%, #2a1a0a 100%);
-            border: 3px solid #5a4a3a;
+            background: radial-gradient(ellipse at 50% 40%, #1a0000 0%, #000000 80%);
+            border: 3px solid var(--accent-dim);
             border-radius: 12px;
-            box-shadow: 0 0 0 2px #1a1410 inset, 0 20px 40px rgba(0,0,0,0.8);
+            box-shadow: 0 0 0 2px #000 inset, 0 20px 40px rgba(0,0,0,0.95), 0 0 40px rgba(180,0,0,0.15);
             overflow: hidden;
             transition: border-color 0.5s, box-shadow 0.5s;
         }
 
         #game-container.bonus-mode {
-            border-color: var(--gold);
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            border-color: var(--accent-bright);
+            box-shadow: 0 0 50px rgba(220, 0, 0, 0.5), 0 0 0 2px #000 inset;
         }
 
         /* 4 columns x 5 rows grid */
@@ -111,9 +112,9 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            background: rgba(40,30,20,0.3);
+            background: rgba(10,0,0,0.5);
             border-radius: 6px;
-            border: 1px solid rgba(92, 74, 58, 0.3);
+            border: 1px solid rgba(100, 0, 0, 0.35);
         }
 
         .symbol {
@@ -127,8 +128,8 @@
             user-select: none;
             will-change: transform;
             transform: translateZ(0);
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.5);
-            border: 2px solid rgba(197, 184, 150, 0.3);
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.7), 0 4px 8px rgba(0,0,0,0.7);
+            border: 2px solid rgba(150, 0, 0, 0.3);
             overflow: hidden;
         }
 
@@ -140,21 +141,21 @@
             display: block;
         }
 
-        /* Symbol CSS fallback colors */
-        .sym-0 { background-color: #3d2e1e; border-color: rgba(100,70,40,0.6); }
-        .sym-1 { background-color: #1e2d3d; border-color: rgba(50,100,160,0.6); }
-        .sym-2 { background-color: #2a3d2a; border-color: rgba(60,110,60,0.6); }
-        .sym-3 { background-color: #3d3d1e; border-color: rgba(180,150,30,0.6); }
-        .sym-4 { background-color: #3d2010; border-color: rgba(180,80,20,0.6); }
+        /* Symbol CSS fallback colors — dark & spooky */
+        .sym-0 { background-color: #1a0a0a; border-color: rgba(120,20,20,0.5); }
+        .sym-1 { background-color: #0a0a1a; border-color: rgba(40,20,100,0.5); }
+        .sym-2 { background-color: #0a1a0a; border-color: rgba(20,80,20,0.5); }
+        .sym-3 { background-color: #1a1a0a; border-color: rgba(100,80,20,0.5); }
+        .sym-4 { background-color: #1a0505; border-color: rgba(160,20,20,0.6); }
 
         /* Symbol 5 - WILD */
         .sym-5 {
-            background-color: #2a1a3d;
-            border: 2px solid rgba(212, 175, 55, 0.7);
+            background-color: #1a0020;
+            border: 2px solid rgba(200, 0, 200, 0.7);
             box-shadow:
-                inset 0 0 15px rgba(212, 175, 55, 0.25),
-                0 0 12px rgba(212, 175, 55, 0.35),
-                0 4px 8px rgba(0,0,0,0.5);
+                inset 0 0 15px rgba(180, 0, 180, 0.2),
+                0 0 14px rgba(180, 0, 180, 0.35),
+                0 4px 8px rgba(0,0,0,0.7);
             position: relative;
         }
 
@@ -163,26 +164,26 @@
             position: absolute;
             bottom: 3px;
             right: 3px;
-            background: rgba(212, 175, 55, 0.95);
-            color: #1a1410;
+            background: rgba(200, 0, 200, 0.95);
+            color: #fff;
             padding: 2px 5px;
             border-radius: 2px;
             font-size: 0.5rem;
             font-weight: 900;
             letter-spacing: 0.5px;
-            font-family: 'Rye', cursive;
+            font-family: 'Creepster', cursive;
             z-index: 10;
             line-height: 1.2;
         }
 
         /* Symbol 6 - BONUS */
         .sym-6 {
-            background-color: #3d1a1a;
-            border: 2px solid rgba(255, 107, 53, 0.7);
+            background-color: #200000;
+            border: 2px solid rgba(220, 0, 0, 0.8);
             box-shadow:
-                inset 0 0 15px rgba(255, 107, 53, 0.25),
-                0 0 12px rgba(255, 107, 53, 0.35),
-                0 4px 8px rgba(0,0,0,0.5);
+                inset 0 0 15px rgba(200, 0, 0, 0.25),
+                0 0 14px rgba(200, 0, 0, 0.4),
+                0 4px 8px rgba(0,0,0,0.7);
             position: relative;
         }
 
@@ -191,14 +192,14 @@
             position: absolute;
             bottom: 3px;
             right: 3px;
-            background: rgba(255, 107, 53, 0.95);
+            background: rgba(200, 0, 0, 0.95);
             color: white;
             padding: 2px 5px;
             border-radius: 2px;
             font-size: 0.5rem;
             font-weight: 900;
             letter-spacing: 0.5px;
-            font-family: 'Rye', cursive;
+            font-family: 'Creepster', cursive;
             z-index: 10;
             line-height: 1.2;
         }
@@ -207,8 +208,8 @@
         .win-flash {
             animation: flash 0.6s ease-in-out infinite;
             z-index: 10;
-            border-color: var(--gold);
-            box-shadow: 0 0 25px var(--gold);
+            border-color: var(--accent-bright);
+            box-shadow: 0 0 28px var(--accent-bright);
         }
 
         @keyframes flash {
@@ -247,8 +248,8 @@
         /* Control panel */
         .panel {
             width: 100%;
-            background: linear-gradient(135deg, #3a2a1a 0%, #2a1a0a 100%);
-            border: 2px solid #5a4a3a;
+            background: linear-gradient(135deg, #0d0000 0%, #000000 100%);
+            border: 2px solid var(--border-col);
             padding: 12px;
             border-radius: 12px;
             display: flex;
@@ -256,96 +257,99 @@
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.9), 0 0 15px rgba(150,0,0,0.1);
         }
 
         .lcd {
             font-family: 'Courier New', monospace;
             background: #000;
-            color: #7ed321;
+            color: #cc0000;
             padding: 8px 12px;
             border-radius: 4px;
-            border: 2px solid #3a2a1a;
+            border: 2px solid #3a0000;
             min-width: 100px;
             text-align: right;
             font-weight: bold;
             letter-spacing: 1px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 0 6px rgba(180,0,0,0.2);
         }
 
         .spin-btn {
-            background: linear-gradient(to bottom, #d4af37, #b8941f);
-            color: #1a1410;
+            background: linear-gradient(to bottom, #cc0000, #880000);
+            color: #fff;
             border: none;
             padding: 14px 32px;
             font-size: 1.1rem;
             font-weight: bold;
             border-radius: 6px;
-            box-shadow: 0 4px 0 #8a7a1a, 0 10px 10px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 0 #440000, 0 10px 10px rgba(0,0,0,0.6);
             cursor: pointer;
             transition: transform 0.1s, box-shadow 0.1s;
             text-transform: uppercase;
-            font-family: 'Rye', cursive;
-            letter-spacing: 2px;
+            font-family: 'Creepster', cursive;
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px rgba(255,100,100,0.6);
         }
 
         .spin-btn:active {
             transform: translateY(4px);
-            box-shadow: 0 0 0 #8a7a1a;
+            box-shadow: 0 0 0 #440000;
         }
 
         .spin-btn:disabled {
-            background: #475569;
+            background: #2a2a2a;
             box-shadow: none;
-            color: #94a3b8;
+            color: #666;
             cursor: not-allowed;
             transform: translateY(4px);
+            text-shadow: none;
         }
 
         .auto-btn {
-            background: linear-gradient(to bottom, #5c4a3a, #4a3a2a);
-            color: var(--dusty-tan);
-            border: none;
+            background: linear-gradient(to bottom, #1a0000, #0d0000);
+            color: var(--accent);
+            border: 1px solid var(--accent-dim);
             padding: 14px 20px;
             font-size: 1rem;
             font-weight: bold;
             border-radius: 6px;
-            box-shadow: 0 4px 0 #3a2a1a, 0 10px 10px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 0 #1a0000, 0 10px 10px rgba(0,0,0,0.6);
             cursor: pointer;
             transition: transform 0.1s, box-shadow 0.1s;
             text-transform: uppercase;
             margin-right: 8px;
-            font-family: 'Rye', cursive;
+            font-family: 'Creepster', cursive;
             letter-spacing: 2px;
         }
 
         .auto-btn.active {
-            background: linear-gradient(to bottom, #c44536, #a03527);
-            color: white;
-            box-shadow: 0 4px 0 #7f1d1d, inset 0 0 10px rgba(0,0,0,0.3);
+            background: linear-gradient(to bottom, #880000, #550000);
+            color: #fff;
+            border-color: var(--accent-bright);
+            box-shadow: 0 4px 0 #330000, 0 0 12px rgba(200,0,0,0.4);
         }
 
         .auto-btn:active {
             transform: translateY(4px);
-            box-shadow: 0 0 0 #3a2a1a;
+            box-shadow: 0 0 0 #1a0000;
         }
 
         /* Floating win text */
         .float-text {
             position: absolute;
-            color: var(--gold);
+            color: var(--accent-bright);
             font-weight: 900;
             font-size: 2.5rem;
             text-shadow:
                 0 2px 0 #000,
-                0 0 20px rgba(212,175,55,0.8),
-                0 0 40px rgba(212,175,55,0.5);
+                0 0 20px rgba(220,0,0,0.9),
+                0 0 40px rgba(220,0,0,0.5);
             pointer-events: none;
             animation: floatUp 2s ease-out forwards;
             z-index: 50;
             width: 100%;
             text-align: center;
-            font-family: 'Rye', cursive;
+            font-family: 'Creepster', cursive;
             letter-spacing: 3px;
         }
 
@@ -362,21 +366,21 @@
         }
 
         .game-title {
-            font-family: 'Rye', cursive;
-            font-size: 2rem;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--dusty-tan) 50%, var(--gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Creepster', cursive;
+            font-size: 2.4rem;
+            color: var(--accent-bright);
             letter-spacing: 4px;
             text-transform: uppercase;
-            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.8));
+            text-shadow:
+                0 0 10px rgba(220,0,0,0.8),
+                0 0 30px rgba(220,0,0,0.4),
+                2px 2px 6px #000;
             margin: 0;
         }
 
         .game-subtitle {
             font-size: 0.75rem;
-            color: var(--dusty-tan);
+            color: #aa5555;
             letter-spacing: 3px;
             text-transform: uppercase;
             margin-top: 2px;
@@ -427,28 +431,28 @@
         .control-btn {
             width: 36px;
             height: 36px;
-            background: rgba(26, 20, 16, 0.9);
-            border: 1px solid rgba(197, 184, 150, 0.5);
+            background: rgba(10, 0, 0, 0.9);
+            border: 1px solid rgba(150, 0, 0, 0.5);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
-            color: var(--dusty-tan);
+            color: #aa4444;
             font-size: 1.1rem;
         }
 
         .control-btn:hover {
-            background: rgba(58, 42, 26, 0.95);
-            border-color: var(--gold);
+            background: rgba(40, 0, 0, 0.95);
+            border-color: var(--accent-bright);
             transform: scale(1.05);
         }
 
         .control-btn:active { transform: scale(0.95); }
         .control-btn.active {
-            background: rgba(92, 74, 58, 0.9);
-            border-color: var(--gold);
+            background: rgba(60, 0, 0, 0.9);
+            border-color: var(--accent-bright);
         }
 
         .volume-control { position: relative; }
@@ -567,7 +571,7 @@
     </div>
 
     <div class="title-container">
-        <h1 class="game-title">Wide Cascade Slots</h1>
+        <h1 class="game-title">Spooky Slots with Hauntsync</h1>
         <div class="game-subtitle">4 Reels · 5 Rows · 25 Paylines</div>
     </div>
 
@@ -610,19 +614,19 @@
         <div class="panel">
             <div class="flex gap-4 flex-1 justify-center md:justify-start">
                 <div>
-                    <div class="text-[10px] uppercase mb-1" style="color: var(--dusty-tan);">Balance</div>
+                    <div class="text-[10px] uppercase mb-1" style="color: #aa4444;">Balance</div>
                     <div id="balance-display" class="lcd">$1000.00</div>
                 </div>
                 <div>
-                    <div class="text-[10px] uppercase mb-1" style="color: var(--dusty-tan);">Win</div>
-                    <div id="win-display" class="lcd" style="color: var(--gold);">$0.00</div>
+                    <div class="text-[10px] uppercase mb-1" style="color: #aa4444;">Win</div>
+                    <div id="win-display" class="lcd" style="color: #ff4444;">$0.00</div>
                 </div>
             </div>
 
             <div class="flex items-center gap-2">
                 <div class="flex flex-col items-end mr-2">
-                    <label class="text-[10px] uppercase mb-1" style="color: var(--dusty-tan);">Bet</label>
-                    <select id="bet-select" class="bg-gray-800 border border-gray-600 rounded p-1 text-sm outline-none focus:border-yellow-500" style="background: #2a1a0a; border-color: #5a4a3a; color: var(--dusty-tan);">
+                    <label class="text-[10px] uppercase mb-1" style="color: #aa4444;">Bet</label>
+                    <select id="bet-select" class="rounded p-1 text-sm outline-none" style="background: #1a0000; border: 1px solid #550000; color: #cc4444;">
                         <option value="1">$1</option>
                         <option value="5" selected>$5</option>
                         <option value="10">$10</option>
@@ -671,20 +675,20 @@ const LABELS = ["Symbol 7","Symbol 6","Symbol 5","Symbol 4","Symbol 3","WILD","B
 //    symbolId 6 → slot1.jpg              (BONUS)
 // ─────────────────────────────────────────────
 
-// Colour palette for placeholder SVGs
+// Colour palette for placeholder SVGs — spooky Halloween theme
 const PLACEHOLDER_COLORS = [
-    '#5c3d1e', // 0 – brown
-    '#1e3d5c', // 1 – navy
-    '#2d5c2d', // 2 – green
-    '#5c5c1e', // 3 – gold
-    '#7a3010', // 4 – orange-red
-    '#3d1a6e', // 5 – purple  (WILD)
-    '#7a1a1a', // 6 – red     (BONUS)
+    '#1a0505', // 0 – dark blood
+    '#05050f', // 1 – deep shadow
+    '#0a0f05', // 2 – dark swamp
+    '#0f0a00', // 3 – dark amber
+    '#200000', // 4 – deep red
+    '#1a0025', // 5 – void purple (WILD)
+    '#2a0000', // 6 – crimson    (BONUS)
 ];
 
 const PLACEHOLDER_LABEL_COLORS = [
-    '#e0b070','#70b0e0','#70e070',
-    '#e0e070','#e07030','#c080ff','#ff7070',
+    '#cc3333','#7755cc','#44aa44',
+    '#cc9900','#ff4422','#cc44ff','#ff2222',
 ];
 
 function makePlaceholderSVG(symbolId, animated = false) {
