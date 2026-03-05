@@ -734,16 +734,17 @@ function getWinSrc(symbolId) {
 // ─────────────────────────────────────────────
 //  PAYOUT TABLE  (4-column paylines)
 //  Index = number of consecutive matches from left
-//  [1-match, 2-match, 3-match, 4-match]
+//  [1x, 2x, 3x, 4x] — only index 2 (3-match) and 3 (4-match) pay.
+//  2-match wins are intentionally zero: they show as near-misses.
 // ─────────────────────────────────────────────
 const PAYOUTS = {
-    0: [0,  0.4,  1.5,   6],   // Common sym
-    1: [0,  0.4,  1.5,   6],   // Common sym
-    2: [0,  0.8,  3.0,  12],   // Mid sym
-    3: [0,  1.0,  4.5,  18],   // Mid-high sym
-    4: [0,  2.0,  9.0,  40],   // High sym
-    5: [0,  4.0, 18.0, 120],   // WILD
-    6: [0,  0,    4.5,  15],   // BONUS line wins
+    0: [0,  0,   2.0,   8],   // Common sym
+    1: [0,  0,   2.0,   8],   // Common sym
+    2: [0,  0,   4.0,  16],   // Mid sym
+    3: [0,  0,   6.0,  24],   // Mid-high sym
+    4: [0,  0,  12.0,  50],   // High sym
+    5: [0,  0,  25.0, 150],   // WILD
+    6: [0,  0,   6.0,  20],   // BONUS line wins
 };
 
 // ─────────────────────────────────────────────
@@ -812,9 +813,9 @@ let freeSpins = 0;
 let skipAnimation = false;
 let isWaitingForAnimation = false;
 
-const FREE_SPIN_MULTIPLIER = 1.2;
-// Normalization: compensates for payline density + 2-match wins
-const PAYOUT_NORM = 0.10;
+const FREE_SPIN_MULTIPLIER = 1.5;
+// Normalization: calibrated for 25 paylines, 3-match minimum, ~93% RTP target
+const PAYOUT_NORM = 0.105;
 
 // DOM refs
 const gridEl      = document.getElementById('reel-grid');
@@ -901,29 +902,30 @@ function fillGridRandomly() {
 
 // ─────────────────────────────────────────────
 //  SYMBOL WEIGHTS
-//  BONUS only appears on middle two reels (cols 1, 2)
-//  to keep scatter trigger fair on a 4-reel grid.
+//  BONUS appears on reels 1, 2, 3 (cols 1–3).
+//  Scatter requires a BONUS on ALL THREE of those
+//  reels simultaneously — a rare, high-volatility event.
 // ─────────────────────────────────────────────
 function getRandomSymbol(col) {
     const rand = Math.random() * 100;
 
-    if (col === 0 || col === 3) {
-        // Outer reels — no BONUS; redistribute weight
-        if (rand < 25) return 0;
-        if (rand < 50) return 1;
-        if (rand < 68) return 2;
+    if (col === 0) {
+        // Leftmost reel — no BONUS
+        if (rand < 26) return 0;
+        if (rand < 52) return 1;
+        if (rand < 69) return 2;
         if (rand < 83) return 3;
         if (rand < 91) return 4;
         return 5;                 // WILD ~9%
     }
 
-    // Middle reels — BONUS possible
-    if (rand < 23) return 0;
-    if (rand < 46) return 1;
-    if (rand < 64) return 2;
-    if (rand < 79) return 3;
-    if (rand < 87) return 4;
-    if (rand < 93) return 5;     // WILD ~6%
+    // Reels 1, 2, 3 — BONUS possible (reduced rate for tighter trigger)
+    if (rand < 25) return 0;
+    if (rand < 50) return 1;
+    if (rand < 67) return 2;
+    if (rand < 81) return 3;
+    if (rand < 88) return 4;
+    if (rand < 93) return 5;     // WILD ~5%
     return 6;                    // BONUS ~7%
 }
 
@@ -1062,8 +1064,10 @@ async function processCascades() {
 
 // ─────────────────────────────────────────────
 //  WIN CHECKING
-//  Requires ≥2 consecutive matches left-to-right.
-//  BONUS scatter: need ≥1 BONUS in col 1 AND col 2.
+//  Requires ≥3 consecutive matches left-to-right.
+//  2-symbol runs are visible near-misses — no payout.
+//  BONUS scatter: requires ≥1 BONUS on col 1, col 2,
+//  AND col 3 simultaneously (all three inner reels).
 // ─────────────────────────────────────────────
 function checkWins() {
     const foundWins = [];
@@ -1072,7 +1076,7 @@ function checkWins() {
     UNIQUE_PAYLINES.forEach(line => {
         const symbols = line.map(pos => grid[pos[0]][pos[1]]);
 
-        // Find first non-wild, non-bonus
+        // Find first non-wild, non-bonus symbol to establish match target
         const firstNonWild = symbols.find(s => s !== 5 && s !== BONUS_ID);
         const matchTarget  = (firstNonWild === undefined) ? 5 : firstNonWild;
 
@@ -1084,10 +1088,11 @@ function checkWins() {
             }
         }
 
-        if (count >= 2) {
-            const multiplier  = PAYOUTS[matchTarget][count - 1];
+        // Minimum 3 matches required — 2 symbols = near-miss, no win
+        if (count >= 3) {
+            const multiplier   = PAYOUTS[matchTarget][count - 1];
             const fsMultiplier = freeSpins > 0 ? FREE_SPIN_MULTIPLIER : 1.0;
-            const winAmount   = currentBet * multiplier * PAYOUT_NORM * fsMultiplier;
+            const winAmount    = currentBet * multiplier * PAYOUT_NORM * fsMultiplier;
 
             if (winAmount > 0) {
                 foundWins.push({
@@ -1099,9 +1104,9 @@ function checkWins() {
         }
     });
 
-    // Scatter BONUS check — col 1 AND col 2 must each have ≥1 BONUS
+    // Scatter BONUS — cols 1, 2, AND 3 must each have ≥1 BONUS symbol
     const scatterCoords = [];
-    for (let c = 1; c <= 2; c++) {
+    for (let c = 1; c <= 3; c++) {
         for (let r = 0; r < ROWS; r++) {
             if (grid[r][c] === BONUS_ID) scatterCoords.push([r, c]);
         }
@@ -1109,8 +1114,9 @@ function checkWins() {
 
     const hasC1 = scatterCoords.some(p => p[1] === 1);
     const hasC2 = scatterCoords.some(p => p[1] === 2);
+    const hasC3 = scatterCoords.some(p => p[1] === 3);
 
-    if (hasC1 && hasC2) {
+    if (hasC1 && hasC2 && hasC3) {
         bonusTriggered = true;
         foundWins.push({ payout: 0, coords: scatterCoords, isBonus: true });
     }
