@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wide Cascade Slots - PatternRipple (Preview)</title>
+
+    <!-- NOT PUBLIC YET - noindex until assets uploaded and ready -->
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="author" content="Nick Panek">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rye&family=Roboto+Mono:wght@500;700&display=swap');
+
+        :root {
+            --bg-dark: #1a1410;
+            --gold: #d4af37;
+            --western-brown: #5c4a3a;
+            --dusty-tan: #c5b896;
+            --saddle-leather: #8b4513;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--bg-dark);
+            color: #e6e6e6;
+            overflow-x: hidden;
+            touch-action: manipulation;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background-image:
+                radial-gradient(1200px 800px at 20% -10%, #3a2a1a 0%, rgba(26,20,16,0) 60%),
+                radial-gradient(900px 600px at 120% 120%, #2a1a0a 0%, rgba(16,14,10,0) 60%);
+            background-size: cover, cover;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+            z-index: -1;
+        }
+
+        /* Preview badge */
+        .preview-badge {
+            width: 100%;
+            max-width: 760px;
+            background: linear-gradient(135deg, #2a1a0a 0%, #1a0a00 100%);
+            border: 2px dashed #d4af37;
+            border-radius: 8px;
+            padding: 10px 20px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #d4af37;
+            letter-spacing: 2px;
+        }
+
+        #fullscreen-wrapper {
+            width: 100%;
+            max-width: 760px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* 16:9 game container */
+        #game-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #3a2a1a 0%, #2a1a0a 100%);
+            border: 3px solid #5a4a3a;
+            border-radius: 12px;
+            box-shadow: 0 0 0 2px #1a1410 inset, 0 20px 40px rgba(0,0,0,0.8);
+            overflow: hidden;
+            transition: border-color 0.5s, box-shadow 0.5s;
+        }
+
+        #game-container.bonus-mode {
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        /* 4 columns x 5 rows grid */
+        #reel-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 3px;
+            padding: 6px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .symbol-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: rgba(40,30,20,0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(92, 74, 58, 0.3);
+        }
+
+        .symbol {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            user-select: none;
+            will-change: transform;
+            transform: translateZ(0);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.5);
+            border: 2px solid rgba(197, 184, 150, 0.3);
+            overflow: hidden;
+        }
+
+        .symbol img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+            display: block;
+        }
+
+        /* Symbol CSS fallback colors */
+        .sym-0 { background-color: #3d2e1e; border-color: rgba(100,70,40,0.6); }
+        .sym-1 { background-color: #1e2d3d; border-color: rgba(50,100,160,0.6); }
+        .sym-2 { background-color: #2a3d2a; border-color: rgba(60,110,60,0.6); }
+        .sym-3 { background-color: #3d3d1e; border-color: rgba(180,150,30,0.6); }
+        .sym-4 { background-color: #3d2010; border-color: rgba(180,80,20,0.6); }
+
+        /* Symbol 5 - WILD */
+        .sym-5 {
+            background-color: #2a1a3d;
+            border: 2px solid rgba(212, 175, 55, 0.7);
+            box-shadow:
+                inset 0 0 15px rgba(212, 175, 55, 0.25),
+                0 0 12px rgba(212, 175, 55, 0.35),
+                0 4px 8px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .sym-5::after {
+            content: "WILD";
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            background: rgba(212, 175, 55, 0.95);
+            color: #1a1410;
+            padding: 2px 5px;
+            border-radius: 2px;
+            font-size: 0.5rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            font-family: 'Rye', cursive;
+            z-index: 10;
+            line-height: 1.2;
+        }
+
+        /* Symbol 6 - BONUS */
+        .sym-6 {
+            background-color: #3d1a1a;
+            border: 2px solid rgba(255, 107, 53, 0.7);
+            box-shadow:
+                inset 0 0 15px rgba(255, 107, 53, 0.25),
+                0 0 12px rgba(255, 107, 53, 0.35),
+                0 4px 8px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .sym-6::after {
+            content: "BONUS";
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            background: rgba(255, 107, 53, 0.95);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 2px;
+            font-size: 0.5rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            font-family: 'Rye', cursive;
+            z-index: 10;
+            line-height: 1.2;
+        }
+
+        /* Win animations */
+        .win-flash {
+            animation: flash 0.6s ease-in-out infinite;
+            z-index: 10;
+            border-color: var(--gold);
+            box-shadow: 0 0 25px var(--gold);
+        }
+
+        @keyframes flash {
+            50% {
+                opacity: 0.8;
+                transform: scale(0.97);
+                filter: brightness(1.3);
+            }
+        }
+
+        .bonus-flash {
+            animation: spin-pulse 0.8s ease-in-out infinite;
+            z-index: 20;
+            border-color: #ff6b35;
+        }
+
+        @keyframes spin-pulse {
+            50% {
+                transform: scale(1.08) rotate(3deg);
+                box-shadow: 0 0 30px #ff6b35;
+                filter: brightness(1.4);
+            }
+        }
+
+        .vanishing {
+            animation: vanish 0.3s ease-out forwards;
+        }
+
+        @keyframes vanish {
+            100% {
+                transform: scale(0) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+        /* Control panel */
+        .panel {
+            width: 100%;
+            background: linear-gradient(135deg, #3a2a1a 0%, #2a1a0a 100%);
+            border: 2px solid #5a4a3a;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .lcd {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #7ed321;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 2px solid #3a2a1a;
+            min-width: 100px;
+            text-align: right;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .spin-btn {
+            background: linear-gradient(to bottom, #d4af37, #b8941f);
+            color: #1a1410;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            box-shadow: 0 4px 0 #8a7a1a, 0 10px 10px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            text-transform: uppercase;
+            font-family: 'Rye', cursive;
+            letter-spacing: 2px;
+        }
+
+        .spin-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #8a7a1a;
+        }
+
+        .spin-btn:disabled {
+            background: #475569;
+            box-shadow: none;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: translateY(4px);
+        }
+
+        .auto-btn {
+            background: linear-gradient(to bottom, #5c4a3a, #4a3a2a);
+            color: var(--dusty-tan);
+            border: none;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            box-shadow: 0 4px 0 #3a2a1a, 0 10px 10px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            text-transform: uppercase;
+            margin-right: 8px;
+            font-family: 'Rye', cursive;
+            letter-spacing: 2px;
+        }
+
+        .auto-btn.active {
+            background: linear-gradient(to bottom, #c44536, #a03527);
+            color: white;
+            box-shadow: 0 4px 0 #7f1d1d, inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .auto-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #3a2a1a;
+        }
+
+        /* Floating win text */
+        .float-text {
+            position: absolute;
+            color: var(--gold);
+            font-weight: 900;
+            font-size: 2.5rem;
+            text-shadow:
+                0 2px 0 #000,
+                0 0 20px rgba(212,175,55,0.8),
+                0 0 40px rgba(212,175,55,0.5);
+            pointer-events: none;
+            animation: floatUp 2s ease-out forwards;
+            z-index: 50;
+            width: 100%;
+            text-align: center;
+            font-family: 'Rye', cursive;
+            letter-spacing: 3px;
+        }
+
+        @keyframes floatUp {
+            0%   { transform: translateY(-50%) scale(0.5); opacity: 0; }
+            10%  { transform: translateY(-50%) scale(1.3); opacity: 1; }
+            100% { transform: translateY(-200%) scale(1); opacity: 0; }
+        }
+
+        /* Title */
+        .title-container {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-family: 'Rye', cursive;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--dusty-tan) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.8));
+            margin: 0;
+        }
+
+        .game-subtitle {
+            font-size: 0.75rem;
+            color: var(--dusty-tan);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* Bonus GIF overlay */
+        #gif-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.85);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        #gif-overlay.show {
+            opacity: 1;
+        }
+
+        #gif-overlay img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.6));
+        }
+
+        /* In-game controls */
+        .game-controls {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            display: flex;
+            gap: 8px;
+            z-index: 25;
+        }
+
+        .fullscreen-control {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 25;
+        }
+
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(26, 20, 16, 0.9);
+            border: 1px solid rgba(197, 184, 150, 0.5);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--dusty-tan);
+            font-size: 1.1rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(58, 42, 26, 0.95);
+            border-color: var(--gold);
+            transform: scale(1.05);
+        }
+
+        .control-btn:active { transform: scale(0.95); }
+        .control-btn.active {
+            background: rgba(92, 74, 58, 0.9);
+            border-color: var(--gold);
+        }
+
+        .volume-control { position: relative; }
+
+        .volume-slider {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background: rgba(26, 20, 16, 0.95);
+            border: 1px solid rgba(197, 184, 150, 0.5);
+            border-radius: 6px;
+            padding: 8px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .volume-slider.show { display: flex; }
+
+        .volume-slider input[type="range"] {
+            width: 100px;
+            height: 4px;
+            background: rgba(92, 74, 58, 0.5);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            writing-mode: bt-lr;
+            transform: rotate(270deg);
+            margin: 40px 0;
+        }
+
+        .volume-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .volume-slider input[type="range"]::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            background: var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .volume-percent {
+            font-size: 0.7rem;
+            color: var(--dusty-tan);
+        }
+
+        /* Fullscreen */
+        #fullscreen-wrapper:fullscreen,
+        #fullscreen-wrapper:-webkit-full-screen,
+        #fullscreen-wrapper:-moz-full-screen,
+        #fullscreen-wrapper:-ms-fullscreen {
+            max-width: 100%;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        #fullscreen-wrapper:fullscreen #game-container,
+        #fullscreen-wrapper:-webkit-full-screen #game-container,
+        #fullscreen-wrapper:-moz-full-screen #game-container,
+        #fullscreen-wrapper:-ms-fullscreen #game-container {
+            max-width: min(90vw, 160vh);
+            max-height: 70vh;
+        }
+
+        #fullscreen-wrapper:fullscreen .panel,
+        #fullscreen-wrapper:-webkit-full-screen .panel,
+        #fullscreen-wrapper:-moz-full-screen .panel,
+        #fullscreen-wrapper:-ms-fullscreen .panel {
+            max-width: min(90vw, 160vh);
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        #fullscreen-wrapper:fullscreen .panel button,
+        #fullscreen-wrapper:-webkit-full-screen .panel button,
+        #fullscreen-wrapper:-moz-full-screen .panel button,
+        #fullscreen-wrapper:-ms-fullscreen .panel button {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+        }
+
+        #fullscreen-wrapper:fullscreen .panel select,
+        #fullscreen-wrapper:-webkit-full-screen .panel select,
+        #fullscreen-wrapper:-moz-full-screen .panel select,
+        #fullscreen-wrapper:-ms-fullscreen .panel select {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="preview-badge">
+        ⚠ PREVIEW BUILD — PLACEHOLDER GRAPHICS — NOT PUBLIC YET ⚠
+    </div>
+
+    <div class="title-container">
+        <h1 class="game-title">Wide Cascade Slots</h1>
+        <div class="game-subtitle">4 Reels · 5 Rows · 25 Paylines</div>
+    </div>
+
+    <div id="fullscreen-wrapper">
+
+        <div id="game-container">
+
+            <div class="game-controls">
+                <div class="volume-control">
+                    <div class="control-btn active" id="music-btn" title="Toggle Music">🔊</div>
+                    <div class="volume-slider" id="volume-slider">
+                        <div class="volume-percent" id="volume-percent">50%</div>
+                        <input type="range" id="volume-control" min="0" max="100" value="50">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fullscreen-control">
+                <div class="control-btn" id="fullscreen-btn" title="Fullscreen">⛶</div>
+            </div>
+
+            <div id="fs-banner" class="hidden absolute top-2 left-1/2 -translate-x-1/2 bg-orange-900/90 border-2 border-orange-400 text-orange-100 px-4 py-1 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(255,107,53,0.5)] z-20">
+                FREE SPINS: <span id="fs-count">0</span>
+            </div>
+
+            <div id="reel-grid"></div>
+
+            <div id="overlay" class="hidden absolute inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-[2px] transition-all">
+                <div id="overlay-text" class="text-5xl md:text-6xl font-black text-center animate-bounce drop-shadow-2xl">
+                    BIG WIN!
+                </div>
+            </div>
+
+            <div id="gif-overlay">
+                <img src="bonus-trigger.gif" alt="Free Spins Triggered" id="bonus-gif">
+            </div>
+
+        </div>
+
+        <div class="panel">
+            <div class="flex gap-4 flex-1 justify-center md:justify-start">
+                <div>
+                    <div class="text-[10px] uppercase mb-1" style="color: var(--dusty-tan);">Balance</div>
+                    <div id="balance-display" class="lcd">$1000.00</div>
+                </div>
+                <div>
+                    <div class="text-[10px] uppercase mb-1" style="color: var(--dusty-tan);">Win</div>
+                    <div id="win-display" class="lcd" style="color: var(--gold);">$0.00</div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <div class="flex flex-col items-end mr-2">
+                    <label class="text-[10px] uppercase mb-1" style="color: var(--dusty-tan);">Bet</label>
+                    <select id="bet-select" class="bg-gray-800 border border-gray-600 rounded p-1 text-sm outline-none focus:border-yellow-500" style="background: #2a1a0a; border-color: #5a4a3a; color: var(--dusty-tan);">
+                        <option value="1">$1</option>
+                        <option value="5" selected>$5</option>
+                        <option value="10">$10</option>
+                        <option value="25">$25</option>
+                    </select>
+                </div>
+                <button id="auto-btn" class="auto-btn">AUTO</button>
+                <button id="spin-btn" class="spin-btn">SPIN</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Replace with your own audio file: nicksgame.mp3 or similar -->
+    <audio id="background-music" loop>
+        <source src="nicksgame.mp3" type="audio/mpeg">
+    </audio>
+
+<script>
+// ─────────────────────────────────────────────
+//  GAME CONFIG  — 4 columns × 5 rows  — 16:9
+// ─────────────────────────────────────────────
+const COLS = 4;
+const ROWS = 5;
+const SYMBOLS_COUNT = 7;
+const BONUS_ID = 6;
+const DROP_SPEED = 350;
+
+const LABELS = ["Symbol 7","Symbol 6","Symbol 5","Symbol 4","Symbol 3","WILD","BONUS"];
+
+// ─────────────────────────────────────────────
+//  PLACEHOLDER GRAPHICS
+//  Swap these out by dropping real files into
+//  the same directory:
+//    slot1.jpg  – slot7.jpg  (static, 16:9 ratio)
+//    slot2.gif  – slot6.gif  (animated win, 16:9)
+//    bonus-trigger.gif       (full-overlay animation)
+//
+//  Mapping (lowest → highest value):
+//    symbolId 0 → slot7.jpg  (most common)
+//    symbolId 1 → slot6.jpg
+//    symbolId 2 → slot5.jpg
+//    symbolId 3 → slot4.jpg
+//    symbolId 4 → slot3.jpg
+//    symbolId 5 → slot2.jpg / slot2.gif  (WILD)
+//    symbolId 6 → slot1.jpg              (BONUS)
+// ─────────────────────────────────────────────
+
+// Colour palette for placeholder SVGs
+const PLACEHOLDER_COLORS = [
+    '#5c3d1e', // 0 – brown
+    '#1e3d5c', // 1 – navy
+    '#2d5c2d', // 2 – green
+    '#5c5c1e', // 3 – gold
+    '#7a3010', // 4 – orange-red
+    '#3d1a6e', // 5 – purple  (WILD)
+    '#7a1a1a', // 6 – red     (BONUS)
+];
+
+const PLACEHOLDER_LABEL_COLORS = [
+    '#e0b070','#70b0e0','#70e070',
+    '#e0e070','#e07030','#c080ff','#ff7070',
+];
+
+function makePlaceholderSVG(symbolId, animated = false) {
+    const bg    = PLACEHOLDER_COLORS[symbolId];
+    const color = PLACEHOLDER_LABEL_COLORS[symbolId];
+    const label = LABELS[symbolId];
+    const extra = animated
+        ? `<rect x="0" y="0" width="160" height="90" fill="none" stroke="${color}" stroke-width="4" opacity="0.8"/>`
+        : '';
+    const note  = animated ? 'WIN!' : `SYM ${7 - symbolId}`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90">
+        <rect width="160" height="90" fill="${bg}"/>
+        <rect x="4" y="4" width="152" height="82" fill="none" stroke="${color}" stroke-width="2" opacity="0.4"/>
+        ${extra}
+        <text x="80" y="42" font-family="sans-serif" font-size="13" font-weight="bold"
+              fill="${color}" text-anchor="middle" opacity="0.9">${label}</text>
+        <text x="80" y="60" font-family="sans-serif" font-size="20" font-weight="bold"
+              fill="white" text-anchor="middle">${note}</text>
+    </svg>`;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+// Pre-build placeholder data URIs
+const PH_STATIC = [];
+const PH_WIN    = [];
+for (let i = 0; i < SYMBOLS_COUNT; i++) {
+    PH_STATIC.push(makePlaceholderSVG(i, false));
+    PH_WIN.push(makePlaceholderSVG(i, true));
+}
+
+// Return real file path if it exists, else placeholder
+// (Browser will use placeholder because the real files aren't there yet)
+function getStaticSrc(symbolId) {
+    // When real assets exist, browser will load them.
+    // Until then it falls back to placeholder via onerror.
+    return `slot${7 - symbolId}.jpg`;
+}
+
+function getWinSrc(symbolId) {
+    return `slot${7 - symbolId}.gif`;
+}
+
+// ─────────────────────────────────────────────
+//  PAYOUT TABLE  (4-column paylines)
+//  Index = number of consecutive matches from left
+//  [1-match, 2-match, 3-match, 4-match]
+// ─────────────────────────────────────────────
+const PAYOUTS = {
+    0: [0,  0.4,  1.5,   6],   // Common sym
+    1: [0,  0.4,  1.5,   6],   // Common sym
+    2: [0,  0.8,  3.0,  12],   // Mid sym
+    3: [0,  1.0,  4.5,  18],   // Mid-high sym
+    4: [0,  2.0,  9.0,  40],   // High sym
+    5: [0,  4.0, 18.0, 120],   // WILD
+    6: [0,  0,    4.5,  15],   // BONUS line wins
+};
+
+// ─────────────────────────────────────────────
+//  PAYLINES  — 25 lines for 4-col × 5-row grid
+//  Format: [[row,col], [row,col], [row,col], [row,col]]
+//  Row 0 = top, Row 4 = bottom
+// ─────────────────────────────────────────────
+const PAYLINES = [
+    // ── Straight horizontals (5 rows) ──
+    [[0,0],[0,1],[0,2],[0,3]],
+    [[1,0],[1,1],[1,2],[1,3]],
+    [[2,0],[2,1],[2,2],[2,3]],   // centre row
+    [[3,0],[3,1],[3,2],[3,3]],
+    [[4,0],[4,1],[4,2],[4,3]],
+
+    // ── Full diagonals ──
+    [[0,0],[1,1],[2,2],[3,3]],   // TL → BR
+    [[4,0],[3,1],[2,2],[1,3]],   // BL → TR
+    [[1,0],[2,1],[3,2],[4,3]],   // shifted down
+    [[3,0],[2,1],[1,2],[0,3]],   // shifted up
+
+    // ── V-shapes (peaks at centre row) ──
+    [[0,0],[2,1],[2,2],[0,3]],   // open top
+    [[4,0],[2,1],[2,2],[4,3]],   // open bottom
+    [[2,0],[0,1],[0,2],[2,3]],   // M-top
+    [[2,0],[4,1],[4,2],[2,3]],   // M-bottom
+
+    // ── Zigzag / wave patterns ──
+    [[0,0],[2,1],[0,2],[2,3]],   // high zigzag
+    [[4,0],[2,1],[4,2],[2,3]],   // low zigzag
+    [[1,0],[3,1],[1,2],[3,3]],   // inner zigzag A
+    [[3,0],[1,1],[3,2],[1,3]],   // inner zigzag B
+
+    // ── Step / staircase patterns ──
+    [[0,0],[0,1],[1,2],[1,3]],   // step down (top)
+    [[1,0],[1,1],[0,2],[0,3]],   // step up (top)
+    [[3,0],[3,1],[4,2],[4,3]],   // step down (bottom)
+    [[4,0],[4,1],[3,2],[3,3]],   // step up (bottom)
+
+    // ── Gentle slopes (span from outer rows) ──
+    [[0,0],[1,1],[2,2],[3,3]],   // same as [5] but listed explicitly — skip, replace:
+    [[1,0],[2,1],[2,2],[3,3]],   // gentle slope down
+    [[3,0],[2,1],[2,2],[1,3]],   // gentle slope up
+    [[0,0],[1,1],[3,2],[4,3]],   // steep slope down
+];
+
+// Deduplicate paylines (safety check — stringify for comparison)
+const seen = new Set();
+const UNIQUE_PAYLINES = PAYLINES.filter(pl => {
+    const key = JSON.stringify(pl);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+});
+
+// ─────────────────────────────────────────────
+//  GAME STATE
+// ─────────────────────────────────────────────
+let grid = [];
+let balance = 1000;
+let currentBet = 5;
+let isSpinning = false;
+let autoEnabled = false;
+let totalWinThisSpin = 0;
+let freeSpins = 0;
+let skipAnimation = false;
+let isWaitingForAnimation = false;
+
+const FREE_SPIN_MULTIPLIER = 1.2;
+// Normalization: compensates for payline density + 2-match wins
+const PAYOUT_NORM = 0.10;
+
+// DOM refs
+const gridEl      = document.getElementById('reel-grid');
+const spinBtn     = document.getElementById('spin-btn');
+const autoBtn     = document.getElementById('auto-btn');
+const balanceEl   = document.getElementById('balance-display');
+const winEl       = document.getElementById('win-display');
+const betSelect   = document.getElementById('bet-select');
+const overlay     = document.getElementById('overlay');
+const overlayText = document.getElementById('overlay-text');
+const container   = document.getElementById('game-container');
+const fwrapper    = document.getElementById('fullscreen-wrapper');
+const fsBanner    = document.getElementById('fs-banner');
+const fsCount     = document.getElementById('fs-count');
+const gifOverlay  = document.getElementById('gif-overlay');
+const bonusGifEl  = document.getElementById('bonus-gif');
+const bgMusic     = document.getElementById('background-music');
+const musicBtn    = document.getElementById('music-btn');
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+const volumeControl = document.getElementById('volume-control');
+const volumeSlider  = document.getElementById('volume-slider');
+const volumePercent = document.getElementById('volume-percent');
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+function init() {
+    createGridStructure();
+    fillGridRandomly();
+
+    spinBtn.addEventListener('click', () => startSpin(false));
+    autoBtn.addEventListener('click', toggleAuto);
+    betSelect.addEventListener('change', e => currentBet = parseInt(e.target.value));
+
+    bgMusic.volume = 0.5;
+    musicBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        toggleMusic();
+        volumeSlider.classList.toggle('show');
+    });
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    volumeControl.addEventListener('input', updateVolume);
+
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.volume-control')) volumeSlider.classList.remove('show');
+    });
+    document.addEventListener('click', startMusicOnInteraction, { once: true });
+
+    updateUI();
+    checkFullscreenSupport();
+}
+
+function startMusicOnInteraction() {
+    bgMusic.play().catch(() => {});
+}
+
+// ─────────────────────────────────────────────
+//  GRID STRUCTURE
+// ─────────────────────────────────────────────
+function createGridStructure() {
+    gridEl.innerHTML = '';
+    grid = [];
+    for (let r = 0; r < ROWS; r++) {
+        let row = [];
+        for (let c = 0; c < COLS; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'symbol-wrapper';
+            cell.id = `cell-${r}-${c}`;
+            gridEl.appendChild(cell);
+            row.push(-1);
+        }
+        grid.push(row);
+    }
+}
+
+function fillGridRandomly() {
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            grid[r][c] = getRandomSymbol(c);
+            spawnSymbolInCell(r, c, grid[r][c]);
+        }
+    }
+}
+
+// ─────────────────────────────────────────────
+//  SYMBOL WEIGHTS
+//  BONUS only appears on middle two reels (cols 1, 2)
+//  to keep scatter trigger fair on a 4-reel grid.
+// ─────────────────────────────────────────────
+function getRandomSymbol(col) {
+    const rand = Math.random() * 100;
+
+    if (col === 0 || col === 3) {
+        // Outer reels — no BONUS; redistribute weight
+        if (rand < 25) return 0;
+        if (rand < 50) return 1;
+        if (rand < 68) return 2;
+        if (rand < 83) return 3;
+        if (rand < 91) return 4;
+        return 5;                 // WILD ~9%
+    }
+
+    // Middle reels — BONUS possible
+    if (rand < 23) return 0;
+    if (rand < 46) return 1;
+    if (rand < 64) return 2;
+    if (rand < 79) return 3;
+    if (rand < 87) return 4;
+    if (rand < 93) return 5;     // WILD ~6%
+    return 6;                    // BONUS ~7%
+}
+
+// ─────────────────────────────────────────────
+//  SPAWN A SYMBOL INTO A CELL
+// ─────────────────────────────────────────────
+function spawnSymbolInCell(r, c, id) {
+    const cell = document.getElementById(`cell-${r}-${c}`);
+    cell.innerHTML = '';
+    const sym = document.createElement('div');
+    sym.className = `symbol sym-${id}`;
+
+    const img = document.createElement('img');
+    img.alt = LABELS[id];
+    // Try real asset; fall back to SVG placeholder on error
+    img.src = getStaticSrc(id);
+    img.onerror = () => { img.onerror = null; img.src = PH_STATIC[id]; };
+
+    sym.appendChild(img);
+    cell.appendChild(sym);
+    return sym;
+}
+
+// ─────────────────────────────────────────────
+//  AUTO PLAY
+// ─────────────────────────────────────────────
+function toggleAuto() {
+    autoEnabled = !autoEnabled;
+    if (autoEnabled) {
+        autoBtn.textContent = 'STOP';
+        autoBtn.classList.add('active');
+        if (!isSpinning) startSpin(true);
+    } else {
+        autoBtn.textContent = 'AUTO';
+        autoBtn.classList.remove('active');
+    }
+}
+
+// ─────────────────────────────────────────────
+//  SPIN
+// ─────────────────────────────────────────────
+async function startSpin(isAuto = false) {
+    if (isWaitingForAnimation) { skipAnimation = true; return; }
+    if (isSpinning) return;
+
+    if (freeSpins === 0 && balance < currentBet) {
+        if (autoEnabled) toggleAuto();
+        alert('Insufficient credits!');
+        return;
+    }
+
+    isSpinning = true;
+
+    if (freeSpins === 0) {
+        balance -= currentBet;
+        totalWinThisSpin = 0;
+    } else {
+        freeSpins--;
+        fsCount.textContent = freeSpins;
+    }
+
+    updateUI();
+    overlay.classList.add('hidden');
+    spinBtn.disabled = true;
+
+    // Clear grid
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            const cell = document.getElementById(`cell-${r}-${c}`);
+            cell.innerHTML = '';
+            grid[r][c] = -1;
+        }
+    }
+
+    await wait(150);
+    await dropAndFill();
+    await wait(200);
+    await processCascades();
+}
+
+// ─────────────────────────────────────────────
+//  CASCADE PROCESSOR
+// ─────────────────────────────────────────────
+async function processCascades() {
+    const { wins, bonusTriggered } = checkWins();
+
+    if (wins.length > 0) {
+        let roundWin = 0;
+        wins.forEach(w => {
+            roundWin += w.payout;
+            highlightWin(w.coords, w.isBonus);
+        });
+
+        balance += roundWin;
+        totalWinThisSpin += roundWin;
+        updateUI();
+        if (roundWin > 0) showFloatText(roundWin);
+
+        if (bonusTriggered) {
+            await wait(500);
+            await showBonusGif();
+            freeSpins += 8;
+            fsCount.textContent = freeSpins;
+            toggleBonusMode(true);
+        } else {
+            await waitSkippable(5000);
+        }
+
+        await removeWinningSymbols(wins);
+        await dropAndFill();
+        await processCascades();
+
+    } else {
+        if (freeSpins > 0) {
+            isSpinning = false;
+            setTimeout(() => startSpin(true), 800);
+        } else if (autoEnabled) {
+            isSpinning = false;
+            toggleBonusMode(false);
+            if (balance >= currentBet) {
+                setTimeout(() => startSpin(true), 800);
+            } else {
+                toggleAuto();
+            }
+        } else {
+            isSpinning = false;
+            spinBtn.disabled = false;
+            toggleBonusMode(false);
+            if (totalWinThisSpin > currentBet * 10) {
+                showOverlayMessage('BIG WIN!', 'text-yellow-400');
+                setTimeout(() => overlay.classList.add('hidden'), 2500);
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────
+//  WIN CHECKING
+//  Requires ≥2 consecutive matches left-to-right.
+//  BONUS scatter: need ≥1 BONUS in col 1 AND col 2.
+// ─────────────────────────────────────────────
+function checkWins() {
+    const foundWins = [];
+    let bonusTriggered = false;
+
+    UNIQUE_PAYLINES.forEach(line => {
+        const symbols = line.map(pos => grid[pos[0]][pos[1]]);
+
+        // Find first non-wild, non-bonus
+        const firstNonWild = symbols.find(s => s !== 5 && s !== BONUS_ID);
+        const matchTarget  = (firstNonWild === undefined) ? 5 : firstNonWild;
+
+        let count = 0;
+        if (matchTarget !== BONUS_ID) {
+            for (const s of symbols) {
+                if (s === matchTarget || s === 5) count++;
+                else break;
+            }
+        }
+
+        if (count >= 2) {
+            const multiplier  = PAYOUTS[matchTarget][count - 1];
+            const fsMultiplier = freeSpins > 0 ? FREE_SPIN_MULTIPLIER : 1.0;
+            const winAmount   = currentBet * multiplier * PAYOUT_NORM * fsMultiplier;
+
+            if (winAmount > 0) {
+                foundWins.push({
+                    payout: winAmount,
+                    coords: line.slice(0, count),
+                    isBonus: false
+                });
+            }
+        }
+    });
+
+    // Scatter BONUS check — col 1 AND col 2 must each have ≥1 BONUS
+    const scatterCoords = [];
+    for (let c = 1; c <= 2; c++) {
+        for (let r = 0; r < ROWS; r++) {
+            if (grid[r][c] === BONUS_ID) scatterCoords.push([r, c]);
+        }
+    }
+
+    const hasC1 = scatterCoords.some(p => p[1] === 1);
+    const hasC2 = scatterCoords.some(p => p[1] === 2);
+
+    if (hasC1 && hasC2) {
+        bonusTriggered = true;
+        foundWins.push({ payout: 0, coords: scatterCoords, isBonus: true });
+    }
+
+    return { wins: foundWins, bonusTriggered };
+}
+
+// ─────────────────────────────────────────────
+//  WIN HIGHLIGHT — swaps JPG → GIF on winning cells
+// ─────────────────────────────────────────────
+function highlightWin(coords, isBonus) {
+    coords.forEach(pos => {
+        const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+        const sym  = cell.querySelector('.symbol');
+        if (!sym) return;
+
+        sym.classList.add(isBonus ? 'bonus-flash' : 'win-flash');
+
+        if (!isBonus) {
+            const symbolId = grid[pos[0]][pos[1]];
+            // Symbols 1–5 have GIF win animations (same logic as original)
+            if (symbolId >= 1 && symbolId <= 5) {
+                const img = sym.querySelector('img');
+                if (img) {
+                    const gifSrc = getWinSrc(symbolId);
+                    img.onerror = () => { img.onerror = null; img.src = PH_WIN[symbolId]; };
+                    img.src = gifSrc;
+                }
+            }
+        }
+    });
+}
+
+// ─────────────────────────────────────────────
+//  REMOVE WINNING SYMBOLS
+// ─────────────────────────────────────────────
+async function removeWinningSymbols(wins) {
+    const removed = new Set();
+
+    wins.forEach(w => {
+        w.coords.forEach(pos => {
+            const key = `${pos[0]}-${pos[1]}`;
+            if (removed.has(key)) return;
+            removed.add(key);
+
+            const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+            const sym  = cell.querySelector('.symbol');
+            if (!sym) return;
+
+            sym.classList.remove('win-flash', 'bonus-flash');
+            // Restore static src before vanish
+            const symbolId = grid[pos[0]][pos[1]];
+            const img = sym.querySelector('img');
+            if (img && symbolId >= 1 && symbolId <= 5) {
+                img.onerror = () => { img.onerror = null; img.src = PH_STATIC[symbolId]; };
+                img.src = getStaticSrc(symbolId);
+            }
+            sym.classList.add('vanishing');
+            grid[pos[0]][pos[1]] = -1;
+        });
+    });
+
+    await wait(350);
+
+    removed.forEach(key => {
+        const [r, c] = key.split('-');
+        document.getElementById(`cell-${r}-${c}`).innerHTML = '';
+    });
+}
+
+// ─────────────────────────────────────────────
+//  DROP & FILL (gravity + new symbols)
+// ─────────────────────────────────────────────
+async function dropAndFill() {
+    const moves    = [];
+    const newDrops = [];
+
+    for (let c = 0; c < COLS; c++) {
+        let nextWriteRow = ROWS - 1;
+
+        for (let r = ROWS - 1; r >= 0; r--) {
+            if (grid[r][c] !== -1) {
+                if (r !== nextWriteRow) {
+                    const cell = document.getElementById(`cell-${r}-${c}`);
+                    const sym  = cell.querySelector('.symbol');
+                    if (sym) {
+                        moves.push({ dom: sym, fromR: r, toR: nextWriteRow, c });
+                        grid[nextWriteRow][c] = grid[r][c];
+                        grid[r][c] = -1;
+                    }
+                }
+                nextWriteRow--;
+            }
+        }
+
+        while (nextWriteRow >= 0) {
+            const newId = getRandomSymbol(c);
+            grid[nextWriteRow][c] = newId;
+            newDrops.push({ r: nextWriteRow, c, id: newId });
+            nextWriteRow--;
+        }
+    }
+
+    // Animate existing pieces dropping
+    moves.forEach(m => {
+        const targetCell = document.getElementById(`cell-${m.toR}-${m.c}`);
+        targetCell.appendChild(m.dom);
+        const dist = m.toR - m.fromR;
+        m.dom.style.transition = 'none';
+        m.dom.style.transform  = `translateY(-${dist * 100}%)`;
+    });
+
+    // Spawn and position new pieces above the grid
+    newDrops.forEach(d => {
+        const targetCell = document.getElementById(`cell-${d.r}-${d.c}`);
+        const sym = document.createElement('div');
+        sym.className = `symbol sym-${d.id}`;
+
+        const img = document.createElement('img');
+        img.alt = LABELS[d.id];
+        img.src = getStaticSrc(d.id);
+        img.onerror = () => { img.onerror = null; img.src = PH_STATIC[d.id]; };
+        sym.appendChild(img);
+        targetCell.appendChild(sym);
+
+        const startOffset = (d.r + 1) * 100 + 20;
+        sym.style.transition = 'none';
+        sym.style.transform  = `translateY(-${startOffset}%)`;
+        d.dom = sym;
+    });
+
+    // Trigger reflow then animate
+    gridEl.offsetHeight;
+
+    [...moves.map(m => m.dom), ...newDrops.map(d => d.dom)].forEach(el => {
+        if (!el) return;
+        el.style.transition = `transform ${DROP_SPEED}ms cubic-bezier(0.5, 0, 0.2, 1)`;
+        el.style.transform  = 'translateY(0)';
+    });
+
+    await wait(DROP_SPEED + 50);
+}
+
+// ─────────────────────────────────────────────
+//  UI HELPERS
+// ─────────────────────────────────────────────
+function updateUI() {
+    balanceEl.textContent = `$${balance.toFixed(2)}`;
+    winEl.textContent     = `$${totalWinThisSpin.toFixed(2)}`;
+}
+
+function showFloatText(amount) {
+    const txt = document.createElement('div');
+    txt.className   = 'float-text';
+    txt.textContent = `+$${amount.toFixed(2)}`;
+    txt.style.top   = '50%';
+    container.appendChild(txt);
+    setTimeout(() => txt.remove(), 2000);
+}
+
+function showOverlayMessage(html, colorClass) {
+    overlayText.innerHTML  = html;
+    overlayText.className  = `text-5xl md:text-6xl font-black text-center animate-bounce drop-shadow-2xl ${colorClass}`;
+    overlay.classList.remove('hidden');
+}
+
+// ─────────────────────────────────────────────
+//  BONUS GIF OVERLAY
+//  Same behaviour as old-west-slots original.
+//  Swap bonus-trigger.gif in the same directory.
+// ─────────────────────────────────────────────
+async function showBonusGif() {
+    // Force GIF restart by resetting src
+    const src = bonusGifEl.getAttribute('src');
+    bonusGifEl.src = '';
+    bonusGifEl.src = src;
+    gifOverlay.classList.add('show');
+    await waitSkippable(5000);
+    gifOverlay.classList.remove('show');
+    await wait(400);
+}
+
+function toggleBonusMode(active) {
+    if (active) {
+        container.classList.add('bonus-mode');
+        fsBanner.classList.remove('hidden');
+    } else {
+        container.classList.remove('bonus-mode');
+        fsBanner.classList.add('hidden');
+    }
+}
+
+// ─────────────────────────────────────────────
+//  MUSIC
+// ─────────────────────────────────────────────
+function toggleMusic() {
+    if (bgMusic.paused) {
+        bgMusic.play().catch(() => {});
+        musicBtn.classList.add('active');
+        musicBtn.textContent = '🔊';
+    } else {
+        bgMusic.pause();
+        musicBtn.classList.remove('active');
+        musicBtn.textContent = '🔇';
+    }
+}
+
+function updateVolume() {
+    bgMusic.volume = volumeControl.value / 100;
+    volumePercent.textContent = `${volumeControl.value}%`;
+}
+
+// ─────────────────────────────────────────────
+//  FULLSCREEN
+// ─────────────────────────────────────────────
+function toggleFullscreen() {
+    const elem = fwrapper;
+    if (!document.fullscreenElement && !document.webkitFullscreenElement
+        && !document.mozFullScreenElement && !document.msFullscreenElement) {
+        (elem.requestFullscreen || elem.webkitRequestFullscreen
+            || elem.mozRequestFullScreen || elem.msRequestFullscreen
+        ).call(elem).then
+            ? (elem.requestFullscreen || elem.webkitRequestFullscreen
+                || elem.mozRequestFullScreen || elem.msRequestFullscreen
+              ).call(elem).then(() => fullscreenBtn.classList.add('active'))
+                .catch(() => {})
+            : fullscreenBtn.classList.add('active');
+    } else {
+        (document.exitFullscreen || document.webkitExitFullscreen
+            || document.mozCancelFullScreen || document.msExitFullscreen
+        ).call(document).then
+            ? (document.exitFullscreen || document.webkitExitFullscreen
+                || document.mozCancelFullScreen || document.msExitFullscreen
+              ).call(document).then(() => fullscreenBtn.classList.remove('active'))
+                .catch(() => {})
+            : fullscreenBtn.classList.remove('active');
+    }
+}
+
+['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange']
+    .forEach(ev => document.addEventListener(ev, () => {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement
+            && !document.mozFullScreenElement && !document.msFullscreenElement) {
+            fullscreenBtn.classList.remove('active');
+        }
+    }));
+
+function checkFullscreenSupport() {
+    if (!document.fullscreenEnabled && !document.webkitFullscreenEnabled
+        && !document.mozFullScreenEnabled && !document.msFullscreenEnabled) {
+        fullscreenBtn.style.display = 'none';
+    }
+}
+
+// ─────────────────────────────────────────────
+//  UTILITY
+// ─────────────────────────────────────────────
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function waitSkippable(ms) {
+    return new Promise(resolve => {
+        isWaitingForAnimation = true;
+        spinBtn.disabled  = false;
+        spinBtn.textContent = 'SKIP';
+
+        const interval = setInterval(() => {
+            if (skipAnimation) {
+                clearInterval(interval);
+                skipAnimation = false;
+                isWaitingForAnimation = false;
+                spinBtn.textContent = 'SPIN';
+                resolve();
+            }
+        }, 50);
+
+        setTimeout(() => {
+            clearInterval(interval);
+            isWaitingForAnimation = false;
+            spinBtn.textContent = 'SPIN';
+            resolve();
+        }, ms);
+    });
+}
+
+init();
+</script>
+</body>
+</html>
