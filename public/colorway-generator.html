@@ -22,9 +22,39 @@
         .upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
         .upload-label { font-size:0.82rem; color:var(--muted); }
         .upload-label span { color:var(--accent); }
-        #preview-wrap { display:none; margin-bottom:22px; }
-        #preview-img { max-width:100%; max-height:200px; border:1px solid var(--border); border-radius:4px; display:block; }
+        #preview-wrap { display:none; margin-bottom:16px; }
         .section-label { font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-bottom:12px; }
+        #preview-container { position:relative; display:inline-block; width:100%; }
+        #preview-img { max-width:100%; max-height:220px; border:1px solid var(--border); border-radius:4px; display:block; }
+        #maskCanvas {
+            position:absolute; top:0; left:0; pointer-events:none;
+            border-radius:4px; border:1px solid transparent;
+        }
+        #maskCanvas.drawing-mode { pointer-events:auto; cursor:crosshair; }
+        /* Mask section */
+        #mask-section { display:none; margin-bottom:22px; }
+        .mask-controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
+        .mask-btn {
+            padding:8px 14px; background:var(--surface); color:var(--text);
+            border:1px solid var(--border); border-radius:4px;
+            font-family:'DM Mono',monospace; font-size:0.76rem; cursor:pointer;
+            transition:border-color 0.15s, color 0.15s;
+        }
+        .mask-btn:hover { border-color:var(--accent); color:var(--accent); }
+        .mask-btn.active { border-color:var(--accent); color:var(--accent); background:rgba(200,240,101,0.06); }
+        .mask-clear-btn {
+            padding:8px 14px; background:var(--surface); color:var(--muted);
+            border:1px solid var(--border); border-radius:4px;
+            font-family:'DM Mono',monospace; font-size:0.76rem; cursor:pointer;
+            transition:border-color 0.15s, color 0.15s;
+        }
+        .mask-clear-btn:hover { border-color:#555; color:var(--text); }
+        #mask-count { font-size:0.72rem; color:var(--muted); }
+        #mask-hint {
+            font-size:0.72rem; color:var(--accent); padding:8px 12px;
+            background:rgba(200,240,101,0.06); border:1px solid rgba(200,240,101,0.2);
+            border-radius:4px; display:none;
+        }
         .color-grid { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:24px; }
         .color-option { cursor:pointer; }
         .color-option input[type=checkbox] { display:none; }
@@ -33,9 +63,7 @@
             padding:10px 14px; background:var(--surface); border:1px solid var(--border);
             border-radius:4px; transition:border-color 0.15s;
         }
-        .color-option input:checked ~ .chip-wrap {
-            border-color:var(--accent);
-        }
+        .color-option input:checked ~ .chip-wrap { border-color:var(--accent); }
         .color-chip {
             width:32px; height:32px; border-radius:50%;
             border:2px solid rgba(255,255,255,0.08);
@@ -66,7 +94,19 @@
     </div>
     <div id="preview-wrap">
         <div class="section-label">Preview</div>
-        <img id="preview-img" alt="preview">
+        <div id="preview-container">
+            <img id="preview-img" alt="preview">
+            <canvas id="maskCanvas"></canvas>
+        </div>
+    </div>
+    <div id="mask-section">
+        <div class="section-label">Mask Protected Areas</div>
+        <div class="mask-controls">
+            <button class="mask-btn" id="maskToggle">&#9998; Draw Mask</button>
+            <button class="mask-clear-btn" id="clearMasks">Clear All</button>
+            <span id="mask-count">no protected areas</span>
+        </div>
+        <div id="mask-hint">Draw rectangles over areas you want to keep unchanged — eyes, logos, etc.</div>
     </div>
     <div class="section-label">Pick colorways</div>
     <div class="color-grid">
@@ -104,6 +144,13 @@ function loadImage(file) {
         document.getElementById('preview-img').src = url;
         document.getElementById('preview-wrap').style.display = 'block';
         document.getElementById('generateBtn').disabled = false;
+        document.getElementById('mask-section').style.display = 'block';
+        // Reset mask state on new image load
+        maskRects = [];
+        maskMode = false;
+        updateMaskUI();
+        // Size overlay canvas after image renders
+        requestAnimationFrame(() => { requestAnimationFrame(syncMaskCanvas); });
     };
     img.src = url;
 }
@@ -130,6 +177,163 @@ function hslToRgb(h,s,l) {
     const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};
     return[Math.round(hue2rgb(p,q,h+1/3)*255),Math.round(hue2rgb(p,q,h)*255),Math.round(hue2rgb(p,q,h-1/3)*255)];
 }
+
+// ── Mask feature ──────────────────────────────────────────────────────────────
+const maskCanvas = document.getElementById('maskCanvas');
+const maskCtx = maskCanvas.getContext('2d');
+let maskRects = [];   // [{x,y,w,h}] in image-native pixel coordinates
+let maskMode = false;
+let isDrawing = false;
+let drawStart = null; // display coords where drag started
+let liveRect = null;  // rect being drawn right now (display coords)
+
+// Keep overlay canvas pixel dimensions == image dimensions,
+// sized via CSS to match the rendered preview image.
+function syncMaskCanvas() {
+    if (!originalImageData) return;
+    const img = document.getElementById('preview-img');
+    const r = img.getBoundingClientRect();
+    maskCanvas.style.width  = r.width  + 'px';
+    maskCanvas.style.height = r.height + 'px';
+    maskCanvas.style.top    = (img.offsetTop)  + 'px';
+    maskCanvas.style.left   = (img.offsetLeft) + 'px';
+    maskCanvas.width  = originalImageData.width;
+    maskCanvas.height = originalImageData.height;
+    redrawMask();
+}
+window.addEventListener('resize', syncMaskCanvas);
+
+// Convert display-space coords → image-native coords
+function toImgCoords(dx, dy) {
+    const img = document.getElementById('preview-img');
+    const r = img.getBoundingClientRect();
+    return {
+        x: Math.round(dx * originalImageData.width  / r.width),
+        y: Math.round(dy * originalImageData.height / r.height)
+    };
+}
+// Convert display-space rect → image-native rect
+function toImgRect(x, y, w, h) {
+    const a = toImgCoords(x, y);
+    const b = toImgCoords(x + w, y + h);
+    return { x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y };
+}
+
+function redrawMask() {
+    if (!originalImageData) return;
+    maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+
+    // Existing masks – draw in image-native coords (canvas pixels == image pixels)
+    maskCtx.fillStyle   = 'rgba(200,240,101,0.25)';
+    maskCtx.strokeStyle = 'rgba(200,240,101,0.85)';
+    maskCtx.lineWidth   = Math.max(1, maskCanvas.width / 400); // scales with image
+    maskCtx.setLineDash([]);
+    for (const r of maskRects) {
+        maskCtx.fillRect(r.x, r.y, r.w, r.h);
+        maskCtx.strokeRect(r.x, r.y, r.w, r.h);
+    }
+
+    // Rectangle currently being dragged (display coords → image coords)
+    if (liveRect) {
+        const ir = toImgRect(liveRect.x, liveRect.y, liveRect.w, liveRect.h);
+        maskCtx.fillStyle   = 'rgba(200,240,101,0.15)';
+        maskCtx.strokeStyle = 'rgba(200,240,101,0.5)';
+        maskCtx.setLineDash([Math.max(2, maskCanvas.width / 200), Math.max(2, maskCanvas.width / 200)]);
+        maskCtx.fillRect(ir.x, ir.y, ir.w, ir.h);
+        maskCtx.strokeRect(ir.x, ir.y, ir.w, ir.h);
+        maskCtx.setLineDash([]);
+    }
+}
+
+function getDisplayPos(e) {
+    const r = maskCanvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+
+function startDraw(pos) {
+    if (!maskMode) return;
+    isDrawing = true;
+    drawStart = pos;
+    liveRect = { x: pos.x, y: pos.y, w: 0, h: 0 };
+}
+function moveDraw(pos) {
+    if (!isDrawing) return;
+    liveRect = {
+        x: Math.min(drawStart.x, pos.x),
+        y: Math.min(drawStart.y, pos.y),
+        w: Math.abs(pos.x - drawStart.x),
+        h: Math.abs(pos.y - drawStart.y)
+    };
+    redrawMask();
+}
+function endDraw() {
+    if (!isDrawing) return;
+    isDrawing = false;
+    // Only commit if large enough (>5px in display space) to avoid accidental dots
+    if (liveRect && liveRect.w > 5 && liveRect.h > 5) {
+        maskRects.push(toImgRect(liveRect.x, liveRect.y, liveRect.w, liveRect.h));
+        updateMaskCount();
+    }
+    liveRect = null;
+    redrawMask();
+}
+
+// Mouse events
+maskCanvas.addEventListener('mousedown', e => { e.preventDefault(); startDraw(getDisplayPos(e)); });
+maskCanvas.addEventListener('mousemove', e => { moveDraw(getDisplayPos(e)); });
+maskCanvas.addEventListener('mouseup',   e => { endDraw(); });
+maskCanvas.addEventListener('mouseleave',e => { if (isDrawing) endDraw(); });
+
+// Touch events
+maskCanvas.addEventListener('touchstart', e => { e.preventDefault(); startDraw(getDisplayPos(e.touches[0])); }, { passive: false });
+maskCanvas.addEventListener('touchmove',  e => { e.preventDefault(); moveDraw(getDisplayPos(e.touches[0])); },  { passive: false });
+maskCanvas.addEventListener('touchend',   e => { e.preventDefault(); endDraw(); },                               { passive: false });
+
+// Toggle mask drawing mode
+document.getElementById('maskToggle').addEventListener('click', () => {
+    maskMode = !maskMode;
+    updateMaskUI();
+});
+
+// Clear all masks
+document.getElementById('clearMasks').addEventListener('click', () => {
+    maskRects = [];
+    updateMaskCount();
+    redrawMask();
+});
+
+function updateMaskUI() {
+    const btn  = document.getElementById('maskToggle');
+    const hint = document.getElementById('mask-hint');
+    if (maskMode) {
+        btn.classList.add('active');
+        btn.textContent = '✓ Drawing Mask';
+        hint.style.display = 'block';
+        maskCanvas.classList.add('drawing-mode');
+    } else {
+        btn.classList.remove('active');
+        btn.textContent = '✎ Draw Mask';
+        hint.style.display = 'none';
+        maskCanvas.classList.remove('drawing-mode');
+    }
+}
+
+function updateMaskCount() {
+    const el = document.getElementById('mask-count');
+    el.textContent = maskRects.length === 0
+        ? 'no protected areas'
+        : maskRects.length === 1 ? '1 protected area' : `${maskRects.length} protected areas`;
+}
+
+// Check if a pixel at image-native (px, py) falls inside any mask rect
+function isMasked(px, py) {
+    for (const r of maskRects) {
+        if (px >= r.x && px < r.x + r.w && py >= r.y && py < r.y + r.h) return true;
+    }
+    return false;
+}
+// ── End mask feature ──────────────────────────────────────────────────────────
+
 document.getElementById('generateBtn').addEventListener('click', async () => {
     const selected = [...document.querySelectorAll('input[type=checkbox]:checked')];
     if(!selected.length){ document.getElementById('status').textContent='Check at least one color.'; return; }
@@ -140,6 +344,8 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
     document.getElementById('progressBar').style.display='block';
     fill.style.width='0%';
     const zip=new JSZip();
+    const imgW = originalImageData.width;
+    const hasMask = maskRects.length > 0;
     for(let i=0;i<selected.length;i++){
         const el=selected[i];
         const isBW=el.value==='bw';
@@ -150,13 +356,14 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
         const d=nd.data;
         for(let j=0;j<d.length;j+=4){
             if(d[j+3]<10) continue;
+            // Skip pixels inside mask areas — keep original color
+            if(hasMask && isMasked(j/4 % imgW, Math.floor(j/4 / imgW))) continue;
             const [h,s,l]=rgbToHsl(d[j],d[j+1],d[j+2]);
             if(isBW){
-                // desaturate all colored pixels to gray
                 if(s>=0.06){ const v=Math.round(l*255); d[j]=v;d[j+1]=v;d[j+2]=v; }
                 continue;
             }
-            if(s<0.06) continue; // leave grays/whites/blacks alone
+            if(s<0.06) continue;
             const targetHue=hueLight*l+hueDark*(1-l);
             const [nr,ng,nb]=hslToRgb(targetHue,s,l);
             d[j]=nr;d[j+1]=ng;d[j+2]=nb;
