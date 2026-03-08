@@ -1,6 +1,6 @@
-# PatternRipple - Free Creative Software & Browser Tools
+# PatternRipple - Free Creative Software for Creators
 
-This repository contains the codebase for **PatternRipple**, a collection of free browser-based creative tools built with **Next.js**. All tools run entirely client-side with no server uploads required.
+This repository contains the codebase for **PatternRipple**, a collection of free browser-based creative tools for designers, artists, and creators. Built with **Next.js**. All tools run entirely client-side with no server uploads required.
 
 ---
 
@@ -18,6 +18,7 @@ This repository contains the codebase for **PatternRipple**, a collection of fre
 ## 🛠️ Available Tools
 
 ### Design Tools
+- **Colorway Generator** - Recolor pattern images across 8 preset hues and export as ZIP
 - **Seamless Pattern Creator** - Create repeating tile patterns with offset/wrap controls
 - **PNG2SVG Fabric Design Vectorizer** - Convert PNG designs to vector SVG for fabric printing
 - **Seamless Pattern Checker (SmoothSnap)** - Preview and validate seamless patterns
@@ -29,9 +30,6 @@ This repository contains the codebase for **PatternRipple**, a collection of fre
 ### Video Tools
 - **Property Slideshow Maker** - Create listing videos with custom branding
 
-### Experimental
-- **cqs-rs Browser Demo** - Quantum circuit simulator running in WebAssembly
-
 ---
 
 ## 📂 Project Structure
@@ -42,13 +40,14 @@ app/
   layout.tsx             # Root layout
   page.tsx               # Homepage
 public/
+  colorway-generator.html
   seamless-pattern-creator.html
   png2svg.html
   pattern-checker-smoothsnap.html
   audio-looper-panek.html
   audio-processor.html
   property-slideshow-maker.html
-  cqs_rs_docs.html
+_archive/                # Non-published research archive
 ```
 
 ---
@@ -59,7 +58,7 @@ public/
 - [React](https://react.dev/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [TypeScript](https://www.typescriptlang.org/)
-- WebAssembly (for vector tracing and quantum simulation)
+- WebAssembly (for vector tracing)
 
 ---
 
@@ -91,7 +90,7 @@ npm run export
      title: "Tool Name",
      href: "/tool-name.html",
      summary: "Brief description of the tool",
-     badge: "Design" | "Audio" | "Video" | "Experimental",
+     badge: "Design" | "Audio" | "Video",
    }
    ```
 3. Update the `order` object with the display order

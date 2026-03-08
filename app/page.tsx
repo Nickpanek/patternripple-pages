@@ -4,16 +4,16 @@ import Link from "next/link";
 import Head from "next/head";
 
 export default function HomePage() {
-  const siteTitle = "PatternRipple - Free Browser Tools, Open Source Research & HTML5 Games";
+  const siteTitle = "PatternRipple - Free Browser Software for Creators";
   const siteDescription =
-    "Discover free browser-based creative tools, public domain antimicrobial drug research (LAZ-1011 & LAZ-1123), scaffold enrichment analysis datasets, and HTML5 games. No subscriptions, no data collection. Open source software and CC0-licensed scientific discoveries for drug discovery, AI training, and creative work.";
+    "Free browser-based creative software and tools for designers and creators. Pattern creator, audio looper, video tools, and more. No subscriptions, no data collection, everything runs in your browser.";
 
   const jsonLdWebsite = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     url: "https://www.patternripple.com/",
     name: "PatternRipple",
-    description: "Free browser tools, public domain drug research, and open source games",
+    description: "Free browser software for creators",
     potentialAction: {
       "@type": "SearchAction",
       target: "https://www.patternripple.com/search?q={query}",
@@ -27,52 +27,16 @@ export default function HomePage() {
     name: "PatternRipple",
     url: "https://www.patternripple.com/",
     logo: "https://www.patternripple.com/icon-512.png",
-    description: "Open platform for free creative tools, public domain scientific research, and browser-based games",
+    description: "Free browser-based creative software for designers, artists, and creators",
     sameAs: ["https://heylink.me/nickpanek/"],
     knowsAbout: [
-      "Drug Discovery",
-      "Antimicrobial Resistance",
-      "Molecular Scaffolds",
-      "ChEMBL Database",
       "Browser-Based Tools",
       "Pattern Design",
       "Audio Processing",
-      "HTML5 Games",
-      "Open Source Software",
-      "Public Domain Research"
+      "Video Production",
+      "Creative Software",
+      "Open Source Software"
     ]
-  };
-
-  const jsonLdResearch = {
-    "@context": "https://schema.org",
-    "@type": "ScholarlyArticle",
-    headline: "LAZ-1011 & LAZ-1123: Public Domain Antimicrobial Drug Candidates",
-    description: "First public domain in silico antimicrobial drug discovery featuring high Fsp3 bis-dioxolane scaffolds with efflux pump evasion and quorum sensing inhibition capabilities",
-    author: {
-      "@type": "Organization",
-      name: "PatternRipple Research Lab"
-    },
-    license: "https://creativecommons.org/publicdomain/zero/1.0/",
-    keywords: "antimicrobial resistance, drug discovery, public domain, efflux pump evasion, quorum sensing inhibition, MDR pathogens, ChEMBL, molecular scaffolds",
-    url: "https://www.patternripple.com/lab/lazarus-001"
-  };
-
-  const jsonLdDataset = {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    name: "Scaffold-Target Enrichment Analysis - 85,717 ChEMBL Compounds",
-    description: "Public domain dataset analyzing 456 molecular scaffolds significantly enriched in specific protein families, derived from 85,717 ChEMBL compounds with statistical validation",
-    license: "https://creativecommons.org/publicdomain/zero/1.0/",
-    creator: {
-      "@type": "Organization",
-      name: "PatternRipple Research Lab"
-    },
-    keywords: "molecular scaffolds, drug discovery, ChEMBL, protein targets, scaffold hopping, AI training data, machine learning",
-    distribution: {
-      "@type": "DataDownload",
-      contentUrl: "https://www.patternripple.com/scaffold-enrichment/",
-      encodingFormat: "text/html"
-    }
   };
 
   const jsonLdSoftware = {
@@ -94,7 +58,7 @@ export default function HomePage() {
       <Head>
         <title>{siteTitle}</title>
         <meta name="description" content={siteDescription} />
-        <meta name="keywords" content="free browser tools, antimicrobial drug discovery, public domain research, LAZ-1011, LAZ-1123, scaffold enrichment, ChEMBL, pattern creator, audio looper, HTML5 games, open source, CC0 license, drug discovery, AI training data, molecular scaffolds, seamless patterns, no subscription tools" />
+        <meta name="keywords" content="free browser tools, pattern creator, audio looper, seamless patterns, creative software, design tools, no subscription tools, creator tools, audio tools, video maker, browser software" />
         <link rel="canonical" href="https://www.patternripple.com/" />
 
         {/* Open Graph */}
@@ -123,14 +87,6 @@ export default function HomePage() {
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdResearch) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdDataset) }}
-        />
-        <script
-          type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSoftware) }}
         />
       </Head>
@@ -140,109 +96,42 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-5xl font-thin tracking-wide text-gray-100 mb-4">PatternRipple</h1>
           <p className="text-lg text-gray-400 max-w-3xl mx-auto">
-            Free browser tools, public domain drug discovery research, and HTML5 games. No subscriptions, no data collection, always open source.
+            Free browser software for creators. No subscriptions, no data collection, no installation required.
           </p>
         </div>
       </header>
 
-      {/* Highlight banner */}
-      <div className="bg-accent text-black py-3">
-        <div className="max-w-6xl mx-auto px-4 flex justify-center items-center gap-8 text-sm font-medium">
-          <span>🧬 NEW: LAZ-1011 & LAZ-1123 Antimicrobial Research</span>
-          <span>📊 NEW: Scaffold Enrichment Dataset (85,717 compounds)</span>
-        </div>
-      </div>
-
       {/* Main Content Sections */}
       <main className="max-w-6xl mx-auto px-4 mt-10 space-y-8">
-
-        {/* Research Lab Section */}
-        <section className="bg-[#1e1e1e] rounded-2xl shadow-lg p-6 md:p-8 ring-1 ring-gray-700">
-          <h2 className="text-2xl md:text-3xl font-light text-gray-100 mb-4">
-            🧬 Research Lab - Public Domain Drug Discovery
-          </h2>
-          <p className="text-gray-400 leading-relaxed mb-6">
-            Open source scientific research and datasets released under CC0 license. Free for commercial use, AI training, and academic research.
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-[#252525] p-5 rounded-lg border border-gray-700">
-              <h3 className="text-xl font-medium text-gray-100 mb-2">LAZ-1011 & LAZ-1123 Discovery</h3>
-              <p className="text-sm text-gray-400 mb-4">
-                First public domain antimicrobial drug candidates targeting MDR pathogens. High Fsp3 bis-dioxolane scaffolds with efflux pump evasion and quorum sensing inhibition.
-              </p>
-              <ul className="text-sm text-gray-400 space-y-1 mb-4">
-                <li>✓ Efflux pump evasion capability</li>
-                <li>✓ Quorum sensing inhibition</li>
-                <li>✓ Complete Markush family defined</li>
-                <li>✓ Full PDF reports available</li>
-              </ul>
-              <Link
-                href="/lab/lazarus-001"
-                className="inline-block bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors text-sm"
-              >
-                View Research →
-              </Link>
-            </div>
-
-            <div className="bg-[#252525] p-5 rounded-lg border border-gray-700">
-              <h3 className="text-xl font-medium text-gray-100 mb-2">Scaffold Enrichment Analysis</h3>
-              <p className="text-sm text-gray-400 mb-4">
-                Interactive dataset analyzing 85,717 ChEMBL compounds. 456 molecular scaffolds significantly enriched (3-57×) in specific protein families.
-              </p>
-              <ul className="text-sm text-gray-400 space-y-1 mb-4">
-                <li>✓ Statistical validation (Fisher's exact test)</li>
-                <li>✓ Filterable by target family</li>
-                <li>✓ Ideal for AI/ML training data</li>
-                <li>✓ Scaffold hopping resource</li>
-              </ul>
-              <Link
-                href="/scaffold-enrichment/"
-                className="inline-block bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors text-sm"
-              >
-                Explore Dataset →
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <Link
-              href="/lab"
-              className="inline-block bg-gray-700 text-white px-5 py-3 rounded-lg hover:bg-gray-600 transition-colors"
-            >
-              Visit Research Lab
-            </Link>
-          </div>
-        </section>
 
         {/* Software Section */}
         <section className="bg-[#1e1e1e] rounded-2xl shadow-lg p-6 md:p-8 ring-1 ring-gray-700">
           <h2 className="text-2xl md:text-3xl font-light text-gray-100 mb-4">
-            🛠️ Free Browser Tools
+            🛠️ Creative Software
           </h2>
           <p className="text-gray-400 leading-relaxed mb-6">
-            Simple, privacy-focused browser utilities. No installation, no subscriptions, no data collection. Works 100% in your browser.
+            Browser-based tools built for designers, artists, and creators. Privacy-first, no installation, no subscriptions. Works 100% in your browser.
           </p>
 
           <div className="grid md:grid-cols-3 gap-4 mb-6">
             <div className="bg-[#252525] p-4 rounded-lg border border-gray-700">
               <h3 className="text-lg font-medium text-gray-100 mb-2">Pattern Design</h3>
               <p className="text-sm text-gray-400">
-                Create seamless tile patterns with offset/wrap tools and live preview.
+                Create seamless tile patterns with offset/wrap tools and live preview. Export for fabric, wallpaper, and digital use.
               </p>
             </div>
 
             <div className="bg-[#252525] p-4 rounded-lg border border-gray-700">
               <h3 className="text-lg font-medium text-gray-100 mb-2">Audio Tools</h3>
               <p className="text-sm text-gray-400">
-                Loop audio with tempo control, add fades, normalize, and export in multiple formats.
+                Loop audio with tempo control, add fades, normalize, and export in multiple formats. Perfect for music and sound design.
               </p>
             </div>
 
             <div className="bg-[#252525] p-4 rounded-lg border border-gray-700">
               <h3 className="text-lg font-medium text-gray-100 mb-2">Video & Photo</h3>
               <p className="text-sm text-gray-400">
-                Create property slideshows, compress photos, all processed locally in browser.
+                Create property slideshows, compress photos, and produce listing videos. All processed locally in your browser.
               </p>
             </div>
           </div>
@@ -255,49 +144,10 @@ export default function HomePage() {
           </Link>
         </section>
 
-        {/* Games Section */}
-        <section className="bg-[#1e1e1e] rounded-2xl shadow-lg p-6 md:p-8 ring-1 ring-gray-700">
-          <h2 className="text-2xl md:text-3xl font-light text-gray-100 mb-4">
-            🎮 HTML5 Games
-          </h2>
-          <p className="text-gray-400 leading-relaxed mb-6">
-            Browser-based games with no installation required. Featuring slot machines with bonus rounds, background music, and PWA support.
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div className="bg-[#252525] p-5 rounded-lg border border-gray-700">
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="text-xl font-medium text-gray-100">Tacticool Patches Slot</h3>
-                <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">PWA</span>
-              </div>
-              <p className="text-sm text-gray-400 mb-3">
-                Airsoft-themed slot machine with custom embroidered patch designs, cascading reels, and free spins bonus rounds.
-              </p>
-            </div>
-
-            <div className="bg-[#252525] p-5 rounded-lg border border-gray-700">
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="text-xl font-medium text-gray-100">Old West Slots</h3>
-                <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">NEW</span>
-              </div>
-              <p className="text-sm text-gray-400 mb-3">
-                Wild West themed slot with 5-second GIF animations, bonus rounds, authentic imagery, and background music.
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href="/games"
-            className="inline-block bg-accent text-white px-5 py-3 rounded-lg hover:bg-accent/90 transition-colors"
-          >
-            Play Games
-          </Link>
-        </section>
-
         {/* Philosophy Section */}
         <section className="bg-[#1e1e1e] rounded-2xl shadow-lg p-6 md:p-8 ring-1 ring-gray-700">
           <h2 className="text-2xl md:text-3xl font-light text-gray-100 mb-4">
-            Our Philosophy
+            Built for Creators
           </h2>
           <div className="grid md:grid-cols-3 gap-6 text-sm">
             <div>
@@ -309,13 +159,13 @@ export default function HomePage() {
             <div>
               <h3 className="text-gray-100 font-medium mb-2">💰 No Subscriptions</h3>
               <p className="text-gray-400">
-                Everything is free forever. No paywalls, no feature limitations, no upsells.
+                Everything is free. No paywalls, no feature limitations, no upsells. Just tools that work.
               </p>
             </div>
             <div>
-              <h3 className="text-gray-100 font-medium mb-2">📖 Open Source</h3>
+              <h3 className="text-gray-100 font-medium mb-2">⚡ Works Offline</h3>
               <p className="text-gray-400">
-                Research and datasets released under CC0. Free for commercial use, AI training, and academic research.
+                No internet required once loaded. Tools run entirely in your browser without any server dependency.
               </p>
             </div>
           </div>
@@ -329,15 +179,13 @@ export default function HomePage() {
             <div>
               <h3 className="text-white font-medium mb-4">PatternRipple</h3>
               <p className="text-sm">
-                Free browser tools, public domain drug discovery research, and HTML5 games. Built with privacy and open science in mind.
+                Free browser software for creators. Built with privacy and simplicity in mind.
               </p>
             </div>
             <div>
               <h3 className="text-white font-medium mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/lab" className="hover:text-accent">Research Lab</Link></li>
                 <li><Link href="/software" className="hover:text-accent">Software</Link></li>
-                <li><Link href="/games" className="hover:text-accent">Games</Link></li>
                 <li><Link href="/about" className="hover:text-accent">About</Link></li>
                 <li><a href="mailto:nick@patternripple.com" className="hover:text-accent">Contact</a></li>
               </ul>

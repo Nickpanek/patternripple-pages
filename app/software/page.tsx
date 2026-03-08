@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Free Software & Browser Tools - Pattern Creator, Audio Tools & More | PatternRipple",
   description:
-    "Free browser-based creative software and tools. Seamless pattern creator, PNG2SVG converter, pattern tile checker, audio looper, audio processor, property slideshow maker, video tools, and quantum circuit simulator. No installation required, works offline.",
+    "Free browser-based creative software and tools for creators. Seamless pattern creator, PNG2SVG converter, pattern tile checker, audio looper, audio processor, property slideshow maker, and more. No installation required, works offline.",
   keywords: "free software, browser tools, pattern creator, png to svg, vector converter, seamless patterns, audio looper, audio tools, video maker, creative tools, design software, free design tools, web-based tools, offline tools",
   alternates: { canonical: "https://www.patternripple.com/software" },
   openGraph: {
@@ -115,14 +115,6 @@ const tools: Tool[] = [
       "Build quick listing videos. Choose aspect ratio, add address, price, details, color, and logo. Export WebM, GIF, or frames ZIP.",
     badge: "Video",
   },
-  {
-    slug: "cqs-rs-browser-simulator",
-    title: "cqs-rs Browser Demo",
-    href: "/cqs_rs_docs.html",
-    summary:
-      "Run small quantum circuit programs in the browser. JSON editor, shots control, and inline results for a demo subset of the Rust simulator.",
-    badge: "Experimental",
-  },
 ];
 
 const order: Record<string, number> = {
@@ -133,7 +125,6 @@ const order: Record<string, number> = {
   "audio-looper-panek": 30,
   "audio-processor": 40,
   "property-slideshow-maker": 50,
-  "cqs-rs-browser-simulator": 90,
 };
 
 const sortedTools = [...tools].sort(
