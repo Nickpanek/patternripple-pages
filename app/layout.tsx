@@ -7,7 +7,7 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "PatternRipple - Creative Tools and Utilities",
   description:
-    "Free and paid creative tools that run in your browser. Built without subscriptions.",
+    "Creative tools and software for designers and creators. Privacy-focused, runs in your browser.",
 };
 
 export default function RootLayout({

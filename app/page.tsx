@@ -4,16 +4,16 @@ import Link from "next/link";
 import Head from "next/head";
 
 export default function HomePage() {
-  const siteTitle = "PatternRipple - Free Browser Software for Creators";
+  const siteTitle = "PatternRipple - Browser Software for Creators";
   const siteDescription =
-    "Free browser-based creative software and tools for designers and creators. Pattern creator, audio looper, video tools, and more. No subscriptions, no data collection, everything runs in your browser.";
+    "Browser-based creative software and tools for designers and creators. Pattern creator, audio looper, video tools, and more. No data collection, everything runs in your browser.";
 
   const jsonLdWebsite = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     url: "https://www.patternripple.com/",
     name: "PatternRipple",
-    description: "Free browser software for creators",
+    description: "Browser software for creators",
     potentialAction: {
       "@type": "SearchAction",
       target: "https://www.patternripple.com/search?q={query}",
@@ -27,7 +27,7 @@ export default function HomePage() {
     name: "PatternRipple",
     url: "https://www.patternripple.com/",
     logo: "https://www.patternripple.com/icon-512.png",
-    description: "Free browser-based creative software for designers, artists, and creators",
+    description: "Browser-based creative software for designers, artists, and creators",
     sameAs: ["https://heylink.me/nickpanek/"],
     knowsAbout: [
       "Browser-Based Tools",
@@ -50,7 +50,7 @@ export default function HomePage() {
       price: "0",
       priceCurrency: "USD"
     },
-    description: "Free browser-based tools for seamless pattern creation, audio looping, video slideshows, and photo compression. No installation required."
+    description: "Browser-based tools for seamless pattern creation, audio looping, video slideshows, and photo compression. No installation required."
   };
 
   return (
@@ -96,7 +96,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-5xl font-thin tracking-wide text-gray-100 mb-4">PatternRipple</h1>
           <p className="text-lg text-gray-400 max-w-3xl mx-auto">
-            Free browser software for creators. No subscriptions, no data collection, no installation required.
+            Browser software for creators. No data collection, no installation required.
           </p>
         </div>
       </header>
@@ -110,7 +110,7 @@ export default function HomePage() {
             🛠️ Creative Software
           </h2>
           <p className="text-gray-400 leading-relaxed mb-6">
-            Browser-based tools built for designers, artists, and creators. Privacy-first, no installation, no subscriptions. Works 100% in your browser.
+            Browser-based tools built for designers, artists, and creators. Privacy-first, no installation required. Works 100% in your browser.
           </p>
 
           <div className="grid md:grid-cols-3 gap-4 mb-6">
@@ -157,9 +157,9 @@ export default function HomePage() {
               </p>
             </div>
             <div>
-              <h3 className="text-gray-100 font-medium mb-2">💰 No Subscriptions</h3>
+              <h3 className="text-gray-100 font-medium mb-2">💰 No SaaS</h3>
               <p className="text-gray-400">
-                Everything is free. No paywalls, no feature limitations, no upsells. Just tools that work.
+                No recurring fees, no paywalls, no upsells. Just tools that work.
               </p>
             </div>
             <div>
@@ -179,7 +179,7 @@ export default function HomePage() {
             <div>
               <h3 className="text-white font-medium mb-4">PatternRipple</h3>
               <p className="text-sm">
-                Free browser software for creators. Built with privacy and simplicity in mind.
+                Browser software for creators. Built with privacy and simplicity in mind.
               </p>
             </div>
             <div>

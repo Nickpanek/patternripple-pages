@@ -3,24 +3,24 @@ import type { Metadata } from "next";
 
 // SEO
 export const metadata: Metadata = {
-  title: "About PatternRipple - Free Creative Software for Creators by Nick Panek",
+  title: "About PatternRipple - Creative Software for Creators by Nick Panek",
   description:
-    "PatternRipple by Nick Panek offers free browser-based creative software for designers and creators. No subscriptions, no SaaS traps. Files stay local, privacy-focused tools.",
-  keywords: "Nick Panek, PatternRipple, about, creative software, no subscriptions, privacy-focused tools, indie developer, free tools, creator tools",
+    "PatternRipple by Nick Panek offers browser-based creative software for designers and creators. Privacy-focused tools. Files stay local.",
+  keywords: "Nick Panek, PatternRipple, about, creative software, privacy-focused tools, indie developer, creator tools",
   alternates: { canonical: "https://www.patternripple.com/about" },
   openGraph: {
-    title: "About PatternRipple | Free Creative Software by Nick Panek",
+    title: "About PatternRipple | Creative Software by Nick Panek",
     description:
-      "Free creative software for creators. No subscriptions ever. Built by Nick Panek.",
+      "Creative software for creators. Built by Nick Panek.",
     url: "https://www.patternripple.com/about",
     type: "website",
     siteName: "PatternRipple",
   },
   twitter: {
     card: "summary_large_image",
-    title: "About PatternRipple - Free Creative Software",
+    title: "About PatternRipple - Creative Software",
     description:
-      "Free creative software for creators by Nick Panek. No subscriptions ever.",
+      "Creative software for creators by Nick Panek.",
   },
   robots: {
     index: true,
@@ -44,8 +44,8 @@ export default function AboutPage() {
             PatternRipple
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            I used to sell patterns on this site. I’m now building software that
-            will never have a subscription. It’s just me here—a one-man team—and
+            I used to sell patterns on this site. I’m now building software tools
+            and desktop apps. It’s just me here—a one-man team—and
             I’ll squash bugs as fast as I can. Files stay local where possible.
           </p>
 
@@ -85,9 +85,8 @@ export default function AboutPage() {
           </p>
 
           <p>
-            All tools listed in the <strong>Software section are free</strong> and will
-            always stay free. They're prototypes and experiments designed to run
-            in your browser, no account needed.
+            The tools listed in the <strong>Software section</strong> are
+            prototypes and experiments designed to run in your browser, no account needed.
           </p>
 
           <p>
