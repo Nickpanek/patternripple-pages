@@ -38,11 +38,12 @@
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Audio Loop Creator",
-    "description": "Automatically create seamless audio loops with intelligent beat detection, energy analysis, and zero-crossing alignment",
+    "name": "Audio Looper — Desktop Edition",
+    "description": "Free browser-based audio loop creator with intelligent beat detection, energy analysis, and zero-crossing alignment. Create seamless loops for video game music, music production, and audio projects.",
     "url": "https://www.patternripple.com/audio-looper-panek.html",
     "applicationCategory": "MultimediaApplication",
     "operatingSystem": "Any",
+    "inLanguage": "en",
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -56,16 +57,56 @@
     "publisher": {
       "@type": "Organization",
       "name": "PatternRipple",
-      "url": "https://patternripple.com"
+      "url": "https://www.patternripple.com"
     },
     "featureList": [
       "Intelligent beat detection",
-      "Energy analysis",
-      "Zero-crossing alignment",
-      "Seamless loop creation",
-      "Professional quality output",
-      "Perfect for video game music",
-      "Music production ready"
+      "Energy analysis for optimal loop points",
+      "Zero-crossing alignment for click-free loops",
+      "Adjustable start and end points",
+      "Tempo control",
+      "Stereo panning",
+      "Export WAV or MP3",
+      "No installation or account required",
+      "Works in browser"
+    ]
+  }
+  </script>
+
+  <!-- BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://www.patternripple.com"},
+      {"@type":"ListItem","position":2,"name":"Software","item":"https://www.patternripple.com/software"},
+      {"@type":"ListItem","position":3,"name":"Audio Looper","item":"https://www.patternripple.com/audio-looper-panek.html"}
+    ]
+  }
+  </script>
+
+  <!-- FAQPage structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I make a seamless audio loop online?",
+        "acceptedAnswer": {"@type":"Answer","text":"Load any audio file into the Audio Looper. It automatically detects beats and energy levels to suggest the best loop points. Fine-tune the start and end points on the waveform, adjust tempo and panning, then export as WAV or MP3."}
+      },
+      {
+        "@type": "Question",
+        "name": "What is zero-crossing alignment in audio loops?",
+        "acceptedAnswer": {"@type":"Answer","text":"Zero-crossing alignment snaps loop start and end points to positions where the audio waveform crosses zero amplitude. This eliminates the audible click or pop that occurs when a loop restarts at a non-zero amplitude position."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use this audio looper for video game music?",
+        "acceptedAnswer": {"@type":"Answer","text":"Yes. The Audio Looper was designed with video game music in mind. Beat detection and zero-crossing alignment produce perfectly seamless loops that work with game audio engines."}
+      }
     ]
   }
   </script>
@@ -1494,5 +1535,18 @@ audio quality issues.
       document.getElementById('statusSection').classList.remove('hidden');
     }
   </script>
+
+<!-- Google Translate Widget -->
+<div id="pr-translate" style="position:fixed;bottom:16px;right:16px;z-index:9999;">
+  <div id="google_translate_element"></div>
+</div>
+<style>
+  .goog-te-banner-frame,.skiptranslate{display:none!important;}
+  body{top:0!important;}
+  .goog-te-gadget{font-size:0!important;}
+  .goog-te-gadget select{font-size:13px!important;padding:6px 10px!important;border-radius:8px!important;border:1px solid rgba(255,255,255,0.18)!important;background:rgba(20,20,20,0.96)!important;color:#e0e0e0!important;cursor:pointer!important;outline:none!important;}
+</style>
+<script>function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:'en',autoDisplay:false},'google_translate_element');}</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
 </body>
 </html>

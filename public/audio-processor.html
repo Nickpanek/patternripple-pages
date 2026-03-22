@@ -38,27 +38,74 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Audio Fade & Normalize",
-  "description": "Free online audio processor for adding fade in/out effects and normalizing audio levels",
+  "name": "Audio Processor — Fade & Normalize",
+  "description": "Free browser-based audio processor. Add fade in/out effects, normalize audio levels, and export to WAV or MP3. All processing is local — no file uploads.",
   "url": "https://www.patternripple.com/audio-processor.html",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Any",
+  "inLanguage": "en",
   "offers": {
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "USD"
   },
+  "author": {
+    "@type": "Person",
+    "name": "Nick Panek",
+    "url": "https://heylink.me/nickpanek/"
+  },
   "publisher": {
     "@type": "Organization",
     "name": "PatternRipple",
-    "url": "https://patternripple.com"
+    "url": "https://www.patternripple.com"
   },
   "featureList": [
-    "Add fade in effects",
-    "Add fade out effects",
-    "Normalize audio levels",
-    "Browser-based processing",
-    "No uploads required"
+    "Add fade in effect with adjustable duration",
+    "Add fade out effect with adjustable duration",
+    "Normalize audio to target loudness",
+    "Browser-based Web Audio processing",
+    "Export WAV or MP3",
+    "No file uploads — complete privacy",
+    "Works offline",
+    "No account or signup required"
+  ]
+}
+</script>
+
+<!-- BreadcrumbList -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Home","item":"https://www.patternripple.com"},
+    {"@type":"ListItem","position":2,"name":"Software","item":"https://www.patternripple.com/software"},
+    {"@type":"ListItem","position":3,"name":"Audio Processor","item":"https://www.patternripple.com/audio-processor.html"}
+  ]
+}
+</script>
+
+<!-- FAQPage structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I add a fade to an audio file online?",
+      "acceptedAnswer": {"@type":"Answer","text":"Upload your audio file to the Audio Processor, set the fade-in and fade-out durations in seconds, and click export. The tool applies the fades locally in your browser using the Web Audio API and downloads the result as WAV or MP3."}
+    },
+    {
+      "@type": "Question",
+      "name": "What does audio normalization do?",
+      "acceptedAnswer": {"@type":"Answer","text":"Audio normalization adjusts the overall volume of an audio file so its peak (or loudness) reaches a target level. This is useful for ensuring consistent volume across multiple tracks or preparing audio for broadcast and streaming."}
+    },
+    {
+      "@type": "Question",
+      "name": "Does the audio processor upload my files?",
+      "acceptedAnswer": {"@type":"Answer","text":"No. All processing is done locally in your browser using the Web Audio API. Your audio files are never sent to any server, ensuring complete privacy."}
+    }
   ]
 }
 </script>
@@ -914,5 +961,18 @@
     URL.revokeObjectURL(url);
   });
 </script>
+
+<!-- Google Translate Widget -->
+<div id="pr-translate" style="position:fixed;bottom:16px;right:16px;z-index:9999;">
+  <div id="google_translate_element"></div>
+</div>
+<style>
+  .goog-te-banner-frame,.skiptranslate{display:none!important;}
+  body{top:0!important;}
+  .goog-te-gadget{font-size:0!important;}
+  .goog-te-gadget select{font-size:13px!important;padding:6px 10px!important;border-radius:8px!important;border:1px solid rgba(255,255,255,0.18)!important;background:rgba(20,20,20,0.96)!important;color:#e0e0e0!important;cursor:pointer!important;outline:none!important;}
+</style>
+<script>function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:'en',autoDisplay:false},'google_translate_element');}</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
 </body>
 </html>
