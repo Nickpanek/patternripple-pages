@@ -39,10 +39,11 @@
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "Seamless Pattern Creator",
-      "description": "Free online tool to create seamless repeating patterns with shapes, images, and custom colors",
+      "description": "Free online tool to create seamless repeating patterns with shapes, images, and custom colors. Offset and wrap artwork, preview as repeating tiles, and export PNG.",
       "url": "https://www.patternripple.com/seamless-pattern-creator.html",
       "applicationCategory": "DesignApplication",
       "operatingSystem": "Any",
+      "inLanguage": "en",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -56,15 +57,55 @@
       "publisher": {
         "@type": "Organization",
         "name": "PatternRipple",
-        "url": "https://patternripple.com"
+        "url": "https://www.patternripple.com"
       },
       "featureList": [
-        "Create seamless patterns",
-        "Add custom shapes and images",
+        "Create seamless repeating patterns",
+        "Upload custom artwork and images",
+        "Offset and wrap controls for seamless tiling",
+        "Live repeating tile preview",
         "Adjustable colors and opacity",
         "Export to PNG",
-        "No signup required",
-        "Free to use"
+        "No signup or installation required",
+        "Works offline in browser"
+      ]
+    }
+    </script>
+
+    <!-- BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://www.patternripple.com"},
+        {"@type":"ListItem","position":2,"name":"Software","item":"https://www.patternripple.com/software"},
+        {"@type":"ListItem","position":3,"name":"Seamless Pattern Creator","item":"https://www.patternripple.com/seamless-pattern-creator.html"}
+      ]
+    }
+    </script>
+
+    <!-- FAQPage structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I create a seamless repeating pattern online?",
+          "acceptedAnswer": {"@type":"Answer","text":"Upload your artwork to the Seamless Pattern Creator, adjust the offset and wrap settings until edges match, preview the live tiling, and export the final seamless tile as a PNG. No account or software installation required."}
+        },
+        {
+          "@type": "Question",
+          "name": "What can I use seamless patterns for?",
+          "acceptedAnswer": {"@type":"Answer","text":"Seamless patterns are used for textile and fabric design, wallpaper, surface design, print-on-demand products, game textures, and digital backgrounds."}
+        },
+        {
+          "@type": "Question",
+          "name": "Is the Seamless Pattern Creator free?",
+          "acceptedAnswer": {"@type":"Answer","text":"Yes. The Seamless Pattern Creator is completely free. No account, subscription, or watermarks. All processing happens in your browser."}
+        }
       ]
     }
     </script>
@@ -1079,5 +1120,18 @@
 
         requestAnimationFrame(draw);
     </script>
+
+<!-- Google Translate Widget -->
+<div id="pr-translate" style="position:fixed;bottom:16px;right:16px;z-index:9999;">
+  <div id="google_translate_element"></div>
+</div>
+<style>
+  .goog-te-banner-frame,.skiptranslate{display:none!important;}
+  body{top:0!important;}
+  .goog-te-gadget{font-size:0!important;}
+  .goog-te-gadget select{font-size:13px!important;padding:6px 10px!important;border-radius:8px!important;border:1px solid rgba(255,255,255,0.18)!important;background:rgba(20,20,20,0.96)!important;color:#e0e0e0!important;cursor:pointer!important;outline:none!important;}
+</style>
+<script>function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:'en',autoDisplay:false},'google_translate_element');}</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
 </body>
 </html>

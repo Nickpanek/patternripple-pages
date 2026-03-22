@@ -36,11 +36,12 @@
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Seamless Pattern Checker SmoothSnap",
-    "description": "Enhanced seamless pattern testing tool with SmoothSnap technology for instant tiling preview",
+    "name": "Seamless Pattern Checker — SmoothSnap v1",
+    "description": "Free browser-based pattern checker with SmoothSnap technology. Preview how your pattern tiles and repeats. Adjust rows, columns, and gap spacing to spot seams. No upload, no account.",
     "url": "https://www.patternripple.com/pattern-checker-smoothsnap.html",
     "applicationCategory": "DesignApplication",
     "operatingSystem": "Any",
+    "inLanguage": "en",
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -48,18 +49,60 @@
     },
     "author": {
       "@type": "Person",
-      "name": "Nick Panek"
+      "name": "Nick Panek",
+      "url": "https://heylink.me/nickpanek/"
     },
     "publisher": {
       "@type": "Organization",
       "name": "PatternRipple",
-      "url": "https://patternripple.com"
+      "url": "https://www.patternripple.com"
     },
     "featureList": [
-      "SmoothSnap technology",
-      "Instant pattern tiling",
-      "Adjustable gap preview",
-      "Enhanced pattern testing"
+      "SmoothSnap tiling technology",
+      "Instant live pattern tiling preview",
+      "Adjustable row and column count",
+      "Toggle gap between tiles",
+      "Spot seams and misalignments instantly",
+      "No account or installation required",
+      "Works in browser"
+    ]
+  }
+  </script>
+
+  <!-- BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://www.patternripple.com"},
+      {"@type":"ListItem","position":2,"name":"Software","item":"https://www.patternripple.com/software"},
+      {"@type":"ListItem","position":3,"name":"Pattern Checker SmoothSnap","item":"https://www.patternripple.com/pattern-checker-smoothsnap.html"}
+    ]
+  }
+  </script>
+
+  <!-- FAQPage structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I check if my pattern tiles seamlessly?",
+        "acceptedAnswer": {"@type":"Answer","text":"Upload your pattern image to the Seamless Pattern Checker. It instantly tiles the image in a grid so you can see if edges align correctly. Adjust the number of rows and columns, and toggle gaps between tiles to spot any seams or misalignments."}
+      },
+      {
+        "@type": "Question",
+        "name": "What is SmoothSnap tiling technology?",
+        "acceptedAnswer": {"@type":"Answer","text":"SmoothSnap is PatternRipple's tiling algorithm that smoothly snaps adjacent tile edges together for a crisp, accurate preview of how a pattern would repeat in real-world applications like fabric printing or wallpaper."}
+      },
+      {
+        "@type": "Question",
+        "name": "What file formats does the Pattern Checker support?",
+        "acceptedAnswer": {"@type":"Answer","text":"The Seamless Pattern Checker supports common image formats including PNG, JPEG, and WEBP. All processing is done in your browser — no files are uploaded."}
+      }
     ]
   }
   </script>
@@ -1111,5 +1154,18 @@
     resizeCanvas();
   })();
   </script>
+
+<!-- Google Translate Widget -->
+<div id="pr-translate" style="position:fixed;bottom:16px;right:16px;z-index:9999;">
+  <div id="google_translate_element"></div>
+</div>
+<style>
+  .goog-te-banner-frame,.skiptranslate{display:none!important;}
+  body{top:0!important;}
+  .goog-te-gadget{font-size:0!important;}
+  .goog-te-gadget select{font-size:13px!important;padding:6px 10px!important;border-radius:8px!important;border:1px solid rgba(255,255,255,0.18)!important;background:rgba(20,20,20,0.96)!important;color:#e0e0e0!important;cursor:pointer!important;outline:none!important;}
+</style>
+<script>function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:'en',autoDisplay:false},'google_translate_element');}</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
 </body>
 </html>
