@@ -1,0 +1,65 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [main, claude/**]
+  pull_request:
+
+jobs:
+  build-windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: public/handdraw/src-tauri
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install TypeScript
+        run: npm install -g typescript
+
+      - name: Compile TypeScript
+        run: |
+          cd public/handdraw/app
+          tsc --outDir ../src-tauri/dist --module es2020 --target es2020 --skipLibCheck --allowSyntheticDefaultImports app.ts
+
+      - name: Copy static assets
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path public/handdraw/src-tauri/dist
+          Copy-Item public/handdraw/app/index.html public/handdraw/src-tauri/dist/
+          Copy-Item public/handdraw/app/styles.css public/handdraw/src-tauri/dist/
+          Copy-Item -Recurse public/handdraw/app/assets public/handdraw/src-tauri/dist/
+
+      - name: Download FFmpeg-kit LGPL
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path public/handdraw/src-tauri/libs
+          cd public/handdraw/src-tauri/libs
+          Invoke-WebRequest -Uri "https://github.com/arthenica/ffmpeg-kit/releases/download/v6.0/ffmpeg-kit-windows-x86_64-6.0.zip" -OutFile "ffmpeg-kit-windows.zip"
+          Expand-Archive -Path "ffmpeg-kit-windows.zip" -DestinationPath "."
+          Move-Item -Path "ffmpeg-kit-windows-x86_64-6.0/bin/*" -Destination "."
+          Remove-Item -Recurse -Force "ffmpeg-kit-windows-x86_64-6.0", "ffmpeg-kit-windows.zip"
+
+      - name: Build Tauri NSIS
+        run: |
+          cd public/handdraw/src-tauri
+          cargo install tauri-cli --version "^1.0"
+          cargo tauri build --bundles nsis
+
+      - name: Upload NSIS Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: handdraw-windows-nsis
+          path: public/handdraw/src-tauri/target/release/bundle/nsis/*.exe
