@@ -148,6 +148,17 @@ const tools: Tool[] = [
     faqA:
       "Upload your property photos to the Property Slideshow Maker, fill in address, price, beds/baths/sqft, and agent details, then choose an aspect ratio and brand color. Export as WebM video, animated GIF, or a ZIP of individual frames — no watermarks.",
   },
+  {
+    slug: "video-to-gif",
+    title: "Video to GIF Converter",
+    href: "/video-to-gif.html",
+    summary:
+      "Convert any video to GIF with controls for size, frame rate, speed, and file size limits. Runs entirely in your browser — no uploads. (ALPHA)",
+    badge: "Video",
+    faqQ: "How do I convert a video to GIF?",
+    faqA:
+      "Upload or drag a video file into the Video to GIF Converter. Adjust frame rate, output width, playback speed, and set a max file size. The tool uses palette-based encoding for quality GIFs and works on iOS Safari. All processing happens in your browser.",
+  },
 ];
 
 const order: Record<string, number> = {
@@ -158,6 +169,7 @@ const order: Record<string, number> = {
   "audio-looper-panek": 30,
   "audio-processor": 40,
   "property-slideshow-maker": 50,
+  "video-to-gif": 55,
 };
 
 const sortedTools = [...tools].sort(
