@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Video to GIF Converter — Browser-Based Tool | PatternRipple</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Free browser-based video to GIF converter. Convert MP4, WebM, and other video formats to animated GIFs with adjustable frame rate, speed, dimensions, and output size limits. Works on iOS Safari, desktop, and mobile.">
+    <meta name="keywords" content="video to gif, gif converter, mp4 to gif, webm to gif, video converter, gif creator, animated gif, browser tool, no upload, free converter">
+    <meta name="author" content="Nick Panek">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+    <link rel="canonical" href="https://www.patternripple.com/video-to-gif.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.patternripple.com/video-to-gif.html">
+    <meta property="og:title" content="Free Video to GIF Converter | PatternRipple">
+    <meta property="og:description" content="Convert videos to animated GIFs in your browser. Fast, free, no uploads.">
+    <meta property="og:site_name" content="PatternRipple">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'accent': '#5399B5',
+                        'ancient-dark': '#111111',
+                        'ancient-darker': '#0a0a0a',
+                    },
+                    fontFamily: { 'ancient': ['Cinzel', 'serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Cinzel', serif; }
+
+        .upload-zone {
+            transition: all 0.3s ease;
+            min-height: 200px;
+        }
+
+        .upload-zone.dragover {
+            border-color: #5399B5;
+            background-color: rgba(83, 153, 181, 0.1);
+            transform: scale(1.01);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: linear-gradient(90deg, #5399B5, #7bb3d6);
+            border-radius: 4px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #5399B5;
+            transition: width 0.3s ease;
+        }
+
+        .gif-preview {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: #5399B5;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background-color: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            color: #fca5a5;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* iOS Safari touch target sizes */
+        button, input[type="file"], .upload-zone {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #a0a0a0;
+            font-weight: 600;
+        }
+
+        .control-value {
+            color: #5399B5;
+            font-weight: 700;
+        }
+    </style>
+
+    <!-- FFmpeg ES Module -->
+    <script type="importmap">
+    {
+        "imports": {
+            "@ffmpeg/ffmpeg": "https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js",
+            "@ffmpeg/util": "https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js"
+        }
+    }
+    </script>
+</head>
+<body class="bg-ancient-dark text-gray-100 min-h-screen">
+
+    <header class="bg-ancient-darker border-b border-gray-800 py-10">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-light mb-2 uppercase tracking-widest">
+                <span class="text-accent">VIDEO</span>→<span class="text-accent">GIF</span>
+            </h1>
+            <p class="text-gray-500 text-[10px] tracking-[0.4em] uppercase font-bold">Browser-Based Conversion</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Upload Area -->
+        <div id="uploadArea" class="mb-12">
+            <label for="videoInput" id="dropZone" class="upload-zone block border-2 border-dashed border-gray-700 rounded-xl p-12 md:p-20 text-center cursor-pointer bg-gray-900/40 hover:border-accent hover:bg-gray-800/50 group">
+                <input type="file" id="videoInput" accept="video/*" class="hidden">
+                <div class="pointer-events-none">
+                    <svg class="mx-auto h-16 w-16 text-gray-600 mb-6 group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="text-xl text-gray-300 font-medium mb-2 uppercase">Select Video File</h3>
+                    <p class="text-gray-500 text-sm">or drag and drop</p>
+                </div>
+            </label>
+            <div id="uploadError" class="error-message"></div>
+        </div>
+
+        <!-- Editor Area (hidden until video loaded) -->
+        <div id="editorArea" class="hidden space-y-8">
+            <!-- Video Preview -->
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-8">
+                <div class="flex justify-center bg-black/40 p-4 rounded-lg overflow-hidden">
+                    <video id="videoPreview" class="max-w-full h-auto max-h-96 rounded" controls></video>
+                </div>
+            </div>
+
+            <!-- Controls Grid -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Width -->
+                <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
+                    <div class="control-group">
+                        <label for="widthSelect" class="control-label">Output Width</label>
+                        <select id="widthSelect" class="w-full bg-black border border-gray-700 rounded px-4 py-3 text-accent outline-none text-sm">
+                            <option value="240">240px</option>
+                            <option value="360">360px</option>
+                            <option value="480" selected>480px (default)</option>
+                            <option value="640">640px</option>
+                            <option value="720">720px</option>
+                            <option value="original">Original Size</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Frame Rate -->
+                <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
+                    <div class="control-group">
+                        <label for="fpsSlider" class="control-label">Frame Rate: <span class="control-value" id="fpsValue">15</span> fps</label>
+                        <input type="range" id="fpsSlider" min="5" max="30" value="15" class="w-full">
+                        <p class="text-gray-500 text-xs mt-2">Lower = smaller file, choppier</p>
+                    </div>
+                </div>
+
+                <!-- Speed -->
+                <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
+                    <div class="control-group">
+                        <label for="speedSelect" class="control-label">Playback Speed</label>
+                        <select id="speedSelect" class="w-full bg-black border border-gray-700 rounded px-4 py-3 text-accent outline-none text-sm">
+                            <option value="0.25">0.25x</option>
+                            <option value="0.5">0.5x</option>
+                            <option value="0.75">0.75x</option>
+                            <option value="1" selected>1x (normal)</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2">2x</option>
+                            <option value="4">4x</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Max Size -->
+                <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
+                    <div class="control-group">
+                        <label for="maxSizeSelect" class="control-label">Max Output Size</label>
+                        <select id="maxSizeSelect" class="w-full bg-black border border-gray-700 rounded px-4 py-3 text-accent outline-none text-sm">
+                            <option value="0">No limit</option>
+                            <option value="2">2 MB</option>
+                            <option value="5">5 MB</option>
+                            <option value="10">10 MB</option>
+                            <option value="25">25 MB</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Trim Start -->
+                <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
+                    <div class="control-group">
+                        <label for="trimStart" class="control-label">Trim Start (seconds)</label>
+                        <input type="number" id="trimStart" min="0" value="0" step="0.1" class="w-full bg-black border border-gray-700 rounded px-4 py-3 text-accent outline-none text-sm">
+                        <p class="text-gray-500 text-xs mt-2">Leave empty to start from beginning</p>
+                    </div>
+                </div>
+
+                <!-- Trim End -->
+                <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
+                    <div class="control-group">
+                        <label for="trimEnd" class="control-label">Trim End (seconds)</label>
+                        <input type="number" id="trimEnd" min="0" step="0.1" class="w-full bg-black border border-gray-700 rounded px-4 py-3 text-accent outline-none text-sm">
+                        <p class="text-gray-500 text-xs mt-2">Leave empty to end at video end</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Convert Button -->
+            <button id="convertBtn" class="w-full bg-accent hover:bg-opacity-80 text-white font-bold py-4 rounded uppercase tracking-widest text-sm transition-all shadow-lg shadow-accent/20">
+                Convert to GIF
+            </button>
+
+            <!-- Error Display -->
+            <div id="conversionError" class="error-message"></div>
+
+            <!-- Progress Section (hidden until conversion starts) -->
+            <div id="progressSection" class="hidden bg-gray-900 border border-gray-800 p-6 rounded-xl space-y-4">
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-400">Processing</span>
+                        <span class="text-sm text-accent font-bold" id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span id="elapsedTime">Elapsed: 0s</span>
+                    <span id="remainingTime">ETA: --</span>
+                </div>
+                <p id="progressStatus" class="text-sm text-gray-400">Initializing FFmpeg...</p>
+            </div>
+
+            <!-- Download Section (hidden until conversion complete) -->
+            <div id="downloadSection" class="hidden space-y-6">
+                <div class="success-message show">
+                    <span id="successMessage">GIF created successfully!</span>
+                </div>
+
+                <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
+                    <p class="text-sm text-gray-400 mb-4">Final GIF Preview:</p>
+                    <div class="flex justify-center bg-black/40 p-4 rounded-lg overflow-hidden">
+                        <img id="gifPreview" class="gif-preview" alt="Generated GIF">
+                    </div>
+                    <div class="mt-4 text-center">
+                        <p class="text-xs text-gray-500 mb-2">Final Size: <span class="text-accent font-bold" id="finalSize">0 KB</span></p>
+                    </div>
+                </div>
+
+                <button id="downloadBtn" class="w-full bg-white text-black font-bold py-4 rounded uppercase tracking-widest text-sm hover:bg-accent hover:text-white transition-all shadow-2xl">
+                    Download GIF
+                </button>
+
+                <button id="convertAnotherBtn" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded uppercase tracking-widest text-sm transition-all">
+                    Convert Another Video
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="statusMessage" class="hidden mt-8 text-center text-sm text-gray-400"></div>
+    </main>
+
+    <!-- Google Translate Widget -->
+    <div id="pr-translate" style="position:fixed;bottom:16px;right:16px;z-index:9999;">
+        <div id="google_translate_element"></div>
+    </div>
+    <style>
+        .goog-te-banner-frame,.skiptranslate{display:none!important;}
+        body{top:0!important;}
+        .goog-te-gadget{font-size:0!important;}
+        .goog-te-gadget select{font-size:13px!important;padding:6px 10px!important;border-radius:8px!important;border:1px solid rgba(255,255,255,0.18)!important;background:rgba(20,20,20,0.96)!important;color:#e0e0e0!important;cursor:pointer!important;outline:none!important;}
+    </style>
+    <script>function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:'en',autoDisplay:false},'google_translate_element');}</script>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
+
+    <script type="module">
+        import { FFmpeg } from '@ffmpeg/ffmpeg';
+        import { fetchFile, toBlobURL } from '@ffmpeg/util';
+
+        const videoInput = document.getElementById('videoInput');
+        const dropZone = document.getElementById('dropZone');
+        const editorArea = document.getElementById('editorArea');
+        const videoPreview = document.getElementById('videoPreview');
+        const convertBtn = document.getElementById('convertBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const convertAnotherBtn = document.getElementById('convertAnotherBtn');
+        const gifPreview = document.getElementById('gifPreview');
+        const downloadSection = document.getElementById('downloadSection');
+        const progressSection = document.getElementById('progressSection');
+        const uploadError = document.getElementById('uploadError');
+        const conversionError = document.getElementById('conversionError');
+        const statusMessage = document.getElementById('statusMessage');
+
+        const widthSelect = document.getElementById('widthSelect');
+        const fpsSlider = document.getElementById('fpsSlider');
+        const fpsValue = document.getElementById('fpsValue');
+        const speedSelect = document.getElementById('speedSelect');
+        const maxSizeSelect = document.getElementById('maxSizeSelect');
+        const trimStart = document.getElementById('trimStart');
+        const trimEnd = document.getElementById('trimEnd');
+
+        let ffmpeg = null;
+        let videoFile = null;
+        let currentGifBlob = null;
+
+        // Initialize FFmpeg on page load
+        async function initFFmpeg() {
+            try {
+                ffmpeg = new FFmpeg();
+
+                // Detect SharedArrayBuffer support (iOS Safari doesn't support it)
+                const supportsSharedArrayBuffer = typeof SharedArrayBuffer !== 'undefined';
+
+                // Set core and WASM URLs based on SharedArrayBuffer support
+                const coreURL = supportsSharedArrayBuffer
+                    ? '/ffmpeg/mt/ffmpeg-core.js'
+                    : '/ffmpeg/ffmpeg-core.js';
+                const wasmURL = supportsSharedArrayBuffer
+                    ? '/ffmpeg/mt/ffmpeg-core.wasm'
+                    : '/ffmpeg/ffmpeg-core.wasm';
+
+                // Set up progress listener
+                ffmpeg.on('log', ({ message }) => {
+                    // Optionally log ffmpeg messages
+                });
+
+                // Load FFmpeg
+                await ffmpeg.load({ coreURL, wasmURL });
+                console.log('FFmpeg initialized successfully');
+                statusMessage.textContent = '';
+            } catch (error) {
+                console.error('FFmpeg initialization failed:', error);
+                showError(uploadError, `Failed to load FFmpeg: ${error.message}. Please refresh the page.`);
+            }
+        }
+
+        // Update FPS display
+        fpsSlider.addEventListener('input', () => {
+            fpsValue.textContent = fpsSlider.value;
+        });
+
+        // File input handling
+        videoInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleVideoFile(e.target.files[0]);
+            }
+        });
+
+        // Drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files[0]) {
+                handleVideoFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleVideoFile(file) {
+            // Validate file type
+            if (!file.type.startsWith('video/')) {
+                showError(uploadError, 'Please select a valid video file (MP4, WebM, etc.)');
+                return;
+            }
+
+            videoFile = file;
+            clearError(uploadError);
+            clearError(conversionError);
+
+            // Display video preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                videoPreview.src = e.target.result;
+            };
+            reader.readAsArrayBuffer(file);
+
+            // Show editor
+            editorArea.classList.remove('hidden');
+            downloadSection.classList.add('hidden');
+            progressSection.classList.add('hidden');
+            convertBtn.disabled = false;
+        }
+
+        convertBtn.addEventListener('click', async () => {
+            if (!videoFile || !ffmpeg) {
+                showError(conversionError, 'Video not loaded or FFmpeg not ready');
+                return;
+            }
+
+            clearError(conversionError);
+            convertBtn.disabled = true;
+            downloadSection.classList.add('hidden');
+            progressSection.classList.remove('hidden');
+
+            try {
+                await convertVideoToGif();
+            } catch (error) {
+                showError(conversionError, `Conversion failed: ${error.message}`);
+                progressSection.classList.add('hidden');
+            } finally {
+                convertBtn.disabled = false;
+            }
+        });
+
+        async function convertVideoToGif() {
+            const fps = parseInt(fpsSlider.value);
+            const width = widthSelect.value;
+            const speed = parseFloat(speedSelect.value);
+            const maxSize = parseInt(maxSizeSelect.value);
+            const start = trimStart.value ? parseFloat(trimStart.value) : 0;
+            const end = trimEnd.value ? parseFloat(trimEnd.value) : null;
+
+            updateProgress(0, 'Loading video...');
+            const startTime = Date.now();
+
+            // Load video into FFmpeg
+            await ffmpeg.writeFile('input_video', await fetchFile(videoFile));
+            updateProgress(10, 'Analyzing video...');
+
+            // Get video info (probe to get duration and dimensions)
+            let inputFile = 'input_video';
+            let trimFilter = '';
+            let widthFilter = '';
+            let speedFilter = '';
+            let fps_arg = fps;
+
+            // Build filters
+            if (start || end) {
+                const trimStart_val = start;
+                const trimEnd_val = end ? `${end}` : '';
+                trimFilter = `trim=start=${trimStart_val}${end ? `:end=${trimEnd_val}` : ''}`;
+            }
+
+            if (width !== 'original') {
+                const w = parseInt(width);
+                widthFilter = `scale=${w}:-1`;
+            }
+
+            // Speed filter: use setpts to speed up the video
+            if (speed !== 1) {
+                speedFilter = `setpts=${1/speed}*PTS`;
+            }
+
+            // Combine filters
+            let videoFilters = [trimFilter, speedFilter, widthFilter].filter(f => f).join(',');
+
+            updateProgress(20, 'Creating palette...');
+
+            // First pass: generate palette
+            const paletteCmd = [
+                '-i', inputFile,
+                ...(videoFilters ? ['-vf', videoFilters] : []),
+                '-vf', `${videoFilters ? videoFilters + ',' : ''}palettegen=stats_mode=diff`,
+                'palette.png'
+            ];
+
+            await ffmpeg.exec(...paletteCmd);
+            updateProgress(50, 'Encoding GIF...');
+
+            // Second pass: use palette to encode GIF
+            let gifCmd = [
+                '-i', inputFile,
+                '-i', 'palette.png',
+                ...(videoFilters ? ['-vf', `${videoFilters},paletteuse=dither=floyd_steinberg`] : ['-vf', 'paletteuse=dither=floyd_steinberg']),
+                '-r', fps_arg.toString(),
+                'output.gif'
+            ];
+
+            await ffmpeg.exec(...gifCmd);
+            updateProgress(80, 'Finalizing...');
+
+            // Read output
+            let gifData = await ffmpeg.readFile('output.gif');
+            let gifBlob = new Blob([gifData], { type: 'image/gif' });
+            let gifSizeKB = Math.round(gifBlob.size / 1024);
+
+            // Check size and adjust if needed
+            if (maxSize > 0 && gifBlob.size > maxSize * 1024 * 1024) {
+                updateProgress(60, 'Output too large, optimizing...');
+
+                let currentFps = fps;
+                let currentWidth = width;
+
+                const widthOrder = ['480', '360', '240'];
+                let widthIndex = widthOrder.indexOf(currentWidth);
+
+                // Reduce FPS and width to meet size constraint
+                while (gifBlob.size > maxSize * 1024 * 1024 && (currentFps > 5 || widthIndex > 0)) {
+                    if (currentFps > 5) {
+                        currentFps = Math.max(5, currentFps - 2);
+                    } else if (widthIndex > 0) {
+                        widthIndex--;
+                        currentWidth = widthOrder[widthIndex];
+                    } else {
+                        break;
+                    }
+
+                    // Rebuild filters with new parameters
+                    videoFilters = [trimFilter, speedFilter].filter(f => f).join(',');
+                    if (currentWidth !== 'original') {
+                        const w = parseInt(currentWidth);
+                        videoFilters += (videoFilters ? ',' : '') + `scale=${w}:-1`;
+                    }
+
+                    // Re-encode with new settings
+                    await ffmpeg.exec(
+                        '-i', inputFile,
+                        ...(videoFilters ? ['-vf', videoFilters] : []),
+                        '-vf', `${videoFilters ? videoFilters + ',' : ''}palettegen=stats_mode=diff`,
+                        'palette2.png'
+                    );
+
+                    gifCmd = [
+                        '-i', inputFile,
+                        '-i', 'palette2.png',
+                        ...(videoFilters ? ['-vf', `${videoFilters},paletteuse=dither=floyd_steinberg`] : ['-vf', 'paletteuse=dither=floyd_steinberg']),
+                        '-r', currentFps.toString(),
+                        'output2.gif'
+                    ];
+
+                    await ffmpeg.exec(...gifCmd);
+                    gifData = await ffmpeg.readFile('output2.gif');
+                    gifBlob = new Blob([gifData], { type: 'image/gif' });
+                }
+
+                gifSizeKB = Math.round(gifBlob.size / 1024);
+            }
+
+            // Clean up
+            await ffmpeg.deleteFile('input_video');
+            await ffmpeg.deleteFile('palette.png');
+            await ffmpeg.deleteFile('output.gif');
+
+            updateProgress(100, 'Complete!');
+
+            // Display results
+            currentGifBlob = gifBlob;
+            const gifUrl = URL.createObjectURL(gifBlob);
+            gifPreview.src = gifUrl;
+
+            const finalSize = gifBlob.size > 1024 * 1024
+                ? (gifBlob.size / (1024 * 1024)).toFixed(2) + ' MB'
+                : gifSizeKB + ' KB';
+            document.getElementById('finalSize').textContent = finalSize;
+
+            progressSection.classList.add('hidden');
+            downloadSection.classList.remove('hidden');
+        }
+
+        downloadBtn.addEventListener('click', () => {
+            if (!currentGifBlob) return;
+
+            // Create blob URL and download link
+            const gifUrl = URL.createObjectURL(currentGifBlob);
+            const a = document.createElement('a');
+            a.href = gifUrl;
+            a.download = `converted_${Date.now()}.gif`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(gifUrl);
+        });
+
+        convertAnotherBtn.addEventListener('click', () => {
+            videoFile = null;
+            currentGifBlob = null;
+            videoInput.value = '';
+            videoPreview.src = '';
+            editorArea.classList.add('hidden');
+            downloadSection.classList.add('hidden');
+            progressSection.classList.add('hidden');
+            clearError(uploadError);
+            clearError(conversionError);
+            statusMessage.textContent = '';
+        });
+
+        function updateProgress(percent, status) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressPercent').textContent = percent + '%';
+            document.getElementById('progressStatus').textContent = status;
+
+            // Calculate and display ETA
+            const elapsed = Date.now() - progressStartTime;
+            if (percent > 0 && percent < 100) {
+                const estimatedTotal = (elapsed / percent) * 100;
+                const remaining = estimatedTotal - elapsed;
+                const remainingSeconds = Math.round(remaining / 1000);
+                document.getElementById('elapsedTime').textContent = `Elapsed: ${Math.round(elapsed / 1000)}s`;
+                document.getElementById('remainingTime').textContent = `ETA: ${remainingSeconds}s`;
+            }
+        }
+
+        let progressStartTime = Date.now();
+
+        function showError(element, message) {
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function clearError(element) {
+            element.textContent = '';
+            element.classList.remove('show');
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initFFmpeg);
+    </script>
+</body>
+</html>
