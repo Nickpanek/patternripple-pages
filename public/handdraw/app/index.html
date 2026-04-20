@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HandDraw</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar">
+      <h2>Assets</h2>
+      <button id="btn-add-svg">Add SVG</button>
+      <button id="btn-add-audio">Add Audio</button>
+      <div id="assets-list"></div>
+    </aside>
+
+    <main id="stage-container">
+      <div id="toolbar">
+        <button id="btn-zoom-in">Zoom +</button>
+        <button id="btn-zoom-out">Zoom −</button>
+        <button id="btn-zoom-reset">Reset</button>
+      </div>
+      <svg id="stage" viewBox="0 0 1920 1080">
+        <!-- Demo SVG -->
+        <path id="demo-path" d="M 100 100 Q 300 50 500 100 T 900 100 L 900 500 Q 700 600 500 500 T 100 500 Z"
+              stroke="#ffffff" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <canvas id="hand-canvas"></canvas>
+    </main>
+
+    <aside id="inspector">
+      <h2>Inspector</h2>
+      <div id="inspector-content">
+        <label>Hand Offset X: <input type="number" id="hand-offset-x" value="20"></label>
+        <label>Hand Offset Y: <input type="number" id="hand-offset-y" value="-30"></label>
+        <label>Hand Type:
+          <select id="hand-type">
+            <option value="right">Right</option>
+            <option value="left">Left</option>
+          </select>
+        </label>
+      </div>
+    </aside>
+
+    <footer id="timeline-container">
+      <div id="timeline-controls">
+        <button id="btn-play">Play</button>
+        <button id="btn-stop">Stop</button>
+        <button id="btn-add-segment">Add Segment</button>
+        <button id="btn-export-mp4">Export MP4</button>
+        <button id="btn-export-webm">Export WebM</button>
+      </div>
+      <div id="timeline"></div>
+      <div id="waveform"></div>
+    </footer>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
