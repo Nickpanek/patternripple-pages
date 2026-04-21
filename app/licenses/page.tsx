@@ -64,7 +64,7 @@ export default function LicensesPage() {
           </p>
           <address>
             PatternRipple<br />
-            Email: <a href="mailto:nick@patternripple.com">nick@patternripple.com</a><br />
+            Email: <a href="mailto:nickpanek.ks@gmail.com">nickpanek.ks@gmail.com</a><br />
             Website: <a href="https://patternripple.com">https://patternripple.com</a>
           </address>
         </section>

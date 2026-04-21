@@ -44,7 +44,7 @@ export default function PrivacyPage() {
         <section>
           <h2>5. Emails and Support</h2>
           <p>
-            If you contact us at <a href="mailto:nick@patternripple.com">nick@patternripple.com</a>, we will retain your email address and message only as long as needed to respond or provide support.
+            If you contact us at <a href="mailto:nickpanek.ks@gmail.com">nickpanek.ks@gmail.com</a>, we will retain your email address and message only as long as needed to respond or provide support.
           </p>
         </section>
 
@@ -76,7 +76,7 @@ export default function PrivacyPage() {
           </p>
           <address>
             PatternRipple<br />
-            Email: <a href="mailto:nick@patternripple.com">nick@patternripple.com</a><br />
+            Email: <a href="mailto:nickpanek.ks@gmail.com">nickpanek.ks@gmail.com</a><br />
             Website: <a href="https://patternripple.com">https://patternripple.com</a>
           </address>
         </section>
