@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Motif Painter | PatternRipple</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #111; color: #e2e8f0; font-family: sans-serif; user-select: none; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; }
+        input[type="range"] { width: 100%; height: 6px; border-radius: 3px; accent-color: #22c55e; }
+        /* Checkerboard behind canvas shows transparency */
+        .canvas-bg {
+            background-color: #aaaaaa;
+            background-image:
+                linear-gradient(45deg, #888 25%, transparent 25%),
+                linear-gradient(-45deg, #888 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #888 75%),
+                linear-gradient(-45deg, transparent 75%, #888 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        canvas { display: block; cursor: crosshair; touch-action: none; }
+        .tool-btn {
+            padding: 7px 10px; border-radius: 6px; font-size: 11px; font-weight: bold;
+            text-transform: uppercase; cursor: pointer; border: 1px solid #475569;
+            background: #1e293b; color: #94a3b8; transition: all 0.15s;
+            width: 100%; text-align: left; letter-spacing: 0.03em;
+        }
+        .tool-btn.active { background: #22c55e; color: #000; border-color: #22c55e; }
+        .tool-btn:hover:not(.active) { background: #334155; color: #e2e8f0; }
+        .swatch {
+            width: 100%; aspect-ratio: 1; border-radius: 3px; border: 1px solid #475569;
+            cursor: pointer; transition: transform 0.1s;
+        }
+        .swatch:hover { transform: scale(1.2); border-color: #94a3b8; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+<aside class="w-72 bg-slate-900 border-r border-slate-700 p-5 overflow-y-auto flex flex-col gap-4">
+    <div>
+        <h1 class="text-green-500 font-bold text-xl tracking-tight">MOTIF PAINTER</h1>
+        <p class="text-xs text-slate-500">Transparent Background Export</p>
+    </div>
+
+    <!-- Color -->
+    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 space-y-2">
+        <label class="block text-xs font-bold uppercase">Color</label>
+        <div class="flex gap-2 items-center">
+            <input type="color" id="colorPicker" value="#000000" class="h-9 w-12 rounded cursor-pointer border-0 bg-transparent p-0">
+            <input type="text" id="colorHex" value="#000000" maxlength="7"
+                   class="flex-1 bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-xs text-slate-200 font-mono">
+            <div id="colorPreview" class="w-9 h-9 rounded border border-slate-600 flex-shrink-0"
+                 style="background:#000"></div>
+        </div>
+        <div class="grid grid-cols-8 gap-1 pt-1" id="palette"></div>
+    </div>
+
+    <!-- Size -->
+    <div>
+        <div class="slider-label"><span>Brush Size</span><span id="v-size">12px</span></div>
+        <input type="range" id="brushSize" min="1" max="80" value="12">
+    </div>
+
+    <!-- Opacity -->
+    <div>
+        <div class="slider-label"><span>Opacity</span><span id="v-opacity">100%</span></div>
+        <input type="range" id="brushOpacity" min="5" max="100" value="100">
+    </div>
+
+    <!-- Brush styles -->
+    <div class="space-y-1.5">
+        <label class="block text-xs font-bold uppercase text-slate-400">Brush Style</label>
+        <button class="tool-btn active" data-brush="round">&#9679; Round</button>
+        <button class="tool-btn" data-brush="square">&#9632; Square / Pixel</button>
+        <button class="tool-btn" data-brush="marker">&#9644; Marker</button>
+        <button class="tool-btn" data-brush="spray">&#10022; Spray / Airbrush</button>
+        <button class="tool-btn" data-brush="eraser">&#9711; Eraser</button>
+    </div>
+
+    <!-- Canvas size -->
+    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 space-y-2">
+        <label class="block text-xs font-bold uppercase">Canvas Size</label>
+        <select id="canvasSize" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-200">
+            <option value="512">512 × 512</option>
+            <option value="800" selected>800 × 800</option>
+            <option value="1024">1024 × 1024</option>
+        </select>
+        <button id="resizeBtn" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-1.5 rounded text-xs transition-all">
+            RESIZE (clears canvas)
+        </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-auto space-y-2">
+        <button id="undoBtn" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 rounded-lg text-sm transition-all">
+            &#8617; UNDO &nbsp;<span class="text-slate-400 text-xs font-normal">Ctrl+Z</span>
+        </button>
+        <button id="clearBtn" class="w-full bg-slate-700 hover:bg-red-900/60 border border-slate-600 text-white font-bold py-2 rounded-lg text-sm transition-all">
+            CLEAR CANVAS
+        </button>
+        <button id="downloadBtn" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-green-900/20">
+            DOWNLOAD PNG
+        </button>
+        <p class="text-[10px] text-center text-slate-500">Saves with transparent background</p>
+    </div>
+</aside>
+
+<main class="flex-1 flex items-center justify-center bg-slate-950 overflow-hidden" id="mainArea">
+    <div class="canvas-bg rounded shadow-2xl overflow-hidden" id="canvasWrap">
+        <canvas id="canvas"></canvas>
+    </div>
+</main>
+
+<script>
+    const canvas  = document.getElementById('canvas');
+    const ctx     = canvas.getContext('2d');
+    const mainArea = document.getElementById('mainArea');
+
+    // ── Init canvas size ──────────────────────────────────────────────────────
+    function setCanvasSize(px) {
+        const pad = 48;
+        const maxFit = Math.min(mainArea.clientWidth - pad, mainArea.clientHeight - pad);
+        const size   = Math.min(px, maxFit);
+        canvas.width  = px;   // actual pixel resolution
+        canvas.height = px;
+        canvas.style.width  = size + 'px';
+        canvas.style.height = size + 'px';
+    }
+    setCanvasSize(800);
+
+    document.getElementById('resizeBtn').addEventListener('click', () => {
+        if (!confirm('Resize will clear the canvas. Continue?')) return;
+        undoStack.length = 0;
+        setCanvasSize(+document.getElementById('canvasSize').value);
+    });
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    let painting      = false;
+    let lastX         = 0, lastY = 0;
+    let currentBrush  = 'round';
+    let currentColor  = '#000000';
+    let brushSize     = 12;
+    let brushOpacity  = 1.0;
+
+    // ── Undo stack ────────────────────────────────────────────────────────────
+    const undoStack = [];
+    function saveUndo() {
+        undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        if (undoStack.length > 30) undoStack.shift();
+    }
+    function undo() {
+        if (undoStack.length) ctx.putImageData(undoStack.pop(), 0, 0);
+    }
+    document.getElementById('undoBtn').addEventListener('click', undo);
+    document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
+    });
+
+    // ── Color palette ─────────────────────────────────────────────────────────
+    const PALETTE = [
+        '#000000','#2d2d2d','#666666','#b0b0b0',
+        '#ffffff','#ff0000','#ff6600','#ffcc00',
+        '#00bb33','#0066ff','#9900cc','#ff66cc',
+        '#00cccc','#ff9966','#5c3317','#336699',
+    ];
+    const paletteEl = document.getElementById('palette');
+    PALETTE.forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'swatch';
+        b.style.background = c;
+        b.title = c;
+        b.addEventListener('click', () => setColor(c));
+        paletteEl.appendChild(b);
+    });
+
+    function setColor(c) {
+        currentColor = c;
+        document.getElementById('colorPicker').value    = c;
+        document.getElementById('colorHex').value       = c;
+        document.getElementById('colorPreview').style.background = c;
+    }
+    document.getElementById('colorPicker').addEventListener('input', e => setColor(e.target.value));
+    document.getElementById('colorHex').addEventListener('input', e => {
+        if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) setColor(e.target.value);
+    });
+
+    // ── Sliders ───────────────────────────────────────────────────────────────
+    document.getElementById('brushSize').addEventListener('input', e => {
+        brushSize = +e.target.value;
+        document.getElementById('v-size').textContent = brushSize + 'px';
+    });
+    document.getElementById('brushOpacity').addEventListener('input', e => {
+        brushOpacity = +e.target.value / 100;
+        document.getElementById('v-opacity').textContent = e.target.value + '%';
+    });
+
+    // ── Brush buttons ─────────────────────────────────────────────────────────
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentBrush = btn.dataset.brush;
+        });
+    });
+
+    // ── Drawing ───────────────────────────────────────────────────────────────
+    function getPos(e) {
+        const r  = canvas.getBoundingClientRect();
+        const sx = canvas.width  / r.width;
+        const sy = canvas.height / r.height;
+        const src = e.touches ? e.touches[0] : e;
+        return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
+    }
+
+    function drawAt(x, y, px, py) {
+        ctx.save();
+
+        if (currentBrush === 'eraser') {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, brushSize, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,0,0,1)';
+            ctx.fill();
+            ctx.restore();
+            return;
+        }
+
+        ctx.globalAlpha = brushOpacity;
+
+        switch (currentBrush) {
+            case 'round':
+                ctx.strokeStyle = currentColor;
+                ctx.lineWidth   = brushSize * 2;
+                ctx.lineCap     = 'round';
+                ctx.lineJoin    = 'round';
+                ctx.beginPath();
+                ctx.moveTo(px, py);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                break;
+
+            case 'square':
+                ctx.fillStyle = currentColor;
+                const s = brushSize * 2;
+                ctx.fillRect(Math.round(x - brushSize), Math.round(y - brushSize), s, s);
+                break;
+
+            case 'marker':
+                ctx.strokeStyle = currentColor;
+                ctx.lineWidth   = brushSize * 3.5;
+                ctx.lineCap     = 'butt';
+                ctx.lineJoin    = 'round';
+                ctx.beginPath();
+                ctx.moveTo(px, py);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                break;
+
+            case 'spray':
+                ctx.fillStyle = currentColor;
+                const radius = brushSize * 2.5;
+                const count  = Math.max(12, brushSize * 3);
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const r     = radius * Math.sqrt(Math.random());
+                    ctx.beginPath();
+                    ctx.arc(x + r * Math.cos(angle), y + r * Math.sin(angle), 0.8, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                break;
+        }
+
+        ctx.restore();
+    }
+
+    // ── Mouse events ──────────────────────────────────────────────────────────
+    canvas.addEventListener('mousedown', e => {
+        saveUndo();
+        painting = true;
+        const p = getPos(e); lastX = p.x; lastY = p.y;
+        drawAt(p.x, p.y, p.x, p.y);
+    });
+    canvas.addEventListener('mousemove', e => {
+        if (!painting) return;
+        const p = getPos(e);
+        drawAt(p.x, p.y, lastX, lastY);
+        lastX = p.x; lastY = p.y;
+    });
+    canvas.addEventListener('mouseup',    () => painting = false);
+    canvas.addEventListener('mouseleave', () => painting = false);
+
+    // ── Touch events ──────────────────────────────────────────────────────────
+    canvas.addEventListener('touchstart', e => {
+        e.preventDefault();
+        saveUndo();
+        painting = true;
+        const p = getPos(e); lastX = p.x; lastY = p.y;
+        drawAt(p.x, p.y, p.x, p.y);
+    }, { passive: false });
+    canvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        if (!painting) return;
+        const p = getPos(e);
+        drawAt(p.x, p.y, lastX, lastY);
+        lastX = p.x; lastY = p.y;
+    }, { passive: false });
+    canvas.addEventListener('touchend', () => painting = false);
+
+    // ── Buttons ───────────────────────────────────────────────────────────────
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        saveUndo();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'motif.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+</script>
+</body>
+</html>
