@@ -32,76 +32,81 @@
 
             <!-- Added: Paper.js code box -->
             <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 space-y-2">
-                <label class="block text-xs font-bold uppercase">1B. Generate Vector (Paper.js)</label>
+                <button id="paperToggleBtn" class="w-full flex items-center justify-between text-xs font-bold uppercase hover:text-green-400 transition-colors">
+                    <span>1B. Generate Vector (Paper.js)</span>
+                    <span id="paperToggleCaret">▼</span>
+                </button>
                 <p class="text-[10px] text-slate-400 leading-snug">
                     Choose a shape preset or paste Paper.js drawing code below (do NOT call paper.setup). Click GENERATE to use it as the motif.
                 </p>
 
-                <!-- Color Controls -->
-                <div class="space-y-2">
-                    <div>
-                        <label class="block text-[10px] text-slate-400 mb-1.5 font-bold">Fill Color</label>
-                        <div class="flex gap-2 items-center bg-slate-900 p-2 rounded-lg border border-slate-700">
-                            <input type="color" id="fillColor" value="#000000" class="h-10 w-14 rounded cursor-pointer border-0 p-0">
-                            <input type="text" id="fillColorHex" value="#000000" maxlength="7" class="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-slate-200 font-mono">
+                <!-- Collapsible content -->
+                <div id="paperCollapsible" class="space-y-2">
+                    <!-- Color Controls -->
+                    <div class="space-y-2">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1.5 font-bold">Fill Color</label>
+                            <div class="flex gap-2 items-center bg-slate-900 p-2 rounded-lg border border-slate-700">
+                                <input type="color" id="fillColor" value="#000000" class="h-10 w-14 rounded cursor-pointer border-0 p-0">
+                                <input type="text" id="fillColorHex" value="#000000" maxlength="7" class="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-slate-200 font-mono">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1.5 font-bold">Stroke Color</label>
+                            <div class="flex gap-2 items-center bg-slate-900 p-2 rounded-lg border border-slate-700">
+                                <input type="color" id="strokeColor" value="#000000" class="h-10 w-14 rounded cursor-pointer border-0 p-0">
+                                <input type="text" id="strokeColorHex" value="#000000" maxlength="7" class="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-slate-200 font-mono">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1.5 font-bold">Background Color</label>
+                            <div class="flex gap-2 items-center bg-slate-900 p-2 rounded-lg border border-slate-700">
+                                <input type="color" id="bgColor" value="#ffffff" class="h-10 w-14 rounded cursor-pointer border-0 p-0">
+                                <input type="text" id="bgColorHex" value="#ffffff" maxlength="7" class="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-slate-200 font-mono">
+                            </div>
+                            <p class="text-[9px] text-slate-500 mt-1">Canvas fill color (white default)</p>
+                        </div>
+                        <!-- Quick Color Palette -->
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1 font-bold">Quick Colors</label>
+                            <div class="grid grid-cols-8 gap-1">
+                                <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #000000" title="#000000" onclick="setFillColor('#000000')"></button>
+                                <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ffffff; border: 2px solid #666" title="#ffffff" onclick="setFillColor('#ffffff')"></button>
+                                <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ff0000" title="#ff0000" onclick="setFillColor('#ff0000')"></button>
+                                <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ff6600" title="#ff6600" onclick="setFillColor('#ff6600')"></button>
+                                <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ffcc00" title="#ffcc00" onclick="setFillColor('#ffcc00')"></button>
+                                <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #00bb33" title="#00bb33" onclick="setFillColor('#00bb33')"></button>
+                                <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #0066ff" title="#0066ff" onclick="setFillColor('#0066ff')"></button>
+                                <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #9900cc" title="#9900cc" onclick="setFillColor('#9900cc')"></button>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] text-slate-400 mb-1.5 font-bold">Stroke Color</label>
-                        <div class="flex gap-2 items-center bg-slate-900 p-2 rounded-lg border border-slate-700">
-                            <input type="color" id="strokeColor" value="#000000" class="h-10 w-14 rounded cursor-pointer border-0 p-0">
-                            <input type="text" id="strokeColorHex" value="#000000" maxlength="7" class="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-slate-200 font-mono">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-slate-400 mb-1.5 font-bold">Background Color</label>
-                        <div class="flex gap-2 items-center bg-slate-900 p-2 rounded-lg border border-slate-700">
-                            <input type="color" id="bgColor" value="#ffffff" class="h-10 w-14 rounded cursor-pointer border-0 p-0">
-                            <input type="text" id="bgColorHex" value="#ffffff" maxlength="7" class="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-slate-200 font-mono">
-                        </div>
-                        <p class="text-[9px] text-slate-500 mt-1">Canvas fill color (white default)</p>
-                    </div>
-                    <!-- Quick Color Palette -->
-                    <div>
-                        <label class="block text-[10px] text-slate-400 mb-1 font-bold">Quick Colors</label>
-                        <div class="grid grid-cols-8 gap-1">
-                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #000000" title="#000000" onclick="setFillColor('#000000')"></button>
-                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ffffff; border: 2px solid #666" title="#ffffff" onclick="setFillColor('#ffffff')"></button>
-                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ff0000" title="#ff0000" onclick="setFillColor('#ff0000')"></button>
-                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ff6600" title="#ff6600" onclick="setFillColor('#ff6600')"></button>
-                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ffcc00" title="#ffcc00" onclick="setFillColor('#ffcc00')"></button>
-                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #00bb33" title="#00bb33" onclick="setFillColor('#00bb33')"></button>
-                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #0066ff" title="#0066ff" onclick="setFillColor('#0066ff')"></button>
-                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #9900cc" title="#9900cc" onclick="setFillColor('#9900cc')"></button>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Shape Presets -->
-                <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Shape Presets</label>
-                    <select id="shapePreset" class="w-full bg-slate-900 border border-slate-700 rounded-md p-2 text-xs text-slate-200">
-                        <option value="">-- Select a shape --</option>
-                        <optgroup label="Filled Shapes">
-                            <option value="circle-fill">Circle (Filled)</option>
-                            <option value="rectangle-fill">Rectangle (Filled)</option>
-                            <option value="triangle-fill">Triangle (Filled)</option>
-                            <option value="pentagon-fill">Pentagon (Filled)</option>
-                            <option value="hexagon-fill">Hexagon (Filled)</option>
-                            <option value="star-fill">Star (Filled)</option>
-                        </optgroup>
-                        <optgroup label="Outline Shapes">
-                            <option value="circle-outline">Circle (Outline)</option>
-                            <option value="rectangle-outline">Rectangle (Outline)</option>
-                            <option value="triangle-outline">Triangle (Outline)</option>
-                            <option value="pentagon-outline">Pentagon (Outline)</option>
-                            <option value="hexagon-outline">Hexagon (Outline)</option>
-                            <option value="star-outline">Star (Outline)</option>
-                        </optgroup>
-                    </select>
-                </div>
+                    <!-- Shape Presets -->
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Shape Presets</label>
+                        <select id="shapePreset" class="w-full bg-slate-900 border border-slate-700 rounded-md p-2 text-xs text-slate-200">
+                            <option value="">-- Select a shape --</option>
+                            <optgroup label="Filled Shapes">
+                                <option value="circle-fill">Circle (Filled)</option>
+                                <option value="rectangle-fill">Rectangle (Filled)</option>
+                                <option value="triangle-fill">Triangle (Filled)</option>
+                                <option value="pentagon-fill">Pentagon (Filled)</option>
+                                <option value="hexagon-fill">Hexagon (Filled)</option>
+                                <option value="star-fill">Star (Filled)</option>
+                            </optgroup>
+                            <optgroup label="Outline Shapes">
+                                <option value="circle-outline">Circle (Outline)</option>
+                                <option value="rectangle-outline">Rectangle (Outline)</option>
+                                <option value="triangle-outline">Triangle (Outline)</option>
+                                <option value="pentagon-outline">Pentagon (Outline)</option>
+                                <option value="hexagon-outline">Hexagon (Outline)</option>
+                                <option value="star-outline">Star (Outline)</option>
+                            </optgroup>
+                        </select>
+                    </div>
 
-                <textarea id="paperCode" class="bg-slate-900 border border-slate-700 rounded-md p-2 text-xs text-slate-200 font-mono"
+                    <textarea id="paperCode" class="bg-slate-900 border border-slate-700 rounded-md p-2 text-xs text-slate-200 font-mono"
 spellcheck="false">// Example: solid black triangle
 const tri = new Path({
   segments: [
@@ -114,6 +119,7 @@ const tri = new Path({
   strokeColor: null
 });
 tri.position = view.center;</textarea>
+                </div>
 
                 <div class="flex items-center gap-2">
                     <button id="paperRun" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 rounded-lg transition-all">
@@ -187,6 +193,26 @@ tri.position = view.center;</textarea>
     const upload = document.getElementById('upload');
     let img = new Image();
     let imgLoaded = false;
+
+    // Paper.js section toggle
+    let paperCollapsedState = true;
+    const paperToggleBtn = document.getElementById('paperToggleBtn');
+    const paperCollapsible = document.getElementById('paperCollapsible');
+    const paperToggleCaret = document.getElementById('paperToggleCaret');
+
+    function togglePaperSection() {
+        paperCollapsedState = !paperCollapsedState;
+        if (paperCollapsedState) {
+            paperCollapsible.style.display = 'none';
+            paperToggleCaret.textContent = '▶';
+        } else {
+            paperCollapsible.style.display = 'block';
+            paperToggleCaret.textContent = '▼';
+        }
+    }
+
+    paperToggleBtn.addEventListener('click', togglePaperSection);
+    paperCollapsible.style.display = 'none';
 
     // Control Map (Added mirrorRows to listeners)
     const controls = ['scale', 'spX', 'spY', 'stag', 'rot', 'forceBlack', 'mirrorRows'];
