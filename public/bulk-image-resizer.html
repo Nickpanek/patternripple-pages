@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free Bulk Image Resizer - Batch Resize Images Online | PatternRipple</title>
-    <meta name="description" content="Resize multiple images at once. Upload batch, choose preset sizes, download all resized images as ZIP. Free, no upload, works offline.">
+    <meta name="description" content="Resize multiple images at once. Upload batch, set custom width (aspect ratio preserved), download all resized images as ZIP. Free, no upload, works offline.">
     <meta name="keywords" content="bulk image resizer, batch resize, resize images online, free resizer, image batch tool, bulk converter">
     <link rel="canonical" href="https://www.patternripple.com/bulk-image-resizer.html">
 
@@ -58,29 +58,59 @@
             background: rgba(126, 231, 135, 0.05);
         }
         input[type="file"] { display: none; }
-        .size-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .size-btn {
+        input[type="number"], input[type="range"] {
+            width: 100%;
             padding: 10px;
             border: 1px solid #333;
+            border-radius: 8px;
             background: #0f0f0f;
             color: #e0e0e0;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.2s;
+            font-family: inherit;
+            margin-bottom: 8px;
         }
-        .size-btn.active {
+        input[type="range"] {
+            padding: 8px;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
             background: #7ee787;
-            color: #0a0a0a;
-            border-color: #7ee787;
+            cursor: pointer;
+            border: 2px solid #0a0a0a;
         }
-        .size-btn:hover { border-color: #7ee787; }
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #7ee787;
+            cursor: pointer;
+            border: 2px solid #0a0a0a;
+        }
+        .size-section {
+            margin-bottom: 20px;
+        }
+        .size-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .size-display {
+            font-size: 13px;
+            color: #7ee787;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #0f0f0f;
+            border-radius: 4px;
+            text-align: center;
+        }
         button {
             width: 100%;
             padding: 12px 20px;
@@ -114,7 +144,7 @@
             background: #0f0f0f;
             border: 1px solid #333;
             border-radius: 8px;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
@@ -122,6 +152,7 @@
             font-size: 12px;
         }
         .image-item-name { color: #aaa; flex: 1; }
+        .image-item-size { color: #888; font-size: 11px; margin-right: 10px; }
         .image-item-remove {
             background: transparent;
             color: #ff6b6b;
@@ -140,6 +171,7 @@
             font-size: 12px;
             color: #aaa;
             margin-bottom: 15px;
+            line-height: 1.5;
         }
         .progress {
             background: #0f0f0f;
@@ -178,7 +210,7 @@
     <div class="container">
         <header>
             <h1>Bulk Image Resizer</h1>
-            <p class="subtitle">Batch resize multiple images at once</p>
+            <p class="subtitle">Batch resize multiple images — aspect ratio always preserved</p>
         </header>
 
         <div class="layout">
@@ -191,17 +223,22 @@
                 </div>
                 <input type="file" id="fileInput" accept="image/*" multiple>
 
-                <label style="margin-top: 20px;">Target Size</label>
-                <div class="size-grid">
-                    <button class="size-btn active" data-size="800">800px</button>
-                    <button class="size-btn" data-size="1024">1024px</button>
-                    <button class="size-btn" data-size="1280">1280px</button>
-                    <button class="size-btn" data-size="1920">1920px</button>
-                    <button class="size-btn" data-size="2048">2048px</button>
-                    <button class="size-btn" data-size="512">512px</button>
+                <div class="size-section">
+                    <label>Target Width (pixels)</label>
+                    <div class="size-display" id="sizeDisplay">800 × auto</div>
+
+                    <span class="size-label">Slider</span>
+                    <input type="range" id="sizeSlider" min="100" max="4000" value="800" step="50">
+
+                    <span class="size-label">Or type custom width</span>
+                    <input type="number" id="sizeInput" value="800" min="100" max="10000" step="50">
                 </div>
 
-                <div class="info-box">Max dimension will be resized to selected size. Aspect ratio preserved.</div>
+                <div class="info-box">
+                    ✓ Aspect ratio preserved automatically<br>
+                    ✓ Smaller file sizes<br>
+                    ✓ Batch process all at once
+                </div>
 
                 <button class="btn-primary" id="resizeBtn" disabled>Resize All</button>
                 <button class="btn-secondary" onclick="downloadHTML()">Download Tool Offline</button>
@@ -235,18 +272,33 @@
         const progress = document.getElementById('progress');
         const progressFill = document.getElementById('progressFill');
         const progressText = document.getElementById('progressText');
+        const sizeSlider = document.getElementById('sizeSlider');
+        const sizeInput = document.getElementById('sizeInput');
+        const sizeDisplay = document.getElementById('sizeDisplay');
 
         let selectedSize = 800;
         let uploadedImages = [];
         let resizedImages = [];
 
-        document.querySelectorAll('.size-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                selectedSize = parseInt(e.target.dataset.size);
-            });
+        // Sync slider and input
+        sizeSlider.addEventListener('input', (e) => {
+            selectedSize = parseInt(e.target.value);
+            sizeInput.value = selectedSize;
+            updateSizeDisplay();
         });
+
+        sizeInput.addEventListener('input', (e) => {
+            let value = parseInt(e.target.value) || 100;
+            if (value < 100) value = 100;
+            if (value > 10000) value = 10000;
+            selectedSize = value;
+            sizeSlider.value = value;
+            updateSizeDisplay();
+        });
+
+        function updateSizeDisplay() {
+            sizeDisplay.textContent = `${selectedSize} × auto`;
+        }
 
         dropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -272,12 +324,18 @@
                 if (file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        uploadedImages.push({
-                            name: file.name,
-                            data: e.target.result,
-                            file: file
-                        });
-                        updateImageList();
+                        const img = new Image();
+                        img.onload = () => {
+                            uploadedImages.push({
+                                name: file.name,
+                                data: e.target.result,
+                                file: file,
+                                width: img.width,
+                                height: img.height
+                            });
+                            updateImageList();
+                        };
+                        img.src = e.target.result;
                     };
                     reader.readAsDataURL(file);
                 }
@@ -289,6 +347,7 @@
             imageList.innerHTML = uploadedImages.map((img, idx) => `
                 <div class="image-item">
                     <span class="image-item-name">${img.name}</span>
+                    <span class="image-item-size">${img.width}×${img.height}</span>
                     <button class="image-item-remove" onclick="removeImage(${idx})">Remove</button>
                 </div>
             `).join('');
@@ -310,20 +369,10 @@
                 const image = new Image();
                 image.onload = () => {
                     const canvas = document.createElement('canvas');
-                    let newWidth = image.width;
-                    let newHeight = image.height;
 
-                    if (newWidth > newHeight) {
-                        if (newWidth > selectedSize) {
-                            newHeight = Math.round((newHeight * selectedSize) / newWidth);
-                            newWidth = selectedSize;
-                        }
-                    } else {
-                        if (newHeight > selectedSize) {
-                            newWidth = Math.round((newWidth * selectedSize) / newHeight);
-                            newHeight = selectedSize;
-                        }
-                    }
+                    // Calculate new dimensions preserving aspect ratio
+                    let newWidth = selectedSize;
+                    let newHeight = Math.round((image.height * selectedSize) / image.width);
 
                     canvas.width = newWidth;
                     canvas.height = newHeight;
