@@ -7,9 +7,9 @@ export const metadata: Metadata = {
   title:
     "Free Browser-Based Creative Software & Tools | PatternRipple",
   description:
-    "Free browser-based creative tools: seamless pattern creator, pattern repeat engine with vector design, colorway generator, PNG-to-SVG converter, pattern tile checker, audio looper, audio fade/normalize processor, and real estate slideshow maker. No installation, no account, works offline. All file processing stays in your browser.",
+    "Free browser-based creative tools: seamless pattern creator, pattern repeat engine with vector design, motif painter, colorway generator, PNG-to-SVG converter, pattern tile checker, audio looper, audio fade/normalize processor, and real estate slideshow maker. No installation, no account, works offline. All file processing stays in your browser.",
   keywords:
-    "free browser tools, pattern creator, pattern repeat engine, colorway generator, png to svg, vector converter, seamless patterns, paper.js, audio looper, audio processor, audio fade normalize, video slideshow maker, creative tools, design software, free design tools, web-based tools, offline tools, no signup, no install, textile design, fabric pattern, surface design",
+    "free browser tools, pattern creator, motif painter, pattern repeat engine, paint tool, colorway generator, png to svg, vector converter, seamless patterns, paper.js, audio looper, audio processor, audio fade normalize, video slideshow maker, creative tools, design software, free design tools, web-based tools, offline tools, no signup, no install, textile design, fabric pattern, surface design",
   alternates: {
     canonical: "https://www.patternripple.com/software",
     languages: { "x-default": "https://www.patternripple.com/software" },
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Free Creative Software & Browser Tools | PatternRipple",
     description:
-      "8 free browser-based creative tools: pattern creator, pattern repeat engine, colorway generator, PNG→SVG converter, pattern checker, audio looper, audio processor, and real estate slideshow maker. No install, works offline.",
+      "9 free browser-based creative tools: pattern creator, pattern repeat engine, motif painter, colorway generator, PNG→SVG converter, pattern checker, audio looper, audio processor, and real estate slideshow maker. No install, works offline.",
     url: "https://www.patternripple.com/software",
     type: "website",
     siteName: "PatternRipple",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Free Creative Software — Pattern, Audio & Video Tools | PatternRipple",
     description:
-      "8 free browser-based tools: pattern creator, pattern repeat engine, colorway generator, PNG→SVG, audio looper, audio processor, property slideshow. No signup, no install.",
+      "9 free browser-based tools: pattern creator, pattern repeat engine, motif painter, colorway generator, PNG→SVG, audio looper, audio processor, property slideshow. No signup, no install.",
     images: ["https://www.patternripple.com/og-pattern-creator.png"],
   },
   robots: {
@@ -99,6 +99,17 @@ const tools: Tool[] = [
     faqQ: "What is the Pattern Repeat Engine?",
     faqA:
       "The Pattern Repeat Engine lets you create seamless pattern tiles with advanced controls. Upload an image or generate custom vector shapes with Paper.js, adjust scale, spacing, rotation, and stagger, then export a perfect 1000×1000px tile optimized for Spoonflower Basic Repeat.",
+  },
+  {
+    slug: "motif-painter",
+    title: "Motif Painter",
+    href: "/motif-painter.html",
+    summary:
+      "Browser-based paint tool with multiple brush styles (round, square, marker, spray, eraser). Paint freely with adjustable size and opacity, then download your artwork as a transparent-background PNG — perfect for creating custom motifs to use with Pattern Repeat Engine.",
+    badge: "Design",
+    faqQ: "What is the Motif Painter?",
+    faqA:
+      "The Motif Painter is a simple drawing tool for creating custom motifs directly in your browser. Choose from round, square/pixel, marker, spray, or eraser brushes, adjust size and opacity, and export your finished design as a PNG with a transparent background. Perfect for painting custom artwork to feed into the Pattern Repeat Engine.",
   },
   {
     slug: "png2svg",
@@ -165,6 +176,7 @@ const order: Record<string, number> = {
   "colorway-generator": 5,
   "seamless-pattern-creator": 10,
   "pattern-repeat-engine": 12,
+  "motif-painter": 13,
   "png2svg": 15,
   "seamless-pattern-checker": 20,
   "audio-looper-panek": 30,
