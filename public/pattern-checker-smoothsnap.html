@@ -822,6 +822,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Download Button -->
+    <footer style="padding: 24px; border-top: 1px solid var(--border); text-align: center; background: rgba(21,21,24,0.6);">
+      <button onclick="downloadHTML()" style="padding: 10px 20px; font-size: 13px; border: none; border-radius: 8px; background: var(--accent); color: #0b0b0c; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">
+        DOWNLOAD HTML FOR OFFLINE USE
+      </button>
+      <div style="margin-top: 8px; font-size: 12px; color: var(--muted);">Works entirely in your browser • No data uploaded</div>
+    </footer>
   </main>
 
   <script>
@@ -1153,6 +1161,17 @@
     updateUIState();
     resizeCanvas();
   })();
+
+  function downloadHTML() {
+    const htmlContent = document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pattern-checker-smoothsnap.html';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
   </script>
 
 <!-- Google Translate Widget -->
