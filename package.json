@@ -4,15 +4,11 @@
   "private": true,
   "scripts": {
     "prebuild": "node scripts/build-search-index.js",
-    "postinstall": "node scripts/copy-ffmpeg.js",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"
   },
   "dependencies": {
-    "@ffmpeg/core": "^0.12.6",
-    "@ffmpeg/ffmpeg": "^0.12.10",
-    "@ffmpeg/util": "^0.12.1",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
     "@types/three": "^0.160.0",
