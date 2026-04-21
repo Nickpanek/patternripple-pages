@@ -41,7 +41,7 @@ export default function TermsPage() {
           <ul className="list-disc pl-6 space-y-2">
             <li>Upon purchase, download access is provided immediately or via email.</li>
             <li>PatternRipple is not responsible for issues due to internet or device failures.</li>
-            <li>Contact <a href="mailto:nick@patternripple.com">nick@patternripple.com</a> if you experience issues.</li>
+            <li>Contact <a href="mailto:nickpanek.ks@gmail.com">nickpanek.ks@gmail.com</a> if you experience issues.</li>
           </ul>
         </section>
 
@@ -64,7 +64,7 @@ export default function TermsPage() {
         <section>
           <h2>7. Chargebacks and Disputes</h2>
           <ul className="list-disc pl-6 space-y-2">
-            <li>Contact <a href="mailto:nick@patternripple.com">nick@patternripple.com</a> before initiating any dispute.</li>
+            <li>Contact <a href="mailto:nickpanek.ks@gmail.com">nickpanek.ks@gmail.com</a> before initiating any dispute.</li>
             <li>Unjustified chargebacks may result in revoked software access and legal pursuit for damages.</li>
           </ul>
         </section>
@@ -106,7 +106,7 @@ export default function TermsPage() {
           </p>
           <address>
             PatternRipple<br />
-            Email: <a href="mailto:nick@patternripple.com">nick@patternripple.com</a><br />
+            Email: <a href="mailto:nickpanek.ks@gmail.com">nickpanek.ks@gmail.com</a><br />
             Website: <a href="https://patternripple.com">https://patternripple.com</a>
           </address>
         </section>

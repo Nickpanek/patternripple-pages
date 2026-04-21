@@ -465,10 +465,10 @@ export default function SoftwarePage() {
           <p>
             Feature requests and bugs — email{" "}
             <a
-              href="mailto:nick@patternripple.com"
+              href="mailto:nickpanek.ks@gmail.com"
               className="underline hover:text-accent"
             >
-              nick@patternripple.com
+              nickpanek.ks@gmail.com
             </a>
             .
           </p>
