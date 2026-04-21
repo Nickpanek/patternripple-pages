@@ -518,4 +518,10 @@
        <changefreq>weekly</changefreq>
        <priority>0.8000</priority>
   </url>
+  <url>
+       <loc>https://www.patternripple.com/pattern-repeat-engine.html</loc>
+       <lastmod>2026-04-21T00:00:00+00:00</lastmod>
+       <changefreq>monthly</changefreq>
+       <priority>0.8500</priority>
+  </url>
 </urlset>

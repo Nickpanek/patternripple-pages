@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pattern Repeat Engine | PatternRipple</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Added: Paper.js (for vector motif generation) -->
+    <script src="https://unpkg.com/paper@0.12.17/dist/paper-full.min.js"></script>
+
+    <style>
+        body { background: #111; color: #e2e8f0; font-family: sans-serif; }
+        canvas { background: white; box-shadow: 0 0 40px rgba(0,0,0,0.7); cursor: move; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; }
+        input[type="range"] { width: 100%; height: 6px; border-radius: 3px; accent-color: #22c55e; }
+        textarea { width: 100%; min-height: 160px; resize: vertical; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <aside class="w-80 bg-slate-900 border-r border-slate-700 p-6 overflow-y-auto flex flex-col gap-6">
+        <div>
+            <h1 class="text-green-500 font-bold text-xl tracking-tight">PATTERN REPEAT ENGINE</h1>
+            <p class="text-xs text-slate-500">Seamless Pattern Export</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                <label class="block text-xs font-bold uppercase mb-2">1. Upload Image</label>
+                <input type="file" id="upload" accept="image/*" class="text-xs text-slate-400">
+            </div>
+
+            <!-- Added: Paper.js code box -->
+            <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 space-y-2">
+                <label class="block text-xs font-bold uppercase">1B. Generate Vector (Paper.js)</label>
+                <p class="text-[10px] text-slate-400 leading-snug">
+                    Choose a shape preset or paste Paper.js drawing code below (do NOT call paper.setup). Click GENERATE to use it as the motif.
+                </p>
+
+                <!-- Color Controls -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Fill Color</label>
+                        <div class="flex gap-2 items-center">
+                            <input type="color" id="fillColor" value="#000000" class="h-8 w-12 rounded cursor-pointer">
+                            <input type="text" id="fillColorHex" value="#000000" class="flex-1 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Stroke Color</label>
+                        <div class="flex gap-2 items-center">
+                            <input type="color" id="strokeColor" value="#000000" class="h-8 w-12 rounded cursor-pointer">
+                            <input type="text" id="strokeColorHex" value="#000000" class="flex-1 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shape Presets -->
+                <div>
+                    <label class="block text-[10px] text-slate-400 mb-1">Shape Presets</label>
+                    <select id="shapePreset" class="w-full bg-slate-900 border border-slate-700 rounded-md p-2 text-xs text-slate-200">
+                        <option value="">-- Select a shape --</option>
+                        <optgroup label="Filled Shapes">
+                            <option value="circle-fill">Circle (Filled)</option>
+                            <option value="rectangle-fill">Rectangle (Filled)</option>
+                            <option value="triangle-fill">Triangle (Filled)</option>
+                            <option value="pentagon-fill">Pentagon (Filled)</option>
+                            <option value="hexagon-fill">Hexagon (Filled)</option>
+                            <option value="star-fill">Star (Filled)</option>
+                        </optgroup>
+                        <optgroup label="Outline Shapes">
+                            <option value="circle-outline">Circle (Outline)</option>
+                            <option value="rectangle-outline">Rectangle (Outline)</option>
+                            <option value="triangle-outline">Triangle (Outline)</option>
+                            <option value="pentagon-outline">Pentagon (Outline)</option>
+                            <option value="hexagon-outline">Hexagon (Outline)</option>
+                            <option value="star-outline">Star (Outline)</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <textarea id="paperCode" class="bg-slate-900 border border-slate-700 rounded-md p-2 text-xs text-slate-200 font-mono"
+spellcheck="false">// Example: solid black triangle
+const tri = new Path({
+  segments: [
+    [w * 0.5, h * 0.15],
+    [w * 0.85, h * 0.85],
+    [w * 0.15, h * 0.85]
+  ],
+  closed: true,
+  fillColor: 'black',
+  strokeColor: null
+});
+tri.position = view.center;</textarea>
+
+                <div class="flex items-center gap-2">
+                    <button id="paperRun" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 rounded-lg transition-all">
+                        GENERATE MOTIF
+                    </button>
+                    <button id="paperClear" class="bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold py-2 px-3 rounded-lg border border-slate-700 transition-all">
+                        CLEAR
+                    </button>
+                </div>
+
+                <div id="paperStatus" class="text-[10px] text-slate-400 min-h-[14px]"></div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <div class="slider-label"><span>Scale</span><span id="v-scale">50%</span></div>
+                    <input type="range" id="scale" min="10" max="150" value="50">
+                </div>
+                <div>
+                    <div class="slider-label"><span>Horizontal Spacing</span><span id="v-spX">150</span></div>
+                    <input type="range" id="spX" min="50" max="400" value="150">
+                </div>
+                <div>
+                    <div class="slider-label"><span>Vertical Spacing</span><span id="v-spY">150</span></div>
+                    <input type="range" id="spY" min="50" max="400" value="150">
+                </div>
+                <div>
+                    <div class="slider-label"><span>Half-Drop Offset</span><span id="v-stag">75</span></div>
+                    <input type="range" id="stag" min="0" max="300" value="75">
+                </div>
+                <div>
+                    <div class="slider-label"><span>Rotation</span><span id="v-rot">0°</span></div>
+                    <input type="range" id="rot" min="0" max="360" value="0">
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex items-center gap-2 bg-slate-800 p-3 rounded-lg border border-slate-700">
+                    <input type="checkbox" id="forceBlack" checked>
+                    <label class="text-xs font-bold uppercase cursor-pointer">Force Solid Black</label>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800 p-3 rounded-lg border border-slate-700 text-green-400">
+                    <input type="checkbox" id="mirrorRows">
+                    <label class="text-xs font-bold uppercase cursor-pointer">Mirror Every Other Row</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-auto space-y-2">
+            <button id="download" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-green-900/20">
+                DOWNLOAD SEAMLESS TILE
+            </button>
+            <p class="text-[10px] text-center text-slate-500">Optimized for Spoonflower Basic Repeat</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex items-center justify-center bg-slate-950 relative">
+        <div class="absolute top-4 left-4 text-[10px] uppercase tracking-widest text-slate-600">Workspace: 1000x1000 Seamless Tile</div>
+        <canvas id="canvas" width="1000" height="1000"></canvas>
+    </main>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const upload = document.getElementById('upload');
+    let img = new Image();
+    let imgLoaded = false;
+
+    // Control Map (Added mirrorRows to listeners)
+    const controls = ['scale', 'spX', 'spY', 'stag', 'rot', 'forceBlack', 'mirrorRows'];
+    controls.forEach(id => {
+        document.getElementById(id).addEventListener('input', (e) => {
+            if(document.getElementById('v-'+id)) document.getElementById('v-'+id).innerText = e.target.value + (id === 'rot' ? '°' : '');
+            draw();
+        });
+    });
+
+    upload.onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = (f) => {
+            img.onload = () => { imgLoaded = true; draw(); };
+            img.src = f.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+    function draw() {
+        if (!imgLoaded) return;
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const s = document.getElementById('scale').value / 100;
+        const xGap = parseInt(document.getElementById('spX').value);
+        const yGap = parseInt(document.getElementById('spY').value);
+        const stagger = parseInt(document.getElementById('stag').value);
+        const rot = document.getElementById('rot').value * Math.PI / 180;
+        const isBlack = document.getElementById('forceBlack').checked;
+        const mirror = document.getElementById('mirrorRows').checked;
+
+        const w = img.width * s;
+        const h = img.height * s;
+
+        const offscreen = document.createElement('canvas');
+        offscreen.width = img.width; offscreen.height = img.height;
+        const oCtx = offscreen.getContext('2d');
+        oCtx.drawImage(img, 0, 0);
+        if (isBlack) {
+            oCtx.globalCompositeOperation = 'source-in';
+            oCtx.fillStyle = "black";
+            oCtx.fillRect(0, 0, offscreen.width, offscreen.height);
+        }
+
+        for (let y = 0; y < canvas.height + yGap; y += yGap) {
+            let rowIdx = Math.floor(y / yGap);
+            let offset = (rowIdx % 2 === 0) ? 0 : stagger;
+
+            for (let x = -xGap; x < canvas.width + xGap; x += xGap) {
+                const posX = x + offset;
+                const posY = y;
+
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) {
+                        ctx.save();
+                        ctx.translate(posX + (i * canvas.width), posY + (j * canvas.height));
+
+                        // Mirror logic injected here
+                        if (mirror && rowIdx % 2 !== 0) {
+                            ctx.scale(1, -1);
+                        }
+
+                        ctx.rotate(rot);
+                        ctx.drawImage(offscreen, -w/2, -h/2, w, h);
+                        ctx.restore();
+                    }
+                }
+            }
+        }
+    }
+
+    document.getElementById('download').onclick = () => {
+        const link = document.createElement('a');
+        link.download = 'pattern-repeat.png';
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+    };
+
+    /* ===================== COLOR CONTROLS ===================== */
+
+    const fillColorPicker = document.getElementById('fillColor');
+    const fillColorHex = document.getElementById('fillColorHex');
+    const strokeColorPicker = document.getElementById('strokeColor');
+    const strokeColorHex = document.getElementById('strokeColorHex');
+    const shapePresetSelect = document.getElementById('shapePreset');
+
+    // Sync color picker with hex input
+    fillColorPicker.addEventListener('input', (e) => {
+        fillColorHex.value = e.target.value;
+    });
+    fillColorHex.addEventListener('input', (e) => {
+        fillColorPicker.value = e.target.value;
+    });
+    strokeColorPicker.addEventListener('input', (e) => {
+        strokeColorHex.value = e.target.value;
+    });
+    strokeColorHex.addEventListener('input', (e) => {
+        strokeColorPicker.value = e.target.value;
+    });
+
+    /* ===================== SHAPE TEMPLATES ===================== */
+
+    const shapeTemplates = {
+        'circle-fill': (fillColor, strokeColor) => `// Circle (Filled)
+const circle = new Path.Circle({
+  center: view.center,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: '${fillColor}',
+  strokeColor: null
+});`,
+        'circle-outline': (fillColor, strokeColor) => `// Circle (Outline)
+const circle = new Path.Circle({
+  center: view.center,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});`,
+        'rectangle-fill': (fillColor, strokeColor) => `// Rectangle (Filled)
+const rect = new Path.Rectangle({
+  point: [w * 0.2, h * 0.2],
+  size: [w * 0.6, h * 0.6],
+  fillColor: '${fillColor}',
+  strokeColor: null
+});`,
+        'rectangle-outline': (fillColor, strokeColor) => `// Rectangle (Outline)
+const rect = new Path.Rectangle({
+  point: [w * 0.2, h * 0.2],
+  size: [w * 0.6, h * 0.6],
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});`,
+        'triangle-fill': (fillColor, strokeColor) => `// Triangle (Filled)
+const tri = new Path({
+  segments: [
+    [w * 0.5, h * 0.15],
+    [w * 0.85, h * 0.85],
+    [w * 0.15, h * 0.85]
+  ],
+  closed: true,
+  fillColor: '${fillColor}',
+  strokeColor: null
+});
+tri.position = view.center;`,
+        'triangle-outline': (fillColor, strokeColor) => `// Triangle (Outline)
+const tri = new Path({
+  segments: [
+    [w * 0.5, h * 0.15],
+    [w * 0.85, h * 0.85],
+    [w * 0.15, h * 0.85]
+  ],
+  closed: true,
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});
+tri.position = view.center;`,
+        'pentagon-fill': (fillColor, strokeColor) => `// Pentagon (Filled)
+const pentagon = new Path.RegularPolygon({
+  center: view.center,
+  sides: 5,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: '${fillColor}',
+  strokeColor: null
+});`,
+        'pentagon-outline': (fillColor, strokeColor) => `// Pentagon (Outline)
+const pentagon = new Path.RegularPolygon({
+  center: view.center,
+  sides: 5,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});`,
+        'hexagon-fill': (fillColor, strokeColor) => `// Hexagon (Filled)
+const hexagon = new Path.RegularPolygon({
+  center: view.center,
+  sides: 6,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: '${fillColor}',
+  strokeColor: null
+});`,
+        'hexagon-outline': (fillColor, strokeColor) => `// Hexagon (Outline)
+const hexagon = new Path.RegularPolygon({
+  center: view.center,
+  sides: 6,
+  radius: Math.min(w, h) * 0.35,
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});`,
+        'star-fill': (fillColor, strokeColor) => `// Star (Filled)
+const star = new Path.Star({
+  center: view.center,
+  points: 5,
+  radius1: Math.min(w, h) * 0.35,
+  radius2: Math.min(w, h) * 0.18,
+  fillColor: '${fillColor}',
+  strokeColor: null
+});`,
+        'star-outline': (fillColor, strokeColor) => `// Star (Outline)
+const star = new Path.Star({
+  center: view.center,
+  points: 5,
+  radius1: Math.min(w, h) * 0.35,
+  radius2: Math.min(w, h) * 0.18,
+  fillColor: null,
+  strokeColor: '${strokeColor}',
+  strokeWidth: 8
+});`
+    };
+
+    // Handle shape preset selection
+    shapePresetSelect.addEventListener('change', (e) => {
+        const selectedShape = e.target.value;
+        if (selectedShape && shapeTemplates[selectedShape]) {
+            const fillColor = fillColorHex.value;
+            const strokeColor = strokeColorHex.value;
+            paperCodeEl.value = shapeTemplates[selectedShape](fillColor, strokeColor);
+        }
+    });
+
+    /* ===================== PAPER.JS GENERATOR ===================== */
+
+    const paperStatus = document.getElementById('paperStatus');
+    const paperCodeEl = document.getElementById('paperCode');
+
+    function setPaperStatus(msg, isError = false) {
+        paperStatus.textContent = msg;
+        paperStatus.className = "text-[10px] min-h-[14px] " + (isError ? "text-red-400" : "text-slate-400");
+    }
+
+    function normalizeSvg(svgString, w, h) {
+        try {
+            const doc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+            const svg = doc.documentElement;
+            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            svg.setAttribute('width', String(w));
+            svg.setAttribute('height', String(h));
+            svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+            return new XMLSerializer().serializeToString(svg);
+        } catch {
+            return svgString;
+        }
+    }
+
+    async function generateMotifWithPaperFromTextarea({ w = 512, h = 512, precision = 7 } = {}) {
+        if (!window.paper) {
+            setPaperStatus("Paper.js not loaded.", true);
+            return;
+        }
+
+        setPaperStatus("Generating...");
+
+        // Offscreen canvas for Paper.js (does not touch your main canvas)
+        const paperCanvas = document.createElement('canvas');
+        paperCanvas.width = w;
+        paperCanvas.height = h;
+
+        paper.setup(paperCanvas);
+        paper.project.clear();
+        paper.project.activeLayer.removeChildren();
+
+        // Provide convenient aliases so pasted code can use Path/Point/view/etc.
+        const {
+            Path, Point, Shape, Group, Color, Raster, PointText, Rectangle, Size, Segment
+        } = paper;
+        const view = paper.view;
+        const project = paper.project;
+
+        const userCode = paperCodeEl.value || "";
+
+        try {
+            // Execute user code with common Paper.js symbols in scope.
+            // User code should create vector items (paths/shapes/groups).
+            const fn = new Function(
+                "paper","w","h","view","project",
+                "Path","Point","Shape","Group","Color","Raster","PointText","Rectangle","Size","Segment",
+                `"use strict";\n${userCode}\n`
+            );
+
+            fn(paper, w, h, view, project, Path, Point, Shape, Group, Color, Raster, PointText, Rectangle, Size, Segment);
+
+            paper.view.update();
+
+            let svgString = paper.project.exportSVG({
+                asString: true,
+                bounds: new paper.Rectangle(0, 0, w, h),
+                precision,
+                embedImages: false
+            });
+
+            svgString = normalizeSvg(svgString, w, h);
+
+            // Cleanup Paper.js project
+            paper.project.clear();
+
+            // Load generated SVG into your existing `img` variable
+            const blob = new Blob([svgString], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+
+            img.onload = () => {
+                URL.revokeObjectURL(url);
+                imgLoaded = true;
+                draw();
+                setPaperStatus(`Motif generated (${w}x${h}).`);
+            };
+            img.onerror = () => {
+                URL.revokeObjectURL(url);
+                setPaperStatus("Failed to load generated SVG into Image().", true);
+            };
+            img.src = url;
+
+        } catch (err) {
+            paper.project.clear();
+            setPaperStatus(String(err && err.message ? err.message : err), true);
+            console.error(err);
+        }
+    }
+
+    document.getElementById('paperRun').onclick = () => {
+        // Change w/h here if you want a different intrinsic motif size:
+        generateMotifWithPaperFromTextarea({ w: 512, h: 512, precision: 7 });
+    };
+
+    document.getElementById('paperClear').onclick = () => {
+        paperCodeEl.value = "";
+        setPaperStatus("");
+    };
+</script>
+</body>
+</html>
