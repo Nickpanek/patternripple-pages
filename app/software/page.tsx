@@ -66,6 +66,42 @@ type Tool = {
   faqA?: string;
 };
 
+const betaTools: Tool[] = [
+  {
+    slug: "qr-code-generator",
+    title: "QR Code Generator",
+    href: "/qr-code-generator.html",
+    summary:
+      "Convert text or URLs to QR codes instantly. Download as PNG. Works offline. No signup required.",
+    badge: "Utility",
+    faqQ: "How do I create a QR code?",
+    faqA:
+      "Enter your text or URL into the QR Code Generator, click Generate, and download the QR code as a PNG. No account needed.",
+  },
+  {
+    slug: "exif-stripper",
+    title: "EXIF Stripper",
+    href: "/exif-stripper.html",
+    summary:
+      "Remove metadata from images instantly. Strip location, camera info, and device data for privacy. Works offline.",
+    badge: "Privacy",
+    faqQ: "What metadata does EXIF Stripper remove?",
+    faqA:
+      "Removes location, camera/device info, timestamps, software info, and orientation data. Image quality and size are preserved.",
+  },
+  {
+    slug: "favicon-generator",
+    title: "Favicon Generator",
+    href: "/favicon-generator.html",
+    summary:
+      "Generate favicon sets from any image. Create 16px, 32px, 180px, and 192px icons for web projects. Download as ZIP.",
+    badge: "Web Tools",
+    faqQ: "What favicon sizes does it generate?",
+    faqA:
+      "Generates 4 sizes: 16×16px (browser tab), 32×32px (standard), 180×180px (iOS), and 192×192px (Android). Download all as a ZIP.",
+  },
+];
+
 const tools: Tool[] = [
   {
     slug: "colorway-generator",
@@ -170,6 +206,9 @@ const order: Record<string, number> = {
   "audio-looper-panek": 30,
   "audio-processor": 40,
   "property-slideshow-maker": 50,
+  "qr-code-generator": 100,
+  "exif-stripper": 101,
+  "favicon-generator": 102,
 };
 
 const sortedTools = [...tools].sort(
@@ -177,6 +216,7 @@ const sortedTools = [...tools].sort(
 );
 
 // ─── JSON-LD Structured Data ──────────────────────────────────────────────────
+const allTools = [...sortedTools, ...betaTools];
 const itemListJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -184,8 +224,8 @@ const itemListJsonLd = {
   description:
     "Free browser-based creative tools for designers, musicians, and real estate professionals.",
   url: "https://www.patternripple.com/software",
-  numberOfItems: sortedTools.length,
-  itemListElement: sortedTools.map((t, i) => ({
+  numberOfItems: allTools.length,
+  itemListElement: allTools.map((t, i) => ({
     "@type": "ListItem",
     position: i + 1,
     url: `https://www.patternripple.com${t.href}`,
@@ -281,7 +321,7 @@ const faqJsonLd = {
         text: "Most tools work offline once the page has loaded. The Audio Processor and Seamless Pattern Creator are fully offline-capable.",
       },
     },
-    ...sortedTools
+    ...allTools
       .filter((t) => t.faqQ && t.faqA)
       .map((t) => ({
         "@type": "Question",
@@ -397,6 +437,19 @@ export default function SoftwarePage() {
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {videoTools.map((tool) => (
+              <ToolCard key={tool.slug} tool={tool} />
+            ))}
+          </div>
+        </section>
+
+        {/* Beta Tools */}
+        <section aria-labelledby="beta-tools-heading" className="mb-10">
+          <h2 id="beta-tools-heading" className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">
+            🧪 Beta Tools
+          </h2>
+          <p className="text-sm text-gray-400 mb-6">New tools in testing. Feedback welcome.</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {betaTools.map((tool) => (
               <ToolCard key={tool.slug} tool={tool} />
             ))}
           </div>
