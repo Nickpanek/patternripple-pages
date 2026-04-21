@@ -38,19 +38,41 @@
                 </p>
 
                 <!-- Color Controls -->
-                <div class="grid grid-cols-2 gap-2">
+                <div class="space-y-2">
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Fill Color</label>
-                        <div class="flex gap-2 items-center">
-                            <input type="color" id="fillColor" value="#000000" class="h-8 w-12 rounded cursor-pointer">
-                            <input type="text" id="fillColorHex" value="#000000" class="flex-1 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200">
+                        <label class="block text-[10px] text-slate-400 mb-1.5 font-bold">Fill Color</label>
+                        <div class="flex gap-2 items-center bg-slate-900 p-2 rounded-lg border border-slate-700">
+                            <input type="color" id="fillColor" value="#000000" class="h-10 w-14 rounded cursor-pointer border-0 p-0">
+                            <input type="text" id="fillColorHex" value="#000000" maxlength="7" class="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-slate-200 font-mono">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Stroke Color</label>
-                        <div class="flex gap-2 items-center">
-                            <input type="color" id="strokeColor" value="#000000" class="h-8 w-12 rounded cursor-pointer">
-                            <input type="text" id="strokeColorHex" value="#000000" class="flex-1 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200">
+                        <label class="block text-[10px] text-slate-400 mb-1.5 font-bold">Stroke Color</label>
+                        <div class="flex gap-2 items-center bg-slate-900 p-2 rounded-lg border border-slate-700">
+                            <input type="color" id="strokeColor" value="#000000" class="h-10 w-14 rounded cursor-pointer border-0 p-0">
+                            <input type="text" id="strokeColorHex" value="#000000" maxlength="7" class="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-slate-200 font-mono">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1.5 font-bold">Background Color</label>
+                        <div class="flex gap-2 items-center bg-slate-900 p-2 rounded-lg border border-slate-700">
+                            <input type="color" id="bgColor" value="#ffffff" class="h-10 w-14 rounded cursor-pointer border-0 p-0">
+                            <input type="text" id="bgColorHex" value="#ffffff" maxlength="7" class="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-slate-200 font-mono">
+                        </div>
+                        <p class="text-[9px] text-slate-500 mt-1">Canvas fill color (white default)</p>
+                    </div>
+                    <!-- Quick Color Palette -->
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1 font-bold">Quick Colors</label>
+                        <div class="grid grid-cols-8 gap-1">
+                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #000000" title="#000000" onclick="setFillColor('#000000')"></button>
+                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ffffff; border: 2px solid #666" title="#ffffff" onclick="setFillColor('#ffffff')"></button>
+                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ff0000" title="#ff0000" onclick="setFillColor('#ff0000')"></button>
+                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ff6600" title="#ff6600" onclick="setFillColor('#ff6600')"></button>
+                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #ffcc00" title="#ffcc00" onclick="setFillColor('#ffcc00')"></button>
+                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #00bb33" title="#00bb33" onclick="setFillColor('#00bb33')"></button>
+                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #0066ff" title="#0066ff" onclick="setFillColor('#0066ff')"></button>
+                            <button class="h-6 w-full rounded border border-slate-600 cursor-pointer hover:border-slate-400" style="background: #9900cc" title="#9900cc" onclick="setFillColor('#9900cc')"></button>
                         </div>
                     </div>
                 </div>
@@ -187,7 +209,8 @@ tri.position = view.center;</textarea>
     function draw() {
         if (!imgLoaded) return;
 
-        ctx.fillStyle = "white";
+        const bgColor = document.getElementById('bgColorHex').value;
+        ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         const s = document.getElementById('scale').value / 100;
@@ -251,20 +274,41 @@ tri.position = view.center;</textarea>
     const fillColorHex = document.getElementById('fillColorHex');
     const strokeColorPicker = document.getElementById('strokeColor');
     const strokeColorHex = document.getElementById('strokeColorHex');
+    const bgColorPicker = document.getElementById('bgColor');
+    const bgColorHex = document.getElementById('bgColorHex');
     const shapePresetSelect = document.getElementById('shapePreset');
 
-    // Sync color picker with hex input
+    function setFillColor(hex) {
+        fillColorHex.value = hex;
+        fillColorPicker.value = hex;
+    }
+
+    // Sync fill color picker with hex input
     fillColorPicker.addEventListener('input', (e) => {
         fillColorHex.value = e.target.value;
     });
     fillColorHex.addEventListener('input', (e) => {
-        fillColorPicker.value = e.target.value;
+        if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) fillColorPicker.value = e.target.value;
     });
+
+    // Sync stroke color picker with hex input
     strokeColorPicker.addEventListener('input', (e) => {
         strokeColorHex.value = e.target.value;
     });
     strokeColorHex.addEventListener('input', (e) => {
-        strokeColorPicker.value = e.target.value;
+        if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) strokeColorPicker.value = e.target.value;
+    });
+
+    // Sync background color picker with hex input
+    bgColorPicker.addEventListener('input', (e) => {
+        bgColorHex.value = e.target.value;
+        draw();
+    });
+    bgColorHex.addEventListener('input', (e) => {
+        if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) {
+            bgColorPicker.value = e.target.value;
+            draw();
+        }
     });
 
     /* ===================== SHAPE TEMPLATES ===================== */
