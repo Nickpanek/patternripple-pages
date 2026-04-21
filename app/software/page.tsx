@@ -79,17 +79,6 @@ const tools: Tool[] = [
       "The Colorway Generator lets you upload a pattern image and instantly recolor it into up to 8 preset hues. Each colorway is exported as a separate PNG in a single ZIP download. All processing happens in your browser.",
   },
   {
-    slug: "seamless-pattern-creator",
-    title: "Seamless Pattern Creator",
-    href: "/seamless-pattern-creator.html",
-    summary:
-      "Build seamless tiles in your browser. Offset and wrap artwork, preview as repeating tiles, and export the final image.",
-    badge: "Design",
-    faqQ: "How do I create a seamless repeating pattern?",
-    faqA:
-      "Use the Seamless Pattern Creator to upload artwork, adjust offset/wrap settings, preview tiling in real time, and export the seamless tile as a PNG. No installation or account required.",
-  },
-  {
     slug: "pattern-repeat-engine",
     title: "Pattern Repeat Engine",
     href: "/pattern-repeat-engine.html",
@@ -174,7 +163,6 @@ const tools: Tool[] = [
 
 const order: Record<string, number> = {
   "colorway-generator": 5,
-  "seamless-pattern-creator": 10,
   "pattern-repeat-engine": 12,
   "motif-painter": 13,
   "png2svg": 15,
