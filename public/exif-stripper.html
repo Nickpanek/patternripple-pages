@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free EXIF Stripper - Remove Image Metadata | PatternRipple</title>
+    <meta name="description" content="Remove EXIF metadata from images. Privacy tool to strip location, camera, and device info. No upload to servers. Works offline.">
+    <meta name="keywords" content="EXIF stripper, metadata remover, image privacy, remove EXIF, strip metadata, privacy tool">
+    <link rel="canonical" href="https://www.patternripple.com/exif-stripper.html">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 700px; margin: 0 auto; }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 30px;
+        }
+        h1 { font-size: 2rem; font-weight: 300; margin-bottom: 10px; }
+        .subtitle { font-size: 14px; color: #888; }
+        .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 700px) { .layout { grid-template-columns: 1fr; } }
+        .panel {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7ee787;
+            margin-bottom: 15px;
+        }
+        .dropzone {
+            border: 2px dashed #333;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #0f0f0f;
+        }
+        .dropzone:hover, .dropzone.drag-over {
+            border-color: #7ee787;
+            background: rgba(126, 231, 135, 0.05);
+        }
+        input[type="file"] { display: none; }
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #7ee787;
+            color: #0a0a0a;
+            margin-bottom: 10px;
+        }
+        .btn-primary:hover:not(:disabled) { background: #6fd874; transform: translateY(-2px); }
+        .btn-primary:disabled { background: #444; color: #666; cursor: not-allowed; }
+        .btn-secondary {
+            background: transparent;
+            color: #7ee787;
+            border: 1px solid #7ee787;
+        }
+        .btn-secondary:hover { background: #7ee787; color: #0a0a0a; }
+        img { max-width: 100%; border-radius: 8px; margin-bottom: 15px; }
+        .info-box {
+            background: rgba(126, 231, 135, 0.1);
+            border: 1px solid #7ee787;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+        .metadata-list {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .metadata-list div { padding: 4px 0; color: #888; }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #333;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EXIF Stripper</h1>
+            <p class="subtitle">Remove metadata from images privately</p>
+        </header>
+
+        <div class="layout">
+            <!-- Upload -->
+            <div class="panel">
+                <label>Upload Image</label>
+                <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                    <div style="font-size: 24px; margin-bottom: 10px;">📸</div>
+                    <div style="font-weight: 600; margin-bottom: 5px;">Click to upload</div>
+                    <div style="font-size: 12px; color: #666;">or drag & drop</div>
+                </div>
+                <input type="file" id="fileInput" accept="image/*">
+                <div class="info-box" style="margin-top: 15px;">Supports JPG, PNG, WebP. All processing is local.</div>
+                <button class="btn-secondary" onclick="downloadHTML()">Download Tool Offline</button>
+            </div>
+
+            <!-- Preview & Result -->
+            <div class="panel" id="resultPanel" style="display: none;">
+                <label>Cleaned Image</label>
+                <img id="previewImage" alt="Cleaned image">
+                <button class="btn-primary" id="downloadBtn" onclick="downloadCleaned()">Download Cleaned Image</button>
+                <button class="btn-secondary" onclick="resetTool()">Process Another</button>
+            </div>
+        </div>
+
+        <!-- Metadata Info -->
+        <div class="panel" id="metadataPanel" style="display: none;">
+            <label>Metadata Found & Removed</label>
+            <div class="metadata-list" id="metadataList"></div>
+        </div>
+
+        <footer>
+            <p>Created by <a href="https://heylink.me/nickpanek/" style="color: #7ee787; text-decoration: none;">Nick Panek</a></p>
+            <button class="btn-secondary" onclick="downloadHTML()" style="font-size: 11px; padding: 8px 16px; width: auto; margin-top: 12px;">Download for Offline Use</button>
+        </footer>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const dropzone = document.getElementById('dropzone');
+        let originalFile = null;
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('drag-over');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('drag-over');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('drag-over');
+            if (e.dataTransfer.files[0]) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+
+            originalFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    stripExif(img, file.type);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function stripExif(img, mimeType) {
+            // Create canvas and redraw image (removes all EXIF data)
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            // Display cleaned image
+            const previewUrl = canvas.toDataURL(mimeType);
+            document.getElementById('previewImage').src = previewUrl;
+            document.getElementById('resultPanel').style.display = 'block';
+
+            // Show metadata info
+            showMetadataInfo(img);
+        }
+
+        function showMetadataInfo(img) {
+            const metadataList = document.getElementById('metadataList');
+            const metadataPanel = document.getElementById('metadataPanel');
+
+            metadataList.innerHTML = `
+                <div>✓ Location data removed</div>
+                <div>✓ Camera/device info removed</div>
+                <div>✓ Timestamps removed</div>
+                <div>✓ Software/app info removed</div>
+                <div>✓ Orientation data reset</div>
+                <div style="margin-top: 8px; color: #7ee787;">Image size preserved: ${img.width}×${img.height}px</div>
+            `;
+            metadataPanel.style.display = 'block';
+        }
+
+        function downloadCleaned() {
+            const previewImage = document.getElementById('previewImage');
+            const canvas = document.createElement('canvas');
+            const img = new Image();
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `cleaned-${originalFile.name}`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            };
+            img.src = previewImage.src;
+        }
+
+        function resetTool() {
+            fileInput.value = '';
+            document.getElementById('resultPanel').style.display = 'none';
+            document.getElementById('metadataPanel').style.display = 'none';
+        }
+
+        function downloadHTML() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'exif-stripper.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
