@@ -8,7 +8,6 @@
         body { background: #111; color: #e2e8f0; font-family: sans-serif; user-select: none; }
         .slider-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px; }
         input[type="range"] { width: 100%; height: 6px; border-radius: 3px; accent-color: #22c55e; }
-        /* Checkerboard behind canvas shows transparency */
         .canvas-bg {
             background-color: #aaaaaa;
             background-image:
@@ -33,6 +32,7 @@
             cursor: pointer; transition: transform 0.1s;
         }
         .swatch:hover { transform: scale(1.2); border-color: #94a3b8; }
+        .section-label { text-xs font-bold uppercase text-slate-400 mt-3 mb-1.5; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
@@ -58,7 +58,7 @@
 
     <!-- Size -->
     <div>
-        <div class="slider-label"><span>Brush Size</span><span id="v-size">12px</span></div>
+        <div class="slider-label"><span>Size</span><span id="v-size">12px</span></div>
         <input type="range" id="brushSize" min="1" max="80" value="12">
     </div>
 
@@ -68,14 +68,30 @@
         <input type="range" id="brushOpacity" min="5" max="100" value="100">
     </div>
 
-    <!-- Brush styles -->
+    <!-- Stroke Width for shapes -->
+    <div>
+        <div class="slider-label"><span>Stroke Width</span><span id="v-stroke">2px</span></div>
+        <input type="range" id="strokeWidth" min="1" max="20" value="2">
+    </div>
+
+    <!-- Brush Tools -->
     <div class="space-y-1.5">
-        <label class="block text-xs font-bold uppercase text-slate-400">Brush Style</label>
-        <button class="tool-btn active" data-brush="round">&#9679; Round</button>
-        <button class="tool-btn" data-brush="square">&#9632; Square / Pixel</button>
-        <button class="tool-btn" data-brush="marker">&#9644; Marker</button>
-        <button class="tool-btn" data-brush="spray">&#10022; Spray / Airbrush</button>
-        <button class="tool-btn" data-brush="eraser">&#9711; Eraser</button>
+        <label class="section-label">Brush Tools</label>
+        <button class="tool-btn active" data-tool="brush" data-mode="round">● Round</button>
+        <button class="tool-btn" data-tool="brush" data-mode="square">■ Square</button>
+        <button class="tool-btn" data-tool="brush" data-mode="marker">▬ Marker</button>
+        <button class="tool-btn" data-tool="brush" data-mode="spray">✦ Spray</button>
+        <button class="tool-btn" data-tool="brush" data-mode="eraser">◯ Eraser</button>
+    </div>
+
+    <!-- Shape Tools -->
+    <div class="space-y-1.5">
+        <label class="section-label">Shape Tools</label>
+        <button class="tool-btn" data-tool="shape" data-mode="line">/ Line</button>
+        <button class="tool-btn" data-tool="shape" data-mode="rectangle">□ Rectangle</button>
+        <button class="tool-btn" data-tool="shape" data-mode="filledRect">■ Filled Rectangle</button>
+        <button class="tool-btn" data-tool="shape" data-mode="circle">○ Circle</button>
+        <button class="tool-btn" data-tool="shape" data-mode="filledCircle">● Filled Circle</button>
     </div>
 
     <!-- Canvas size -->
@@ -87,7 +103,7 @@
             <option value="1024">1024 × 1024</option>
         </select>
         <button id="resizeBtn" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-1.5 rounded text-xs transition-all">
-            RESIZE (clears canvas)
+            RESIZE
         </button>
     </div>
 
@@ -102,7 +118,7 @@
         <button id="downloadBtn" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-green-900/20">
             DOWNLOAD PNG
         </button>
-        <p class="text-[10px] text-center text-slate-500">Saves with transparent background</p>
+        <p class="text-[10px] text-center text-slate-500">Transparent background</p>
     </div>
 </aside>
 
@@ -113,16 +129,15 @@
 </main>
 
 <script>
-    const canvas  = document.getElementById('canvas');
-    const ctx     = canvas.getContext('2d');
+    const canvas   = document.getElementById('canvas');
+    const ctx      = canvas.getContext('2d');
     const mainArea = document.getElementById('mainArea');
 
-    // ── Init canvas size ──────────────────────────────────────────────────────
     function setCanvasSize(px) {
         const pad = 48;
         const maxFit = Math.min(mainArea.clientWidth - pad, mainArea.clientHeight - pad);
         const size   = Math.min(px, maxFit);
-        canvas.width  = px;   // actual pixel resolution
+        canvas.width  = px;
         canvas.height = px;
         canvas.style.width  = size + 'px';
         canvas.style.height = size + 'px';
@@ -136,14 +151,19 @@
     });
 
     // ── State ─────────────────────────────────────────────────────────────────
-    let painting      = false;
-    let lastX         = 0, lastY = 0;
-    let currentBrush  = 'round';
-    let currentColor  = '#000000';
-    let brushSize     = 12;
-    let brushOpacity  = 1.0;
+    let currentTool     = 'brush';
+    let currentMode     = 'round';
+    let currentColor    = '#000000';
+    let brushSize       = 12;
+    let brushOpacity    = 1.0;
+    let strokeWidth     = 2;
+    let painting        = false;
+    let shapeStartX     = 0;
+    let shapeStartY     = 0;
+    let lastX           = 0, lastY = 0;
+    let savedCanvas     = null;
 
-    // ── Undo stack ────────────────────────────────────────────────────────────
+    // ── Undo ───────────────────────────────────────────────────────────────────
     const undoStack = [];
     function saveUndo() {
         undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
@@ -157,7 +177,7 @@
         if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
     });
 
-    // ── Color palette ─────────────────────────────────────────────────────────
+    // ── Palette ────────────────────────────────────────────────────────────────
     const PALETTE = [
         '#000000','#2d2d2d','#666666','#b0b0b0',
         '#ffffff','#ff0000','#ff6600','#ffcc00',
@@ -176,8 +196,8 @@
 
     function setColor(c) {
         currentColor = c;
-        document.getElementById('colorPicker').value    = c;
-        document.getElementById('colorHex').value       = c;
+        document.getElementById('colorPicker').value = c;
+        document.getElementById('colorHex').value = c;
         document.getElementById('colorPreview').style.background = c;
     }
     document.getElementById('colorPicker').addEventListener('input', e => setColor(e.target.value));
@@ -185,7 +205,7 @@
         if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) setColor(e.target.value);
     });
 
-    // ── Sliders ───────────────────────────────────────────────────────────────
+    // ── Sliders ────────────────────────────────────────────────────────────────
     document.getElementById('brushSize').addEventListener('input', e => {
         brushSize = +e.target.value;
         document.getElementById('v-size').textContent = brushSize + 'px';
@@ -194,17 +214,22 @@
         brushOpacity = +e.target.value / 100;
         document.getElementById('v-opacity').textContent = e.target.value + '%';
     });
+    document.getElementById('strokeWidth').addEventListener('input', e => {
+        strokeWidth = +e.target.value;
+        document.getElementById('v-stroke').textContent = strokeWidth + 'px';
+    });
 
-    // ── Brush buttons ─────────────────────────────────────────────────────────
-    document.querySelectorAll('.tool-btn').forEach(btn => {
+    // ── Tool buttons ───────────────────────────────────────────────────────────
+    document.querySelectorAll('[data-tool]').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('[data-tool]').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            currentBrush = btn.dataset.brush;
+            currentTool = btn.dataset.tool;
+            currentMode = btn.dataset.mode;
         });
     });
 
-    // ── Drawing ───────────────────────────────────────────────────────────────
+    // ── Drawing utilities ──────────────────────────────────────────────────────
     function getPos(e) {
         const r  = canvas.getBoundingClientRect();
         const sx = canvas.width  / r.width;
@@ -213,10 +238,11 @@
         return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
     }
 
-    function drawAt(x, y, px, py) {
+    function drawBrushStroke(x, y, px, py) {
         ctx.save();
+        ctx.globalAlpha = brushOpacity;
 
-        if (currentBrush === 'eraser') {
+        if (currentMode === 'eraser') {
             ctx.globalCompositeOperation = 'destination-out';
             ctx.beginPath();
             ctx.arc(x, y, brushSize, 0, Math.PI * 2);
@@ -226,9 +252,7 @@
             return;
         }
 
-        ctx.globalAlpha = brushOpacity;
-
-        switch (currentBrush) {
+        switch (currentMode) {
             case 'round':
                 ctx.strokeStyle = currentColor;
                 ctx.lineWidth   = brushSize * 2;
@@ -239,13 +263,11 @@
                 ctx.lineTo(x, y);
                 ctx.stroke();
                 break;
-
             case 'square':
                 ctx.fillStyle = currentColor;
                 const s = brushSize * 2;
                 ctx.fillRect(Math.round(x - brushSize), Math.round(y - brushSize), s, s);
                 break;
-
             case 'marker':
                 ctx.strokeStyle = currentColor;
                 ctx.lineWidth   = brushSize * 3.5;
@@ -256,7 +278,6 @@
                 ctx.lineTo(x, y);
                 ctx.stroke();
                 break;
-
             case 'spray':
                 ctx.fillStyle = currentColor;
                 const radius = brushSize * 2.5;
@@ -270,44 +291,112 @@
                 }
                 break;
         }
-
         ctx.restore();
     }
 
-    // ── Mouse events ──────────────────────────────────────────────────────────
+    function drawShape(x, y, x0, y0) {
+        ctx.save();
+        ctx.globalAlpha = brushOpacity;
+        ctx.strokeStyle = currentColor;
+        ctx.fillStyle = currentColor;
+        ctx.lineWidth = strokeWidth;
+
+        switch (currentMode) {
+            case 'line':
+                ctx.beginPath();
+                ctx.moveTo(x0, y0);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                break;
+            case 'rectangle':
+                const w = x - x0, h = y - y0;
+                ctx.strokeRect(x0, y0, w, h);
+                break;
+            case 'filledRect':
+                const w2 = x - x0, h2 = y - y0;
+                ctx.fillRect(x0, y0, w2, h2);
+                break;
+            case 'circle':
+                const rx = Math.abs(x - x0), ry = Math.abs(y - y0);
+                const cx = (x0 + x) / 2, cy = (y0 + y) / 2;
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                break;
+            case 'filledCircle':
+                const rx2 = Math.abs(x - x0), ry2 = Math.abs(y - y0);
+                const cx2 = (x0 + x) / 2, cy2 = (y0 + y) / 2;
+                ctx.beginPath();
+                ctx.ellipse(cx2, cy2, rx2, ry2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                break;
+        }
+        ctx.restore();
+    }
+
+    // ── Mouse events ───────────────────────────────────────────────────────────
     canvas.addEventListener('mousedown', e => {
         saveUndo();
         painting = true;
-        const p = getPos(e); lastX = p.x; lastY = p.y;
-        drawAt(p.x, p.y, p.x, p.y);
+        const p = getPos(e);
+        lastX = p.x; lastY = p.y;
+        shapeStartX = p.x; shapeStartY = p.y;
+
+        if (currentTool === 'brush') {
+            drawBrushStroke(p.x, p.y, p.x, p.y);
+        } else if (currentTool === 'shape') {
+            savedCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
     });
+
     canvas.addEventListener('mousemove', e => {
         if (!painting) return;
         const p = getPos(e);
-        drawAt(p.x, p.y, lastX, lastY);
-        lastX = p.x; lastY = p.y;
+
+        if (currentTool === 'brush') {
+            drawBrushStroke(p.x, p.y, lastX, lastY);
+            lastX = p.x; lastY = p.y;
+        } else if (currentTool === 'shape') {
+            // Show preview
+            ctx.putImageData(savedCanvas, 0, 0);
+            drawShape(p.x, p.y, shapeStartX, shapeStartY);
+        }
     });
-    canvas.addEventListener('mouseup',    () => painting = false);
+
+    canvas.addEventListener('mouseup', () => painting = false);
     canvas.addEventListener('mouseleave', () => painting = false);
 
-    // ── Touch events ──────────────────────────────────────────────────────────
+    // ── Touch events ───────────────────────────────────────────────────────────
     canvas.addEventListener('touchstart', e => {
         e.preventDefault();
         saveUndo();
         painting = true;
-        const p = getPos(e); lastX = p.x; lastY = p.y;
-        drawAt(p.x, p.y, p.x, p.y);
+        const p = getPos(e);
+        lastX = p.x; lastY = p.y;
+        shapeStartX = p.x; shapeStartY = p.y;
+        if (currentTool === 'brush') {
+            drawBrushStroke(p.x, p.y, p.x, p.y);
+        } else if (currentTool === 'shape') {
+            savedCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
     }, { passive: false });
+
     canvas.addEventListener('touchmove', e => {
         e.preventDefault();
         if (!painting) return;
         const p = getPos(e);
-        drawAt(p.x, p.y, lastX, lastY);
-        lastX = p.x; lastY = p.y;
+        if (currentTool === 'brush') {
+            drawBrushStroke(p.x, p.y, lastX, lastY);
+            lastX = p.x; lastY = p.y;
+        } else if (currentTool === 'shape') {
+            ctx.putImageData(savedCanvas, 0, 0);
+            drawShape(p.x, p.y, shapeStartX, shapeStartY);
+        }
     }, { passive: false });
+
     canvas.addEventListener('touchend', () => painting = false);
 
-    // ── Buttons ───────────────────────────────────────────────────────────────
+    // ── Buttons ────────────────────────────────────────────────────────────────
     document.getElementById('clearBtn').addEventListener('click', () => {
         saveUndo();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
