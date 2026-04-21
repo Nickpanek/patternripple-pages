@@ -100,6 +100,39 @@ const betaTools: Tool[] = [
     faqA:
       "Generates 4 sizes: 16×16px (browser tab), 32×32px (standard), 180×180px (iOS), and 192×192px (Android). Download all as a ZIP.",
   },
+  {
+    slug: "bulk-image-resizer",
+    title: "Bulk Image Resizer",
+    href: "/bulk-image-resizer.html",
+    summary:
+      "Upload multiple images, batch resize to any dimension, download as ZIP. Preserve aspect ratio. Free, no signup.",
+    badge: "Image Tools",
+    faqQ: "How do I resize multiple images at once?",
+    faqA:
+      "Upload images to Bulk Image Resizer, select your target size (800px-2048px), click Resize All, then download the ZIP of all resized images.",
+  },
+  {
+    slug: "image-to-ascii",
+    title: "Image to ASCII Art",
+    href: "/image-to-ascii.html",
+    summary:
+      "Convert any image to ASCII text art. Customize density and character set. Copy or download as text file. Perfect for terminal art.",
+    badge: "Image Tools",
+    faqQ: "How do I convert an image to ASCII art?",
+    faqA:
+      "Upload an image to Image to ASCII Art, adjust density and width sliders, choose a character set, click Convert, then copy or download the result.",
+  },
+  {
+    slug: "color-blindness-simulator",
+    title: "Color Blindness Simulator",
+    href: "/color-blindness-simulator.html",
+    summary:
+      "Test design accessibility. Preview images as they appear to users with color blindness. Supports protanopia, deuteranopia, tritanopia.",
+    badge: "Accessibility",
+    faqQ: "What color blindness types does it simulate?",
+    faqA:
+      "Simulates normal vision, protanopia (red-blind), deuteranopia (green-blind), and tritanopia (blue-yellow blind). Essential for accessible design.",
+  },
 ];
 
 const tools: Tool[] = [
@@ -209,6 +242,9 @@ const order: Record<string, number> = {
   "qr-code-generator": 100,
   "exif-stripper": 101,
   "favicon-generator": 102,
+  "bulk-image-resizer": 103,
+  "image-to-ascii": 104,
+  "color-blindness-simulator": 105,
 };
 
 const sortedTools = [...tools].sort(

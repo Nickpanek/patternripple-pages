@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Image to ASCII Art Converter | PatternRipple</title>
+    <meta name="description" content="Convert images to ASCII art instantly. Upload PNG, JPG, or GIF. Customize character set and density. Download as text or copy. Free, no upload.">
+    <meta name="keywords" content="image to ASCII, ASCII art converter, ASCII art generator, text art, image converter, free tool">
+    <link rel="canonical" href="https://www.patternripple.com/image-to-ascii.html">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 30px;
+        }
+        h1 { font-size: 2rem; font-weight: 300; margin-bottom: 10px; }
+        .subtitle { font-size: 14px; color: #888; font-family: sans-serif; }
+        .layout { display: grid; grid-template-columns: 280px 1fr; gap: 30px; align-items: start; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+        .panel {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7ee787;
+            margin-bottom: 12px;
+            font-family: sans-serif;
+        }
+        .dropzone {
+            border: 2px dashed #333;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #0f0f0f;
+            margin-bottom: 15px;
+            font-family: sans-serif;
+        }
+        .dropzone:hover, .dropzone.drag-over {
+            border-color: #7ee787;
+            background: rgba(126, 231, 135, 0.05);
+        }
+        input[type="file"], input[type="range"] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        input[type="file"] { display: none; }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .control-group { font-family: sans-serif; }
+        .control-group label { margin-bottom: 8px; }
+        .value-display {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+            font-family: sans-serif;
+        }
+        .btn-primary {
+            background: #7ee787;
+            color: #0a0a0a;
+        }
+        .btn-primary:hover:not(:disabled) { background: #6fd874; transform: translateY(-2px); }
+        .btn-primary:disabled { background: #444; color: #666; cursor: not-allowed; }
+        .btn-secondary {
+            background: transparent;
+            color: #7ee787;
+            border: 1px solid #7ee787;
+        }
+        .btn-secondary:hover { background: #7ee787; color: #0a0a0a; }
+        #asciiOutput {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            overflow: auto;
+            max-height: 600px;
+            line-height: 1.2;
+            font-size: 7px;
+            display: none;
+        }
+        #asciiOutput.show { display: block; }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        .action-buttons.show { display: grid; }
+        .action-buttons button {
+            margin-bottom: 0;
+            padding: 10px;
+            font-size: 12px;
+        }
+        .info-box {
+            background: rgba(126, 231, 135, 0.1);
+            border: 1px solid #7ee787;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 15px;
+            font-family: sans-serif;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #333;
+            font-size: 12px;
+            color: #666;
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Image to ASCII Art</h1>
+            <p class="subtitle">Convert images to text art instantly</p>
+        </header>
+
+        <div class="layout">
+            <div class="panel">
+                <label>Upload Image</label>
+                <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                    <div style="font-size: 20px; margin-bottom: 10px;">🖼️</div>
+                    <div style="font-weight: 600; margin-bottom: 5px;">Click to upload</div>
+                    <div style="font-size: 12px; color: #666;">or drag & drop</div>
+                </div>
+                <input type="file" id="fileInput" accept="image/*">
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Density</label>
+                        <input type="range" id="density" min="5" max="100" value="50">
+                        <div class="value-display"><span id="densityValue">50</span>% density</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Width</label>
+                        <input type="range" id="width" min="40" max="200" value="100">
+                        <div class="value-display"><span id="widthValue">100</span> chars</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Character Set</label>
+                        <select id="charset" style="width: 100%; padding: 8px; border: 1px solid #333; background: #0f0f0f; color: #e0e0e0; border-radius: 4px;">
+                            <option value="standard">Standard</option>
+                            <option value="detailed">Detailed</option>
+                            <option value="blocks">Blocks</option>
+                            <option value="minimal">Minimal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="info-box">Convert photo to text art. Adjust density and width for best results.</div>
+
+                <button class="btn-primary" id="convertBtn" disabled>Convert to ASCII</button>
+                <button class="btn-secondary" onclick="downloadHTML()">Download Tool Offline</button>
+            </div>
+
+            <div class="panel">
+                <pre id="asciiOutput"></pre>
+                <div class="action-buttons" id="actions">
+                    <button class="btn-secondary" onclick="copyToClipboard()">Copy</button>
+                    <button class="btn-secondary" onclick="downloadASCII()">Download</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Created by <a href="https://heylink.me/nickpanek/" style="color: #7ee787; text-decoration: none;">Nick Panek</a></p>
+            <button class="btn-secondary" onclick="downloadHTML()" style="font-size: 11px; padding: 8px 16px; width: auto; margin-top: 12px;">Download for Offline Use</button>
+        </footer>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const dropzone = document.getElementById('dropzone');
+        const convertBtn = document.getElementById('convertBtn');
+        const output = document.getElementById('asciiOutput');
+        const actions = document.getElementById('actions');
+        const densitySlider = document.getElementById('density');
+        const widthSlider = document.getElementById('width');
+        const densityValue = document.getElementById('densityValue');
+        const widthValue = document.getElementById('widthValue');
+
+        let sourceImage = null;
+
+        const charsets = {
+            standard: '@%#*+=-:. ',
+            detailed: '@MWmwsoxX*-_:;,. ',
+            blocks: '█▓▒░  ',
+            minimal: '# '
+        };
+
+        densitySlider.addEventListener('input', (e) => {
+            densityValue.textContent = e.target.value;
+        });
+
+        widthSlider.addEventListener('input', (e) => {
+            widthValue.textContent = e.target.value;
+        });
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('drag-over');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('drag-over');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('drag-over');
+            if (e.dataTransfer.files[0]) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    sourceImage = img;
+                    convertBtn.disabled = false;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        convertBtn.addEventListener('click', convertToASCII);
+
+        function convertToASCII() {
+            if (!sourceImage) return;
+
+            const width = parseInt(widthSlider.value);
+            const density = parseInt(densitySlider.value) / 100;
+            const charsetName = document.getElementById('charset').value;
+            const charset = charsets[charsetName];
+
+            const canvas = document.createElement('canvas');
+            const aspectRatio = sourceImage.height / sourceImage.width;
+            canvas.width = width;
+            canvas.height = Math.round(width * aspectRatio * 0.55); // 0.55 accounts for char aspect ratio
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(sourceImage, 0, 0, canvas.width, canvas.height);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            let ascii = '';
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                const brightness = (r + g + b) / 3 / 255;
+                const charIndex = Math.floor(brightness * (charset.length - 1) * density);
+                ascii += charset[Math.min(charIndex, charset.length - 1)];
+
+                if ((i / 4 + 1) % canvas.width === 0) {
+                    ascii += '\n';
+                }
+            }
+
+            output.textContent = ascii;
+            output.classList.add('show');
+            actions.classList.add('show');
+        }
+
+        function copyToClipboard() {
+            const text = output.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('ASCII art copied to clipboard!');
+            });
+        }
+
+        function downloadASCII() {
+            const text = output.textContent;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ascii-art.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadHTML() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'image-to-ascii.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

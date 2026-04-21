@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Bulk Image Resizer - Batch Resize Images Online | PatternRipple</title>
+    <meta name="description" content="Resize multiple images at once. Upload batch, choose preset sizes, download all resized images as ZIP. Free, no upload, works offline.">
+    <meta name="keywords" content="bulk image resizer, batch resize, resize images online, free resizer, image batch tool, bulk converter">
+    <link rel="canonical" href="https://www.patternripple.com/bulk-image-resizer.html">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 30px;
+        }
+        h1 { font-size: 2rem; font-weight: 300; margin-bottom: 10px; }
+        .subtitle { font-size: 14px; color: #888; }
+        .layout { display: grid; grid-template-columns: 350px 1fr; gap: 30px; align-items: start; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+        .panel {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7ee787;
+            margin-bottom: 12px;
+        }
+        .dropzone {
+            border: 2px dashed #333;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #0f0f0f;
+            margin-bottom: 15px;
+        }
+        .dropzone:hover, .dropzone.drag-over {
+            border-color: #7ee787;
+            background: rgba(126, 231, 135, 0.05);
+        }
+        input[type="file"] { display: none; }
+        .size-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .size-btn {
+            padding: 10px;
+            border: 1px solid #333;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .size-btn.active {
+            background: #7ee787;
+            color: #0a0a0a;
+            border-color: #7ee787;
+        }
+        .size-btn:hover { border-color: #7ee787; }
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+        .btn-primary {
+            background: #7ee787;
+            color: #0a0a0a;
+        }
+        .btn-primary:hover:not(:disabled) { background: #6fd874; transform: translateY(-2px); }
+        .btn-primary:disabled { background: #444; color: #666; cursor: not-allowed; }
+        .btn-secondary {
+            background: transparent;
+            color: #7ee787;
+            border: 1px solid #7ee787;
+        }
+        .btn-secondary:hover { background: #7ee787; color: #0a0a0a; }
+        .image-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .image-item {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+        .image-item-name { color: #aaa; flex: 1; }
+        .image-item-remove {
+            background: transparent;
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+        }
+        .info-box {
+            background: rgba(126, 231, 135, 0.1);
+            border: 1px solid #7ee787;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+        .progress {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .progress.show { display: block; }
+        .progress-bar {
+            height: 6px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #7ee787;
+            width: 0%;
+            transition: width 0.2s;
+        }
+        .progress-text { font-size: 11px; color: #888; }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #333;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bulk Image Resizer</h1>
+            <p class="subtitle">Batch resize multiple images at once</p>
+        </header>
+
+        <div class="layout">
+            <div class="panel">
+                <label>Upload Images</label>
+                <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                    <div style="font-size: 20px; margin-bottom: 10px;">📁</div>
+                    <div style="font-weight: 600; margin-bottom: 5px;">Click to upload</div>
+                    <div style="font-size: 12px; color: #666;">or drag & drop multiple files</div>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" multiple>
+
+                <label style="margin-top: 20px;">Target Size</label>
+                <div class="size-grid">
+                    <button class="size-btn active" data-size="800">800px</button>
+                    <button class="size-btn" data-size="1024">1024px</button>
+                    <button class="size-btn" data-size="1280">1280px</button>
+                    <button class="size-btn" data-size="1920">1920px</button>
+                    <button class="size-btn" data-size="2048">2048px</button>
+                    <button class="size-btn" data-size="512">512px</button>
+                </div>
+
+                <div class="info-box">Max dimension will be resized to selected size. Aspect ratio preserved.</div>
+
+                <button class="btn-primary" id="resizeBtn" disabled>Resize All</button>
+                <button class="btn-secondary" onclick="downloadHTML()">Download Tool Offline</button>
+            </div>
+
+            <div class="panel">
+                <label>Images (<span id="imageCount">0</span>)</label>
+                <div class="image-list" id="imageList"></div>
+                <div class="progress" id="progress">
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                    <div class="progress-text"><span id="progressText">0/0</span> resized</div>
+                </div>
+                <button class="btn-primary" id="downloadBtn" style="display: none;" onclick="downloadZip()">Download ZIP</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Created by <a href="https://heylink.me/nickpanek/" style="color: #7ee787; text-decoration: none;">Nick Panek</a></p>
+            <button class="btn-secondary" onclick="downloadHTML()" style="font-size: 11px; padding: 8px 16px; width: auto; margin-top: 12px;">Download for Offline Use</button>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const dropzone = document.getElementById('dropzone');
+        const resizeBtn = document.getElementById('resizeBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const imageList = document.getElementById('imageList');
+        const imageCount = document.getElementById('imageCount');
+        const progress = document.getElementById('progress');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+
+        let selectedSize = 800;
+        let uploadedImages = [];
+        let resizedImages = [];
+
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                selectedSize = parseInt(e.target.dataset.size);
+            });
+        });
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('drag-over');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('drag-over');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('drag-over');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        uploadedImages.push({
+                            name: file.name,
+                            data: e.target.result,
+                            file: file
+                        });
+                        updateImageList();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function updateImageList() {
+            imageCount.textContent = uploadedImages.length;
+            imageList.innerHTML = uploadedImages.map((img, idx) => `
+                <div class="image-item">
+                    <span class="image-item-name">${img.name}</span>
+                    <button class="image-item-remove" onclick="removeImage(${idx})">Remove</button>
+                </div>
+            `).join('');
+            resizeBtn.disabled = uploadedImages.length === 0;
+        }
+
+        function removeImage(idx) {
+            uploadedImages.splice(idx, 1);
+            updateImageList();
+        }
+
+        async function resizeImages() {
+            resizedImages = [];
+            progress.classList.add('show');
+            resizeBtn.disabled = true;
+
+            for (let i = 0; i < uploadedImages.length; i++) {
+                const img = uploadedImages[i];
+                const image = new Image();
+                image.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let newWidth = image.width;
+                    let newHeight = image.height;
+
+                    if (newWidth > newHeight) {
+                        if (newWidth > selectedSize) {
+                            newHeight = Math.round((newHeight * selectedSize) / newWidth);
+                            newWidth = selectedSize;
+                        }
+                    } else {
+                        if (newHeight > selectedSize) {
+                            newWidth = Math.round((newWidth * selectedSize) / newHeight);
+                            newHeight = selectedSize;
+                        }
+                    }
+
+                    canvas.width = newWidth;
+                    canvas.height = newHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(image, 0, 0, newWidth, newHeight);
+
+                    canvas.toBlob((blob) => {
+                        resizedImages.push({
+                            name: img.name,
+                            blob: blob
+                        });
+                        updateProgress(i + 1);
+                    });
+                };
+                image.src = img.data;
+            }
+        }
+
+        function updateProgress(done) {
+            const percent = (done / uploadedImages.length) * 100;
+            progressFill.style.width = percent + '%';
+            progressText.textContent = `${done}/${uploadedImages.length}`;
+
+            if (done === uploadedImages.length) {
+                resizeBtn.disabled = false;
+                downloadBtn.style.display = 'block';
+            }
+        }
+
+        async function downloadZip() {
+            const zip = new JSZip();
+            resizedImages.forEach(img => {
+                zip.file(img.name, img.blob);
+            });
+            const blob = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'resized-images.zip';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        resizeBtn.addEventListener('click', resizeImages);
+
+        function downloadHTML() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bulk-image-resizer.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
