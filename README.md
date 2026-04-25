@@ -84,42 +84,6 @@ _archive/                       # Non-published research archive
 
 ---
 
-## 🔧 Development
-
-```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Export static site
-npm run export
-```
-
----
-
-## ✨ Adding a New Tool
-
-1. Create the tool as a standalone HTML file in `public/`
-2. Add entry to `app/software/page.tsx`:
-   ```typescript
-   {
-     slug: "tool-name",
-     title: "Tool Name",
-     href: "/tool-name.html",
-     summary: "Brief description of the tool",
-     badge: "Design" | "Audio" | "Video",
-   }
-   ```
-3. Update the `order` object with the display order
-4. Test locally and commit
-
----
-
 ## 📄 License
 
 This repository is maintained by PatternRipple. All tools are free to use.
