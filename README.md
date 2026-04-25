@@ -19,16 +19,26 @@ This repository contains the codebase for **PatternRipple**, a collection of fre
 
 ### Design Tools
 - **Colorway Generator** - Recolor pattern images across 8 preset hues and export as ZIP
-- **Seamless Pattern Creator** - Create repeating tile patterns with offset/wrap controls
+- **Pattern Repeat Engine** - Generate seamless pattern tiles with vector motif creation using Paper.js
+- **Motif Painter** - Browser-based paint tool with multiple brush styles (round, square, marker, spray, eraser)
 - **PNG2SVG Fabric Design Vectorizer** - Convert PNG designs to vector SVG for fabric printing
-- **Seamless Pattern Checker (SmoothSnap)** - Preview and validate seamless patterns
+- **Seamless Pattern Checker (SmoothSnap v1)** - Preview and validate seamless patterns with smooth snapping
 
 ### Audio Tools
-- **Audio Looper (Desktop Edition)** - Loop audio with adjustable controls and tempo
-- **Audio Processor** - Add fades and normalize audio levels
+- **Audio Looper (Desktop Edition)** - Loop audio with adjustable start/end points, tempo, and panning
+- **Audio Processor** - Browser-based fades and normalize using Web Audio API
 
 ### Video Tools
-- **Property Slideshow Maker** - Create listing videos with custom branding
+- **Property Slideshow Maker** - Create quick listing videos with custom branding and aspect ratios
+
+### Beta Tools
+- **Nonogram Generator** - Convert images to nonogram puzzles with logic clues
+- **QR Code Generator** - Convert text or URLs to QR codes instantly
+- **EXIF Stripper** - Remove metadata from images for privacy
+- **Favicon Generator** - Generate favicon sets (16px, 32px, 180px, 192px)
+- **Bulk Image Resizer** - Batch resize multiple images
+- **Image to ASCII Art** - Convert images to ASCII text art
+- **Color Blindness Simulator** - Test design accessibility (protanopia, deuteranopia, tritanopia)
 
 ---
 
@@ -36,18 +46,30 @@ This repository contains the codebase for **PatternRipple**, a collection of fre
 
 ```
 app/
-  software/page.tsx      # Main software listing page
-  layout.tsx             # Root layout
-  page.tsx               # Homepage
+  software/page.tsx              # Main software listing page
+  layout.tsx                     # Root layout
+  page.tsx                       # Homepage
+  about/                         # About page
+  licenses/                      # License information
+  privacy/                       # Privacy policy
+  search/                        # Search functionality
 public/
   colorway-generator.html
-  seamless-pattern-creator.html
+  pattern-repeat-engine.html
+  motif-painter.html
   png2svg.html
   pattern-checker-smoothsnap.html
   audio-looper-panek.html
   audio-processor.html
   property-slideshow-maker.html
-_archive/                # Non-published research archive
+  nonogram-generator.html
+  qr-code-generator.html
+  exif-stripper.html
+  favicon-generator.html
+  bulk-image-resizer.html
+  image-to-ascii.html
+  color-blindness-simulator.html
+_archive/                       # Non-published research archive
 ```
 
 ---
@@ -102,7 +124,7 @@ npm run export
 
 This repository is maintained by PatternRipple. All tools are free to use.
 
-**Contact:** nick@patternripple.com
+**Contact:** nickpanek.ks@gmail.com
 
 ---
 
