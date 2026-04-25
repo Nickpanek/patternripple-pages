@@ -68,6 +68,17 @@ type Tool = {
 
 const betaTools: Tool[] = [
   {
+    slug: "nonogram-generator",
+    title: "Nonogram Generator",
+    href: "/nonogram-generator.html",
+    summary:
+      "Convert images to nonogram puzzles with logic clues. Upload a pattern, adjust grid resolution and color depth, then export as high-res PNG with clues or JSON data.",
+    badge: "Design",
+    faqQ: "How do I generate a nonogram puzzle?",
+    faqA:
+      "Upload an image to the Nonogram Generator, adjust the grid size (5-100), select a color mode (2-5 colors), tune the threshold for black & white mode, and export as PNG or JSON. The tool generates row and column clues for solving.",
+  },
+  {
     slug: "qr-code-generator",
     title: "QR Code Generator",
     href: "/qr-code-generator.html",

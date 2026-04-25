@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nonogram Generator | PatternRipple</title>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --card: #1e1e1e;
+            --text: #e0e0e0;
+            --text-muted: #999;
+            --accent: #00ff88;
+            --border: #333;
+            --success: #4ade80;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem 2rem;
+        }
+
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-main {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                margin-top: 2rem;
+            }
+        }
+
+        .preview-section {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .card h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+        }
+
+        .upload-area {
+            width: 100%;
+            height: 300px;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(0, 255, 136, 0.02);
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .upload-area.has-image {
+            border: 1px solid var(--border);
+            background: transparent;
+            cursor: default;
+        }
+
+        .upload-area.has-image:hover {
+            border-color: var(--border);
+            background: transparent;
+        }
+
+        .upload-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .upload-placeholder svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 0.5rem;
+            opacity: 0.6;
+        }
+
+        #origImg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            background: white;
+            border-radius: 4px;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .clue-output {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            background: #000;
+            color: var(--accent);
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.4;
+        }
+
+        .clues-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .control-group h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .control-item {
+            margin-bottom: 1.25rem;
+        }
+
+        .control-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-item label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        input[type="file"],
+        input[type="range"],
+        select {
+            width: 100%;
+            padding: 0.65rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        input[type="file"] {
+            padding: 0.5rem;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            filter: brightness(1.15);
+        }
+
+        input[type="range"] {
+            padding: 0;
+            height: 6px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: none;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300ff88' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            padding-right: 2rem;
+        }
+
+        .value-display {
+            display: inline-block;
+            font-weight: 500;
+            color: var(--accent);
+            font-size: 0.85rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            margin-bottom: 0.75rem;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.secondary {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        button.secondary:hover {
+            background: rgba(0, 255, 136, 0.1);
+            filter: brightness(1);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .info-box {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 6px;
+            padding: 1rem;
+            font-size: 0.85rem;
+            color: var(--text);
+            margin-top: 1rem;
+        }
+
+        .info-box strong {
+            color: var(--accent);
+        }
+
+        #exportCanvas {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem 1rem;
+        }
+
+        .empty-state p {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .clues-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-main {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Nonogram Generator</h1>
+    <p>Convert images to nonogram puzzles with logic clues. Upload a pattern, adjust settings, and export as high-res PNG or JSON.</p>
+</div>
+
+<div class="container">
+    <div class="grid-main">
+        <!-- Preview Area -->
+        <div class="preview-section">
+            <!-- Original Image Card -->
+            <div class="card">
+                <h2>1. Upload Image</h2>
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                    <div id="uploadPlaceholder" class="upload-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p>Click to upload or drag image here</p>
+                        <p class="hint">PNG, JPG, or GIF (max 5MB)</p>
+                    </div>
+                    <img id="origImg" style="display: none;">
+                </div>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            </div>
+
+            <!-- Processed Grid Card -->
+            <div class="card">
+                <h2>2. Pattern Grid</h2>
+                <p class="hint">Real-time preview of your nonogram grid</p>
+                <canvas id="targetCanvas"></canvas>
+            </div>
+
+            <!-- Logic Clues Card -->
+            <div class="card">
+                <h2>3. Logic Clues</h2>
+                <p class="hint">Clues for solving the nonogram puzzle</p>
+                <div class="clues-grid">
+                    <div>
+                        <h3>Row Clues (Left)</h3>
+                        <div id="rowClues" class="clue-output"></div>
+                    </div>
+                    <div>
+                        <h3>Column Clues (Top)</h3>
+                        <div id="colClues" class="clue-output"></div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>How to read:</strong> Numbers represent consecutive filled cells in each row/column. Spaces between numbers mean at least one empty cell.
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Controls -->
+        <div class="sidebar">
+            <div class="control-group">
+                <h3>Grid Settings</h3>
+
+                <div class="control-item">
+                    <label for="resSlider">Grid Size</label>
+                    <input type="range" id="resSlider" min="5" max="100" value="20">
+                    <p class="value-display" id="resVal">20 × 20</p>
+                </div>
+
+                <div class="control-item">
+                    <label for="colorMode">Color Mode</label>
+                    <select id="colorMode">
+                        <option value="2">2 Colors (B&W)</option>
+                        <option value="3">3 Colors</option>
+                        <option value="4">4 Colors</option>
+                        <option value="5">5 Colors</option>
+                    </select>
+                </div>
+
+                <div class="control-item">
+                    <label for="thresholdSlider">Threshold (B&W Only)</label>
+                    <input type="range" id="thresholdSlider" min="0" max="255" value="128">
+                    <p class="value-display" id="thresholdVal">128</p>
+                    <p class="hint">Lower = more black cells. Only applies to 2-color mode.</p>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Export</h3>
+                <button id="exportPngBtn" disabled>Export as PNG</button>
+                <p class="hint">High-resolution with clues and grid lines</p>
+
+                <button id="downloadJson" class="secondary" disabled>Export as JSON</button>
+                <p class="hint">Clues and grid data for puzzles</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<canvas id="exportCanvas" style="display: none;"></canvas>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const resSlider = document.getElementById('resSlider');
+    const resVal = document.getElementById('resVal');
+    const colorMode = document.getElementById('colorMode');
+    const thresholdSlider = document.getElementById('thresholdSlider');
+    const thresholdVal = document.getElementById('thresholdVal');
+    const targetCanvas = document.getElementById('targetCanvas');
+    const ctx = targetCanvas.getContext('2d');
+    const origImg = document.getElementById('origImg');
+    const uploadArea = document.getElementById('uploadArea');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const exportPngBtn = document.getElementById('exportPngBtn');
+    const downloadJsonBtn = document.getElementById('downloadJson');
+
+    let currentImage = null;
+    let currentGrid = [];
+    let currentRows = [];
+    let currentCols = [];
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'var(--accent)';
+        uploadArea.style.background = 'rgba(0, 255, 136, 0.1)';
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = 'var(--border)';
+        uploadArea.style.background = 'rgba(0, 255, 136, 0.02)';
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'var(--border)';
+        uploadArea.style.background = 'rgba(0, 255, 136, 0.02)';
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileChange();
+        }
+    });
+
+    // Real-time listeners
+    resSlider.addEventListener('input', () => {
+        resVal.innerText = `${resSlider.value} × ${resSlider.value}`;
+        processImage();
+    });
+
+    colorMode.addEventListener('input', processImage);
+
+    thresholdSlider.addEventListener('input', () => {
+        thresholdVal.innerText = thresholdSlider.value;
+        processImage();
+    });
+
+    fileInput.addEventListener('change', handleFileChange);
+
+    function handleFileChange() {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            origImg.src = event.target.result;
+            origImg.style.display = 'block';
+            uploadPlaceholder.style.display = 'none';
+            uploadArea.classList.add('has-image');
+
+            currentImage = new Image();
+            currentImage.src = event.target.result;
+            currentImage.onload = processImage;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function processImage() {
+        if (!currentImage) return;
+
+        const size = parseInt(resSlider.value);
+        const colorCount = parseInt(colorMode.value);
+        const threshold = parseInt(thresholdSlider.value);
+
+        targetCanvas.width = size;
+        targetCanvas.height = size;
+        ctx.drawImage(currentImage, 0, 0, size, size);
+        const imgData = ctx.getImageData(0, 0, size, size);
+        const pixels = imgData.data;
+
+        currentGrid = [];
+        for (let y = 0; y < size; y++) {
+            const row = [];
+            for (let x = 0; x < size; x++) {
+                const i = (y * size + x) * 4;
+                const avg = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3;
+                let val = 0;
+
+                if (colorCount === 2) {
+                    val = avg < threshold ? 1 : 0;
+                } else {
+                    val = Math.floor(avg / (256 / colorCount));
+                    val = (colorCount - 1) - val;
+                }
+
+                row.push(val);
+                const fill = (colorCount === 2)
+                    ? (val === 1 ? 0 : 255)
+                    : 255 - (val * (255 / (colorCount - 1)));
+                pixels[i] = pixels[i + 1] = pixels[i + 2] = fill;
+                pixels[i + 3] = 255;
+            }
+            currentGrid.push(row);
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+
+        currentRows = currentGrid.map(row => getLineClues(row));
+        currentCols = [];
+        for (let x = 0; x < size; x++) {
+            const col = [];
+            for (let y = 0; y < size; y++) col.push(currentGrid[y][x]);
+            currentCols.push(getLineClues(col));
+        }
+
+        displayClues();
+        exportPngBtn.disabled = false;
+        downloadJsonBtn.disabled = false;
+    }
+
+    function getLineClues(line) {
+        const clues = [];
+        let count = 0, lastVal = 0;
+
+        line.forEach(val => {
+            if (val > 0) {
+                if (val === lastVal) {
+                    count++;
+                } else {
+                    if (count > 0) clues.push(count);
+                    count = 1;
+                    lastVal = val;
+                }
+            } else {
+                if (count > 0) clues.push(count);
+                count = 0;
+                lastVal = 0;
+            }
+        });
+
+        if (count > 0) clues.push(count);
+        return clues.length ? clues : [0];
+    }
+
+    function displayClues() {
+        document.getElementById('rowClues').innerText = currentRows
+            .map((r, i) => `${i + 1}: ${r.join(' ')}`)
+            .join('\n');
+        document.getElementById('colClues').innerText = currentCols
+            .map((c, i) => `${i + 1}: ${c.join(' ')}`)
+            .join('\n');
+    }
+
+    exportPngBtn.addEventListener('click', () => {
+        if (!currentGrid.length) return;
+
+        const eCanvas = document.getElementById('exportCanvas');
+        const eCtx = eCanvas.getContext('2d');
+        const cellSize = 30, padding = 150, gridSize = currentGrid.length;
+        const colorCount = parseInt(colorMode.value);
+
+        eCanvas.width = (gridSize * cellSize) + padding + 50;
+        eCanvas.height = (gridSize * cellSize) + padding + 50;
+
+        eCtx.fillStyle = 'white';
+        eCtx.fillRect(0, 0, eCanvas.width, eCanvas.height);
+
+        eCtx.font = 'bold 14px Arial';
+        eCtx.textAlign = 'center';
+        eCtx.textBaseline = 'middle';
+        eCtx.fillStyle = 'black';
+
+        currentRows.forEach((clues, i) => {
+            eCtx.fillText(
+                clues.join(' '),
+                padding / 2,
+                padding + (i * cellSize) + (cellSize / 2)
+            );
+        });
+
+        currentCols.forEach((clues, i) => {
+            clues.forEach((num, j) => {
+                eCtx.fillText(
+                    num,
+                    padding + (i * cellSize) + (cellSize / 2),
+                    padding - ((clues.length - j) * 20)
+                );
+            });
+        });
+
+        eCtx.strokeStyle = '#ccc';
+        for (let y = 0; y <= gridSize; y++) {
+            eCtx.lineWidth = (y % 5 === 0) ? 3 : 1;
+            eCtx.beginPath();
+            eCtx.moveTo(padding, padding + y * cellSize);
+            eCtx.lineTo(padding + gridSize * cellSize, padding + y * cellSize);
+            eCtx.stroke();
+
+            eCtx.beginPath();
+            eCtx.moveTo(padding + y * cellSize, padding);
+            eCtx.lineTo(padding + y * cellSize, padding + gridSize * cellSize);
+            eCtx.stroke();
+        }
+
+        currentGrid.forEach((row, y) => {
+            row.forEach((val, x) => {
+                if (val > 0) {
+                    const fill = 255 - (val * (255 / (colorCount - 1)));
+                    eCtx.fillStyle = `rgb(${fill},${fill},${fill})`;
+                    eCtx.fillRect(
+                        padding + x * cellSize + 2,
+                        padding + y * cellSize + 2,
+                        cellSize - 4,
+                        cellSize - 4
+                    );
+                }
+            });
+        });
+
+        const link = document.createElement('a');
+        link.download = 'pattern_ripple_nonogram.png';
+        link.href = eCanvas.toDataURL('image/png');
+        link.click();
+    });
+
+    downloadJsonBtn.addEventListener('click', () => {
+        const data = {
+            size: parseInt(resSlider.value),
+            colorMode: parseInt(colorMode.value),
+            rows: currentRows,
+            cols: currentCols
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'nonogram_puzzle.json';
+        a.click();
+    });
+</script>
+
+</body>
+</html>
