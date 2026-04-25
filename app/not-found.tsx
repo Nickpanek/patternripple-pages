@@ -148,9 +148,7 @@ export default function NotFound() {
 
             <div className="pr404-actions">
               <a className="pr404-btnPrimary" href="/">Go home</a>
-              <a className="pr404-btn" href="/tools/">All tools</a>
-              <a className="pr404-btn" href="/collections">Collections</a>
-              <a className="pr404-btn" href="/contact">Contact</a>
+              <a className="pr404-btn" href="/software">All tools</a>
             </div>
 
             <form role="search" action="/search" method="get" style={{ marginTop: 14, display: "flex", gap: 8 }}>
